@@ -1,0 +1,395 @@
+@import "../../../lib/style/font.css";
+
+page {
+	background: #f2f2f2;
+}
+
+.Hui-iconfont {
+ font-family: "Hui-iconfont";
+ font-size:30rpx;
+}
+.iconv-uparrow:after {
+  content:'\e6d6';
+}
+
+.iconv-downarrow:after {
+  content:'\e6d5';
+}
+
+.startBar {
+  height: 75rpx;
+  background: #1d1d1d;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  padding: 5rpx;
+  border-bottom: 0px solid #f2f2f2;
+  z-index: 99;
+}
+.top-title {
+  height: 75rpx;
+  background: #1d1d1d;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  padding: 5rpx;
+  border-bottom: 0px solid #f2f2f2;
+  z-index: 99;
+}
+.top-title-item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  line-height: 75rpx;
+  font-size: 48rpx;
+  padding: 10rpx;
+}
+.top-title-item .title-image {
+  width: 70rpx;
+  height: 70rpx;
+  margin-right: 1rpx;
+  margin-top: 0rpx;
+  margin-left: 20rpx;
+}
+.container {
+  width: 100%;
+  overflow-x: hidden;
+}
+.order-item {
+  width: 96%;
+  margin: 15rpx auto 0 auto;
+	background: #fff;
+  border-radius: 10rpx;
+}
+
+.order-item:last-child {
+	margin-bottom: 0;
+}
+
+.order-footer {
+	padding: 10rpx 20rpx;
+  display: flex;
+  flex-direction: row;
+}
+
+.order-footer text {
+	font-size: 12px;
+	margin: 5px;
+}
+
+/*接受方微信头像*/
+.order-footer image {
+	width:50rpx;
+	height:50rpx;
+  border-radius: 50%;
+}
+
+/*每行单元格*/
+.carts-item {
+	display: flex;
+	flex-direction: row;
+	height:150rpx;
+	/*width属性解决标题文字太短而缩略图偏移*/
+	width:100%;
+	border-bottom: 1rpx solid #F2f2f2;
+	padding: 10rpx;
+ 
+}
+
+/*左部图片*/
+.carts-image {
+  margin: 10rpx 20rpx;
+	width:100rpx;
+	height:100rpx;
+  overflow-y: hidden;
+}
+
+
+/**/
+.shop-text {
+	margin-left: 10rpx;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+  font-size:28rpx;
+	justify-content: space-between;
+}
+
+/*logo部图片*/
+.logo-image {
+	width:50rpx;
+	height:50rpx;
+}
+
+
+/*右部描述*/
+.carts-text {
+	margin-left: 10rpx;
+	width: 100%;
+	height:220rpx;
+	display: flex;
+	flex-direction: column;
+	justify-content:flex-start;
+	color: #999;
+}
+ 
+.carts-title {
+	font-size: 28rpx;
+	color: #444;
+	line-height: 38rpx;
+	display: -webkit-box ;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp:1; /*显示多少行*/
+}
+.carts-card-title {
+	font-size: 25rpx;
+	color: #999;
+	line-height: 38rpx;
+  display: -webkit-box ;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp:1; /*显示多少行*/
+}
+
+/*右下部分价格与数量*/
+.carts-subtitle {
+	font-size: 25rpx;
+	color:#999;
+	display: flex;
+	flex-direction: row;
+	justify-content:space-between;
+}
+.smallbtn {
+  border: 3rpx solid #e34c55;
+  color: #e34c55;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  margin-left:10rpx;
+}
+.smallbtn2 {
+  border: 3rpx solid #999;
+  color: #999;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  margin-right:10rpx;
+}
+/*地址*/
+.order-address {
+  float: left;
+  margin-left: 10rpx;
+	color: darkgray;
+	font-size:14px;
+	line-height: 22px;
+  display: flex;
+	flex-direction: row;
+}
+
+/*价格*/
+.order-price {
+	color: #f60;
+	font-size:14px;
+	line-height: 22px;
+}
+
+/*隐藏元素*/
+.hidden {
+	display: none;
+}
+
+
+/*辅助导航 nav*/
+.banner {
+	width: 100%;
+	height: 100%;
+  
+	/*margin-left: 15rpx;*/
+}
+.banner text {
+	width: 100%;
+	height: 80rpx;
+	font-size:32rpx;
+  font-weight: bold;
+  color:white;
+  text-align: center;
+  display: flex;
+	flex-direction: column;
+  justify-content:center;
+	/*margin-left: 15rpx;*/
+}
+.status1 {
+background-color: #E34C55;
+}
+.status2 {
+background-color: #E34C55;
+}
+.top-bar2 {
+  height: 72rpx;
+  background: white; 
+  width:100%;
+  position: fixed;
+  top:0;
+  border-top: 1px solid #F2f2f2;
+  z-index:1;
+}
+.top-bar-item2 {
+  display:inline-block;
+  width: 48%;  /*250rpx*/
+  color: gray;
+  text-align: center;
+  /* line-height: 72rpx; */
+  font-size: 32rpx;
+}
+.top-bar-active2 {
+  color: red;
+  font-size: 38rpx;
+}
+
+
+.order-detail {
+  width: 96%;
+  margin: 15rpx auto 0 auto;
+  display: flex;
+  flex-direction:column;
+  background-color:#fff; 
+  border-radius: 10rpx;
+  overflow-x: hidden;
+}
+
+.order-detail-text {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  line-height: 2.5;
+  font-size: 24rpx;
+  text-align: left;
+  color: #444;
+  padding: 0 20rpx;
+}
+
+.labeltext {
+  display: inline-block;
+  width: 20%;
+  color: #999;
+}
+
+/**/
+.order-detail image {
+	width:60rpx;
+	height:60rpx;
+  border-radius: 50%;
+  margin: 0;
+  line-height: 1;
+}
+
+
+.delivery-detail {
+  width: 96%;
+  margin: 15rpx auto 0 auto;
+  display: flex;
+  flex-direction:column;
+  background-color:#fff; 
+  border-radius: 10rpx;
+  overflow-x: hidden;
+}
+
+.delivery-detail-text {
+  line-height: 2.5;
+  font-size: 24rpx;
+  text-align: left;
+  color: #444;
+  padding: 0 20rpx;
+}
+
+
+/**/
+.delivery-detail image {
+	width:50rpx;
+	height:50rpx;
+  border-radius: 50%;
+}
+
+.delivery-detail-info {
+	width: 96%;
+  margin: 15rpx auto 150rpx auto;
+  display: flex;
+  flex-direction:column;
+  background-color:#fff; 
+  border-radius: 10rpx;
+  overflow-x: hidden;
+  padding: 30rpx 0;
+  font-size: 30rpx;
+ 
+}
+.delivery-detail-info-text {
+	display: flex;
+  flex-direction:column;
+  font-size: 24rpx;
+	margin-left: 10rpx;
+  margin-right: 10rpx;
+  color:#444;
+}
+
+.timeline-date {
+	overflow: hidden;
+	position: relative;
+  display: inline-block;
+  
+}
+
+
+.footer {
+  background: #f9f9f9;
+  width: 100%;
+  padding:20rpx 0 50rpx 0;
+  position: fixed;
+  bottom: 0;
+  border-top: 1rpx solid #eee;
+}
+
+/*购物车按钮、收藏等*/
+.opt-buttons {
+  width: 100%;
+  /*
+  padding-top: 20rpx;
+  text-align: center;
+  justify-content: space-between;
+  */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+/*cart*/
+.button-group {
+  line-height: 55rpx;
+  text-align: center;
+  width: 250rpx;
+  height: 60rpx;
+  font-size: 28rpx;
+  border-radius: 14rpx;
+  border: 2rpx solid #E34C55;
+  color: #e34c55;
+}
+
+.button-image {
+	width: 60rpx;
+	height: 60rpx;
+
+}
+
+.button-text {
+	font-size: 24rpx;
+	line-height: 40rpx;
+}
+
+.contact-button {
+  color: #999;
+}

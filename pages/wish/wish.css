@@ -1,0 +1,375 @@
+@import "../../lib/style/font.css";
+
+page {
+  background: #1d1d1d;
+}
+
+.top-title {
+  height: 75rpx;
+  background: #444;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  padding: 5rpx;
+  border-bottom: 0px solid #f2f2f2;
+  z-index: 99;
+}
+.top-title-item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  line-height: 75rpx;
+  font-size: 48rpx;
+  padding: 10rpx;
+}
+.top-title-item .title-image {
+  width: 70rpx;
+  height: 70rpx;
+  margin-right: 1rpx;
+  margin-top: 0rpx;
+  margin-left: 20rpx;
+}
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
+.Hui-iconfont {
+ font-family: "Hui-iconfont";
+ font-size:30rpx;
+}
+.iconv-uparrow:after {
+  content:'\e6d6';
+}
+
+.iconv-downarrow:after {
+  content:'\e6d5';
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin-top: 180rpx;
+    padding: 0;
+	z-index: 1;
+}
+
+/*user info*/
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 220rpx;
+  background: #1d1d1d;
+  top:50rpx;
+  position:fixed;
+  z-index: 1000;
+}
+.userinfo_my {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 150rpx;
+  background: #1d1d1d;
+  top:45rpx;
+  position:fixed;
+  z-index: 1000;
+}
+
+.userinfo-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+
+.userinfo-nickname {
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.banner {
+	width: 100%;
+	height: 100rpx;
+	text-align: center;
+}
+.banner button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: #FFF;
+}
+.banner .shareto {
+  width: 32rpx;
+  height: 32rpx;
+  margin: 14rpx 6rpx 0 0;
+}
+.banner .btnadd {
+  width: 80rpx;
+  height: 80rpx;
+  margin-top:50rpx;
+  border-radius: 50%;
+  z-index: 1001;
+  font-size: 64rpx;
+  font-weight: normal;
+  line-height: 85rpx;
+  background: #EC4844;
+  border: 4rpx solid #F2F2F2;
+  box-shadow: 0rpx 3rpx 0rpx rgba(100, 100, 100, 0.3);
+  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCRTY4NjZFMEVEQjAxMUU2QTI2OEJENDREQTM2NUZBMyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCRTY4NjZFMUVEQjAxMUU2QTI2OEJENDREQTM2NUZBMyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkJFNjg2NkRFRURCMDExRTZBMjY4QkQ0NERBMzY1RkEzIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkJFNjg2NkRGRURCMDExRTZBMjY4QkQ0NERBMzY1RkEzIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+nfloEwAABh1JREFUeNrsnVtsFFUY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);
+  background-repeat:no-repeat; 
+  background-size:100% 100%;
+  -moz-background-size:100% 100%;
+}
+.banner .btnshare {
+  font-size: 24rpx;
+  position: fixed;
+  top: 50rpx;
+  right: 20rpx;
+  z-index: 99;
+  background:rgba(0, 0, 0, 0.5);
+}
+.banner image {
+	width: 100%;
+	height: 100rpx;
+}
+
+.banner .swiper_box {
+    width: 100%;
+}
+
+/*导航 nav*/
+.top-bar {
+  height: 72rpx;
+  background: white; 
+  width:100%;
+  position: fixed;
+  top:0;
+  z-index:1;
+}
+.top-bar-item {
+  display:inline-block;
+  width: 120rpx;
+  color: gray;
+  text-align: center;
+  /* line-height: 72rpx; */
+  font-size: 30rpx;
+}
+.top-bar-active{
+  color: red;
+  font-size: 34rpx;
+}
+
+/*辅助导航 nav2*/
+.top-bar2 {
+  height: 72rpx;
+  background: white; 
+  width:100%;
+  position: fixed;
+  margin-top: 70rpx;
+  top:0;
+  border-top: 1px solid #F2f2f2;
+  z-index:1;
+}
+.top-bar-item2 {
+  display:inline-block;
+  width: 250rpx;
+  color: gray;
+  text-align: center;
+  /* line-height: 72rpx; */
+  font-size: 32rpx;
+}
+.top-bar-active2 {
+  color: red;
+  font-size: 38rpx;
+}
+
+swiper-item image {
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+}
+
+view.text {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 10px 10px 10px 12px;
+    font-size: 15px;
+    color: #656565;
+}
+
+view.text:before {
+    position: absolute;
+    display: block;
+    content: ' ';
+    left: -5px;
+    width: 2px;
+    height: 100%;
+    background-color: #09bb07;
+}
+
+.line_flag {
+    width: 3px;
+    height: 100%;
+    display: inline-block;
+    background-color: #f9f027;
+}
+
+view.text text {
+    margin-left: 10px;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+.venues_box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  align-content:center;
+  justify-content:space-around;
+  width: 98%;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 15rpx 0 124rpx 0;
+  z-index:1 ;
+}
+
+.venues_item {
+  width: 48%;
+  margin-bottom:15rpx;
+  background: #ffffff;
+  border-radius: 10rpx;
+  padding-top:10rpx;
+  padding-bottom: 10rpx;
+}
+
+.venues_item .mainpic {
+  display: block;
+  width: 100%;
+  height: 356rpx;
+}
+
+ .venues_item .goods_name {
+  color: #444;
+  font-size: 26rpx;
+  font-weight: bold;
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  padding-left: 20rpx;
+}
+.venues_item .goods_sku {
+  display: block;
+  width: 98%;
+  color: #999;
+  font-size:22rpx;
+  overflow:hidden;  
+  text-overflow:ellipsis;  
+  white-space:nowrap;
+  text-indent: 20rpx;
+  min-height: 36rpx;
+}
+
+ .venues_item .goods_tag {
+  color: #999;
+  font-size: 20rpx;
+  padding: 2rpx 4rpx;
+  border: 1px solid #f2f2f2;
+  border-radius: 6rpx;
+  text-align: center;
+}
+.venues_item .goods_tag image{
+  width: 10%;
+  height: 30rpx;
+}
+ .venues_item .goods_bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: #E52445;
+  font-size: 24rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding:0 20rpx;
+}
+
+
+.price-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 0 20rpx;
+}
+
+.price-market {
+  text-indent: 0;
+  color: #999;
+  font-size: 24rpx;
+  line-height: 1.8;
+  padding-right: 3rpx;
+  text-decoration:line-through;
+}
+.price-market::first-letter {
+  font-size: 20rpx;
+}
+.price-now {
+  text-indent: 0;
+  color: #e34c55;
+  font-size: 26rpx;
+  font-weight: bold;
+}
+.price-now::first-letter {
+  font-size: 20rpx;
+}
+.search {
+	width: 100%;
+	height: 80rpx;
+  display: flex;
+	flex-direction: row;
+	justify-content: center;/*子项横轴上居中对齐*/
+	align-items: center;/*子项纵轴上居中对齐*/
+  padding: 5rpx;
+}
+
+.search .wx-input {
+	width: 70%;
+	height: 30rpx;
+	border: 1px solid #bfbfbf;
+	border-radius: 120rpx;
+  padding-left: 5rpx;
+	/*margin: 30rpx 0 0 38rpx;*/
+}
+
+.search image {
+	width: 5%;
+	height: 40rpx;
+	border: 0px solid #bfbfbf;
+  margin-left:10rpx;
+}
+.share-image {
+  width: 600rpx;
+  height: 888rpx;
+  margin: 0 75rpx;
+  border: 1px solid black;
+}
+
+button {
+  margin-top: 20rpx;
+}
+.status_bar {
+      height: var(--status-bar-height);
+      width: 100%;
+  }

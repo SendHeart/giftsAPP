@@ -1,0 +1,197 @@
+@import "../../../lib/style/font.css";
+
+page {
+	background: #fff;
+}
+
+.Hui-iconfont {
+ font-family: "Hui-iconfont";
+ font-size:30rpx;
+}
+.iconv-uparrow:after {
+  content:'\e6d6';
+}
+
+.iconv-downarrow:after {
+  content:'\e6d5';
+}
+.order-summary {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+  position: absolute;
+  top:0;
+  margin-top:0;
+  padding-left: 20rpx;
+  color:#f2f2f2;
+  background: #1d1d1d;
+  border-bottom:3rpx solid #eee;
+}
+
+.order-title {
+	width: 100%;
+  font-size:35rpx;
+}
+.order-dueday {
+  width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+.order-statistic {
+  width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+.order-owner {
+  width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+.order_owner text{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/*每行单元格*/
+.order-list {
+	display: flex;
+	flex-direction: row;
+  justify-content: space-around;
+	height:150rpx;
+  line-height: 150rpx;
+	width:100%;
+	border-bottom: 1px solid #eee; 
+  padding: 10rpx;
+}
+
+/*左部图片*/
+.order-image {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  height:150rpx;
+}
+
+.order-image image{
+  width:80rpx;
+  height:80rpx;
+  border-radius:50%;
+}
+
+/*右部描述*/
+.order-item {
+	margin-left: 10rpx;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+ .order-list text{
+   font-size:28rpx;
+  
+ }
+
+.order-sub-item {
+	font-size: 25rpx;
+	color:#444;
+	padding: 0 20rpx ;
+	display: flex;
+	flex-direction: row;
+	justify-content:space-around;
+}
+
+.order-member-info {
+  width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+.sentbtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: center;
+  margin: 20rpx auto;
+  width: 100%;
+  height: 120rpx;
+}
+
+.sentbtn button {
+  line-height: 100rpx;
+  width: 60%;
+  height: 100rpx;
+  background: #e34c55;
+  color: white;
+  font-size: 34rpx;
+  border-radius: 20rpx;
+  -webkit-box-shadow: 0px 4rpx 0px rgba(219, 31, 5, 1);
+  -moz-box-shadow: 0px 4rpx 0px rgba(219, 31, 5, 1);
+  box-shadow: 0px 4rpx 0px rgb(179, 22, 2);
+  margin:10rpx;
+}
+
+.sentbtn text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/*隐藏元素*/
+.hidden {
+	display: none;
+}
+
+/*导航 nav*/
+.top-bar {
+  height: 76rpx;
+  background: white; 
+  white-space: nowrap;
+  position: fixed;
+  top:0;
+  z-index:99;
+}
+.top-bar-item {
+  display:inline-block;
+  width: 120rpx;
+  color: #444;
+  text-align: center;
+  line-height: 70rpx;
+  font-size: 32rpx;
+}
+.top-bar-active {
+  color: #444;
+  font-weight: bold;
+  border-bottom: 6rpx solid #E34C55;
+}
+/*辅助导航 nav2*/
+.banner {
+	width: 100%;
+	height: 90rpx;
+	padding-top: 0rpx;
+	/*margin-left: 15rpx;*/
+}
+.top-bar2 {
+  height: 70rpx;
+  background: #FFF; 
+  width:100%;
+  position: fixed;
+  margin-top: 0rpx;
+  top:0;
+  border-top: 1px solid #F2f2f2;
+  border-bottom: 1px solid #F2f2f2;
+  z-index:99;
+}
+.top-bar-item2 {
+  display:inline-block;
+  width: 250rpx;
+  color: #999;
+  text-align: center;
+  line-height: 70rpx;
+  font-size: 28rpx;
+}
+.top-bar-active2 {
+  color: #444;
+}

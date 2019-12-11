@@ -1,0 +1,234 @@
+{
+    "name" : "送心礼物",
+    "appid" : "__UNI__8B1760E",
+    "description" : "送心礼物",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    /* 5+App特有相关 */
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueCompiler" : "uni-app",
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        "modules" : {
+            "OAuth" : {},
+            "Payment" : {},
+            "Share" : {},
+            "Speech" : {},
+            "VideoPlayer" : {},
+            "Maps" : {},
+            "Push" : {}
+        },
+        /* 应用发布信息 */
+        "distribute" : {
+            /* android打包配置 */
+            "android" : {
+                "permissions" : [
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_MOCK_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_TASKS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.SEND_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SMS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>"
+                ],
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ],
+                "schemes" : "com.yiquangou.app"
+            },
+            /* ios打包配置 */
+            "ios" : {
+                "UIBackgroundModes" : [ "audio" ],
+                "urlschemewhitelist" : [ "baidumap", "iosamap" ],
+                "privacyDescription" : {
+                    "NSPhotoLibraryUsageDescription" : "\"送心礼物\"需要您的同意，才能访问相册，以便于分享图片",
+                    "NSPhotoLibraryAddUsageDescription" : "\"送心礼物\"需要您的同意，才能添加照片，以便于保存商品图片",
+                    "NSCameraUsageDescription" : "\"送心礼物\"需要您的同意，才能访问相机，以便于上传图片",
+                    "NSMicrophoneUsageDescription" : "\"送心礼物\"需要您的同意，才能访问麦克风，以便于上传音频",
+                    "NSLocationWhenInUseUsageDescription" : "\"送心礼物\"需要您的同意，才能访问位置，以便于推荐特色商品",
+                    "NSLocationAlwaysUsageDescription" : "\"送心礼物\"需要您的同意，才能始终访问位置，以便于推荐特色商品",
+                    "NSLocationAlwaysAndWhenInUseUsageDescription" : "\"送心礼物\"需要您的同意，才能始终访问位置，以便于推荐特色商品",
+                    "NSCalendarsUsageDescription" : "\"送心礼物\"需要您的同意，才能访问日历，以便于提醒您及时接收信息",
+                    "NSContactsUsageDescription" : "\"送心礼物\"需要您的同意，才能访问通讯录，以便于选择收件人信息",
+                    "NSSpeechRecognitionUsageDescription" : "\"送心礼物\"需要您的同意，才能开启语音识别，以便于和客户交互",
+                    "NSRemindersUsageDescription" : "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于提醒您及时接收信息",
+                    "NSMotionUsageDescription" : "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于获取运动与健身信息",
+                    "NSHealthUpdateUsageDescription" : "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于获取健康信息"
+                },
+                "urltypes" : "com.yiquangou.app"
+            },
+            /* SDK配置 */
+            "sdkConfigs" : {
+                "speech" : {
+                    "ifly" : {}
+                },
+                "maps" : {
+                    "baidu" : {
+                        "appkey_ios" : "3075ca513c180f154a83789e3f93c1c4",
+                        "appkey_android" : "3075ca513c180f154a83789e3f93c1c4"
+                    }
+                },
+                "payment" : {
+                    "weixin" : {
+                        "appid" : "wx75f9d4c06ae00125",
+                        "UniversalLinks" : ""
+                    },
+                    "alipay" : {},
+                    "appleiap" : {}
+                },
+                "oauth" : {
+                    "weixin" : {
+                        "appid" : "wx75f9d4c06ae00125",
+                        "appsecret" : "d67a84077ba18bf54a88d688e7c89a90"
+                    },
+                    "qq" : {
+                        "appid" : "101609235"
+                    }
+                },
+                "share" : {
+                    "qq" : {
+                        "appid" : "101609235"
+                    },
+                    "weixin" : {
+                        "appid" : "wx75f9d4c06ae00125",
+                        "UniversalLinks" : ""
+                    }
+                },
+                "push" : {
+                    "unipush" : {}
+                }
+            },
+            "orientation" : [ "portrait-primary" ],
+            "icons" : {
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                },
+                "ios" : {
+                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                    },
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                    }
+                }
+            },
+            "splashscreen" : {
+                "android" : {
+                    "hdpi" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                    "xhdpi" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                    "xxhdpi" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
+                },
+                "ios" : {
+                    "iphone" : {
+                        "portrait-896h@3x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
+                    }
+                }
+            }
+        },
+        "nativePlugins" : {
+            "longyoung-BDFaceAuth" : {
+                "__plugin_info__" : {
+                    "name" : "【限免】安卓人脸识别、百度活体检测、人脸采集android端",
+                    "description" : "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。",
+                    "platforms" : "Android",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=976",
+                    "android_package_name" : "com.yiquangou.app",
+                    "ios_bundle_id" : "com.yiquangou.app",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "976",
+                    "parameters" : {}
+                }
+            }
+        }
+    },
+    /* 快应用特有相关 */
+    "quickapp" : {},
+    /* 小程序特有相关 */
+    "mp-weixin" : {
+        "appid" : "",
+        "setting" : {
+            "urlCheck" : false
+        },
+        "usingComponents" : true,
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "演示定位能力"
+            }
+        }
+    },
+    "mp-alipay" : {
+        "usingComponents" : true
+    },
+    "mp-baidu" : {
+        "usingComponents" : true
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true
+    },
+    "h5" : {
+        "template" : "",
+        "router" : {
+            "mode" : "history",
+            "base" : ""
+        },
+        "sdkConfigs" : {
+            "maps" : {
+                "qqmap" : {
+                    "key" : ""
+                }
+            }
+        },
+        "title" : "送心礼物",
+        "domain" : "shappc.itoldfarmer.com"
+    }
+}

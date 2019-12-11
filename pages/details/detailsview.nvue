@@ -1,0 +1,492 @@
+<template>
+    <div class="page" :style="{ height: height }">
+		<swiper
+			class="swiper"
+			:vertical="false"
+			@change="changeCurrent"
+			:current="index">
+			<swiper-item v-for="(pic,idx) in image_pic" :key="idx" class="swiper-item">
+				<div v-if="Math.abs(index-idx)<=1" class="video-box">
+					<div>
+						<img :src="pic.url" class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'" :data-list="image_pic" :data-src="pic.url" @tap="imgYu" mode="aspecFit"></img>
+					</div>
+					<div v-if="pic.video_url" style="flex: 1;">
+						<div v-if="!showVideo">						 
+							<img class="video-play" src="/static/images/play.png" @tap="bindplay"></img>
+						</div>
+						<div v-if="showVideo">
+							<chunlei-video class="video" :src="pic.video_url"  :height="height" :width="width"
+								:play="pic.flag" v-if="Math.abs(index-idx)<=1" :gDuration="pic.duration"
+								:initialTime="pic.initialTime" @pause="pauseVideo" :objectFit="pic.short?'':'fill'"
+							>
+							</chunlei-video>
+						</div>
+					</div>
+				</div>
+			</swiper-item>
+		</swiper>
+    </div>
+</template>
+<script>
+	import chunleiVideo from '@/components/chunlei-video/chunlei-video.vue'
+	
+	var weburl = getApp().globalData.weburl;
+	var shop_type = getApp().globalData.shop_type; 
+	var from_page = getApp().globalData.from_page;
+    export default { 
+		components:{
+			chunleiVideo
+		},
+        data() {
+            return {
+				sysheight:0,
+				height:'667px',
+				index:0,
+				width:'',
+				oldIndex:0,
+				weburl:weburl,
+				shop_type:shop_type,
+				indicatorDots: true,
+				vertical: false,
+				autoplay: false,
+				page: 1,
+				interval: 3000,
+				duration: 300,
+				circular: true,
+				card_image_height: '750',
+				showVideo:false,
+				is_apple: "",
+				keyword: "",
+				is_satisfy: "",
+				rule_selected_info: "",
+				
+				goodsid:0,
+				goodsname: '',
+				goodsinfo: [],
+				goodsprice: 0,
+				goodssale: 0,
+				goodsid: 0,
+				goodsshape: 0,
+				goodsdiscount: 100,
+				goodsorg: "",
+				goodstag: "",
+				discountinfo: '9折优惠券',
+				sku_gov_price: 0,
+				sku_earnest_price: 0,
+				sku_sell_price: 0,
+				sku_id: 0,
+				commodityAttr: [],
+				attrValueList: [],
+				image: '',
+				image_pic: [],
+				image_video:[],
+				card_type: "",
+				refer_mid: "",
+				m_id: "",
+				share_goods_qrcode: "",
+				goodscoverimg: "",
+				share_goods_wx_headimg: "",
+				goodsPicsInfo: [],
+				evalrate: "",
+				card_image_w_rate: "",
+				image_share: "",
+				all_rows: "",
+				sku_delivery_price: "",
+				add_cart_title: "",
+				carts: "",
+				winHeight: 1100,
+				winWidth: 380,
+				secondIndex: "",
+			}
+        },
+		created(){
+			//#ifdef APP-PLUS
+			plus.screen.lockOrientation("portrait-primary")
+			//#endif
+			this.sysheight = uni.getSystemInfoSync().windowHeight
+			this.height = `${this.sysheight}px` 
+			let width = uni.getSystemInfoSync().windowWidth 
+			this.width = `${width}px` 
+			this.image_pic = uni.getStorageSync('image_pic');
+			
+			/*
+			this.keyword = options.keyword ? options.keyword : '';
+			this.is_satisfy = options.is_satisfy ? options.is_satisfy : 0;
+			this.has_cardpayed = options.has_cardpayed ? options.has_cardpayed : 0;
+			this.rule_selected_info = options.rule_selected_info ? options.rule_selected_info : '';
+			this.goodsorg = options.goods_org ? options.goods_org : 1;
+			this.goodsshape = options.goods_shape ? options.goods_shape : 0;
+			this.goodstag = options.goods_tag ? options.goods_tag : '';
+			//var goodsorg = options.goods_org ? options.goods_org : '';
+			this.card_type = options.card_type ? options.card_type : 0;
+			this.goodsname = options.name;
+			this.goodsid = options.id;
+			this.share_goods_id = options.goodsid?options.goodsid:0;
+			this.goodsid = this.goodsid ? this.goodsid : this.share_goods_id;
+			this.refer_mid = options.mid ? options.mid : 0; //分享人id
+			this.goodsinfo = options.goods_info ? options.goods_info : '';
+			this.goodsprice = options.goods_price;
+			this.marketprice = options.goods_marketprice;
+			this.goodssale = options.sale;
+			this.image = options.image;
+			this.activity_image = options.activity_image;
+			this.share_goods_image = this.activity_image ? this.activity_image : this.image;
+			if (this.image) {
+			  var video_init ={}
+			  if (this.image.indexOf(".mp4") >= 0) {
+			    video_init = {
+			      id: 0,
+			      video_url: this.image,
+			      url: this.activity_image,
+				  ext:'mp4',
+				  content:'',
+				  flag:true,
+				  check:false,
+				  like:'10w',
+				  comment:'1045',
+				  avater:'',
+				  initialTime:0,
+				  at:'',
+				  duration:841,
+				  short:true,//是否矮视频
+				  objectFit:'fill'
+			    };
+			    tihs.image_video.push(video_init);
+			  }
+			
+			  var image_init = {
+			    id: 0,
+			    goods_id: this.goodsid,
+			    url: this.activity_image ? this.activity_image : this.image,
+				video_url:'',
+				ext:'png',
+				content:'',
+				flag:false,
+				check:false,
+				like:'10w',
+				comment:'1045',
+				avater:'',
+				initialTime:0,
+				at:'',
+				duration:841,
+				short:true,//是否矮视频
+				objectFit:'fill'
+			  };
+			  image_init['url'] = image_init['url'].replace('/n11/', '/n12/'); // n12京东高清图片
+			  image_init['url'] = image_init['url'].replace('/n1/', '/n12/'); // n12京东高清图片
+			  this.image_pic.push(image_init) ;
+			  if(this.image_video.length > 0) this.image_pic = this.image_video.concat(this.image_pic);
+			   
+			}
+			this.get_goodsdesc()
+			console.log('get_goodsdesc_list share_goods_image:', this.share_goods_image,' image:',this.image)
+			*/
+		},
+		
+		onHide(){
+			for (let item of this.image_pic) {
+				item.flag = false
+			}
+		},
+        methods: {
+			//点击播放按钮，封面图片隐藏,播放视频
+			bindplay: function (e) {
+			 //console.log('detail bindplay 响应', e);
+			 this.showVideo = true ;
+			 this.image_pic[this.index].flag = true ;
+			 //this.videoContext.play();
+			},
+			
+			imgYu: function (e) {
+			  var src = e.currentTarget.dataset.src; //获取data-src
+			  //var list = e.currentTarget.dataset.list; //获取data-list
+			  var imgList = [];
+			  var image_pic = this.image_pic
+			  var card_type = this.card_type
+			  if(card_type!=0){
+				// this.cardEditTapTag()
+				 return ;
+			  }
+			
+			  for (var i = 0; i < image_pic.length; i++) {
+			    imgList.push(image_pic[i]['url']);
+			  }
+			
+			 // console.log('image Yu imgList:', imgList,' src:',src); //图片预览
+			
+			  uni.previewImage({
+			    current: src,
+			    // 当前显示图片的http链接
+			    urls: imgList // 需要预览的图片http链接列表
+			
+			  });
+			},
+			get_goodsdesc: function () {
+			var that = this
+			var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
+			var phonemodel = wx.getStorageSync('phonemodel') ? wx.getStorageSync('phonemodel') : 'Andriod';
+			var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+			var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+			var image_pic = that.image_pic
+			var image_video = that.image_video
+			var image  = that.image
+			var share_goods_image = that.share_goods_image
+			var weburl = that.weburl
+			var shop_type = that.shop_type
+			var page = that.page
+			var keyword = that.keyword
+			var is_satisfy = that.is_satisfy
+			var rule_selected_info = that.rule_selected_info 
+			var refer_mid = that.refer_mid 
+			var goodsid = that.goodsid 
+			wx.showToast({
+			  title: '商品加载中...',
+			  icon: 'loading',
+			  duration: 2000
+			});
+			uni.request({
+				 url: weburl + '/api/client/get_goodsdesc_list?username='+username+'&access_token='+token+'&goods_id='+that.goodsid+'&shop_type='+shop_type,
+				 /*
+				 method: 'POST',
+				 data: {
+				   username: username,
+				   access_token: token,
+				   goods_id: that.goodsid,
+				   refer_mid: refer_mid,
+				   //分享人id
+				   page: page,
+				   shop_type: shop_type,
+				   keyword: keyword,
+				   is_satisfy: is_satisfy,
+				   rule_selected_info: rule_selected_info
+				 },
+				 */
+				 header: {
+				   'Content-Type': 'application/x-www-form-urlencoded',
+				   'Accept': 'application/json'
+				 },
+				 
+				 success: function (res) {
+					var goodsPicsInfo = res.data.result;
+					console.log('get_goodsdesc_list goodsPicsInfo:', goodsPicsInfo, ' share_goods_image:', share_goods_image);
+					var k = image ? 1 : 0;
+					for (var i = k; i < goodsPicsInfo.image.length; i++) {
+						goodsPicsInfo.image[i]['content']  = '' ;
+						goodsPicsInfo.image[i]['flag']  = i==0?true:false ;
+						goodsPicsInfo.image[i]['check']  = false ;
+						goodsPicsInfo.image[i]['like']  = '10w' ;
+						goodsPicsInfo.image[i]['comment']  = '1045' ;
+						goodsPicsInfo.image[i]['avater']  = '' ;
+						goodsPicsInfo.image[i]['initialTime']  = 0 ;
+						goodsPicsInfo.image[i]['at']  = '' ;
+						goodsPicsInfo.image[i]['duration']  = 841 ;
+						goodsPicsInfo.image[i]['objectFit']  = 'fill' ;
+						goodsPicsInfo.image[i]['short'] = true ;//是否矮视频
+					  if (goodsPicsInfo.image[i]['ext'] == 'mp4') {
+							goodsPicsInfo.image[i]['video_url'] =  goodsPicsInfo.image[i]['url'] ;
+							goodsPicsInfo.image[i]['url'] = share_goods_image ;
+							image_video.push(goodsPicsInfo.image[i]);
+							//console.log('get_goodsdesc_list video:', goodsPicsInfo, ' share_goods_image:', share_goods_image,' image_video:',image_video);
+					  } else {
+					    if (goodsPicsInfo.image[i]['url'].indexOf("http") < 0) {
+							goodsPicsInfo.image[i]['url'] = weburl + '/' + goodsPicsInfo.image[i]['url'];
+					    }
+					    goodsPicsInfo.image[i]['url'] = goodsPicsInfo.image[i]['url'].replace("http:", "https:");
+					    goodsPicsInfo.image[i]['video_url'] = '' ;
+						image_pic.push(goodsPicsInfo.image[i]);
+					  }
+					}
+					if(image_video.length > 0){
+						image_pic = image_video.concat(image_pic);
+					}
+					
+					image_pic[0]['template_config'] = goodsPicsInfo.image[0]['template_config'];
+					that.goodsPicsInfo = goodsPicsInfo ;
+					that.image_pic = image_pic ;
+					//that.videoList = image_pic ;
+					that.image_video = image_video ;
+					that.image_share = goodsPicsInfo.share_image ;
+					console.log('get_goodsdesc_list goodsPicsInfo:', goodsPicsInfo, ' image_pic:', that.image_pic,' image_video:',image_video);
+					//that.videoPlay(this.index)
+				},
+				fail: function (err) {  
+					wx.showToast({
+					  title: '商品已下架'+err,
+					  icon: 'loading',
+					  duration: 3000
+					});
+				}  
+				})
+			},
+			changeCurrent(e){
+				this.index = e.detail.current;
+				for (let item of this.image_pic) {
+					item.flag = false
+				}
+				this.image_pic[this.index].flag = !this.image_pic[this.index].flag
+				console.log('changeCurrent index:',this.index,this.image_pic)
+			},
+			
+			
+			videoPlay(index){
+				let promise = new Promise((resolve,reject)=>{
+					resolve()
+				})
+				promise.then(res=>{
+					this.image_pic[index].flag = !this.image_pic[index].flag
+				})
+			},
+			pauseVideo(val){
+				if(typeof this.image_pic[this.oldIndex].initialTime !='undefined') this.videoList[this.oldIndex].initialTime = val
+			},
+			clickVideo(){
+				this.image_pic[this.index].flag = !this.image_pic[this.index].flag
+			}
+        },
+		watch:{
+			index(newVal,oldVal){
+				this.oldIndex = oldVal
+			}
+		}
+    }
+</script>
+<style scoped>
+	.swiper{
+		flex: 1;  
+		width: 100%;
+		height: 750rpx;
+	}
+	.swiper-item {
+	    flex: 1;
+	}
+    .video {
+		flex: 1;
+    }
+	.video-box{
+		flex: 1;
+		width: 100%;
+		height: 750rpx;
+		
+		overflow: hidden;
+		z-index:1;
+	}
+	.slide-image {
+	  flex: 1;
+	  width: 100%;
+	  height: 750rpx;
+	 
+	  overflow: hidden;
+	  z-index:1;
+	}
+	.slide-video {
+	  flex: 1;	
+	  width: 100%;
+	  height: 660rpx;
+	
+	  overflow: hidden;
+	  z-index:1;
+	}
+	.video-play{
+	    position:absolute;
+		width:160rpx;
+		height: 160rpx;
+		top: 0;
+		left:0;
+		right: 0;
+		bottom: 0;
+	    opacity: 0.5; 
+		z-index:9999 ;
+	}
+	.cover-view-center{
+		position: absolute;
+		justify-content: center;
+		align-items: center;
+		opacity: 0.1;
+		z-index: 999;
+	}
+	.cover-view-left{
+		position: absolute;
+		margin-left: 10upx;
+		width: 500upx;
+		bottom: 120upx;
+		z-index: 9999;
+		font-size: 16px;
+		color: #FFFFFF;
+		//#ifndef APP-PLUS-NVUE
+		white-space: pre-wrap;  
+		text-overflow:ellipsis;
+		overflow:hidden;
+		//#endif
+	}
+	.left-view{
+		margin-bottom: 20upx;
+	}
+	.left-text{
+		font-size: 16px;
+		color: #FFFFFF;
+	}
+	.avater{
+		border-radius: 50upx;
+		border-color: #fff;
+		border-style: solid;
+		border-width: 2px;
+	}
+	
+	.cover-view-right{
+		position: absolute;
+		bottom: 160upx;
+		right: 20upx;
+		//#ifndef APP-PLUS-NVUE
+		display: flex;
+		flex-direction: column;
+		//#endif
+		z-index: 9999;
+	}
+	
+	.right-text-avater{
+		position: absolute;
+		font-size: 14px;
+		top: 80upx;
+		left: 30upx;
+		height: 40upx;
+		width: 40upx;
+		background-color: #DD524D;
+		color: #FFFFFF;
+		border-radius: 50%;
+		text-align: center;
+		line-height: 40upx;
+		z-index: 999;
+	}
+	.avater-icon{
+		height: 40upx;
+		width: 40upx;
+		
+		color: #fff;
+		background-color: #DD524D;
+		border-radius: 50%;
+		position: absolute;
+		left: 30upx;
+		top:-20upx;
+	}
+	
+	.right-text{
+		text-align: center;
+		font-size: 14px;
+		color: #FFFFFF;
+		margin-bottom: 50upx;
+		height: 20px;
+	}
+	.img{
+		height: 100upx;
+		width: 100upx;
+		opacity: 0.9;
+	}
+	.page{
+		//#ifndef APP-PLUS-NVUE
+		display: flex;
+		flex-direction: column;
+		//#endif
+		flex: 1; 
+	}
+	
+</style>
