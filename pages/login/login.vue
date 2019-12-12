@@ -250,8 +250,11 @@
 			  var byface = that.byface ;
 			  var bypassword = that.bypassword
 			  var url = bypassword?weburl + '/api/web/user/login/user_login':weburl + '/api/web/user/login/user_xcx_login'
-			  url = byface?weburl + '/api/web/user/login/user_xcx_login':url
-			  var clientinfo = plus.push.getClientInfo() ; //用户推送信息
+			  url = byface?weburl + '/api/web/user/login/user_xcx_login':url;
+			  var clientinfo = '' ;
+			  //#ifdef APP-PLUS
+				clientinfo = plus.push.getClientInfo() ; //用户推送信息
+			  //#endif
 			  var username = that.account?that.account:that.username
 			  var vcode = that.vcode
 			  var password = that.password

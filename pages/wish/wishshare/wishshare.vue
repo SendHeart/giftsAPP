@@ -78,6 +78,7 @@ import uniPopup from '@/components/uni-popup/uni-popup.vue'
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var miniprogram_id = getApp().globalData.miniprogram_id;
+
 var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
 var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
 var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
@@ -117,6 +118,7 @@ var navList2_init = [{
   img: "/uploads/wechat_share.png"
 }];
 var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [];
+var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : {};
 const recorderManager = wx.getRecorderManager();
 const myaudio = wx.createInnerAudioContext();
 const options = {
@@ -217,6 +219,8 @@ export default {
       loadingHidden: false,
       send_status: 0,
 	  isSaveImageToPhotosAlbum:false,
+	  userauth:userauth,
+	  userauth_shoper:0,
     };
   },
 
@@ -235,6 +239,8 @@ export default {
     var share_order_id = options.share_order_id ? options.share_order_id : 0;
     var share_order_shape = options.share_order_shape ? options.share_order_shape : 1;
     var card_type = options.card_type ? options.card_type : 0;
+	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+	that.userauth_shoper = userauth.shoper ;
     wx.setStorageSync('wishshare_options', options);
     that.get_project_gift_para();
 	console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
@@ -499,9 +505,10 @@ export default {
 		if(!this.isSaveImageToPhotosAlbum){
 			this.eventSave();
 		}
+		var itemList = ['微信朋友圈', '微信小程序', 'APP推送']
 		uni.showActionSheet({
 			//title:'分享',
-			itemList: ['微信朋友圈', '微信小程序'],
+			itemList: itemList,
 			success: (e) => {
 				console.log(e.tapIndex);
 				switch (e.tapIndex) {
@@ -511,6 +518,9 @@ export default {
 					case 1:
 						this.shareToWXminiProgram() ;
 						break;
+					case 2:
+						this.shareToAppPush() ;
+						break;	
 					default:
 						break;
 				}
@@ -614,7 +624,54 @@ export default {
 		}) 
 		*/
 	},
-	 
+	
+	shareToAppPush: function () { //APP推送
+	 	var share_goods_name = this.share_goods_name?this.share_goods_name:'送心礼物分享' ;
+		var share_goods_price = this.share_goods_price?this.share_goods_price:0
+	 	var share_goods_id = this.share_goods_id?this.share_goods_id:0 ;
+		var share_goods_org = this.share_goods_org? this.share_goods_org:4 ;
+		var share_goods_shape = this.share_goods_shape? this.share_goods_shape:1 ;
+		var share_goods_image = this.share_goods_image?this.share_goods_image:'';
+	 	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var share_goods_title = this.share_goods_title
+		var payload = '/pages/details/details?id=' + share_goods_id ;
+		//+ '&goods_shape=' + share_goods_shape + '&goods_org=' + share_goods_org + '&goods_price=' + share_goods_price + '&name=' + share_goods_name + '&image=' + share_goods_image + '&token=' + token + '&username=' + username 
+		uni.request({
+		  url: weburl + '/api/app_client/app_push',
+		  method: 'POST',
+		  data: {
+		    username: username,
+		    access_token: token,
+			title:share_goods_name,
+			cid:'',
+			content:share_goods_title,
+		    payload: payload,
+		    shop_type: shop_type
+		  },
+		  header: {
+		    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+		    'Accept': 'application/json'
+		  },
+		  success: function (res) {
+		    console.log('shareToAppPush() : ', res.data);
+			 if(res.data.status == 'y'){
+				 uni.showToast({
+				   title: 'APP推送完成'+share_goods_title,
+				   icon: 'none',
+				   duration: 1000
+				 });
+			}else{
+				uni.showToast({
+				  title: res.data.info? res.data.info:'APP推送失败',
+				  icon: 'success',
+				  duration: 1000
+				});
+			}
+			
+		  }
+		});
+	 },
     //录音计时器
     recordingTimer: function () {
       var that = this; //将计时器赋值给setInter
@@ -1034,13 +1091,9 @@ export default {
       var share_order_shape = that.share_order_shape;
 
       if (share_order_shape == 5 || share_order_shape == 4) {
-        that.setData({
-          share_order_note: e.detail.value
-        });
+		  that.share_order_note = e.detail.value 
       } else {
-        that.setData({
-          share_goods_title: e.detail.value
-        });
+		  that.share_goods_title =  e.detail.value
       }
     },
     sharegoods: function () {

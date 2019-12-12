@@ -16,55 +16,6 @@
 			var face_licenseIDIOS = that.$options.globalData.face_licenseIDIOS;
             // #ifdef APP-PLUS
 			
-			//监听click事件，用户从消息中心点击触发的
-			plus.push.addEventListener("click", function (msg) {
-				//根据payload传递过来的数据，打开一个详情
-				var payload = msg.payload;
-				if (payload) {
-				// payload 按照规范是 Object，但实际推送过来有可能是 String，需要多一步处理；
-					if (typeof payload === 'string') {
-						payload = JSON.parse(payload);
-					}
-					if (typeof payload === 'object') {
-						if(payload.url){
-							setTimeout(function(res){
-								uni.navigateTo({
-									url:payload.url
-								})
-							},1000)
-						}
-					}
-				}
-			}, false);
-			
-			//监听receive事件
-			plus.push.addEventListener(receive, function (msg) {
-				if (plus.os.name != 'iOS') {
-					plus.push.createMessage(msg.title,msg.payload);
-				}
-				//根据payload传递过来的数据，打开一个详情
-				var payload;
-				if (msg.payload) {
-				//如透传消息不符合格式，则“payload”属性为string类型
-				//这里的示例以json字符串去解析，实际上也可以做字符串匹配
-					if (typeof (msg.payload) ==string) {
-						try {
-							payload = JSON.parse(msg.payload);
-						} catch (error) {
-							wx.showToast({
-							  title: '获取消息:'+error,
-							  icon: 'loading',
-							  duration: 2000
-							});
-							console.log(error);
-						}
-					} else if (typeof (msg.payload) == object) {
-					//iOS应用正处于前台运行时收到推送，也触发receive事件，此时payload为json对象
-						plus.push.createMessage(msg.title,msg.content);
-					}
-				}
-			}, false);
-			
             // 锁定屏幕方向
             plus.screen.lockOrientation('portrait-primary'); //锁定
             // 检测升级 整包升级
@@ -164,6 +115,55 @@
 				}  
 			});
 			*/ 
+		   
+		   //监听click事件，用户从消息中心点击触发的
+		   plus.push.addEventListener("click", function (msg) {
+		   	//根据payload传递过来的数据，打开一个详情
+		   	var payload = msg.payload;
+		   	if (payload) {
+		   	// payload 按照规范是 Object，但实际推送过来有可能是 String，需要多一步处理；
+		   		if (typeof payload === 'string') {
+		   			payload = JSON.parse(payload);
+		   		}
+		   		if (typeof payload === 'object') {
+		   			if(payload.url){
+		   				setTimeout(function(res){
+		   					uni.navigateTo({
+		   						url:payload.url
+		   					})
+		   				},1000)
+		   			}
+		   		}
+		   	}
+		   }, false);
+		   
+		   //监听receive事件
+		   plus.push.addEventListener(receive, function (msg) {
+		   	if (plus.os.name != 'iOS') {
+		   		plus.push.createMessage(msg.title,msg.payload);
+		   	}
+		   	//根据payload传递过来的数据，打开一个详情
+		   	var payload;
+		   	if (msg.payload) {
+		   	//如透传消息不符合格式，则“payload”属性为string类型
+		   	//这里的示例以json字符串去解析，实际上也可以做字符串匹配
+		   		if (typeof (msg.payload) ==string) {
+		   			try {
+		   				payload = JSON.parse(msg.payload);
+		   			} catch (error) {
+		   				wx.showToast({
+		   				  title: '获取消息:'+error,
+		   				  icon: 'loading',
+		   				  duration: 2000
+		   				});
+		   				console.log(error);
+		   			}
+		   		} else if (typeof (msg.payload) == object) {
+		   		//iOS应用正处于前台运行时收到推送，也触发receive事件，此时payload为json对象
+		   			plus.push.createMessage(msg.title,msg.content);
+		   		}
+		   	}
+		   }, false);
             // #endif
 			
 			wx.setStorageSync('appid', appid);
