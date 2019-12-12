@@ -208,6 +208,7 @@
 <script>
 import uniIcons from '@/components/uni-icons/uni-icons.vue'
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
+import permision from "@/common/permission.js"
 var util = require("utils/util.js");
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
@@ -303,6 +304,7 @@ export default {
         });
       }
     });
+	that.getPermission();
   },
   onShow: function () {
     var that = this;
@@ -334,6 +336,60 @@ export default {
     //wx.stopPullDownRefresh()
   },
   methods: {
+	  // #ifdef APP-PLUS
+	  async getPermission() {
+	  	let status = await this.checkPermission(); 
+	  },
+	  		
+	  async checkPermission(code) {
+	  	let status_push = permision.isIOS ? await permision.requestIOS('push') :
+	  		1;
+	  	if (status_push === null || status_push === 1) {
+	  		status_push = 1;
+	  	} else {
+	  		uni.showModal({
+	  			content: "需要推送权限",
+	  			confirmText: "设置",
+	  			success: function(res) {
+	  				if (res.confirm) {
+	  					permision.gotoAppSetting();
+	  				}
+	  			}
+	  		})
+	  	}
+	  	let status_WRITE_EXTERNAL_STORAGE =  permision.isIOS ? 1 :await permision.requestAndroid('android.permission.WRITE_EXTERNAL_STORAGE');
+	  	if (status_WRITE_EXTERNAL_STORAGE === null || status_WRITE_EXTERNAL_STORAGE === 1) {
+	  		status_WRITE_EXTERNAL_STORAGE = 1;
+	  	} else {
+	  		uni.showModal({
+	  			content: "需要写数据权限",
+	  			confirmText: "设置",
+	  			success: function(res) {
+	  				if (res.confirm) {
+	  					permision.gotoAppSetting();
+	  				}
+	  			}
+	  		})
+	  	}
+	  	let status_READ_EXTERNAL_STORAGE =  permision.isIOS ? 1 :await permision.requestAndroid('android.permission.READ_EXTERNAL_STORAGE');
+	  	if (status_READ_EXTERNAL_STORAGE === null || status_READ_EXTERNAL_STORAGE === 1) {
+	  		status_READ_EXTERNAL_STORAGE = 1;
+	  	} else {
+	  		uni.showModal({
+	  			content: "需要读数据权限",
+	  			confirmText: "设置",
+	  			success: function(res) {
+	  				if (res.confirm) {
+	  					permision.gotoAppSetting();
+	  				}
+	  			}
+	  		})
+	  	}
+	  	let status = (status_push && status_WRITE_EXTERNAL_STORAGE && status_READ_EXTERNAL_STORAGE)?1:0
+	  	return status;
+	  },
+	  
+	  // #endif
 	tabSelect(e) {
 		this.TabCur = e.currentTarget.dataset.id;
 		this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60	

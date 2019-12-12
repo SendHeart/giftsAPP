@@ -251,7 +251,7 @@
 			  var bypassword = that.bypassword
 			  var url = bypassword?weburl + '/api/web/user/login/user_login':weburl + '/api/web/user/login/user_xcx_login'
 			  url = byface?weburl + '/api/web/user/login/user_xcx_login':url
-			  
+			  var clientinfo = plus.push.getClientInfo() ; //用户推送信息
 			  var username = that.account?that.account:that.username
 			  var vcode = that.vcode
 			  var password = that.password
@@ -274,7 +274,8 @@
 				  smscode:vcode,
 				  faceurl:faceurl,
 			      type: 8,
-			      shop_type: shop_type
+			      shop_type: shop_type,
+				  clientinfo:JSON.stringify(clientinfo),
 			    },
 			    header: {
 			      'Content-Type': 'application/x-www-form-urlencoded',
@@ -294,6 +295,7 @@
 					}
 					var userauth = JSON.parse(res.data.result['userauth']) ;
 					console.log('app login 用户基本信息:', res.data.result);
+					uni.setStorageSync('clientinfo', clientinfo);
 					uni.setStorageSync('userInfo', userInfo);
 					uni.setStorageSync('username', res.data.result['username']);
 					uni.setStorageSync('m_id', res.data.result['m_id']);
@@ -336,6 +338,7 @@
 			    this.byface = true
 				this.onScanFace()
 			},
+			
 			getcode() {
 				var that = this
 				var shop_type = this.shop_type ;
