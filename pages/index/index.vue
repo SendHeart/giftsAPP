@@ -226,6 +226,7 @@ export default {
     var username = wx.getStorageSync('username');
     var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
     that.get_project_gift_para(); //that.reloadData()
+	that.orders = []
     // 存为全局变量，控制支付按钮是否显示
 
     if (order_status) {
@@ -793,7 +794,12 @@ export default {
       }
 	*/
       if (page > page_num && page_num > 0) return;
-	  that.is_loading = true
+	that.is_loading = true
+	if( page == 1){
+		that.orders = []
+		that.orders_show = []
+		that.all_rows = 0
+	}
       wx.request({
         url: weburl + '/api/client/query_order_list',
         method: 'POST',

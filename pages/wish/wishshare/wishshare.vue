@@ -1274,7 +1274,9 @@ export default {
               left: 0,
               width: 360,
               height: 600
-            },  {
+            }, 
+			/*
+			{
               type: 'image',
               url: share_goods_wx_headimg,
               top: 30,
@@ -1282,7 +1284,9 @@ export default {
               width: 33,
               height: 33,
               borderRadius: 25
-            }, {
+            },
+			 */
+			{
               type: 'text',
               content: '来自' + nickname + '的分享',
               fontSize: 18,
