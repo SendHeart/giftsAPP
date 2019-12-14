@@ -2,8 +2,8 @@
     "name" : "送心礼物",
     "appid" : "__UNI__8B1760E",
     "description" : "送心礼物",
-    "versionName" : "1.0.0",
-    "versionCode" : "100",
+    "versionName" : "1.0.6",
+    "versionCode" : 106,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -95,7 +95,7 @@
                 "maps" : {
                     "baidu" : {
                         "appkey_ios" : "3075ca513c180f154a83789e3f93c1c4",
-                        "appkey_android" : "3075ca513c180f154a83789e3f93c1c4"
+                        "appkey_android" : "n3HFLj4VZ9NtkY5EXtutaimDhWBBBvvc"
                     }
                 },
                 "payment" : {
@@ -175,10 +175,24 @@
             }
         },
         "nativePlugins" : {
+            "longyoung-BDFaceAuth-iOS" : {
+                "__plugin_info__" : {
+                    "name" : "【限免】iOS人脸识别、百度活体检测、人脸采集【内含安卓端】",
+                    "description" : "longyoung出品，有疑问公众号「longyoung」后台提问。点击试用，免费打自定义基座测试。",
+                    "platforms" : "iOS",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=1081",
+                    "android_package_name" : "com.yiquangou.app",
+                    "ios_bundle_id" : "com.yiquangou.app",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "1081",
+                    "parameters" : {}
+                }
+            },
             "longyoung-BDFaceAuth" : {
                 "__plugin_info__" : {
-                    "name" : "【限免】安卓人脸识别、百度活体检测、人脸采集android端",
-                    "description" : "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。",
+                    "name" : "【横竖屏】安卓人脸识别、百度活体检测、人脸采集含iOS端",
+                    "description" : "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。支持pad横竖屏。",
                     "platforms" : "Android",
                     "url" : "https://ext.dcloud.net.cn/plugin?id=976",
                     "android_package_name" : "com.yiquangou.app",

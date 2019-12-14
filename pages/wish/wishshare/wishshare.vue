@@ -79,10 +79,10 @@ var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var miniprogram_id = getApp().globalData.miniprogram_id;
 
-var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
-var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
+var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var appid = getApp().globalData.appid;
 var secret = getApp().globalData.secret;
 var uploadurl = getApp().globalData.uploadurl;
@@ -148,8 +148,8 @@ export default {
       share_goods_bg: weburl + '/uploads/share_goods_bg.png', //'/static/images/share_goods_bg.png',
       activity_share_image: weburl + '/uploads/activity_share.jpg',
       activity_avatarUrl: weburl + '/uploads/avatar.png',
-      share_goods_avatarUrl: '/static/images/my.png',
-      nickname: userInfo.nickName,
+      share_goods_avatarUrl:  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
+      nickname: userInfo.nickname,
       avatarUrl: userInfo.avatarUrl,
 	  miniprogram_id:miniprogram_id,
       painting: {},
@@ -240,7 +240,10 @@ export default {
     var share_order_shape = options.share_order_shape ? options.share_order_shape : 1;
     var card_type = options.card_type ? options.card_type : 0;
 	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 	that.userauth_shoper = userauth.shoper ;
+	that.avatarUrl = userInfo.avatarUrl ;
+	that.share_goods_avatarUrl =  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
     wx.setStorageSync('wishshare_options', options);
     that.get_project_gift_para();
 	console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
@@ -362,7 +365,7 @@ export default {
 	  /*
       that.setData({
         avatarUrl: userInfo ? userInfo.avatarUrl : '',
-        nickname: userInfo ? userInfo.nickName : ''
+        nickname: userInfo ? userInfo.nickname : ''
       });
       console.log('wishshare onShow get userInfo：', userInfo);
 	 
@@ -992,7 +995,7 @@ export default {
       var share_goods_id = options.share_goods_id ? options.share_goods_id : 0;
       var share_goods_name = options.share_goods_name ? options.share_goods_name : '';
       var share_goods_org = options.share_goods_org ? options.share_goods_org : '1'; //5虚拟商品 1自营商品
-
+	  var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
       var share_goods_shape = options.share_goods_shape ? options.share_goods_shape : '1'; //5贺卡请柬 4互动卡 1普通商品
 	  var qr_type  = options.qr_type ? options.qr_type : 'wishshare';
       var share_goods_price = options.share_goods_price ? options.share_goods_price : 0;
@@ -1001,8 +1004,8 @@ export default {
       var share_goods_qrcode_cache = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + share_goods_id + '&m_id=' + m_id;;
       var share_goods_wx_headimg = options.share_goods_wx_headimg ? options.share_goods_wx_headimg : that.share_goods_avatarUrl;
       var share_goods_default_title = '';
-	 
-
+		that.image_save(share_goods_wx_headimg,'share_goods_wx_headimg')
+		that.image_save(share_goods_image,'share_goods_image')
       if (share_goods_shape == 5) {
         share_goods_default_title = '平安是福';
       } else if (share_goods_shape == 4) {
@@ -1034,7 +1037,6 @@ export default {
 	  //var cardvoice = wx.getStorageSync('cardvoice')
       //var cardvoicetime = wx.getStorageSync('cardvoicetime')
 
-
       that.setData({
         m_id: m_id,
         task: task,
@@ -1065,8 +1067,9 @@ export default {
         share_order_note: share_order_note,
         share_order_bg: share_order_bg,
         share_order_image: share_order_image,
-        share_order_wx_headimg: share_order_wx_headimg //cardvoice: cardvoice,
+        share_order_wx_headimg: share_order_wx_headimg, //cardvoice: cardvoice,
         //cardvoicetime: cardvoicetime,
+		nickname:userInfo.nickname
 
       });
 
@@ -1147,6 +1150,33 @@ export default {
         notehidden: !that.notehidden
       });
     },
+	image_save: function (image_url, image_cache_name) {
+	  var that = this;
+	  console.log('imge save image url:', image_url, 'image_cache_name:', image_cache_name);
+	  uni.downloadFile({
+	  	url: image_url,
+	  	success: (res) => {
+	  		console.log('downloadFile success, res is', res)
+	  		var img_tempFilePath = res.tempFilePath;
+			/*
+			uni.saveFile({
+				tempFilePath: img_tempFilePath,
+				success: (res) => {
+					//this.savedFilePath = res.savedFilePath;
+					uni.setStorageSync(image_cache_name, res.savedFilePath);
+				},
+				fail: (res) => {
+					 
+				}
+			})
+			*/
+			return img_tempFilePath
+	  	},
+	  	fail: (err) => {
+	  		console.log('downloadFile fail, err is:', err)
+	  	}
+	  })
+	},
     eventDraw: function () {
       var that = this;
       var m_id = that.m_id;
@@ -1217,7 +1247,7 @@ export default {
               left: 10,
               width: 50,
               height: 50,
-              borderRadius: 25
+              radius: 25
             }, {
               type: 'text',
               content: nickname + '在' + activity_name,
@@ -1275,17 +1305,17 @@ export default {
               width: 360,
               height: 600
             }, 
-			/*
+		
 			{
               type: 'image',
               url: share_goods_wx_headimg,
               top: 30,
               left: 20,
-              width: 33,
-              height: 33,
-              borderRadius: 25
+              width: 32,
+              height: 32,
+              radius: 16
             },
-			 */
+			 
 			{
               type: 'text',
               content: '来自' + nickname + '的分享',
@@ -1418,7 +1448,7 @@ export default {
               view_item['url'] = share_order_qrcode ? share_order_qrcode : '';
               view_item['width'] = 70;
               view_item['height'] = 70;
-              view_item['borderRadius'] = 35;
+              view_item['radius'] = 35;
             }
           } else {
             view_item['type'] = 'text';
@@ -1536,7 +1566,7 @@ export default {
               view_item['url'] = share_order_qrcode ? share_order_qrcode : '';
               view_item['width'] = 40;
               view_item['height'] = 40;
-              view_item['borderRadius'] = 20;
+              view_item['radius'] = 20;
             }
           } else {
             view_item['type'] = 'text';
@@ -1622,7 +1652,7 @@ export default {
               view_item['url'] = share_order_qrcode ? share_order_qrcode : '';
               view_item['width'] = 70;
               view_item['height'] = 70;
-              view_item['borderRadius'] = 35;
+              view_item['radius'] = 35;
             }
           } else {
             view_item['type'] = 'text';
@@ -1713,7 +1743,7 @@ export default {
               view_item['url'] = share_order_qrcode ? share_order_qrcode : '';
               view_item['width'] = 80;
               view_item['height'] = 80;
-              view_item['borderRadius'] = 40;
+              view_item['radius'] = 40;
             }
           } else {
             view_item['type'] = 'text';
@@ -1991,7 +2021,7 @@ export default {
 		//const { width, height, views, background, radius = 0 } = this.posterData;
 		 
 		for (let i = 0; i < views.length; i++) {
-			//console.log('canvasdrawer onload views.length:',views.length,' i:',i) ;
+			console.log('canvasdrawer onload views.length:',views.length,' i:',i) ;
 		    if (views[i].type === 'image') {
 		        //let _img = views[i].url;
 		        let _views = views[i];
