@@ -265,6 +265,7 @@
 
 <script>
 var util = require("utils/util.js"); //获取应用实例
+
 //import addTips from "pages/common/weplug-add-tips-master/index";
 //import imageloader from "../../common/imageloader/imageloader";
 import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
@@ -274,6 +275,7 @@ import uniIcons from '@/components/uni-icons/uni-icons.vue'
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
 import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
 import PdList from "./pd-list.vue";
+import push from "@/common/push.js"
 //获取应用实例
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
@@ -392,7 +394,7 @@ export default {
       buyhidden2: true,
       page: 1,
       rpage_num: 1,
-    
+	  isPush:false,
       toView: 0,
       floorstatus: false,
       touchstop: false,
@@ -566,9 +568,10 @@ export default {
 	that.get_project_gift_para();
 	/*
 	setTimeout(() => {
-		this.load()
-	}, 100)
-	*/
+		that.isPush = push.isTurnedOnPush();
+		if(!that.isPush) push.turnOnPush() ;
+	}, 6000*10)
+	 */
     if (pages.length > 1) {
       that.setData({
         title_logo: '../../images/back.png'

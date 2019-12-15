@@ -96,6 +96,7 @@
 				vcode:'',
 				title: '',
 				faceimage:'',
+				faceimage64:'',
 				faceurl:'',
 				licenseIDStr: 'longyoung-face-android',
 				face_items: [{
@@ -247,6 +248,7 @@
 			  var avatarUrl = that.avatarUrl?that.avatarUrl:userInfo.avatarUrl
 			  var userauth = uni.getStorageSync('userauth');
 			  var faceurl = that.faceurl ;
+			  var faceimage64 = that.faceimage64 ;
 			  var byface = that.byface ;
 			  var bypassword = that.bypassword
 			  var url = bypassword?weburl + '/api/web/user/login/user_login':weburl + '/api/web/user/login/user_xcx_login'
@@ -275,7 +277,7 @@
 			      user_name: user_name,
 			      login_type: login_type,
 				  smscode:vcode,
-				  faceurl:faceurl,
+				  faceimage64:faceimage64,
 			      type: 8,
 			      shop_type: shop_type,
 				  clientinfo:JSON.stringify(clientinfo),
@@ -332,7 +334,6 @@
                 } else {
                     uni.navigateBack();
                 }
-
             },
 			bypasswd() {
 			    this.bypassword = !this.bypassword
@@ -552,41 +553,56 @@
 			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 			  var face  = 'face_'+username ;
 			  var upload_type = that.byface?'face_login':'face_reg'
-			  uni.uploadFile({
-			    url: uploadurl,
-			    filePath: faceimage,
-			    name: 'wechat_upimg',
-			    //formData: adds,
-			    formData: {
-			      latitude: encodeURI(0.0),
-			      longitude: encodeURI(0.0),
-			      type: encodeURI(upload_type),
-			      city: encodeURI('杭州'),
-			      prov: encodeURI('浙江'),
-			      name: encodeURI(face) // 名称
-			  			
-			    },
-			    // HTTP 请求中其他额外的 form data
-			    success: function (res) {
-			      var retinfo = JSON.parse(res.data.trim());
-				  var byface = that.byface ;
-			      if (retinfo['status'] == "y") {
-			        //console.log('刷脸图片上传完成');
-					that.faceurl = retinfo['result']['img_url']
-					if(byface){
-						that.my_login() ;
-					}else{
+			  
+			  if(upload_type=='face_login'){
+				var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
+				  // 从本地加载Bitmap图片
+				bitmapFaceLogin.load(faceimage, function() {
+					//console.log('加载图片成功');
+					var base4 = bitmapFaceLogin.toBase64Data();
+					//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
+					that.faceimage64 = base4.replace(/[\r\n]/g, ""); //显示图片
+					that.my_login() ;
+				}, function(e) {
+				  	//console.log('加载图片失败：' + JSON.stringify(e));
+					uni.showToast({
+						title: '加载图片失败！'+JSON.stringify(e),
+						duration: 2000
+					});
+				});
+				
+			  }else{
+			  	uni.uploadFile({
+			  	  url: uploadurl,
+			  	  filePath: faceimage,
+			  	  name: 'wechat_upimg',
+			  	  //formData: adds,
+			  	  formData: {
+			  	    latitude: encodeURI(0.0),
+			  	    longitude: encodeURI(0.0),
+			  	    type: encodeURI(upload_type),
+			  	    city: encodeURI('杭州'),
+			  	    prov: encodeURI('浙江'),
+			  	    name: encodeURI(face) // 名称
+			  				
+			  	  },
+			  	  // HTTP 请求中其他额外的 form data
+			  	  success: function (res) {
+			  	    var retinfo = JSON.parse(res.data.trim());
+			  					  var byface = that.byface ;
+			  	    if (retinfo['status'] == "y") {
+			  	      //console.log('VIP刷脸图片上传完成');
+						that.faceurl = retinfo['result']['img_url']
 						that.update_userinfo();
-					}
-			  		
-			      }else{
-					  uni.showToast({
-					    title: '系统错误！'+retinfo['info'],
-					    duration: 2000
-					  });
-				  }
-			    }
-			  });
+			  	    }else{
+			  			uni.showToast({
+							title: '系统错误！'+retinfo['info'],
+							duration: 2000
+			  			});
+			  		}
+			  	  }
+			  	});
+			  }
 			},
 			
 			update_userinfo: function () {

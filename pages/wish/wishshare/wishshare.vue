@@ -303,8 +303,8 @@ export default {
                   }
                 }
               });
-            } //var card_register_info = m_desc['card_register_info']
-
+            }
+			//var card_register_info = m_desc['card_register_info']
 
             that.setData({
               card_register_info: m_desc['card_register_info'] ? m_desc['card_register_info'] : '',
@@ -320,7 +320,6 @@ export default {
               title: '互动分享'
             });
           }
-
           console.log('card card_template:', that.card_template, ' card_love_info:', that.card_love_info);
         }
       });
@@ -334,43 +333,15 @@ export default {
           windowWidth: res.windowWidth ? res.windowWidth : that.windowWidth,
           dkheight: res.windowHeight - 10
         });
-
-        if (res.platform == "ios") {
-          var version = res.SDKVersion;
-			/*
-          if (util.compareVersion(version, '2.3.0') >= 0) {
-            wx.setInnerAudioOption({
-              obeyMuteSwitch: false
-            });
-          } else {
-            wx.showModal({
-              title: '提示',
-              content: '当前微信版本过低，静音模式下可能会导致播放音频失败。'
-            });
-          }
-		  */
-        }
       }
     });
-    setTimeout(function () {
-      that.reloadData();
-    }, 1000);
+   setTimeout(function () {
+     that.reloadData();
+   }, 1000);
   },
 
   onShow: function () {
     var that = this;
-    //that.has_auth();
-    //getApp().globalData.getUserInfo(function (userInfo) {
-      //更新数据
-	  /*
-      that.setData({
-        avatarUrl: userInfo ? userInfo.avatarUrl : '',
-        nickname: userInfo ? userInfo.nickname : ''
-      });
-      console.log('wishshare onShow get userInfo：', userInfo);
-	 
-    });
-	 */
   },
   onShareAppMessage: function (options) {
     var that = this;
@@ -485,7 +456,6 @@ export default {
       if (share_order_shape == 5) {
         shareObj['title'] = share_order_note;
         shareObj['imageUrl'] = that.shareImage; //share_order_image
-
         shareObj['path'] = '/pages/order/receive/receive?receive=1&order_id=' + share_order_id + '&order_shape=' + share_order_shape + '&mid=' + m_id;
       }
 
@@ -1086,8 +1056,10 @@ export default {
           });
         }
       }
-
-      that.share_image_creat();
+		setTimeout(function () {
+		  that.share_image_creat();
+		}, 300);
+       
     },
     bindTextAreaBlur: function (e) {
       var that = this;
