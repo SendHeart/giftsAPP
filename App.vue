@@ -12,22 +12,30 @@
 			var weburl = that.$options.globalData.weburl
 			var appid = that.$options.globalData.appid;
 			var appsecret = that.$options.globalData.secret;
+			var shop_type = that.$options.globalData.shop_type;
 			var face_licenseIDAndroid = that.$options.globalData.face_licenseIDAndroid;
 			var face_licenseIDIOS = that.$options.globalData.face_licenseIDIOS;
+			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
+			var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
+			var clientinfo = ''
             // #ifdef APP-PLUS
-			
+			clientinfo = plus.push.getClientInfo() ; //用户推送信息
             // 锁定屏幕方向
             plus.screen.lockOrientation('portrait-primary'); //锁定
             // 检测升级 整包升级
 			var update_server = weburl+'/api/app_client/appupdate' ;
             uni.request({
-                url: update_server, //检查更新的服务器地址
+                url: update_server, 
 				method: 'POST',
                 data: {
+					username:username,
+					access_token: token,
+					shop_type:shop_type,
                     appid: plus.runtime.appid,
                     version: plus.runtime.version,
                     imei: plus.device.imei,
 					platform:plus.os.name,
+					clientinfo:JSON.stringify(clientinfo),
 					type:0 , //0 整包升级
                 },
 				header: {
@@ -58,10 +66,14 @@
 				url: update_server, //检查更新的服务器地址
 				method: 'POST',
 				data: {
+					username:username,
+					access_token: token,
+					shop_type:shop_type,
 					appid: plus.runtime.appid,
 					version: plus.runtime.version,
 					imei: plus.device.imei,
 					platform:plus.os.name,
+					clientinfo:JSON.stringify(clientinfo),
 					type:1 , //1 wgt包升级
 				},
 				header: {
