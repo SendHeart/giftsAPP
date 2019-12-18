@@ -58,50 +58,52 @@
                                 }
                             }
                         })
-                    }
-                }
-            })
-			//检查wgt升级包
-			uni.request({
-				url: update_server, //检查更新的服务器地址
-				method: 'POST',
-				data: {
-					username:username,
-					access_token: token,
-					shop_type:shop_type,
-					appid: plus.runtime.appid,
-					version: plus.runtime.version,
-					imei: plus.device.imei,
-					platform:plus.os.name,
-					clientinfo:JSON.stringify(clientinfo),
-					type:1 , //1 wgt包升级
-				},
-				header: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Accept': 'application/json'
-				}, 
-				success: (res) => {  
-			        let ret = res.data.result ;
-					if (res.data.status='y' && ret.update_status=='1') { 
-						let wgtUrl = ret.wgtUrl
-			            uni.downloadFile({  
-			                url: wgtUrl,  
-			                success: (downloadResult) => {  
-			                    if (downloadResult.statusCode === 200) {  
-			                        plus.runtime.install(downloadResult.tempFilePath, {  
-			                            force: false  
-			                        }, function() {  
-			                            console.log('install success...');  
-			                            plus.runtime.restart();  
-			                        }, function(e) {  
-			                            console.error('install fail...');  
+                    }else{
+						//检查wgt升级包
+						uni.request({
+							url: update_server, //检查更新的服务器地址
+							method: 'POST',
+							data: {
+								username:username,
+								access_token: token,
+								shop_type:shop_type,
+								appid: plus.runtime.appid,
+								version: plus.runtime.version,
+								imei: plus.device.imei,
+								platform:plus.os.name,
+								clientinfo:JSON.stringify(clientinfo),
+								type:1 , //1 wgt包升级
+							},
+							header: {
+								'Content-Type': 'application/x-www-form-urlencoded',
+								'Accept': 'application/json'
+							}, 
+							success: (res) => {  
+						        let ret = res.data.result ;
+								if (res.data.status='y' && ret.update_status=='1') { 
+									let wgtUrl = ret.wgtUrl
+						            uni.downloadFile({  
+						                url: wgtUrl,  
+						                success: (downloadResult) => {  
+						                    if (downloadResult.statusCode === 200) {  
+						                        plus.runtime.install(downloadResult.tempFilePath, {  
+						                            force: false  
+						                        }, function() {  
+						                            console.log('install success...');  
+						                            plus.runtime.restart();  
+						                        }, function(e) {  
+						                            console.error('install fail...');  
+												});  
+											}  
+										}  
 									});  
 								}  
 							}  
 						});  
-					}  
-				}  
-			});  
+					}
+                }
+            })
+			
 
             var domModule = weex.requireModule('dom');
             domModule.addRule('fontFace', {
