@@ -25,7 +25,6 @@
 		    <text v-if="item.status==10 && giftflag ==0" class="status" >退款中</text>
 			<text v-if="item.gift_status==2 && giftflag ==0 && item.status == 2 && item.shape == 1" class="status smallbtn" @tap.stop="update_order(item)"  >发货</text>
 		    <text v-if="item.gift_status==2 && item.status == 3" class="status2"  @tap.stop="update_order(item)">已发货</text>
-		    
 		  </view>
 		
 		  <view v-for="(mapping, index2) in item['order_sku']" :key="index2" class="carts-item" >
@@ -921,11 +920,11 @@ export default {
 	// 一键回到顶部
 		var that = this;
 		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
-     	that.pdList = [] ;
+     	//that.pdList = [] ;
 		that.page = 1 ;
 		that.pageoffset = 0 ;
 		that.mescroll.resetUpScroll()
-		getApp().globalData.hall_gotop = 0;
+		//getApp().globalData.hall_gotop = 0;
        // 解决view层不同步的问题
 		//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
 		that.$nextTick(function() {

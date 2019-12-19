@@ -1,25 +1,21 @@
 <template>
 <view>
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
-	<scroll-view  class="container"  :style="'height:' + dkheight + 'px;'"  scroll-y="true"  :scroll-top="scrollTop" @scrolltoupper="scrolltoupper" @scroll="scroll" >
-		<view v-if="hidddensearch" class="search">
-			<view class="wx-input">
-		    <input name="search" :value="keyword" placeholder="搜索订单" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="orderSearch"></input>
-		    <image @tap="orderSearch" src="../../static/images/search-btn.png"></image>
-		    </view>
-		   <!-- <text class='searchcancel' bindtap='searchTagTap'>取消</text>-->
-		</view>
-		<view class="top-bar2">
-		  <block v-for="(item, index) in navList_order" :key="index">
-		    <view :id="'v_' + index" :data-id="index" :data-title="item.title" :data-tab="item.id" :class="'top-bar-item2 ' + (index == TabCur ? 'top-bar-active2' : '')" @click.stop="onOrderTapTag">
-		      <view>{{item.title}}</view>
-		    </view>
-		  </block>
-		</view>
-		<view class="goTop" @tap="goTop" >
-			<uni-icon style="margin-top:0rpx;" class="Hui-iconfont iconv-uparrow"></uni-icon>
-			<view class style="margin-top:-20rpx;font-size:22rpx;">TOP</view>
-		</view>
+	<view v-if="hidddensearch" class="search">
+		<view class="wx-input">
+	    <input name="search" :value="keyword" placeholder="搜索订单" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="orderSearch"></input>
+	    <image @tap="orderSearch" src="../../static/images/search-btn.png"></image>
+	    </view>
+	</view>
+	<view class="top-bar2">
+	  <block v-for="(item, index) in navList_order" :key="index">
+	    <view :id="'v_' + index" :data-id="index" :data-title="item.title" :data-tab="item.id" :class="'top-bar-item2 ' + (index == TabCur ? 'top-bar-active2' : '')" @click.stop="onOrderTapTag">
+	      <view>{{item.title}}</view>
+	    </view>
+	  </block>
+	</view>
+	
+	<mescroll-uni top="170" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
 		<view class="order-item" v-for="(item,order_idx) in orders" :key="order_idx"  >
 			<view class="shop-text">
 				<text>{{(item.shape!=5 && item.shape!=4)?'礼物单号:':'订单号:'}}{{item.order_no}}</text>
@@ -61,7 +57,6 @@
 					</view>
 					<view v-if="(item['card_type']==0?false:true)" class="carts-subtitle">
 						<text>x{{mapping.sku_num}}</text>
-          <!--<text>{{mapping.sku_sell_price_real?'单价:￥'+mapping.sku_sell_price_real:''}}</text>-->
 					</view>
 					<view v-if="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status!=1 && item.shape!=5 && item.rcv_openid == username)?false:true )" @tap="modalinput_buyin" :data-order_index="order_idx" :data-id="mapping.id" :data-sku_index="sku_idx" :data-goods_id="mapping.goods_id" :data-goods_skuid="mapping.sku_id" :data-order_sku_price="mapping.sku_sell_price_real" :data-order_sku_num="mapping.sku_num" :class="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status!=1) ? '': 'hidden') + ' recyclebtn'">
 						<image src="../../static/images/recycle.png"></image>礼物回收
@@ -86,11 +81,7 @@
 				</view>
 			</view>	
 		</view>
-		<view style="margin-bottom: 100rpx;">
-			<uni-load-more :status="status" :content-text="contentText" />
-		</view>
-		
-	</scroll-view>
+	</mescroll-uni>
 
 	<view :hidden="hiddenmodalput" @change="shareConfirmCardLove" class="cu-modal bottom-modal"  :class="!hiddenmodalput?'show':''" :style="dkheight + 'px'">
 		<view class="cu-dialog">
@@ -124,7 +115,10 @@
 <script>
 import uniIcons from '@/components/uni-icons/uni-icons.vue' ;
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
-import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+
+
+//import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 var dateUtils = require('../../common/util.js').dateUtils;
 var weburl = getApp().globalData.weburl;
 var appid = getApp().globalData.appid;
@@ -184,9 +178,9 @@ export default {
       loadingHidden: true,
       // loading
       scrollTop: 0,
-      old: {
-      	scrollTop: 0
-      },
+	  old: {
+    	scrollTop: 0
+	  },
       current_scrollTop: 0,
       needPhoneNumber: '微信授权',
       needUserName: '微信授权',
@@ -208,14 +202,35 @@ export default {
 	  	contentdown: '上拉加载更多',
 	  	contentrefresh: '加载中',
 	  	contentnomore: '没有更多'
-	  }
+	  },
+	  downOption:{
+	  	auto:false, // 不自动加载
+	  	use:false,
+	  	isLock:true,
+	  },
+	  upOption:{
+	  	auto:false, // 不自动加载
+	  	onScroll:true,
+	  	page: {
+	  	 	num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+	  	 	size: 10, // 每页数据的数量
+	  	},
+	  	noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+	  	empty:{
+	  		tip: '~ 空空如也 ~', // 提示
+	  		btnText: '去看看'
+	  	}
+	  },
+	  isInit: false, // 列表是否已经初始化
+	  scrollY: 0
     };
   },
 
   components: {
 	  uniIcons,
 	  uniNavBar,
-	  uniLoadMore,
+	  //uniLoadMore,
+	  MescrollUni
   },
   props: {},
   
@@ -251,7 +266,7 @@ export default {
       });
 	  
     }else{
-		that.reloadData();
+		//that.reloadData();
 		uni.getSystemInfo({
 			  success: function (res) {
 			    that.setData({
@@ -268,6 +283,10 @@ export default {
 	}
   },
   onReady: function () {},
+  mounted() {
+  	this.isInit = true; // 标记为true
+  	this.mescroll.triggerDownScroll();
+  },
   methods: {
 	tabSelect(e) {
 		this.TabCur = e.currentTarget.dataset.id;
@@ -285,7 +304,10 @@ export default {
         page: 1,
 		orders:[],
       });
-      that.reloadData();
+      //that.reloadData();
+	  this.isInit = true; // 标记为true
+	  this.mescroll.triggerDownScroll();
+	  
     },
     searchTagTap: function () {
       var that = this;
@@ -505,59 +527,249 @@ export default {
 		that.hiddenmore = true
 		that.giftflag = giftflag
 		that.all_rows = 0 
-		that.page = 1 
+		that.page = 0 
 		that.page_num = 1
       
 	  console.log('tab:' , tab, ' TabCur:',TabCur, 'giftflag:', giftflag);
 
       if (that.orders.length == 0) {
-		  /*
-        wx.showToast({
-          title: '加载中',
-          icon: 'loading',
-          duration: 1500
-        });
-		*/
-        that.reloadData();
+	   that.isInit = true; // 标记为true
+	   that.mescroll.triggerDownScroll();
+        //that.reloadData();
       }
     },
-    // 获取滚动条当前位置
-    scrolltoupper: function (e) {
-		var that = this
-      if (e.detail.scrollTop > 100) {
-        that.setData({
-          floorstatus: true,
-          hidddensearch: false
-        });
-      } else {
-        that.setData({
-          floorstatus: false,
-          hidddensearch: true
-        });
-      }
-	 that.current_scrollTop = e.detail.scrollTop
-    },
-	scroll: function(e) {
-		var that = this
-		var old_scrollTop = that.old.scrollTop
-		var current_scrollTop = e.detail.scrollTop
-		//console.log('list list:scroll:',e)
-		that.old.scrollTop = current_scrollTop
-		if(current_scrollTop > old_scrollTop +10) {
-			that.getMoreOrdersTapTag() ;
-		}
+	
+   // 获取滚动条当前位置
+   scrolltoupper: function (e) {
+   	var that = this
+   	if (e.detail.scrollTop > 100) {
+   		that.floorstatus = true 
+   	} else {
+   		that.floorstatus = false 
+   	}
+   	
+   	that.current_scrollTop = e.detail.scrollTop
+   },
+   scroll: function(e) {
+   	var that = this
+   	var old_scrollTop = that.old.scrollTop
+   	var current_scrollTop = that.mescroll.scrollTop
+   	that.old.scrollTop = current_scrollTop
+	//console.log('scroll old_scrollTop:', old_scrollTop, 'current_scrollTop:',current_scrollTop);
+   },
+	// mescroll组件初始化的回调,可获取到mescroll对象
+	mescrollInit(mescroll) {
+		this.mescroll = mescroll;
 	},
-    //回到顶部
-    goTop: function (e) {
-      // 一键回到顶部
-      var that = this;
-	  that.scrollTop = 0 ;
-      console.log('goTop:', that.scrollTop); 
-	  that.scrollTop = that.old.scrollTop
-	  that.$nextTick(function() {
-	  	that.scrollTop = 0 ;
-	  });
-    },
+	/*下拉刷新的回调 */
+	downCallback(mescroll) {
+		// 这里加载你想下拉刷新的数据, 比如刷新轮播数据
+		// loadSwiper();
+		// 下拉刷新的回调,默认重置上拉加载列表为第一页 (自动执行 mescroll.num=1, 再触发upCallback方法 )
+		//mescroll.endSuccess() ;
+	
+		this.page =  1 
+		mescroll.resetUpScroll()
+		
+	},
+	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
+	upCallback(mescroll) {
+		//联网加载数据
+		var order_type = this.tab2
+		console.log("order_type:",order_type," mescroll.num:" , mescroll.num , " mescroll.size:" , mescroll.size);
+		
+		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
+			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+			mescroll.endSuccess(curPageData.length);
+			//设置列表数据
+			if(mescroll.num == 1|| this.page == 1) {
+				this.orders = []; //如果是第一页需手动制空列表
+			}
+			if(curPageData=='n'){
+				mescroll.endByPage(this.page, this.all_rows)
+			}else{
+				this.orders=this.page==1?curPageData:this.orders.concat(curPageData); //追加新数据
+				console.log("mescroll.num:" , mescroll.num , " mescroll.size:" , mescroll.size  ,"  order_type:",order_type," orders:" , this.orders);
+			}
+			
+		}, () => {
+			//联网失败的回调,隐藏下拉刷新的状态
+			mescroll.endErr();
+		})
+	},
+	//点击空布局按钮的回调
+	emptyClick(){
+		uni.showToast({
+			title:'点击了按钮'
+		})
+	},
+	
+	getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+		var that = this;
+		var weburl = getApp().globalData.weburl;
+		var scrollTop = that.scrollTop; //保留当前位置
+		var current_scrollTop = that.current_scrollTop ? that.current_scrollTop : 0; //保留当前位置
+		var order_type = that.tab?that.tab:'send';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+		var order_status = that.order_status;
+		var shop_type = that.shop_type;
+		var page = that.page; //从服务器获取页面序号
+		var page_num = that.page_num; //从服务器获取页面数
+		var show_max = that.show_max;
+		var orders_prev = that.orders_prev;
+		var orders_next = that.orders_next;
+		var pagesize = that.pagesize;
+		var now = new Date().getTime();
+		var currenttime = now ? parseInt(now / 1000) : 0;
+		var tips = "查看第" + (page == 0 ? 1 : page) + "页";
+		var hidddensearch = that.hidddensearch;
+		var keyword = hidddensearch ? that.keyword:''  ;
+		var userInfo = uni.getStorageSync('userInfo');
+		//console.log('reloadData userInfo:', userInfo, ' keyword:', keyword,' hidddensearch:',hidddensearch);
+	
+		if(page > page_num && page>1) {
+			console.log('加载完成 page:', page, 'page_num:',page_num);
+			that.is_loading = false ;
+			successCallback && successCallback('n');
+			return ;
+		}else{
+			that.is_loading = true ;
+			that.status = 'loading';
+		}
+		
+		if( page == 1){
+			that.orders = []
+			that.orders_show = []
+			that.page_num = 0
+		}
+		
+		wx.request({
+		  url: weburl + '/api/client/query_order_list',
+		  method: 'POST',
+		  data: {
+		    username: username ? username : openid,
+		    access_token: token,
+		    status: order_status,
+		    shop_type: shop_type,
+		    query_type: 'app',
+		    order_type: order_type,
+		    keyword: keyword,
+		    page: page > page_num ? page_num : page,
+		    pagesize: pagesize
+		  },
+		  header: {
+		    'Content-Type': 'application/x-www-form-urlencoded',
+		    'Accept': 'application/json'
+		  },
+		  success: function (res) {
+		    console.log(res.data);
+		    var orderObjects = res.data.result;
+		    var all_rows = res.data.all_rows;
+		
+		    if (!res.data.result) {
+					that.status = 'nomore' ;
+				    if( page == 1){
+						wx.showToast({
+						  title: "空空如也,快去送礼吧！",
+						  icon: 'none',
+						  duration: 1500
+						});
+						that.orders = []
+						that.orders_show = []
+						that.all_rows = 0
+					}
+					
+		    } else {
+		      // 存储地址字段
+		      var orders = that.orders;
+		      if (orderObjects) {
+		        for (var i = 0; i < orderObjects.length; i++) {
+		          if (orderObjects[i]['logo'].indexOf("http") < 0) {
+		            orderObjects[i]['logo'] = weburl + '/' + orderObjects[i]['logo'];
+		          }
+		
+		          if (orderObjects[i]['order_sku']) {
+		            for (var j = 0; j < orderObjects[i]['order_sku'].length; j++) {
+		              if (orderObjects[i]['order_sku'][j]['sku_image'].indexOf("http") < 0) {
+		                orderObjects[i]['order_sku'][j]['sku_image'] = weburl + orderObjects[i]['order_sku'][j]['sku_image'];
+		              }
+		
+		              orderObjects[i]['order_sku_num'] = orderObjects[i]['order_sku'] ? orderObjects[i]['order_sku'].length : 1;
+		            }
+		          }
+		
+		          var duetime = orderObjects[i]['duetime'] - currenttime;
+		          orderObjects[i]['hour'] = parseInt(duetime / 3600);
+		          orderObjects[i]['minus'] = parseInt((duetime - orderObjects[i]['hour'] * 3600) / 60);
+		          orderObjects[i]['sec'] = duetime - orderObjects[i]['hour'] * 3600 - orderObjects[i]['minus'] * 60; //orders.push(orderObjects[i])
+		
+		          if ((orderObjects[i]['shape'] == 5 || orderObjects[i]['shape'] == 4) && orderObjects[i]['m_desc']) {
+		            var m_desc = JSON.parse(orderObjects[i]['m_desc']);
+		            var card_register_info = m_desc['card_register_info'] ? m_desc['card_register_info'] : '';
+		            var card_name_info = m_desc['card_name_info'] ? m_desc['card_name_info'] : '';
+		            var card_love_info = m_desc['card_love_info'] ? m_desc['card_love_info'] : '';
+		            var card_cele_info = m_desc['card_cele_info'] ? m_desc['card_cele_info'] : '';
+		            var card_template = m_desc['card_template'] ? m_desc['card_template'] : '';
+		            var card_type = m_desc['card_register_info'] ? 1 : 0;
+		            card_type = m_desc['card_template'] ? m_desc['card_template'][0]['type'] : card_type;
+		            orderObjects[i]['card_type'] = card_type;
+		            if (card_name_info) orderObjects[i]['card_name_info'] = card_name_info;
+		            if (card_love_info) orderObjects[i]['card_love_info'] = card_love_info;
+		            if (card_cele_info) orderObjects[i]['card_cele_info'] = card_cele_info;
+		            if (card_register_info) orderObjects[i]['card_register_info'] = card_register_info;
+		          }
+		        } 
+				
+				orders = orders.concat(orderObjects)
+		        var gift_send = that.gift_send;
+		        var gift_rcv = that.gift_rcv;
+		        var page_num = that.page_num;
+		        page_num = all_rows / pagesize + 0.5;
+		
+		        if (order_type == 'send') {
+		          gift_send = all_rows;
+		        } else {
+		          gift_rcv = all_rows;
+		        } //更新当前显示页信息
+					  
+				that.orders = orders
+				that.page = page + 1 
+				that.page_num = page_num.toFixed(0)
+				that.all_rows = all_rows
+				that.gift_send = gift_send
+				that.gift_rcv = gift_rcv
+				that.hiddenmore = false
+				that.is_loading = false
+				that.status = page_num>page?'more':'nomore';
+				that.loadingHidden = false
+		        //console.log('reloadData page:' + page + ' pagesize:' + pagesize, ' current time:', currenttime, 'current scrollTop', scrollTop, ' orders', that.orders);
+		      }
+				console.log('加载 page:', that.page, 'page_num:',that.page_num);
+				successCallback && successCallback(orders)
+		    }
+		  }
+		});
+	},
+
+   //回到顶部
+   goTop: function (e) {
+   // 一键回到顶部
+   	var that = this;
+   	var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
+    	//that.pdList = [] ;
+   	that.page = 1 ;
+   	that.pageoffset = 0 ;
+   	that.mescroll.resetUpScroll()
+   	//getApp().globalData.hall_gotop = 0;
+      // 解决view层不同步的问题
+   	//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
+   	that.$nextTick(function() {
+   		that.mescroll.scrollTo(0) ;
+   	});
+   	that.mescroll.scrollTop = that.old.scrollTop
+   },
     getMoreOrdersTapTag: function () {
       var that = this;
       if (that.is_loading) return;
@@ -587,7 +799,7 @@ export default {
 		*/
 	    that.page = page +  1 ;
         console.log('get More Orders page:', page, 'current scrollTop:', that.current_scrollTop);
-        that.reloadData();
+        //that.reloadData();
       }
     },
     sendAginTapTag: function () {
@@ -758,6 +970,7 @@ export default {
       }, 1500);
     },
 	
+	/*
     reloadData: function () {
       var that = this;
 	  var weburl = getApp().globalData.weburl;
@@ -784,15 +997,7 @@ export default {
       //console.log('reloadData userInfo:', userInfo, ' keyword:', keyword,' hidddensearch:',hidddensearch);
 
   	  that.status = 'loading';
-	 /*
-      if (!username) {
-        //登录
-        wx.navigateTo({
-          url: '/pages/login/login?frompage=/pages/index/index'
-        });
-        return;
-      }
-	*/
+	
       if (page > page_num && page_num > 0) return;
 	that.is_loading = true
 	if( page == 1){
@@ -826,12 +1031,7 @@ export default {
           if (!res.data.result) {
             
 			that.status = 'nomore' ;
-			/*
-            setTimeout(function () {
-              wx.navigateBack();
-            }, 500);
-			that.hiddenmore = true
-			*/
+		
 		    if( page == 1){
 				wx.showToast({
 				  title: "空空如也,快去送礼吧！",
@@ -900,16 +1100,7 @@ export default {
                 gift_rcv = all_rows;
               } //更新当前显示页信息
 
-              /*
-              if(orders_show.length<show_max){
-                orders_show.push(orderObjects)
-                page_show =  page_show +1
-              }else{
-                orders_prev.push(orders_show.shift())
-                orders_show.push(orderObjects)
-                page_show = show_max
-              }
-              */
+             
 			  that.orders = orders
 			  that.page_num = page_num.toFixed(0)
 			  that.all_rows = all_rows
@@ -931,6 +1122,7 @@ export default {
         }
       });
     },
+	*/
     duetime_update: function () {
       var that = this;
       var page = that.page;

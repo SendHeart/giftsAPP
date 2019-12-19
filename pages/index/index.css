@@ -62,12 +62,12 @@ page {
 .order-item {
   position: relative;
   width: 96%;
+  height: 100%;
   margin: 0rpx auto;
   background: #fff;
   border-radius: 10rpx;
   z-index: 9;
 }
-
 
 .order-footer {
   padding: 6rpx 20rpx 10rpx 20rpx;
