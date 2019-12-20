@@ -99,6 +99,7 @@
 				faceimage64:'',
 				faceurl:'',
 				licenseIDStr: 'longyoung-face-android',
+				
 				face_items: [{
 						value: 'Eye',
 						name: '眨眨眼',
@@ -137,6 +138,9 @@
 				],
 				isLivenessRandom: 0,
 				isSound: 1,
+				txtColor: '#3987FD',
+				bgColor: '#2F2F33',
+				roundColor: '#3987FD',
 				resultStr: "",
 				imgBase64Str: ""
             }
@@ -500,6 +504,9 @@
 							//actionAry:actionAry,//不传无动作
 							//isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
+							txtColor: that.txtColor, //文字颜色
+							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
+							roundColor: that.roundColor ,//圆的颜色
 						}, result => {
 								console.log('file://' + result.imgPath);
 								that.faceimage = 'file://' + result.imgPath ;
@@ -511,6 +518,9 @@
 							actionAry:actionAry,//不传无动作
 							isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
+							txtColor: that.txtColor, //文字颜色
+							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
+							roundColor: that.roundColor ,//圆的颜色
 							}, result => {
 								console.log('file://' + result.imgPath);
 								that.faceimage = 'file://' + result.imgPath ;
@@ -525,6 +535,9 @@
 							//actionAry:actionAry,//不传无动作
 							//isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
+							txtColor: that.txtColor, //文字颜色
+							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
+							roundColor: that.roundColor ,//圆的颜色
 						}, result => {
 								console.log('file://' + result.imgPath);
 								that.faceimage = 'file://' + result.imgPath ;
@@ -536,6 +549,9 @@
 							actionAry:actionAry,//不传无动作
 							isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
+							txtColor: that.txtColor, //文字颜色
+							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
+							roundColor: that.roundColor ,//圆的颜色
 							}, result => {
 								console.log('file://' + result.imgPath);
 								that.faceimage = 'file://' + result.imgPath ;

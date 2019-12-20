@@ -1,5 +1,5 @@
 <template>
-<view>
+<view class="page" :style="'height:'+windowHeight">
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d">
 		
 	</uni-nav-bar>

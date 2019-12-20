@@ -21,8 +21,8 @@
 	<image :hidden="isPainting" :src="shareImage" :style="{width: width + 'px', height: height + 'px'}" mode="aspectFit" @tap.stop="(share_order_shape!=5 && share_order_shape!=4)?'sharegoods':''"></image>
 	-->
 	
-	<view @tap.stop="(share_order_shape!=5 && share_order_shape!=4)?'sharegoods':''">
-		<canvas canvas-id="canvasdrawer" :style="{width: width + 'px', height: height + 'px'}" style="background-color: #ffffff;"></canvas>
+	<view style="text-align: center;"  @tap.stop="(share_order_shape!=5 && share_order_shape!=4)?'sharegoods':''">
+		<canvas canvas-id="canvasdrawer" :style="{width: width + 'px', height: height + 'px'}" style="margin:0 auto; background-color: #ffffff;"></canvas>
 	</view>
 	<view v-if="share_order_shape==5||share_order_shape==4" class="share-play-rec" @tap="play_rec">
 		<image src="/static/images/notification.png" style="width:70rpx;height:70rpx;" :mode="((share_order_shape==5||share_order_shape==4)?'aspectFit':'')"></image>
@@ -558,34 +558,69 @@ export default {
 		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
 		var miniprogram_id = this.miniprogram_id ;
 		var shareImage = this.shareImage ;
-		uni.share({
-		  provider: 'weixin',
-		  type: 5,
-		  title: share_goods_name,
-		  imageUrl: share_goods_image?share_goods_image:shareImage,
-		  miniProgram: {
-		          id: miniprogram_id,  // gh_aefe7ce896f6
-		          path: 'pages/details/details?id='+share_goods_id+'&refername='+username,
-		          type: 0,
-		          webUrl: 'http://uniapp.dcloud.io'
-		      },
-		  success: (ret) => {
-		    console.log(ret)
-			/*
-		   uni.showModal({
-		       title: '分享成功',
-		       content: 'res:'+ JSON.stringify(res)
-		   })
-		   */
-		  },
-		  fail: (err) => {
-		    console.log(err)
-				uni.showModal({
-				    title: '分享失败',
-				    content: 'error:'+ JSON.stringify(err)
-				}) 
-		  }
-		})
+		share_goods_image = share_goods_image?share_goods_image:shareImage
+		if(plus.os.name === 'iOS'){
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  scene: 'WXSceneSession',
+			  title: share_goods_name,
+			  imageUrl:  'https://sendheart.dreamer-inc.com/uploads/gift_logo4.png',
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: 'pages/details/details?id='+share_goods_id+'&refername='+username,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+				/*
+			   uni.showModal({
+			       title: '分享成功',
+			       content: 'res:'+ JSON.stringify(res)
+			   })
+			   */
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					uni.showModal({
+					    title: '分享失败',
+					    content: 'error:'+ JSON.stringify(err)
+					}) 
+			  }
+			})
+		}else{
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  scene: 'WXSceneSession',
+			  title: share_goods_name,
+			  imageUrl: share_goods_image + '?x-oss-process=image/resize,w_200',
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: 'pages/details/details?id='+share_goods_id+'&refername='+username,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+				/*
+			   uni.showModal({
+			       title: '分享成功',
+			       content: 'res:'+ JSON.stringify(res)
+			   })
+			   */
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					uni.showModal({
+					    title: '分享失败',
+					    content: 'error:'+ JSON.stringify(err)
+					}) 
+			  }
+			})
+		}
+		
 		/*
 		uni.chooseImage({
 	          count: 1,

@@ -1,5 +1,5 @@
 <template>
-<view>
+<view class="page" :style="'height:'+windowHeight">
 	<view class="status_bar"></view>
 	<view class="userinfo">  
 		<image class="userinfo-avatar" :src="(avatarUrl?avatarUrl:default_avatar)" background-size="cover"  @click.stop="chooseImage(0)"></image>

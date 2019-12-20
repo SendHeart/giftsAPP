@@ -1,5 +1,5 @@
 <template>
-<view>
+<view class="page" :style="'height:'+windowHeight">
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
 	<view v-if="hidddensearch" class="search">
 		<view class="wx-input">
@@ -15,7 +15,7 @@
 	  </block>
 	</view>
 	
-	<mescroll-uni top="170" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
+	<mescroll-uni top="260" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
 		<view class="order-item" v-for="(item,order_idx) in orders" :key="order_idx"  >
 			<view class="shop-text">
 				<text>{{(item.shape!=5 && item.shape!=4)?'礼物单号:':'订单号:'}}{{item.order_no}}</text>
@@ -615,7 +615,7 @@ export default {
 		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 		var order_status = that.order_status;
 		var shop_type = that.shop_type;
-		var page = that.page; //从服务器获取页面序号
+		var page = that.page==0?1:that.page; //从服务器获取页面序号
 		var page_num = that.page_num; //从服务器获取页面数
 		var show_max = that.show_max;
 		var orders_prev = that.orders_prev;
@@ -656,7 +656,7 @@ export default {
 		    query_type: 'app',
 		    order_type: order_type,
 		    keyword: keyword,
-		    page: page > page_num ? page_num : page,
+		    page: page,
 		    pagesize: pagesize
 		  },
 		  header: {
@@ -683,7 +683,7 @@ export default {
 					
 		    } else {
 		      // 存储地址字段
-		      var orders = that.orders;
+		      //var orders = that.orders;
 		      if (orderObjects) {
 		        for (var i = 0; i < orderObjects.length; i++) {
 		          if (orderObjects[i]['logo'].indexOf("http") < 0) {
@@ -722,7 +722,7 @@ export default {
 		          }
 		        } 
 				
-				orders = orders.concat(orderObjects)
+				//orders = orders.concat(orderObjects)
 		        var gift_send = that.gift_send;
 		        var gift_rcv = that.gift_rcv;
 		        var page_num = that.page_num;
@@ -734,7 +734,7 @@ export default {
 		          gift_rcv = all_rows;
 		        } //更新当前显示页信息
 					  
-				that.orders = orders
+				//that.orders = orders
 				that.page = page + 1 
 				that.page_num = page_num.toFixed(0)
 				that.all_rows = all_rows
@@ -747,7 +747,7 @@ export default {
 		        //console.log('reloadData page:' + page + ' pagesize:' + pagesize, ' current time:', currenttime, 'current scrollTop', scrollTop, ' orders', that.orders);
 		      }
 				console.log('加载 page:', that.page, 'page_num:',that.page_num);
-				successCallback && successCallback(orders)
+				successCallback && successCallback(orderObjects)
 		    }
 		  }
 		});
