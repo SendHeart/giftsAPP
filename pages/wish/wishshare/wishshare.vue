@@ -1,7 +1,7 @@
 <template>
-<view>
+<view style="background-color: #fff;height: 100%;">
 <!--index.wxml-->
-<view class="container" :style="'height:' + dkheight + 'px;'">
+<view class="container" :style="'height:' + windowHeight + 'px;'">
 	<view class="share-goods">
 		<view class="share-buttons">
 			<view v-if="share_order_shape==5||share_order_shape==4" class="btncard" @tap="goBack">
@@ -22,7 +22,7 @@
 	-->
 	
 	<view style="text-align: center;"  @tap.stop="(share_order_shape!=5 && share_order_shape!=4)?'sharegoods':''">
-		<canvas canvas-id="canvasdrawer" :style="{width: width + 'px', height: height + 'px'}" style="margin:0 auto; background-color: #ffffff;"></canvas>
+		<canvas canvas-id="canvasdrawer" :style="{width: width + 'px', height: height + 'px'}" style="margin:0 auto; background-color: #1d1d1d;"></canvas>
 	</view>
 	<view v-if="share_order_shape==5||share_order_shape==4" class="share-play-rec" @tap="play_rec">
 		<image src="/static/images/notification.png" style="width:70rpx;height:70rpx;" :mode="((share_order_shape==5||share_order_shape==4)?'aspectFit':'')"></image>
