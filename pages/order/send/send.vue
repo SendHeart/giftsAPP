@@ -388,42 +388,84 @@ export default {
 		that.setData({
 		  send_status: 1
 		});
-		uni.share({
-		  provider: 'weixin',
-		  type: 5,
-		  title: title,
-		  imageUrl: 'https://sendheart.dreamer-inc.com/uploads/gift_logo4.png', //shareimage_url, 规避uni-app bug
-		  miniProgram: {
-		          id: miniprogram_id,  // gh_aefe7ce896f6
-		          path: '/pages/order/receive/receive?page_type=2&order_no=' + order_no + '&receive=1' + '&goods_shape=' + goodsshape + '&goods_flag=' + goods_flag,
-		          type: 0,
-		          webUrl: 'http://uniapp.dcloud.io'
-		      },
-		  success: (ret) => {
-		    console.log(ret)
-			/*
-		   uni.showModal({
-		       title: '分享成功',
-		       content: 'res:'+ JSON.stringify(res)
-		   })
-		   */
-		  },
-		  fail: (err) => {
-		    console.log(err)
-				var errMsg = err.errMsg
-				if(errMsg.share.fail=='客户端未安装'){
-					uni.showModal({
-					    title: '分享失败',
-					    content: '微信客户端未安装'
-					}) 
-				}else{
-					uni.showModal({
-					    title: '分享失败',
-					    content: errMsg.share.fail
-					}) 
-				}
-		  }
-		})
+		 if (uni.getSystemInfoSync().platform == "ios") {
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  title: title,
+			  scene: 'WXSceneSession',
+			  imageUrl: 'https://sendheart.dreamer-inc.com/uploads/gift_share_logo.png', //shareimage_url, 规避uni-app bug
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: '/pages/order/receive/receive?page_type=2&order_no=' + order_no + '&receive=1' + '&goods_shape=' + goodsshape + '&goods_flag=' + goods_flag,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+				/*
+			   uni.showModal({
+			       title: '分享成功',
+			       content: 'res:'+ JSON.stringify(res)
+			   })
+			   */
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					var errMsg = err.errMsg
+					if(errMsg.share.fail=='客户端未安装'){
+						uni.showModal({
+						    title: '分享失败',
+						    content: '微信客户端未安装'
+						}) 
+					}else{
+						uni.showModal({
+						    title: '分享失败',
+						    content: errMsg.share.fail
+						}) 
+					}
+			  }
+			})
+		}else{
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  title: title,
+			  scene: 'WXSceneSession',
+			  imageUrl: share_goods_image + '?x-oss-process=image/resize,w_200',
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: '/pages/order/receive/receive?page_type=2&order_no=' + order_no + '&receive=1' + '&goods_shape=' + goodsshape + '&goods_flag=' + goods_flag,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+				/*
+			   uni.showModal({
+			       title: '分享成功',
+			       content: 'res:'+ JSON.stringify(res)
+			   })
+			   */
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					var errMsg = err.errMsg
+					if(errMsg.share.fail=='客户端未安装'){
+						uni.showModal({
+						    title: '分享失败',
+						    content: '微信客户端未安装'
+						}) 
+					}else{
+						uni.showModal({
+						    title: '分享失败',
+						    content: errMsg.share.fail
+						}) 
+					}
+			  }
+			})
+		}
+		
 		 
 	},
 	

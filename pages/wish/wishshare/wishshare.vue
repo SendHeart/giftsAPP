@@ -565,7 +565,7 @@ export default {
 			  type: 5,
 			  scene: 'WXSceneSession',
 			  title: share_goods_name,
-			  imageUrl:  'https://sendheart.dreamer-inc.com/uploads/gift_logo4.png',
+			  imageUrl:  'https://sendheart.dreamer-inc.com/uploads/goods_share_logo.png',
 			  miniProgram: {
 			          id: miniprogram_id,  // gh_aefe7ce896f6
 			          path: 'pages/details/details?id='+share_goods_id+'&refername='+username,
