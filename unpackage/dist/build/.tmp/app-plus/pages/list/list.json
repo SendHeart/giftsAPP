@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "礼物商城",
+  "enablePullDownRefresh": false,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "mescroll-item": "/pages/list/mescroll-swiper-item"
+  }
+}

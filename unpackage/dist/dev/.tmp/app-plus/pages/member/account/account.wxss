@@ -1,0 +1,269 @@
+.container{
+  margin-bottom: 50rpx;
+}
+.balance {
+  width: 100%;
+  margin: 0 auto;
+  background: #e34c55;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  /*flex-flow: column nowrap;*/
+  -webkit-box-pack: left;
+  -webkit-justify-content: left;
+          justify-content: left; /*子项横轴上居中对齐*/
+  -webkit-box-align: left;
+  -webkit-align-items: left;
+          align-items: left; /*子项纵轴上居中对齐*//*align-content: center;*/
+  opacity: 1;
+}
+.balance .balance-title {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient:horizontal;
+  -webkit-box-direction:normal;
+  -webkit-flex-direction:row;
+          flex-direction:row;
+  position: relative;
+  color: #FFC9CE;
+  margin: 40rpx 0 0 20rpx;
+}
+.balance-title-bal {
+  font-size: 28rpx;
+}
+.balance-content  {
+  color: #999;
+  margin-bottom: 20rpx;
+}
+.balance-content text {
+  margin-right: 4rpx;
+}
+.balance-content .snum {
+  color: #fff;
+  padding: 2rpx 8rpx;
+  font-size:64rpx;
+}
+/* 显示与隐藏 */
+.show {
+	display: block;
+}
+.hidden {
+	display: none;
+}
+.bal-text {
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+  font-size: 24rpx;
+  color: #999;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  background-color: #fff;
+}
+.bal-item {
+ 	display: -webkit-box;
+ 	display: -webkit-flex;
+ 	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	        flex-direction: column;
+	width:100%;
+	border-bottom: 1px solid #f2f2f2;
+	padding: 0;
+  text-align: left;
+  -webkit-box-align: left;
+  -webkit-align-items: left;
+          align-items: left;
+  background-color: #fff;
+}
+.bal-title {
+ 	margin-left:20rpx;
+  font-size:24rpx;
+  line-height: 32rpx;
+  overflow:hidden;  
+  text-overflow:ellipsis;  
+  white-space:nowrap; 
+  color: #999;
+}
+.bal-sub-title {
+ 	display: -webkit-box;
+ 	display: -webkit-flex;
+ 	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: column;
+	        flex-direction: column;
+	padding: 10rpx 0;
+  text-align: left;
+  -webkit-box-align: left;
+  -webkit-align-items: left;
+          align-items: left;
+}
+.bal-content-text{
+  margin-left:20rpx;
+  font-size:28rpx;
+  overflow:hidden;  
+  text-overflow:ellipsis;  
+  white-space:nowrap; 
+  color: #444;
+}
+.bal-content-image {
+ 	display: -webkit-box;
+ 	display: -webkit-flex;
+ 	display: flex;
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: normal;
+	-webkit-flex-direction: row;
+	        flex-direction: row;
+	width:100%;
+	border-bottom: 1px solid #aaaaaa;
+	padding: 10rpx 0;
+  text-align: left;
+  -webkit-box-align: left;
+  -webkit-align-items: left;
+          align-items: left;
+  background-color: #fff;
+}
+.bal-content-image image {
+ /*被图片设置宽高*/ 
+  width: 40px; 
+  height: 40px; 
+  padding-left:10px;
+  padding-bottom: 10rpx;
+}
+.select-and-amount-mark {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  font-size: 28rpx;
+}
+.morebtn {
+  margin:20rpx auto 200rpx auto;
+  border:none;
+  background: #f2f2f2;
+  color: #999;
+  font-size: 24rpx;
+}
+/*购物车按钮、收藏等*/
+.footer {
+  background: #fff;
+  width: 100%;
+  padding-bottom: 50rpx;
+  position: fixed;
+  bottom: 0;
+  border-top: 1rpx solid #eee;
+}
+.opt-buttons {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.opt-buttons button::after {
+  border: none;
+}
+.withdraw {
+  line-height: 100rpx;
+  text-align: center;
+  width: 100%;
+  height: 100rpx;
+  background-color: #e34c55;
+  color: #fff;
+  font-size: 32rpx;
+  border-radius: 0;
+}
+.formfill {
+display: -webkit-box;
+display: -webkit-flex;
+display: flex;
+-webkit-box-orient:horizontal;
+-webkit-box-direction:normal;
+-webkit-flex-direction:row;
+        flex-direction:row;
+-webkit-box-pack: center;
+-webkit-justify-content: center;
+        justify-content: center;
+margin: 20rpx auto;
+}
+.formfill text {
+font-size: 36rpx;
+color: #e34c55;
+}
+.formfill input {
+  width: 80%;
+  background: #f2f2f2;
+  border-radius: 14rpx;
+  padding: 8rpx 15rpx;
+}
+.tips {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  margin: 40rpx 0;
+}
+.strong {
+  font-weight: bold;
+  line-height: 200%;
+}
+/* 提示窗口 */
+.uni-tip {
+		padding: 15px;
+		width: 300px;
+		background: #fff;
+		box-sizing: border-box;
+		border-radius: 10px;
+}
+.uni-tip-title {
+		text-align: center;
+		font-weight: bold;
+		font-size: 16px;
+		color: #333;
+}
+.uni-tip-content {
+		padding: 15px;
+		font-size: 14px;
+		color: #666;
+}
+.uni-tip-group-button {
+		margin-top: 10px;
+		display: -webkit-box;
+		display: -webkit-flex;
+		display: flex;
+}
+.uni-tip-button {
+		width: 100%;
+		text-align: center;
+		font-size: 14px;
+		color: #3b4144;
+}
+

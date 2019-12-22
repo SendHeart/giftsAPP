@@ -1,0 +1,29 @@
+{
+  "navigationBarBackgroundColor": "#1D1D1D",
+  "navigationBarTitleText": "登录",
+  "titleNView": {
+    "buttons": [
+      {
+        "index": "0",
+        "text": "返回",
+        "fontSize": "16",
+        "float": "left",
+        "color": "#fff"
+      },
+      {
+        "index": "1",
+        "text": "VIP认证",
+        "fontSize": "12",
+        "width": "100",
+        "float": "right",
+        "color": "#fff"
+      }
+    ]
+  },
+  "scrollIndicator": "none",
+  "usingComponents": {
+    "m-input": "/components/m-input",
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar"
+  }
+}

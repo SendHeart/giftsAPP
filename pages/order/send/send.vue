@@ -392,7 +392,7 @@ export default {
 		  provider: 'weixin',
 		  type: 5,
 		  title: title,
-		  imageUrl: shareimage_url,
+		  imageUrl: 'https://sendheart.dreamer-inc.com/uploads/gift_logo4.png', //shareimage_url, 规避uni-app bug
 		  miniProgram: {
 		          id: miniprogram_id,  // gh_aefe7ce896f6
 		          path: '/pages/order/receive/receive?page_type=2&order_no=' + order_no + '&receive=1' + '&goods_shape=' + goodsshape + '&goods_flag=' + goods_flag,

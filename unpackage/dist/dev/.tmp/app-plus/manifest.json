@@ -1,0 +1,324 @@
+{
+  "@platforms": [
+    "android",
+    "iPhone",
+    "iPad"
+  ],
+  "id": "__UNI__8B1760E",
+  "name": "送心礼物",
+  "version": {
+    "name": "1.0.6",
+    "code": 106
+  },
+  "description": "送心礼物",
+  "launch_path": "__uniappview.html",
+  "developer": {
+    "name": "",
+    "email": "",
+    "url": ""
+  },
+  "permissions": {
+    "OAuth": {},
+    "Payment": {},
+    "Share": {},
+    "Speech": {},
+    "VideoPlayer": {},
+    "Fingerprint": {},
+    "Messaging": {},
+    "Maps": {
+      "coordType": "gcj02"
+    },
+    "LivePusher": {},
+    "Push": {},
+    "UniNView": {
+      "description": "UniNView原生渲染"
+    }
+  },
+  "plus": {
+    "useragent": {
+      "value": "uni-app",
+      "concatenate": true
+    },
+    "splashscreen": {
+      "target": "id:1",
+      "autoclose": true,
+      "waiting": true,
+      "delay": 0
+    },
+    "popGesture": "close",
+    "launchwebview": {
+      "id": "1",
+      "kernel": "WKWebview",
+      "uni-app": "auto"
+    },
+    "statusbar": {
+      "immersed": "supportedDevice",
+      "style": "light",
+      "background": "#1d1d1d"
+    },
+    "usingComponents": true,
+    "nvueCompiler": "uni-app",
+    "distribute": {
+      "orientation": [
+        "portrait-primary"
+      ],
+      "icons": {
+        "android": {
+          "hdpi": "unpackage/res/icons/72x72.png",
+          "xhdpi": "unpackage/res/icons/96x96.png",
+          "xxhdpi": "unpackage/res/icons/144x144.png",
+          "xxxhdpi": "unpackage/res/icons/192x192.png"
+        },
+        "ios": {
+          "appstore": "unpackage/res/icons/1024x1024.png",
+          "ipad": {
+            "app": "unpackage/res/icons/76x76.png",
+            "app@2x": "unpackage/res/icons/152x152.png",
+            "notification": "unpackage/res/icons/20x20.png",
+            "notification@2x": "unpackage/res/icons/40x40.png",
+            "proapp@2x": "unpackage/res/icons/167x167.png",
+            "settings": "unpackage/res/icons/29x29.png",
+            "settings@2x": "unpackage/res/icons/58x58.png",
+            "spotlight": "unpackage/res/icons/40x40.png",
+            "spotlight@2x": "unpackage/res/icons/80x80.png"
+          },
+          "iphone": {
+            "app@2x": "unpackage/res/icons/120x120.png",
+            "app@3x": "unpackage/res/icons/180x180.png",
+            "notification@2x": "unpackage/res/icons/40x40.png",
+            "notification@3x": "unpackage/res/icons/60x60.png",
+            "settings@2x": "unpackage/res/icons/58x58.png",
+            "settings@3x": "unpackage/res/icons/87x87.png",
+            "spotlight@2x": "unpackage/res/icons/80x80.png",
+            "spotlight@3x": "unpackage/res/icons/120x120.png"
+          }
+        }
+      },
+      "splashscreen": {
+        "android": {
+          "hdpi": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+          "xhdpi": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+          "xxhdpi": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
+        },
+        "ios": {
+          "iphone": {
+            "portrait-896h@3x": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "landscape-896h@3x": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "portrait-896h@2x": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "landscape-896h@2x": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "iphonex": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "iphonexl": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina55": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina55l": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina47": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina47l": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina40": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina40l": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+            "retina35": "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
+          }
+        }
+      },
+      "google": {
+        "permissions": [
+          "<uses-feature android:name=\"android.hardware.camera\"/>",
+          "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_MOCK_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+          "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+          "<uses-permission android:name=\"android.permission.GET_TASKS\"/>",
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+          "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+          "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.READ_SMS\"/>",
+          "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>",
+          "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+          "<uses-permission android:name=\"android.permission.SEND_SMS\"/>",
+          "<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>",
+          "<uses-permission android:name=\"android.permission.USE_FINGERPRINT\"/>",
+          "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+          "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_SMS\"/>",
+          "<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>"
+        ],
+        "abiFilters": [
+          "armeabi-v7a",
+          "arm64-v8a",
+          "x86"
+        ],
+        "schemes": "com.yiquangou.app"
+      },
+      "apple": {
+        "UIBackgroundModes": [
+          "audio",
+          "location"
+        ],
+        "urlschemewhitelist": [
+          "baidumap",
+          "iosamap"
+        ],
+        "privacyDescription": {
+          "NSPhotoLibraryUsageDescription": "\"送心礼物\"需要您的同意，才能访问相册，以便于分享图片",
+          "NSPhotoLibraryAddUsageDescription": "\"送心礼物\"需要您的同意，才能添加照片，以便于保存商品图片",
+          "NSCameraUsageDescription": "\"送心礼物\"需要您的同意，才能访问相机，以便于上传图片",
+          "NSMicrophoneUsageDescription": "\"送心礼物\"需要您的同意，才能访问麦克风，以便于上传音频",
+          "NSLocationWhenInUseUsageDescription": "\"送心礼物\"需要您的同意，才能访问位置，以便于推荐特色商品",
+          "NSLocationAlwaysUsageDescription": "\"送心礼物\"需要您的同意，才能始终访问位置，以便于推荐特色商品",
+          "NSLocationAlwaysAndWhenInUseUsageDescription": "\"送心礼物\"需要您的同意，才能始终访问位置，以便于推荐特色商品",
+          "NSCalendarsUsageDescription": "\"送心礼物\"需要您的同意，才能访问日历，以便于提醒您及时接收信息",
+          "NSContactsUsageDescription": "\"送心礼物\"需要您的同意，才能访问通讯录，以便于选择收件人信息",
+          "NSSpeechRecognitionUsageDescription": "\"送心礼物\"需要您的同意，才能开启语音识别，以便于和客户交互",
+          "NSRemindersUsageDescription": "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于提醒您及时接收信息",
+          "NSMotionUsageDescription": "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于获取运动与健身信息",
+          "NSHealthUpdateUsageDescription": "\"送心礼物\"需要您的同意，才能访问提醒事项，以便于获取健康信息"
+        },
+        "urltypes": "com.yiquangou.app"
+      },
+      "plugins": {
+        "speech": {
+          "ifly": {}
+        },
+        "maps": {
+          "baidu": {
+            "appkey_ios": "HPgDvtvGFgaXlmC0D8Bw7NV02NrIHeFq",
+            "appkey_android": "n3HFLj4VZ9NtkY5EXtutaimDhWBBBvvc"
+          }
+        },
+        "payment": {
+          "weixin": {
+            "appid": "wx75f9d4c06ae00125",
+            "UniversalLinks": "https://sendheart.dreamer-inc.com/"
+          },
+          "alipay": {},
+          "appleiap": {}
+        },
+        "oauth": {
+          "qq": {
+            "appid": "101609235"
+          }
+        },
+        "share": {
+          "qq": {
+            "appid": "101609235"
+          },
+          "weixin": {
+            "appid": "wx75f9d4c06ae00125",
+            "UniversalLinks": "https://sendheart.dreamer-inc.com/"
+          }
+        },
+        "push": {
+          "unipush": {}
+        },
+        "audio": {
+          "mp3": {
+            "description": "Android平台录音支持MP3格式文件"
+          }
+        }
+      }
+    },
+    "nativePlugins": {
+      "longyoung-BDFaceAuth": {
+        "__plugin_info__": {
+          "name": "【横竖屏】安卓人脸识别、百度活体检测、人脸采集【含iOS端】",
+          "description": "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。支持pad横竖屏。",
+          "platforms": "Android",
+          "url": "https://ext.dcloud.net.cn/plugin?id=976",
+          "android_package_name": "com.yiquangou.app",
+          "ios_bundle_id": "com.yiquangou.app",
+          "isCloud": true,
+          "bought": 1,
+          "pid": "976",
+          "parameters": {}
+        }
+      },
+      "longyoung-BDFaceAuth-iOS": {
+        "__plugin_info__": {
+          "name": "【限免】iOS人脸识别、百度活体检测、人脸采集【内含安卓端】",
+          "description": "longyoung出品，有疑问公众号「longyoung」后台提问。点击试用，免费打自定义基座测试。",
+          "platforms": "iOS",
+          "url": "https://ext.dcloud.net.cn/plugin?id=1081",
+          "android_package_name": "com.yiquangou.app",
+          "ios_bundle_id": "com.yiquangou.app",
+          "isCloud": true,
+          "bought": 1,
+          "pid": "1081",
+          "parameters": {}
+        }
+      }
+    },
+    "arguments": "{\"name\":\"\",\"path\":\"\",\"query\":\"\",\"id\":0}",
+    "allowsInlineMediaPlayback": true,
+    "safearea": {
+      "background": "#444444",
+      "bottom": {
+        "offset": "auto"
+      }
+    },
+    "uni-app": {
+      "compilerVersion": "2.4.6",
+      "control": "v8",
+      "nvueCompiler": "uni-app",
+      "renderer": "auto",
+      "nvue": {
+        "flex-direction": "column"
+      }
+    },
+    "tabBar": {
+      "color": "#fff",
+      "selectedColor": "#EC4844",
+      "borderStyle": "rgba(0,0,0,0.4)",
+      "backgroundColor": "#444444",
+      "list": [
+        {
+          "pagePath": "pages/hall/hall",
+          "iconPath": "/static/images/home.png",
+          "selectedIconPath": "/static/images/home_s.png",
+          "text": "送心礼物"
+        },
+        {
+          "pagePath": "pages/wish/wish",
+          "iconPath": "/static/images/wish.png",
+          "selectedIconPath": "/static/images/wish_s.png",
+          "text": "心愿单"
+        },
+        {
+          "pagePath": "pages/member/message/message",
+          "iconPath": "/static/images/logo.png",
+          "selectedIconPath": "/static/images/logo_s.png",
+          "text": "智能助手"
+        },
+        {
+          "pagePath": "pages/index/index",
+          "iconPath": "/static/images/history.png",
+          "selectedIconPath": "/static/images/history_s.png",
+          "text": "礼物袋"
+        },
+        {
+          "pagePath": "pages/my/index",
+          "iconPath": "/static/images/my.png",
+          "selectedIconPath": "/static/images/my_s.png",
+          "text": "我的"
+        }
+      ],
+      "height": "50px",
+      "child": [
+        "lauchwebview"
+      ],
+      "selected": 0
+    }
+  }
+}

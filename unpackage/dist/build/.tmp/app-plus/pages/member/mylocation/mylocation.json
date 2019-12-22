@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "我的位置",
+  "usingComponents": {
+    "uni-popup": "/components/uni-popup/uni-popup"
+  }
+}

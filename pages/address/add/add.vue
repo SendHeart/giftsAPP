@@ -102,6 +102,7 @@
 </template>
 
 <script>
+	
 var weburl = getApp().globalData.weburl;
 var QQMapWX = require("../../../utils/qqmap-wx-jssdk.min.js");
 var qqmapsdk;
@@ -110,7 +111,13 @@ var util = require("../../../utils/util.js");
 var now = new Date().getTime();
 var shop_type = getApp().globalData.shop_type;
 var uploadurl = getApp().globalData.uploadurl;
-
+  
+ var util = require('../../../common/util.js');
+ var formatLocation = util.formatLocation;
+    // #ifdef APP-PLUS
+    import permision from "@/common/permission.js"
+    // #endif
+	
 export default {
   data() {
     return {
@@ -160,6 +167,10 @@ export default {
       longitude: "",
 	  is_activity:0,
 	  is_buymyself:0,
+	  title: 'getLocation',
+	  hasLocation: false,
+	  location: {},
+	  type: ''
     };
   },
 
@@ -169,12 +180,12 @@ export default {
     var that = this;
 	var is_buymyself = options.is_buymyself?options.is_buymyself:0
 	var is_activity =  options.is_activity?options.is_activity:0
+	/*
     var qqmapkey = that.qqmapkey;
     qqmapsdk = new QQMapWX({
       key: qqmapkey //'BJFBZ-ZFTHW-Y2HRO-RL2UZ-M6EC3-GMF4U'
-
     });
-    var that = this;
+	*/
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
     var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
 
@@ -189,7 +200,9 @@ export default {
     that.setData({
       username: username,
       token: token,
-    }); // load province
+    }); 
+	
+	that.getLocation() ;
 
     wx.request({
       url: weburl + '/api/client/get_area_list',
@@ -226,6 +239,80 @@ export default {
     that.cascadePopup(); // TODO:load default city...
   },
   methods: {
+	  async getLocation() {
+	      // #ifdef APP-PLUS
+	      let status = await this.checkPermission();
+	      if (status !== 1) {
+	          return;
+	      }
+	      // #endif	       
+	  },
+	  getSetting: function() {
+	      return new Promise((resolve, reject) => {
+	          uni.getSetting({
+	              success: (res) => {
+	                  if (res.authSetting['scope.userLocation'] === undefined) {
+	                      resolve(0);
+	                      return;
+	                  }
+	                  if (res.authSetting['scope.userLocation']) {
+	                      resolve(1);
+	                  } else {
+	                      resolve(2);
+	                  }
+	              }
+	          });
+	      });
+	  },
+	  openSetting: function() {
+	      this.hideConfirm();
+	      uni.openSetting({
+	          success: (res) => {
+	              if (res.authSetting && res.authSetting['scope.userLocation']) {
+	                  this.doGetLocation();
+	              }
+	          },
+	          fail: (err) => {}
+	      })
+	  },
+	  async checkPermission() {
+	      let status = permision.isIOS ? await permision.requestIOS('location') :
+	          await permision.requestAndroid('android.permission.ACCESS_FINE_LOCATION');
+	  
+	      if (status === null || status === 1) {
+	          status = 1;
+	      } else if (status === 2) {
+	          uni.showModal({
+	              content: "系统定位已关闭",
+	              confirmText: "设置",
+	              success: function(res) {
+	                  if (res.confirm) {
+	                      permision.gotoiOSSetting();
+	                  }
+	              }
+	          })
+	      } else if (status.code) {
+	          uni.showModal({
+	              content: status.message
+	          })
+	      } else {
+	          uni.showModal({
+	              content: "需要定位权限",
+	              confirmText: "设置",
+	              success: function(res) {
+	                  if (res.confirm) {
+	                      permision.gotoAppSetting();
+	                  }
+	              }
+	          })
+	      }
+	  
+	      return status;
+	  },
+	  clear: function() {
+	      this.hasLocation = false
+	  },
+	  
     formSubmit: function (e) {
       var that = this; // user 
 
@@ -822,8 +909,44 @@ export default {
       });
     },
     fetchPOI: function () {
-      var that = this; // 调用接口
-
+		var that = this; // 调用接口
+		uni.getLocation({
+            type: 'gcj02',
+            success: function(res) {
+                console.log('当前位置的经度：' + res.longitude);
+                console.log('当前位置的纬度：' + res.latitude);
+				that.longitude = res.longitude
+				that.latitude =  res.latitude
+                var point = new plus.maps.Point(res.longitude, res.latitude);
+                plus.maps.Map.reverseGeocode(
+                    point,
+                    {},
+                    function(event) {
+                        var address = event.address; // 转换后的地理位置
+                        var point = event.coord; // 转换后的坐标信息
+                        var coordType = event.coordType; // 转换后的坐标系类型
+                        console.log(address, 'address');
+                        var reg = /.+?(省|市|自治区|自治州|县|区)/g;
+                        
+                        console.log(address.match(reg));
+                        that.addressList=address.match(reg).toString().split(",");
+                        console.log(that.addressList[0]);
+                        console.log(that.addressList[1]);
+                        console.log(that.addressList[2]);
+						that.areaSelectedStr = address
+                        
+                    },
+                    function(e) {
+						console.log(e);
+					}
+                );
+            },
+			fail:function(e){
+				console.log('fail:',e);
+			}
+        });
+		
+	/*
       qqmapsdk.reverseGeocoder({
         poi_options: 'policy=2',
         get_poi: 1,
@@ -840,6 +963,7 @@ export default {
         complete: function (res) {//         console.log(res);
         }
       });
+	  */
     },
     setData: function (obj) {
       let that = this;

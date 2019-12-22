@@ -21,7 +21,10 @@
             "Share" : {},
             "Speech" : {},
             "VideoPlayer" : {},
+            "Fingerprint" : {},
+            "Messaging" : {},
             "Maps" : {},
+            "LivePusher" : {},
             "Push" : {}
         },
         /* 应用发布信息 */
@@ -55,6 +58,7 @@
                     "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
                     "<uses-permission android:name=\"android.permission.SEND_SMS\"/>",
                     "<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>",
+                    "<uses-permission android:name=\"android.permission.USE_FINGERPRINT\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
@@ -68,7 +72,7 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "UIBackgroundModes" : [ "audio" ],
+                "UIBackgroundModes" : [ "audio", "location" ],
                 "urlschemewhitelist" : [ "baidumap", "iosamap" ],
                 "privacyDescription" : {
                     "NSPhotoLibraryUsageDescription" : "\"送心礼物\"需要您的同意，才能访问相册，以便于分享图片",
@@ -94,23 +98,19 @@
                 },
                 "maps" : {
                     "baidu" : {
-                        "appkey_ios" : "3075ca513c180f154a83789e3f93c1c4",
+                        "appkey_ios" : "HPgDvtvGFgaXlmC0D8Bw7NV02NrIHeFq",
                         "appkey_android" : "n3HFLj4VZ9NtkY5EXtutaimDhWBBBvvc"
                     }
                 },
                 "payment" : {
                     "weixin" : {
                         "appid" : "wx75f9d4c06ae00125",
-                        "UniversalLinks" : ""
+                        "UniversalLinks" : "https://sendheart.dreamer-inc.com/"
                     },
                     "alipay" : {},
                     "appleiap" : {}
                 },
                 "oauth" : {
-                    "weixin" : {
-                        "appid" : "wx75f9d4c06ae00125",
-                        "appsecret" : "d67a84077ba18bf54a88d688e7c89a90"
-                    },
                     "qq" : {
                         "appid" : "101609235"
                     }
@@ -121,7 +121,7 @@
                     },
                     "weixin" : {
                         "appid" : "wx75f9d4c06ae00125",
-                        "UniversalLinks" : ""
+                        "UniversalLinks" : "https://sendheart.dreamer-inc.com/"
                     }
                 },
                 "push" : {
@@ -169,12 +169,38 @@
                 },
                 "ios" : {
                     "iphone" : {
-                        "portrait-896h@3x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
+                        "portrait-896h@3x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "landscape-896h@3x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "portrait-896h@2x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "landscape-896h@2x" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "iphonex" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "iphonexl" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina55" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina55l" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina47" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina47l" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina40" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina40l" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
+                        "retina35" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
                     }
                 }
             }
         },
         "nativePlugins" : {
+            "longyoung-BDFaceAuth" : {
+                "__plugin_info__" : {
+                    "name" : "【横竖屏】安卓人脸识别、百度活体检测、人脸采集【含iOS端】",
+                    "description" : "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。支持pad横竖屏。",
+                    "platforms" : "Android",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=976",
+                    "android_package_name" : "com.yiquangou.app",
+                    "ios_bundle_id" : "com.yiquangou.app",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "976",
+                    "parameters" : {}
+                }
+            },
             "longyoung-BDFaceAuth-iOS" : {
                 "__plugin_info__" : {
                     "name" : "【限免】iOS人脸识别、百度活体检测、人脸采集【内含安卓端】",
@@ -186,20 +212,6 @@
                     "isCloud" : true,
                     "bought" : 1,
                     "pid" : "1081",
-                    "parameters" : {}
-                }
-            },
-            "longyoung-BDFaceAuth" : {
-                "__plugin_info__" : {
-                    "name" : "【横竖屏】安卓人脸识别、百度活体检测、人脸采集含iOS端",
-                    "description" : "longyoung出品，如有疑问，关注公众号「longyoung」后台发消息提问。支持pad横竖屏。",
-                    "platforms" : "Android",
-                    "url" : "https://ext.dcloud.net.cn/plugin?id=976",
-                    "android_package_name" : "com.yiquangou.app",
-                    "ios_bundle_id" : "com.yiquangou.app",
-                    "isCloud" : true,
-                    "bought" : 1,
-                    "pid" : "976",
                     "parameters" : {}
                 }
             }

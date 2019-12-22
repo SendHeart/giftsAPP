@@ -28,7 +28,7 @@
             <navigator url="../reg/reg">注册账号</navigator>
             <text>|</text>
             <navigator url="../pwd/pwd">忘记密码</navigator>
-			<view  @tap="byscanface">
+			<view  @click="byscanface()">
 			<text>|</text>
 			<text>刷脸</text> 
 			</view>
@@ -55,6 +55,7 @@
 <script>
 	const lyBDFaceAuth = uni.requireNativePlugin('longyoung-BDFaceAuth');
 	const lyBDFaceAuthIOS = uni.requireNativePlugin('longyoung-BDFaceAuth-iOS'); //ios
+
 	var util = require("../../utils/util.js"); //获取应用实例
 	var weburl = getApp().globalData.weburl;
 	var shop_type = getApp().globalData.shop_type;
@@ -64,7 +65,8 @@
 	import permision from "@/common/permission.js"
 	import uniIcons from '@/components/uni-icons/uni-icons.vue' ;
 	import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
-    import md5 from '../../utils/md5.js';
+    import md5 from '../../utils/md5.js'
+	import permijs from '../../utils/permission.js'
 	import service from '../../service.js';
     import {
         mapState,
@@ -98,8 +100,7 @@
 				faceimage:'',
 				faceimage64:'',
 				faceurl:'',
-				licenseIDStr: 'longyoung-face-android',
-				
+				licenseIDStr: 'sendheartAppFace-face-ios',
 				face_items: [{
 						value: 'Eye',
 						name: '眨眨眼',
@@ -142,10 +143,21 @@
 				bgColor: '#2F2F33',
 				roundColor: '#3987FD',
 				resultStr: "",
-				imgBase64Str: ""
+				imgBase64Str: "",
             }
         },
         computed: mapState(['forcedLogin']),
+		onLoad() {
+			//权限
+			// #ifdef APP-PLUS
+			if (uni.getSystemInfoSync().platform == "ios") {
+				this.licenseIDStr = "sendheartAppFace-face-ios";
+			} else if (uni.getSystemInfoSync().platform == "android") {
+				this.licenseIDStr = "sendheartAppFace-face-android";
+			}
+			this.facescan();
+			// #endif
+		},
         methods: {
             ...mapMutations(['login']),
             initProvider() {
@@ -317,9 +329,6 @@
 					uni.reLaunch({
 					    url: '../hall/hall',
 					});
-					    //uni.navigateBack();
-					   //this.toMain(this.account);
-					   
 				  }else{
 					   uni.showToast({
 					       icon: 'none',
@@ -340,11 +349,20 @@
                 }
             },
 			bypasswd() {
-			    this.bypassword = !this.bypassword
+				var that = this
+			    that.bypassword = !that.bypassword
 			},
 			byscanface() {
-			    this.byface = true
-				this.onScanFace()
+				var that = this
+			    that.byface = true
+				console.log("onScanFace starting...")
+				/*
+				wx.navigateTo({
+					url: '/pages/login/face_login?byface=true'
+				});
+				*/
+				that.onScanFace(true)
+				
 			},
 			
 			getcode() {
@@ -386,7 +404,6 @@
 								  duration:2000,
 							});
 						}
-						 
 			          }
 			        })
 			},
@@ -407,7 +424,7 @@
 				}
 				if (val.index == 1) {
 					that.byface = false
-					that.onScanFace()
+					that.onScanFace(false)
 				}
 			},
 			
@@ -431,6 +448,7 @@
 			},
 		
 			async checkPermission(code) {
+				console.log("checkPermission starting...");
 				let status_camera = permision.isIOS ? await permision.requestIOS('camera') :
 					await permision.requestAndroid('android.permission.CAMERA');
 				if (status_camera === null || status_camera === 1) {
@@ -475,18 +493,17 @@
 					})
 				}
 				let status = (status_camera && status_WRITE_EXTERNAL_STORAGE && status_READ_EXTERNAL_STORAGE)?1:0
+				console.log("checkPermission ended...status:",status);
 				return status;
 			},
 			
-			// #endif
 			  
-			onScanFace:function () {
+			onScanFace(byface) {
+				console.log("onScanFace started...");
 				var that  = this 
-				var byface = that.byface
-				
-				var isLivenessRandom = that.byface?0:1
-				console.error("tagg.onScanFace");
-			 
+				//var byface = that.byface
+				var isLivenessRandom = byface?0:1
+		
 				var ary = [];
 				for (var i = 0; i < that.face_items.length; i++) {
 					var face_items = that.face_items[i];
@@ -495,14 +512,14 @@
 					}
 				}
 				var actionAry = byface?'':ary
-			
+				console.log("onScanFace started...");
 				if (uni.getSystemInfoSync().platform == "android") {//安卓
-					that.licenseIDStr = getApp().globalData.face_licenseIDAndroid;
+					console.log("onScanFace android starting...",that.licenseIDStr);
 					if(byface){
 						lyBDFaceAuth.scanFace({
 							licenseID:that.licenseIDStr?that.licenseIDStr:'sendheartAppFace-face-android',
-							//actionAry:actionAry,//不传无动作
-							//isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
+							actionAry: [], //不传无动作
+							isLivenessRandom: that.isLivenessRandom, //不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
 							txtColor: that.txtColor, //文字颜色
 							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
@@ -528,24 +545,24 @@
 						});
 					}
 				}else if (uni.getSystemInfoSync().platform == "ios") {//苹果
-					that.licenseIDStr = getApp().globalData.face_licenseIDIOS;
-					if(byface){
-						lyBDFaceAuth.scanFace({
-							licenseID:that.licenseIDStr?that.licenseIDStr:'sendheartAppFace-face-ios',
-							//actionAry:actionAry,//不传无动作
-							//isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
-							isSound:1,//不传默认有声音，0无声，1有声
-							txtColor: that.txtColor, //文字颜色
-							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
-							roundColor: that.roundColor ,//圆的颜色
-						}, result => {
-								console.log('file://' + result.imgPath);
-								that.faceimage = 'file://' + result.imgPath ;
-								that.upload() ;
-							});
-					}else{
+					if(byface){	
+						console.log("onScanFace ios byface starting...",that.licenseIDStr);
 						lyBDFaceAuthIOS.scanFace({
-							licenseID:that.licenseIDStr?that.licenseIDStr:'sendheartAppFace-face-ios',
+							licenseID: that.licenseIDStr, //安卓，iOS后缀不一样
+							actionAry: [], //不传无动作
+							isLivenessRandom: that.isLivenessRandom, //不传默认有序，0有序，1随机
+							isSound: that.isSound, //不传默认有声音，0无声，1有声，iOS无效
+							txtColor: that.txtColor, //文字颜色
+							bgColor: that.bgColor,  //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
+							roundColor: that.roundColor //圆的颜色
+						}, result => {
+							that.faceimage64 = result.bestImgBase64.replace(/[\r\n]/g, "") ;
+							that.upload() ;
+						});
+					}else{	
+						console.log("onScanFace.ios onScanFace VIP starting...license ID:",that.licenseIDStr);
+						lyBDFaceAuthIOS.scanFace({
+							licenseID:'sendheartAppFace-face-ios',
 							actionAry:actionAry,//不传无动作
 							isLivenessRandom:isLivenessRandom,//不传默认有序，0有序，1随机
 							isSound:1,//不传默认有声音，0无声，1有声
@@ -553,15 +570,13 @@
 							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
 							roundColor: that.roundColor ,//圆的颜色
 							}, result => {
-								console.log('file://' + result.imgPath);
-								that.faceimage = 'file://' + result.imgPath ;
+								that.faceimage64 = result.bestImgBase64.replace(/[\r\n]/g, "") ;
 								that.upload() ;
 						});
 					}
 				}
-				
-				
 			},
+			//#endif
 			
 			upload: function () {
 			  var that = this;
@@ -571,72 +586,82 @@
 			  var upload_type = that.byface?'face_login':'face_reg'
 			  
 			  if(upload_type=='face_login'){
-				var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
-				  // 从本地加载Bitmap图片
-				bitmapFaceLogin.load(faceimage, function() {
-					//console.log('加载图片成功');
-					var base4 = bitmapFaceLogin.toBase64Data();
-					//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
-					that.faceimage64 = base4.replace(/[\r\n]/g, ""); //显示图片
-					that.my_login() ;
-				}, function(e) {
-				  	//console.log('加载图片失败：' + JSON.stringify(e));
-					uni.showToast({
-						title: '加载图片失败！'+JSON.stringify(e),
-						duration: 2000
-					});
-				});
+				  //#ifdef APP-PLUS
+				  if(uni.getSystemInfoSync().platform != "ios"){
+					  var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
+					    // 从本地加载Bitmap图片
+					  bitmapFaceLogin.load(faceimage, function() {
+					  	//console.log('加载图片成功');
+					  	var base4 = bitmapFaceLogin.toBase64Data();
+					  	//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
+					  	that.faceimage64 = base4.replace(/[\r\n]/g, ""); //显示图片
+					  
+					  }, function(e) {
+					    	//console.log('加载图片失败：' + JSON.stringify(e));
+					  	uni.showToast({
+					  		title: '加载图片失败！'+JSON.stringify(e),
+					  		duration: 2000
+					  	});
+					  });
+				  }
+				  that.my_login() ;
+				//#endif
 				
 			  }else{
-			  	uni.uploadFile({
-			  	  url: uploadurl,
-			  	  filePath: faceimage,
-			  	  name: 'wechat_upimg',
-			  	  //formData: adds,
-			  	  formData: {
-			  	    latitude: encodeURI(0.0),
-			  	    longitude: encodeURI(0.0),
-			  	    type: encodeURI(upload_type),
-			  	    city: encodeURI('杭州'),
-			  	    prov: encodeURI('浙江'),
-			  	    name: encodeURI(face) // 名称
-			  				
-			  	  },
-			  	  // HTTP 请求中其他额外的 form data
-			  	  success: function (res) {
-			  	    var retinfo = JSON.parse(res.data.trim());
-			  					  var byface = that.byface ;
-			  	    if (retinfo['status'] == "y") {
-			  	      //console.log('VIP刷脸图片上传完成');
-						that.faceurl = retinfo['result']['img_url']
-						that.update_userinfo();
-			  	    }else{
-			  			uni.showToast({
-							title: '系统错误！'+retinfo['info'],
-							duration: 2000
-			  			});
-			  		}
-			  	  }
-			  	});
+				  if(uni.getSystemInfoSync().platform != "ios"){
+					  uni.uploadFile({
+					    url: uploadurl,
+					    filePath: faceimage,
+					    name: 'wechat_upimg',
+					    //formData: adds,
+					    formData: {
+					      latitude: encodeURI(0.0),
+					      longitude: encodeURI(0.0),
+					      type: encodeURI(upload_type),
+					      city: encodeURI('杭州'),
+					      prov: encodeURI('浙江'),
+					      name: encodeURI(face) // 名称
+					  			
+					    },
+					    // HTTP 请求中其他额外的 form data
+					    success: function (res) {
+					      var retinfo = JSON.parse(res.data.trim());
+					  				  var byface = that.byface ;
+					      if (retinfo['status'] == "y") {
+					        //console.log('VIP刷脸图片上传完成');
+					  		that.faceurl = retinfo['result']['img_url']
+					  		
+					      }else{
+					  		uni.showToast({
+					  			title: '系统错误！'+retinfo['info'],
+					  			duration: 2000
+					  		});
+							return 
+						  }
+					    }
+					  });
+				  }
+				  that.update_userinfo();
 			  }
 			},
 			
 			update_userinfo: function () {
-			  var that = this;
-			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
-			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
-			  var faceurl = that.faceurl? that.faceurl:'';
-			  var shop_type = that.shop_type
-			
-			  uni.request({
-			    url: weburl + '/api/client/update_name',
-			    method: 'POST',
-			    data: {
-			      username: username,
-			      access_token: token,
-				  type:2,   //1获取手机号 2vip认证
-				  shop_type: shop_type,
-			      faceurl: faceurl,
+				var that = this;
+				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
+				var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
+				var faceurl = that.faceurl? that.faceurl:'';
+				var shop_type = that.shop_type
+				var faceimage64 = that.faceimage64
+				uni.request({
+					url: weburl + '/api/client/update_name',
+					method: 'POST',
+					data: {
+					username: username,
+					access_token: token,
+					type:2,   //1获取手机号 2vip认证
+					shop_type: shop_type,
+					faceurl: faceurl,
+					faceimage64:faceimage64
 			    },
 			    header: {
 			      'Content-Type': 'application/x-www-form-urlencoded',
@@ -678,16 +703,29 @@
 			    }
 			  });
 			},
+			/*
+			judgeIosPermission: function(permisionID) {
+				var result = permijs.judgeIosPermission(permisionID)
+				if (result) {} else {
+					permijs.gotoAppPermissionSetting();
+					uni.showToast({
+						title: '请打开权限，否则无法使用',
+						icon: 'none'
+					});
+				}
+				console.log("lygg.result=" + result);
+			},
+			*/
         },
         onReady() {
             this.initPosition();
             this.initProvider();
 			this.username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
-			 
 			// #ifdef APP-PLUS
-			this.facescan();
+			
 			//#endif
         }
+		
     }
 </script>
 

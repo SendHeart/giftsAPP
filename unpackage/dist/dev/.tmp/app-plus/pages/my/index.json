@@ -1,0 +1,7 @@
+{
+  "titleNView": false,
+  "usingComponents": {
+    "u-parse": "/components/uParse/src/wxParse",
+    "uni-popup": "/components/uni-popup/uni-popup"
+  }
+}

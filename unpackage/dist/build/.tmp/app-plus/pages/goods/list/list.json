@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "mescroll-uni": "/components/mescroll-diy/mescroll-beibei",
+    "pd-list": "/pages/goods/list/pd-list"
+  }
+}

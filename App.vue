@@ -198,14 +198,14 @@
 						Vue.prototype.CustomBar = e.statusBarHeight + 45;
 					};
 					// #endif
-			
+								
 					// #ifdef MP-WEIXIN
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					let custom = wx.getMenuButtonBoundingClientRect();
 					Vue.prototype.Custom = custom;
 					Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
 					// #endif		
-			
+								
 					// #ifdef MP-ALIPAY
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
@@ -344,7 +344,7 @@
     @import './common/uni.css';
 	
     page {
-        background-color: #F4F5F6;
+        background-color: #1d1d1d !important;;
         height: 100%;
         font-size: 28upx;
         line-height: 1.8;

@@ -119,6 +119,7 @@ page {
 	margin: 4px;
 	border-bottom: 1px solid #eee;
 	line-height: 28px;
+	background-color: #fff;
 }
 
 .cell:last-child {

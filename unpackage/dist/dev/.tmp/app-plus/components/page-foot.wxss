@@ -1,0 +1,13 @@
+
+.page-share-title {
+	text-align: center;
+	font-size: 30rpx;
+	color: #BEBEBE;
+	padding: 20rpx 0;
+}
+.submit {
+	/*
+	border: 1upx solid #BEBEBE;
+	*/
+}
+

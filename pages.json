@@ -1448,7 +1448,8 @@
         "navigationStyle": "default",
         //"enablePullDownRefresh": false,
         "app-plus": {
-          "animationType": "pop-in"
+          "animationType": "pop-in",
+		  "background":"#1d1d1d"
         }
     },
     "tabBar": {

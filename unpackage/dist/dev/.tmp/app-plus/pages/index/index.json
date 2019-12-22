@@ -1,0 +1,8 @@
+{
+  "titleNView": false,
+  "usingComponents": {
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar",
+    "mescroll-uni": "/components/mescroll-diy/mescroll-beibei"
+  }
+}

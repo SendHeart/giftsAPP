@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "求赠礼物",
+  "usingComponents": {
+    "uni-popup": "/components/uni-popup/uni-popup"
+  }
+}
