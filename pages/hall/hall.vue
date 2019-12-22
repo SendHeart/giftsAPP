@@ -149,8 +149,8 @@
 				  <form @submit="formSubmit" :hidden="!buyhidden1" data-name="buymyself" data-type="1" report-submit="true">
 				    <view class="buttonwrap">
 				      <button class="send-button" formType="submit">
-				        <image src="../../static/images/buynow.png"></image>
-				        立即自购
+				        <image src="../../static/btn_add.png"></image>
+				        添加礼物
 					  </button>
 				    </view>
 				  </form>
