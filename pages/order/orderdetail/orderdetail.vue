@@ -2,11 +2,12 @@
 <view>
 <view class="banner" style>
   <text class="status1" v-if="send_rcv=='send' && gift_status==2 && order_status<2 && order_shape!=5 && order_shape!=4">对方已接受,待付款</text>
-  <text class="status1" v-if="send_rcv=='send' && gift_status==2 && order_status>=2 && order_shape!=5&& order_shape!=4">礼物寄送中</text>
+  <text class="status1" v-if="send_rcv=='send' && gift_status==2 && order_status>=2 && order_status<4 && order_shape!=5&& order_shape!=4">礼物寄送中</text>
   <text class="status2" v-if="send_rcv=='send' && order_status<=2 && gift_status==1">对方未接受</text>
+  <text class="status2" v-if="send_rcv=='send' && order_status==4 && gift_status==1">对方已收货</text>
   <text class="status2" v-if="send_rcv=='send' && gift_status==0">未送出</text>
   <text class="status1" v-if="send_rcv=='receive' && gift_status==2 && order_status<2 && order_shape!=5 && order_shape!=4">已接受,对方未付款</text>
-  <text class="status1" v-if="send_rcv=='receive' && gift_status==2 && order_status>=2 && order_shape!=5 && order_shape!=4">礼物寄送中</text>
+  <text class="status1" v-if="send_rcv=='receive' && gift_status==2 && order_status>=2  && order_status<4 && order_shape!=5 && order_shape!=4">礼物寄送中</text>
 </view>
 <view class="container">
   <view class="order-item" v-for="(item, index) in orders" :key="index">
@@ -14,6 +15,7 @@
     <view class="order-detail-text">
       <text>{{(order_shape!=5 && order_shape!=4)?'礼物单号:':'订单号:'}}</text>
       <text>{{order_no}}</text>
+	  <text class="smallbtn2" style="border: none;margin:0rpx auto;" @tap="copyorderinfo(item)">复制订单信息</text>
     </view>
     <view v-for="(mapping, index2) in item['order_sku']" :key="index2" class="carts-item" @tap="showGoods" :data-sku-id="mapping.id" :data-goods-id="mapping.goods_id" :data-goods-name="mapping.goods_name" :data-goods-shape="mapping.shape">
       <view>
@@ -343,6 +345,21 @@ export default {
     };
   },
   methods: {
+	copyorderinfo: function (e) {
+	    var that = this;
+	    var order_info_no = e.order_no?'订单:'+e.order_no:'';
+	    var order_info_num = e.order_sku[0]['sku_num'] ? ' 数量:' +  e.order_sku[0]['sku_num'] : ''
+	    var order_info_goodsname = e.order_sku[0]['goods_name'] ? ' 商品:' + e.order_sku[0]['goods_name'] : ''
+	    var order_info = order_info_no + order_info_num + order_info_goodsname
+		//console.log('copyorderinfo success data:',order_info);
+	    uni.setClipboardData({
+	        data: order_info,
+	        success: function () {
+	            console.log('copyorderinfo success data:',order_info);
+	        }
+	    });
+	},
+	
     pageScrollToBottom: function () {
       wx.createSelectorQuery().select('#j_page').boundingClientRect(function (rect) {
         // 使页面滚动到底部

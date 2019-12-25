@@ -210,7 +210,7 @@ export default {
 	  },
 	  upOption:{
 	  	auto:false, // 不自动加载
-	  	onScroll:true,
+	  	onScroll:false,
 	  	page: {
 	  	 	num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
 	  	 	size: 10, // 每页数据的数量
@@ -300,10 +300,9 @@ export default {
     orderSearch: function () {
       var that = this;
       console.log('orderSearch keyword:', that.keyword);
-      that.setData({
-        page: 1,
-		orders:[],
-      });
+    
+	  that.page = 1 ;
+	  that.orders = [] ;
       //that.reloadData();
 	  this.isInit = true; // 标记为true
 	  this.mescroll.triggerDownScroll();
@@ -527,14 +526,15 @@ export default {
 		that.hiddenmore = true
 		that.giftflag = giftflag
 		that.all_rows = 0 
-		that.page = 0 
+		that.page = 0
 		that.page_num = 1
       
 	  console.log('tab:' , tab, ' TabCur:',TabCur, 'giftflag:', giftflag);
 
       if (that.orders.length == 0) {
 	   that.isInit = true; // 标记为true
-	   that.mescroll.triggerDownScroll();
+	   that.mescroll.triggerUpScroll();
+	   
         //that.reloadData();
       }
     },
@@ -680,6 +680,9 @@ export default {
 						that.orders_show = []
 						that.all_rows = 0
 					}
+					//that.mescroll.endErr();
+					successCallback && successCallback(res.data.status);
+					return;
 					
 		    } else {
 		      // 存储地址字段

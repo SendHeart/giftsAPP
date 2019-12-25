@@ -145,23 +145,48 @@
 				      打包送出
 					</button>
 				  </form>
-				  
-				  <form @submit="formSubmit" :hidden="!buyhidden1" data-name="buymyself" data-type="1" report-submit="true">
-				    <view class="buttonwrap">
-				      <button class="send-button" formType="submit">
-				        <image src="../../static/btn_add.png"></image>
-				        添加礼物
-					  </button>
-				    </view>
-				  </form>
+				  <view v-if="!carts[0]">
+					<form @submit="formSubmit" :hidden="!buyhidden1" data-name="pickgift" data-type="1" report-submit="true">
+					  <view class="buttonwrap">
+					    <button class="send-button" formType="submit">
+					      <image src="../../static/btn_add.png"></image>
+					      添加礼物
+						</button>
+					  </view>
+					</form>
+				  </view>
+				  <view v-if="carts[0]">
+				  	<form @submit="formSubmit" :hidden="!buyhidden1" data-name="buymyself" data-type="2" report-submit="true">
+				  		<view class="buttonwrap">
+				  			<button class="send-button" formType="submit">
+				  				<image src="../../static/images/buynow.png"></image>
+				  				立即自购
+				  			</button>
+				  		</view>
+				  	</form>
+				  </view>
 				</view>
-				
+				<view v-if="friends[0]" class="recomment-title" @tap="bindPickFriends">
+				  <text>我的好友<text class="title_ex"></text></text>
+				  <text class="more">更多...</text>
+				</view>
+				<view v-if="friends[0]" class="top-bar-list">
+					<scroll-view scroll-x="true" @scroll="getleft" :scroll-into-view="'v_' + toView" class="top-bar">
+						<block v-for="(item, index) in friends" :key="index">
+							<view :id="'v_' + index"  class="top-bar-item" @tap="bindFriendinfo(item)" >
+								<view class="friend-image">
+									<image class="friend-image-headimg" :src=item.wx_headimg mode="aspectFill"></image>
+									<text>{{item.wx_nickname}}</text>
+								</view>
+							</view>
+						</block>
+					</scroll-view>
+				</view>
 				<view class="recomment-title" @tap="bindPickGoods">
 				  <text>精选清单<text class="title_ex">达人推荐</text></text>
 				  <text class="more">更多...</text>
 				</view>
 				<view class="middle-goods">
-				
 				  <view v-if="middle1_img" class="image-btn" @tap="bindMiddleGoods" data-goods-type="1" :data-middle-title="middle1_title" style="border-top-left-radius:14rpx;">
 				    <view>
 				      <image class="middle-goods-image" :src="middle1_img"></image>
@@ -199,7 +224,6 @@
 				      <text class="middle-goods-btntips">{{middle4_note}}</text>
 				    </view>
 				  </view>
-				
 				</view>
 				<view v-if="pdList.length>0" class="recomment-title" @tap="bindPickGoods">
 				  <text>近期热门<text class="title_ex">大家都在送</text></text>
@@ -215,41 +239,6 @@
 		    <view class="t_image" @tap="messageCandel">
 		      <image class="t_image1" src="../../static/images/icon-no.png"></image>
 		    </view>
-		
-		    <!--右上角图标结束-->
-		
-		    <!--弹出框开始-->
-		    <!-- 红包 -->
-		    <!-- 
-		  <view wx:if="{{resp_message.message_type==1||resp_message.message_type==2}}" class="red-item" style="background-image:url('{{resp_message.image}}'); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;">
-		      <view class="bg_view">{{resp_message.title}}</view>  
-		      <text class="red-name">{{resp_message.message}}</text>
-		      <text class="red-value">{{resp_message.amount_type==1?'现金￥'+resp_message.amount+'元':'积分:'+resp_message.amount}}</text>
-		      <text class="red-content">{{resp_message.content}}</text>
-		      <text class="red-footer">{{resp_message.footer}}</text>
-		      <text class="red-dueday">{{resp_message.start_time?'(有效期:'+resp_message.start_time+'至':''}}{{resp_message.end_time?resp_message.end_time+')':''}}</text>
-		      -->
-		    <!-- 
-		      <view class="txtys">{{resp_message.message}}</view>
-		      -->
-		    <!--确定开始-->
-		    <!-- 
-		      <view class="txtsure">
-		        <view class="txtsurebg" bindtap="messageCandel">
-		          <text class="txtsurename">确定</text>
-		        </view>        
-		      </view>
-		      -->
-		    <!-- 确定结束-->
-		    <!-- 优惠券 -->
-		    <!-- 
-		  <view wx:if="{{resp_message.message_type==3}}" class="coupon-item" style="background-image:url('{{resp_message.image}}'); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;">
-		    <text class="coupon-name">{{resp_message.message}}</text>
-		    <text class="coupon-content">{{resp_message.content}}</text>
-		    <text class="coupon-footer">{{resp_message.footer}}</text>
-		    <text class="coupon-dueday">{{resp_message.start_time?'(有效期:'+resp_message.start_time+'至':''}}{{resp_message.end_time?resp_message.end_time+')':''}}</text>
-		  </view>
-		  -->
 		    <!-- 消息通知 -->
 		    <view v-if="main_prom_image" class="main_red" :style="'width:600rpx;height:683rpx;background-image:url(' + main_prom_image + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%; text-align: center;align-items: center;padding:20rpx;z-index:9999;'" @tap="messageConfirm">
 		      <!--
@@ -257,8 +246,32 @@
 		  -->
 		    </view>
 		  </view>
-		
-		  <!--弹出框结束-->
+		</view>
+		<view>
+			<uni-popup :show="!modalFriendinfoHidden" type="bottom" :custom="true" :mask-click="false">
+				<view class="uni-tip" style="z-index:9999;">
+					<view class="uni-tip-title">
+					{{friend_wx_nickname}}
+					</view>
+					<view class="uni-tip-content">
+						<view class="section">  
+							<view class="">{{friend_full_name?'姓名:'+friend_full_name:''}}</view>  
+						</view>
+						<view class="section">
+							<view class="">{{friend_tel?'联系方式:'+friend_tel:''}}</view>  
+						</view>
+						<view class="section">  
+							<view class="">{{friend_address?'地址：'+friend_address:''}}</view>  
+						</view>
+					</view>
+					<view class="uni-tip-group-button">
+						<view class="uni-tip-button" @tap="modalBindFriendinfocancel">取消</view>
+						<!--
+						<view class="uni-tip-button" @tap="modalBindFriendinfoconfirm">确定</view>
+						-->
+					</view>
+				</view>
+			</uni-popup>
 		</view>
 	</view>
 </template>
@@ -380,6 +393,13 @@ export default {
       windowHeight: 1100,
       carts: [],
       cartIds: [],
+	  friends: [],
+	  modalFriendinfoHidden:true,
+	  friend_wx_nickname :'',
+	  friend_full_name :'',
+	  friend_address:'',
+	  friend_tel :'',
+	  scrollLeft: 0,
       amount: 0,
       nickname: userInfo.nickName ,
       avatarUrl: userInfo.avatarUrl ,
@@ -393,6 +413,8 @@ export default {
       buyhidden1: false,
       buyhidden2: true,
       page: 1,
+	  friends_page:1,
+	  friends_pagesize:10,
       rpage_num: 1,
 	  isPush:false,
       toView: 0,
@@ -541,6 +563,7 @@ export default {
 	that.get_project_gift_para();
 	that.reloadData();
     that.sum();
+	//that.query_friends();
   },
   //事件处理函数
   onShow: function () {
@@ -553,6 +576,7 @@ export default {
     var page_type = that.page_type;
     var pages = getCurrentPages();
 	that.userInfo = userInfo ;
+	that.isOpenPush() ;
 	uni.getSystemInfo({
 	  success: function (res) {
 	    let winHeight = res.windowHeight;
@@ -566,6 +590,7 @@ export default {
 	});
     that.query_cart();
 	that.get_project_gift_para();
+	that.query_friends();
 	/*
 	setTimeout(() => {
 		that.isPush = push.isTurnedOnPush();
@@ -667,6 +692,42 @@ export default {
   	this.mescroll.triggerDownScroll();
   },
   methods: {
+	isOpenPush:function () {  
+		var UIApplication = plus.ios.import("UIApplication");  
+		var app = UIApplication.sharedApplication();  
+		var enabledTypes = 0;  
+		if (app.currentUserNotificationSettings) {  
+			var settings = app.currentUserNotificationSettings();  
+			enabledTypes = settings.plusGetAttribute("types");  
+			console.log("enabledTypes1:" + enabledTypes);  
+			if (enabledTypes == 0) {  
+				plus.nativeUI.confirm("推送设置没有开启，是否去开启？", function(e) {  
+					if (e.index == 0) {  
+						var NSURL2 = plus.ios.import("NSURL");  
+						var setting2 = NSURL2.URLWithString("app-settings:");  
+						var application2 = UIApplication.sharedApplication();  
+						application2.openURL(setting2);  
+						plus.ios.deleteObject(setting2);  
+						plus.ios.deleteObject(NSURL2);  
+						plus.ios.deleteObject(application2);  
+					}  
+				}, {  
+						"buttons": ["Yes", "No"],  
+						"verticalAlign": "center"  
+					});  
+				}  
+				plus.ios.deleteObject(settings);  
+			} else {  
+                    enabledTypes = app.enabledRemoteNotificationTypes();  
+                    if(enabledTypes == 0){  
+                        console.log("推送未开启!");  
+                    }else{  
+                        console.log("已经开启推送功能!")  
+                    }  
+				console.log("enabledTypes2:" + enabledTypes);  
+			}  
+			plus.ios.deleteObject(app);  
+	},
 	load: function() {
 		uni.createSelectorQuery().selectAll('.lazy').boundingClientRect((images) => {
 			images.forEach((image, index) => {
@@ -679,7 +740,13 @@ export default {
 	imageLoad: function(e) {
 		this.recommentslist[e.target.dataset.index].loaded = true
 	},
-	
+	//定位数据
+	getleft: function (e) {
+	  var that = this;
+	  var scrollLeft = that.scrollLeft
+	  that.scrollLeft = scrollLeft + 10;
+	  
+	},
     getMoreGoodsTapTag: function (e) {
       var that = this;
       var page = that.page  ;
@@ -1179,6 +1246,11 @@ export default {
 		  that.is_buymyself = 0
       } else if (form_name == 'buymyself') {
 		  that.is_buymyself = 1
+	  } else if (form_name == 'pickgift') {
+		wx.navigateTo({
+		  url: '/pages/list/list?username=' + username + '&token=' + token
+		});
+		return 
       }
 	
       that.$options.methods.bindCheckout(that.is_buymyself,that.carts,that.note,that.total);
@@ -1492,6 +1564,73 @@ export default {
 		
       });
     },
+	bindFriendinfo: function (e) {
+	    var that = this
+	    that.friend_wx_nickname = e.wx_nickname
+	    that.friend_full_name = e.full_name
+	    that.friend_address = e.address
+	    that.friend_tel = e.tel
+	      
+		that.modalFriendinfoHidden = !that.modalFriendinfoHidden
+	    console.log('bindFriendinfo() friend_full_name', friend_full_name, ' friend_address:', friend_address)
+	},  
+	modalBindFriendinfoconfirm: function () {
+		var that = this
+	  	that.modalFriendinfoHidden = !that.modalFriendinfoHidden
+	},
+	    //取消按钮点击事件  
+	modalBindFriendinfocancel: function () {
+	  	var that = this
+	  	that.modalFriendinfoHidden = !that.modalFriendinfoHidden
+	},
+	query_friends: function () {
+	  var that = this;
+	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+	  var shop_type = that.shop_type;
+	  var weburl = getApp().globalData.weburl;
+	  var friends_page  = that.friends_page
+	  var friends_pagesize = that.friends_pagesize 
+	  if (!username) {
+		return;
+	  } 
+	  uni.request({
+	    url: weburl + '/api/client/get_member_friends',
+	    method: 'POST',
+	    data: {
+	      username: username ? username : openid,
+	      access_token: token,
+		  type:3 ,  // 3送心礼物好友
+	      shop_type: shop_type,
+		  page:friends_page,
+		  pagesize:friends_pagesize,
+	    },
+	    header: {
+	      'Content-Type': 'application/x-www-form-urlencoded',
+	      'Accept': 'application/json'
+	    },
+	    success: function (res) {
+	     // console.log('hall query_friends:', res.data);
+	      if (!res.data.result) {
+	        return;
+	      }
+	
+	      var friends_list = res.data.result;
+	      var index = 0;
+	
+	      if(friends_list) {
+	        for (var i = 0; i < friends_list.length; i++) {
+	          if (friends_list[i]['wx_headimg'].indexOf("http") < 0) {
+	            friends_list[i]['wx_headimg'] = weburl + '/' + friends_list[i]['wx_headimg'];
+	          }
+	        }
+	      }
+		  that.friends = friends_list;
+		  console.log('hall query_friends friends:', that.friends);
+	    }
+	  })
+	},
 	// mescroll组件初始化的回调,可获取到mescroll对象
 	mescrollInit(mescroll) {
 		this.mescroll = mescroll;

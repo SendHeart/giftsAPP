@@ -333,7 +333,7 @@ export default {
 	    //console.log('orderSearch keyword:', that.data.keyword)
 	    //that.reloadData()
 		this.isInit = true; // 标记为true
-		this.mescroll.triggerDownScroll();
+		this.mescroll.triggerUpScroll();
 	},
 	
 	goodsStatusInput: function (e) {
@@ -729,12 +729,16 @@ export default {
 			  	        icon: 'none',
 			  	        duration: 1500
 			  	      });
+					  //that.mescroll.endErr();
+					  
 			  	      setTimeout(function () {
 			  	        wx.navigateBack();
 			  	      }, 500);
 			  			that.isReloading =  false
 			  			that.orders =  []
 			  			that.all_rows  = 0 
+						successCallback && successCallback(res.data.status);
+						return;
 			  	    } else {
 			  	      // 存储地址字段
 						if (orderObjects) {

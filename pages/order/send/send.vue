@@ -432,7 +432,7 @@ export default {
 			  type: 5,
 			  title: title,
 			  scene: 'WXSceneSession',
-			  imageUrl: share_goods_image + '?x-oss-process=image/resize,w_200',
+			  imageUrl: shareimage_url,
 			  miniProgram: {
 			          id: miniprogram_id,  // gh_aefe7ce896f6
 			          path: '/pages/order/receive/receive?page_type=2&order_no=' + order_no + '&receive=1' + '&goods_shape=' + goodsshape + '&goods_flag=' + goods_flag,

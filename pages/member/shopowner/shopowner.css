@@ -297,8 +297,8 @@ page {
   background: #1d1d1d;
   width: 100%;
   position: fixed;
-  top: 90rpx;
-  border-bottom: 1px solid #f2f2f2;
+  top: 100rpx;
+  border-bottom: 0px solid #f2f2f2;
   z-index: 999;
 }
 

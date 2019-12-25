@@ -468,7 +468,6 @@ export default {
           order_num: order_num ? order_num : 1,
           is_buymyself: is_buymyself ? is_buymyself : 0 ,//1自购礼品
 		  address_id:address_id,
-
         },
         header: {
           'Content-Type': 'application/x-www-form-urlencoded',
