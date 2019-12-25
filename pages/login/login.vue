@@ -326,9 +326,12 @@
 					uni.setStorageSync('user_type', res.data.result['user_type']);
 					uni.setStorageSync('user_level', res.data.result['user_level']);
 					uni.setStorageSync('userauth', userauth);
-					uni.reLaunch({
-					    url: '../hall/hall',
-					});
+					setTimeout(function () {
+					  uni.reLaunch({
+					      url: '../hall/hall',
+					  });
+					}, 300);
+					
 				  }else{
 					   uni.showToast({
 					       icon: 'none',
