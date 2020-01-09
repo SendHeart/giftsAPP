@@ -49,7 +49,7 @@
     </form>
   </view>
 </view>
-	<uni-popup :show="!notehidden" type="center" :custom="true" :mask-click="false">
+	<uni-popup :show="!notehidden" :type="share_type" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">
 			编辑分享语
@@ -67,7 +67,21 @@
 			</view>
 		</view>
 	</uni-popup>
-	
+	<!-- 底部分享弹窗 -->
+	<uni-popup ref="share" :type="share_type" :custom="true" >
+		<view class="uni-share">
+			<view class="uni-share-title">分享到</view>
+			<view class="uni-share-content">
+				<view v-for="(item, index) in shareInfo" :key="index" class="uni-share-content-box" @tap="share_to(item)">
+					<view class="uni-share-content-image">
+						<image :src="item.icon" class="image" />
+					</view>
+					<view class="uni-share-content-text">{{ item.text }}</view>
+				</view>
+			</view>
+			<view class="uni-share-btn" @click="share_cancel('share')">取消分享</view>
+		</view>
+	</uni-popup>
 </view>
 </template>
 
@@ -221,6 +235,50 @@ export default {
 	  isSaveImageToPhotosAlbum:false,
 	  userauth:userauth,
 	  userauth_shoper:0,
+	  share_type:"bottom",
+	  shareInfo: [{
+	  		text: '微信好友',
+	  		icon: '/static/images/wx_logo.png',
+	  		name: 'wxfriend'
+	  	},
+		{
+			text: '微信朋友圈',
+			icon: '/static/images/wx2_logo.png',
+			name: 'wxcomm'
+		},
+		{
+			text: 'APP推送',
+			icon: '/static/images/phone.png',
+			name: 'appshare'
+		}
+		/*
+	  	{
+	  		text: '支付宝',
+	  		icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-8.png',
+	  		name: 'wx'
+	  	},
+	  	{
+	  		text: 'QQ',
+	  		icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/gird-3.png',
+	  		name: 'qq'
+	  	},
+	  	{
+	  		text: '新浪',
+	  		icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-1.png',
+	  		name: 'sina'
+	  	},
+	  	{
+	  		text: '百度',
+	  		icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-7.png',
+	  		name: 'copy'
+	  	},
+	  	{
+	  		text: '其他',
+	  		icon: 'https://img-cdn-qiniu.dcloud.net.cn/uni-ui/grid-5.png',
+	  		name: 'more'
+	  	}
+		*/
+	  ]
     };
   },
 
@@ -508,6 +566,7 @@ export default {
 	shareToWXSenceTimeline: function () { //分享到朋友圈
 		var shareImage = this.shareImage
 		if(!shareImage) return ;
+		//#ifdef APP-PLUS
 		uni.share({
 		  provider: 'weixin',
 		  type: 2,
@@ -540,16 +599,7 @@ export default {
 				}
 		  }
 		})
-		/*
-		uni.chooseImage({
-	          count: 1,
-	          sizeType: ['compressed'],
-	          sourceType: ['album'],
-	          success: (res) => {
-	            
-	          }
-		}) 
-		*/
+		//#endif
 	},
 	shareToWXminiProgram: function () { //分享到微信小程序
 		var share_goods_name = this.share_goods_name?this.share_goods_name:'送心礼物分享' ;
@@ -559,6 +609,7 @@ export default {
 		var miniprogram_id = this.miniprogram_id ;
 		var shareImage = this.shareImage ;
 		share_goods_image = share_goods_image?share_goods_image:shareImage
+		//#ifdef APP-PLUS
 		if(plus.os.name === 'iOS'){
 			uni.share({
 			  provider: 'weixin',
@@ -620,17 +671,7 @@ export default {
 			  }
 			})
 		}
-		
-		/*
-		uni.chooseImage({
-	          count: 1,
-	          sizeType: ['compressed'],
-	          sourceType: ['album'],
-	          success: (res) => {
-	            
-	          }
-		}) 
-		*/
+		//#endif
 	},
 	
 	shareToAppPush: function () { //APP推送
@@ -691,6 +732,25 @@ export default {
         });
       }, 1000);
     },
+	share_cancel:function(type) {
+		this.$refs[type].close()
+	},
+	share_to(e) {
+		console.log('share_to:',e.text,e.name)
+		var that = this
+		var share_name = e.name
+		switch (share_name) {
+			case 'wxfriend':  //微信好友
+				this.shareToWXminiProgram() ;
+				break
+			case 'wxcomm'://微信朋友圈
+				this.shareToWXSenceTimeline() ;
+				break
+			case 'appshare'://微信朋友圈
+				this.shareToAppPush()() ;
+				break	
+		}
+	},
     formSubmit: function (e) {
       var that = this;
       var formId = e.detail.formId;
@@ -700,7 +760,9 @@ export default {
       if (form_name == 'eventSave') {
         that.eventSave();
       }else if(form_name == 'onShare'){
-		  that.shareAction();
+		 // that.shareAction();
+		 that.share_type="bottom" ;
+		 that.$refs['share'].open()
 	  }
 
       if (formId) that.submintFromId(formId);
@@ -1110,9 +1172,9 @@ export default {
       var that = this;
 	  var share_order_shape = that.share_order_shape + 0;
       if (share_order_shape == 4) return;
-      that.setData({
-        notehidden: !that.notehidden
-      });
+	  that.share_type = 'center' ;
+	  that.notehidden = !that.notehidden ;
+   
     },
     share_image_creat: function () {
       var that = this;

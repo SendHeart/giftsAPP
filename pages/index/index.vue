@@ -119,7 +119,7 @@ import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
 
 
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-var dateUtils = require('../../common/util.js').dateUtils;
+var dateUtils = require('../../common/util.js');
 var weburl = getApp().globalData.weburl;
 var appid = getApp().globalData.appid;
 var appsecret = getApp().globalData.secret;

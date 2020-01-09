@@ -154,9 +154,33 @@
 			}
 		},
 		{
+			"path": "pages/member/friends/friends",
+			"style": {
+				"navigationBarTitleText": "我的好友"
+			}
+		},
+		{
+			"path": "pages/member/friendinfo/friendinfo",
+			"style": {
+				"navigationBarTitleText": "好友信息"
+			}
+		},
+		{
+			"path": "pages/member/friendinfoedit/friendinfoedit",
+			"style": {
+				"navigationBarTitleText": "好友记录"
+			}
+		},
+		{
 			"path": "pages/customerservice/customerservice",
 			"style": {
 				"navigationBarTitleText": "送心客服"
+			}
+		},
+		{
+			"path": "pages/livepush/livepush",
+			"style": {
+				"navigationBarTitleText": "送心直播"
 			}
 		},
 		
@@ -277,8 +301,8 @@
 				"backgroundTextStyle": "dark",
 				"navigationBarTitleText": "全部评价"
 			}
-		},
-		 
+		}
+		 /*,
 		{
 		    "path": "pages/tabBar/component/component",
 		    "style": {
@@ -344,6 +368,7 @@
                 }
             }
         },
+		
         {
             "path": "pages/component/view/view",
             "style": {
@@ -574,7 +599,9 @@
                 "navigationBarTitleText": "问题反馈"
             }
         }
+		*/
     ],
+	/*
     "subPackages": [{
             "root": "pages/API",
             "pages": [{
@@ -1439,6 +1466,7 @@
             ]
         }
     ],
+	*/
     "globalStyle": {
         "backgroundTextStyle": "light",
         "navigationBarTextStyle": "white",

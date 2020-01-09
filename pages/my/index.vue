@@ -1,6 +1,7 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
 	<view class="status_bar"></view>
+	<view class="userinfo-mid">{{m_id?'ID:'+m_id:''}}</view>
 	<view class="userinfo">  
 		<image class="userinfo-avatar" :src="(avatarUrl?avatarUrl:default_avatar)" background-size="cover"  @click.stop="chooseImage(0)"></image>
 		<view class="userinfo-nickname">
@@ -20,6 +21,10 @@
 		<view  v-if="userauth_shoper==1" @click="navigateToShopowner" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
 			 <image src="/static/images/my_s.png" class="png" mode="aspectFit"></image>
 			 <text class="text-grey">我是店长</text>
+		</view>
+		<view  v-if="userauth_shoper==1" @click="bindPlayer" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
+			 <image src="/static/images/live.png" class="png" mode="aspectFit"></image>
+			 <text class="text-grey">我是主播</text>
 		</view>
 		<view @tap="scan" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
 		 	<image src="/static/code.png" class="png" mode="aspectFit"></image>
@@ -126,6 +131,7 @@ export default {
       share_art_image: weburl + '/uploads/share_art_image.jpg',
       nickname: userInfo.nickname ? userInfo.nickname : '匿名',
       avatarUrl: userInfo.avatarUrl,
+	  m_id:m_id,
       default_avatar: weburl + '/uploads/avatar.png',
       hideviewagreementinfo: true,
       agreementinfoshowflag: 0,
@@ -226,6 +232,7 @@ export default {
     var refer_id = options.mid ? options.mid : 0;
     var userInfo = uni.getStorageSync('userInfo');
 	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+	that.m_id = m_id
 	that.login_button = username?'重新登录':'登录' ;
     that.get_project_gift_para();
 	that.userauth = userauth ;
@@ -373,6 +380,55 @@ export default {
 	  var that = this;
 	  that.modalHiddenScan = false ;
 	  console.log('modalHiddenScan:' + that.modalHiddenScan);
+	},
+	bindPlayer: function () {
+		var that = this
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username');
+		var streamname = 'sendheart'
+		uni.request({
+		  url: weburl + '/api/client/get_tengxun_pushurl',
+		  method: 'POST',
+		  data: {
+		    username: username,
+		    access_token: token,
+			streamname:streamname,
+		    shop_type: shop_type
+		  },
+		  header: {
+		    'Content-Type': 'application/x-www-form-urlencoded',
+		    'Accept': 'application/json'
+		  },
+		  success: function (res) {
+			  console.log('bindPlayer  res:',res.data)
+			  if((res.data.status='y')){
+				  var result = res.data.result
+				  var pushurl = result.pushurl? result.pushurl:''
+				  var txSecret = result.txSecret?result.txSecret:''
+				  var txTime = result.txTime?result.txTime:''
+				  var liveid = result.liveid?result.liveid:'0'
+				  if(pushurl && txSecret && txTime){
+					 uni.navigateTo({
+					   url: '/pages/livepush/livepush?pushurl=' + pushurl+'&txSecret='+txSecret+'&txTime='+txTime+'&liveid='+liveid
+					 }) 
+				  }else{
+					uni.showToast({
+					    title: '暂无可用的直播室',
+					    icon: 'loading',
+					    duration: 2000
+					});
+				  }
+			  }else{
+				  console.log("bindPlayer 直播室查询失败"+res.data.info);
+				  uni.showToast({
+				    title: '直播室查询失败',
+				    icon: 'loading',
+				    duration: 2000
+				  });
+			  }
+		  }
+		});
+	   
 	},
     goBack: function () {
       var that = this;

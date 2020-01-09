@@ -886,7 +886,18 @@ page {
   text-align: right;
   display: none;
 }
-
+recomment-title button {
+  line-height: 60rpx;
+  text-align: center;
+  width: 150rpx;
+  height: 60rpx;
+  background-color: #E52445;
+  color: white;
+  font-size: 25rpx;
+  margin:0 auto;
+  border-radius: 10rpx;
+  padding:0 auto;
+}
 /*推荐商品列表头*/
 
 .item {

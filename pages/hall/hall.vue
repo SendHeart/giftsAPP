@@ -110,7 +110,7 @@
 						<text class="pick-goods-slogan">附赠留言</text>
 					</view>
 					<view class="" :hidden="notehidden" style="width: 96%;height:80; 1rpx; margin:0 auto;display: flex;flex-direction: row;color:#666;background: #ffff;">
-						<textarea @blur="bindTextAreaBlur" placeholder="送你一份礼物，愿你喜欢！" maxlength="56" style="height: 50rpx;line-height:50rpx; font-size:24rpx;" />
+						<textarea @blur="bindTextAreaBlur" @input="bindTextAreaBlur" placeholder="送你一份礼物，愿你喜欢！" maxlength="56" style="height: 50rpx;line-height:50rpx; font-size:24rpx;" />
 					</view>
 				</view>
 	
@@ -185,6 +185,9 @@
 				<view class="recomment-title" @tap="bindPickGoods">
 				  <text>精选清单<text class="title_ex">达人推荐</text></text>
 				  <text class="more">更多...</text>
+				  <!--
+				  <button type="primary" @tap.stop='bindPlayer'>看直播</button>
+				  -->
 				</view>
 				<view class="middle-goods">
 				  <view v-if="middle1_img" class="image-btn" @tap="bindMiddleGoods" data-goods-type="1" :data-middle-title="middle1_title" style="border-top-left-radius:14rpx;">
@@ -486,7 +489,7 @@ export default {
 	  pdList: [] ,// 数据列表
 	  isInit: false, // 列表是否已经初始化
 	  scrollY: 0
-    };
+    }
   },
 
   components: {
@@ -576,7 +579,9 @@ export default {
     var page_type = that.page_type;
     var pages = getCurrentPages();
 	that.userInfo = userInfo ;
-	that.isOpenPush() ;
+	//#ifdef APP-PLUS
+	if((plus.os.name=='iOS')) that.isOpenPush() ;
+	//#endif
 	uni.getSystemInfo({
 	  success: function (res) {
 	    let winHeight = res.windowHeight;
@@ -692,42 +697,46 @@ export default {
   	this.mescroll.triggerDownScroll();
   },
   methods: {
+	//#ifdef APP-PLUS
 	isOpenPush:function () {  
-		var UIApplication = plus.ios.import("UIApplication");  
-		var app = UIApplication.sharedApplication();  
-		var enabledTypes = 0;  
-		if (app.currentUserNotificationSettings) {  
-			var settings = app.currentUserNotificationSettings();  
-			enabledTypes = settings.plusGetAttribute("types");  
-			console.log("enabledTypes1:" + enabledTypes);  
-			if (enabledTypes == 0) {  
-				plus.nativeUI.confirm("推送设置没有开启，是否去开启？", function(e) {  
-					if (e.index == 0) {  
-						var NSURL2 = plus.ios.import("NSURL");  
-						var setting2 = NSURL2.URLWithString("app-settings:");  
-						var application2 = UIApplication.sharedApplication();  
-						application2.openURL(setting2);  
-						plus.ios.deleteObject(setting2);  
-						plus.ios.deleteObject(NSURL2);  
-						plus.ios.deleteObject(application2);  
-					}  
-				}, {  
-						"buttons": ["Yes", "No"],  
-						"verticalAlign": "center"  
-					});  
+		if(plus.os.name =='iOS'){
+			var UIApplication = plus.ios.import("UIApplication");
+			var app = UIApplication.sharedApplication();  
+			var enabledTypes = 0;  
+			if (app.currentUserNotificationSettings) {  
+				var settings = app.currentUserNotificationSettings();  
+				enabledTypes = settings.plusGetAttribute("types");  
+				console.log("enabledTypes1:" + enabledTypes);  
+				if (enabledTypes == 0) {  
+					plus.nativeUI.confirm("推送设置没有开启，是否去开启？", function(e) {  
+						if (e.index == 0) {  
+							var NSURL2 = plus.ios.import("NSURL");  
+							var setting2 = NSURL2.URLWithString("app-settings:");  
+							var application2 = UIApplication.sharedApplication();  
+							application2.openURL(setting2);  
+							plus.ios.deleteObject(setting2);  
+							plus.ios.deleteObject(NSURL2);  
+							plus.ios.deleteObject(application2);  
+						}  
+					}, {  
+							"buttons": ["Yes", "No"],  
+							"verticalAlign": "center"  
+						});  
 				}  
 				plus.ios.deleteObject(settings);  
 			} else {  
-                    enabledTypes = app.enabledRemoteNotificationTypes();  
-                    if(enabledTypes == 0){  
-                        console.log("推送未开启!");  
-                    }else{  
-                        console.log("已经开启推送功能!")  
-                    }  
-				console.log("enabledTypes2:" + enabledTypes);  
+				enabledTypes = app.enabledRemoteNotificationTypes();  
+				if(enabledTypes == 0){  
+					console.log("推送未开启!");  
+				}else{  
+					console.log("已经开启推送功能!")  
+				}  
+					console.log("enabledTypes2:" + enabledTypes);  
 			}  
 			plus.ios.deleteObject(app);  
+		}
 	},
+	//#endif
 	load: function() {
 		uni.createSelectorQuery().selectAll('.lazy').boundingClientRect((images) => {
 			images.forEach((image, index) => {
@@ -764,27 +773,26 @@ export default {
 	  }
 	  that.reloadData();
     },
-	/*
-	 // 获取滚动条当前位置
-	 scrolltoupper: function (e) {
-	   var that = this;
-	   var scrollTop = e.detail.scrollTop
-	 
-	   if ( scrollTop > 100) {
-	     this.setData({
-	       floorstatus: true
-	     });
-	 
-	     if (that.platform == 'ios') {
-	 		
-	     }
-	   } else {
-	     this.setData({
-	       floorstatus: false
-	     });
-	   } 
+	 bindPickFriends: function () {
+	    wx.navigateTo({
+	      url: '/pages/member/friends/friends'
+	    })
 	 },
-	 */
+
+	bindFriendinfo: function (e) {
+    var that = this
+    //var index = e.currentTarget.dataset.index
+    //var friends = that.friends
+    var friend_wx_nickname = e.wx_nickname 
+    var friend_full_name = e.full_name
+    var friend_address = e.address
+    var friend_tel = e.tel
+   
+    wx.navigateTo({
+      url: '/pages/member/friendinfo/friendinfo?friendinfo=' + JSON.stringify(e)
+    })
+    console.log('bindFriendinfo() friend_full_name', friend_full_name, ' friend_address:', friend_address)
+  },
 	 scroll: function(e) {
 	 	var that = this
 	 	var old_scrollTop = that.old.scrollTop
@@ -1564,16 +1572,7 @@ export default {
 		
       });
     },
-	bindFriendinfo: function (e) {
-	    var that = this
-	    that.friend_wx_nickname = e.wx_nickname
-	    that.friend_full_name = e.full_name
-	    that.friend_address = e.address
-	    that.friend_tel = e.tel
-	      
-		that.modalFriendinfoHidden = !that.modalFriendinfoHidden
-	    console.log('bindFriendinfo() friend_full_name', friend_full_name, ' friend_address:', friend_address)
-	},  
+	 
 	modalBindFriendinfoconfirm: function () {
 		var that = this
 	  	that.modalFriendinfoHidden = !that.modalFriendinfoHidden

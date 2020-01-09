@@ -629,11 +629,11 @@
 					    // HTTP 请求中其他额外的 form data
 					    success: function (res) {
 					      var retinfo = JSON.parse(res.data.trim());
-					  				  var byface = that.byface ;
+						  var byface = that.byface ;
 					      if (retinfo['status'] == "y") {
 					        //console.log('VIP刷脸图片上传完成');
 					  		that.faceurl = retinfo['result']['img_url']
-					  		
+					  		that.update_userinfo();
 					      }else{
 					  		uni.showToast({
 					  			title: '系统错误！'+retinfo['info'],
@@ -643,8 +643,9 @@
 						  }
 					    }
 					  });
+				  }else{
+					  that.update_userinfo();
 				  }
-				  that.update_userinfo();
 			  }
 			},
 			
