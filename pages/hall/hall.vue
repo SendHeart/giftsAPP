@@ -139,14 +139,16 @@
 				  </view>
 				</view>
 				<view class="btnconfirm">
-				  <form @submit="formSubmit" :hidden="buyhidden1" data-name="sendgift" data-type="0" report-submit="true">
-				    <button class="send-button" formType="submit">
-				      <image src="../../static/images/packed.png"></image>
-				      打包送出
-					</button>
-				  </form>
+					<view v-if="carts[0]">
+						<form @submit="formSubmit" :hidden="buyhidden1" data-name="sendgift" data-type="0" report-submit="true">
+						  <button class="send-button" formType="submit">
+						    <image src="../../static/images/packed.png"></image>
+						    打包送出
+											</button>
+						</form>
+					</view>
 				  <view v-if="!carts[0]">
-					<form @submit="formSubmit" :hidden="!buyhidden1" data-name="pickgift" data-type="1" report-submit="true">
+					<form @submit="formSubmit" data-name="pickgift" data-type="1" report-submit="true">
 					  <view class="buttonwrap">
 					    <button class="send-button" formType="submit">
 					      <image src="../../static/btn_add.png"></image>

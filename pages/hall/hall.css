@@ -41,7 +41,7 @@ page {
   height: 150rpx;
   overflow-y: hidden;
   background: #1D1D1D; 
-  z-index:999;
+  z-index:99;
   padding: 15rpx;
   margin-right:50rpx;
 }

@@ -655,7 +655,7 @@
 				var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
 				var faceurl = that.faceurl? that.faceurl:'';
 				var shop_type = that.shop_type
-				var faceimage64 = that.faceimage64
+				var faceimage64 = uni.getSystemInfoSync().platform == "ios"?that.faceimage64:''
 				uni.request({
 					url: weburl + '/api/client/update_name',
 					method: 'POST',
@@ -678,26 +678,6 @@
 							duration: 2000
 						});
 						uni.setStorageSync('user_level', res.data.result['user_level']);
-						
-						/*
-						var member_info = res.data.result ;
-						var userInfo = {
-							nickname:member_info.wx_nickname,
-							avatarUrl:member_info.wx_headimg,
-						}
-						  console.log('app login 用户基本信息:', res.data.result);
-						  uni.setStorageSync('userInfo', userInfo);
-						  uni.setStorageSync('username', res.data.result['username']);
-						  uni.setStorageSync('m_id', res.data.result['m_id']);
-						  uni.setStorageSync('user_phone', res.data.result['user_phone']);
-						  uni.setStorageSync('user_name', res.data.result['user_name']);
-						  uni.setStorageSync('user_gender', res.data.result['user_gender']);
-						  uni.setStorageSync('user_type', res.data.result['user_type']);
-						    
-						  uni.reLaunch({
-						      url: '../hall/hall',
-						  });
-						  */
 					}else{
 						uni.showToast({
 							title: res.data.info?res.data.info:'VIP认证失败！',
@@ -707,19 +687,6 @@
 			    }
 			  });
 			},
-			/*
-			judgeIosPermission: function(permisionID) {
-				var result = permijs.judgeIosPermission(permisionID)
-				if (result) {} else {
-					permijs.gotoAppPermissionSetting();
-					uni.showToast({
-						title: '请打开权限，否则无法使用',
-						icon: 'none'
-					});
-				}
-				console.log("lygg.result=" + result);
-			},
-			*/
         },
         onReady() {
             this.initPosition();
