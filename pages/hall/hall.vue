@@ -776,9 +776,14 @@ export default {
 	  that.reloadData();
     },
 	 bindPickFriends: function () {
+		 /*
 	    wx.navigateTo({
 	      url: '/pages/member/friends/friends'
 	    })
+		*/
+	    wx.switchTab({
+	         url: '/pages/member/friends/friends'
+	    });
 	 },
 
 	bindFriendinfo: function (e) {
