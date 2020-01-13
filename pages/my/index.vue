@@ -22,7 +22,7 @@
 			 <image src="/static/images/my_s.png" class="png" mode="aspectFit"></image>
 			 <text class="text-grey">我是店长</text>
 		</view>
-		<view  v-if="userauth_shoper==1" @click="bindPlayer" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
+		<view  v-if="userauth_shoper==1 || userauth_host==1" @click="bindPlayer" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
 			 <image src="/static/images/live.png" class="png" mode="aspectFit"></image>
 			 <text class="text-grey">我是主播</text>
 		</view>
@@ -201,6 +201,7 @@ export default {
       userInfo: userInfo,
 	  userauth_coupon:0,
 	  userauth_shoper:0,
+	  userauth_host:0,
 	  userauth_celebration:0,
 	  userauth_location:0,
 	  userauth_article:0,
@@ -238,6 +239,7 @@ export default {
 	that.userauth = userauth ;
 	that.userauth_coupon = userauth.coupon ;
 	that.userauth_shoper = userauth.shoper ;
+	that.userauth_host = userauth.host
 	that.userauth_celebration = userauth.celebration ;
 	that.userauth_article = userauth.article ;
 	that.userauth_location = userauth.location ;
@@ -285,6 +287,7 @@ export default {
 	that.userauth = userauth ;
 	that.userauth_coupon = userauth.coupon ;
 	that.userauth_shoper = userauth.shoper ;
+	that.userauth_host = userauth.host ;
 	that.userauth_celebration = userauth.celebration ;
 	that.userauth_article = userauth.article ;
 	that.userauth_location = userauth.location ;
