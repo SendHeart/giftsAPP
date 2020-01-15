@@ -651,11 +651,13 @@
 			
 			update_userinfo: function () {
 				var that = this;
-				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
+				//var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
+				var username = that.account?that.account:that.username
 				var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
 				var faceurl = that.faceurl? that.faceurl:'';
 				var shop_type = that.shop_type
 				var faceimage64 = uni.getSystemInfoSync().platform == "ios"?that.faceimage64:''
+				
 				uni.request({
 					url: weburl + '/api/client/update_name',
 					method: 'POST',
