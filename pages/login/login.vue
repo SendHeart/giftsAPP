@@ -264,7 +264,7 @@
 			  var avatarUrl = that.avatarUrl?that.avatarUrl:userInfo.avatarUrl
 			  var userauth = uni.getStorageSync('userauth');
 			  var faceurl = that.faceurl ;
-			  var faceimage64 = that.faceimage64 ;
+			  //var faceimage64 = that.faceimage64 ;
 			  var byface = that.byface ;
 			  var bypassword = that.bypassword
 			  var url = bypassword?weburl + '/api/web/user/login/user_login':weburl + '/api/web/user/login/user_xcx_login'
@@ -272,6 +272,7 @@
 			  var clientinfo = '' ;
 			  //#ifdef APP-PLUS
 				clientinfo = plus.push.getClientInfo() ; //用户推送信息
+				//console.log('my login faceimage64:',that.faceimage64)
 			  //#endif
 			  var username = that.account?that.account:that.username
 			  var vcode = that.vcode
@@ -293,7 +294,7 @@
 			      user_name: user_name,
 			      login_type: login_type,
 				  smscode:vcode,
-				  faceimage64:faceimage64,
+				  faceimage64:that.faceimage64,
 			      type: 8,
 			      shop_type: shop_type,
 				  clientinfo:JSON.stringify(clientinfo),
@@ -528,8 +529,8 @@
 							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
 							roundColor: that.roundColor ,//圆的颜色
 						}, result => {
-								console.log('file://' + result.imgPath);
-								that.faceimage = 'file://' + result.imgPath ;
+								console.log('file:/' + result.imgPath);
+								that.faceimage = 'file:/' + result.imgPath ;
 								that.upload() ;
 							});
 					}else{
@@ -542,8 +543,8 @@
 							bgColor: that.bgColor, //背景颜色，iOS设置无效，需要换图片facecover_new.png，路径 nativeplugins\longyoung-BDFaceAuth-iOS\ios\com.baidu.idl.face.faceSDK.bundle，具体看示例。
 							roundColor: that.roundColor ,//圆的颜色
 							}, result => {
-								console.log('file://' + result.imgPath);
-								that.faceimage = 'file://' + result.imgPath ;
+								console.log('file:/' + result.imgPath);
+								that.faceimage = 'file:/' + result.imgPath ;
 								that.upload() ;
 						});
 					}
@@ -562,7 +563,7 @@
 							that.faceimage64 = result.bestImgBase64.replace(/[\r\n]/g, "") ;
 							that.upload() ;
 						});
-					}else{	
+					}else{
 						console.log("onScanFace.ios onScanFace VIP starting...license ID:",that.licenseIDStr);
 						lyBDFaceAuthIOS.scanFace({
 							licenseID:'sendheartAppFace-face-ios',
@@ -593,21 +594,30 @@
 				  if(uni.getSystemInfoSync().platform != "ios"){
 					  var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
 					    // 从本地加载Bitmap图片
-					  bitmapFaceLogin.load(faceimage, function() {
-					  	//console.log('加载图片成功');
-					  	var base4 = bitmapFaceLogin.toBase64Data();
-					  	//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
-					  	that.faceimage64 = base4.replace(/[\r\n]/g, ""); //显示图片
-					  
-					  }, function(e) {
-					    	//console.log('加载图片失败：' + JSON.stringify(e));
-					  	uni.showToast({
-					  		title: '加载图片失败！'+JSON.stringify(e),
-					  		duration: 2000
-					  	});
-					  });
+					 var count = 0 
+					 that.faceimage64 = ''
+					 while(that.faceimage64=='' && count<3){ //重复获取3次
+						 count++ ;
+						 bitmapFaceLogin.load(faceimage, function() {
+						 	console.log('加载图片成功 faceimage:',faceimage,' count:',count);
+							var base64 = bitmapFaceLogin.toBase64Data();
+							//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
+							that.faceimage64 = base64.replace(/[\r\n]/g, ""); //显示图片
+							console.log('base64图片转换完成 count:',count);
+							that.my_login() ;
+						 }, function(e) {
+						 	console.log('加载图片失败：' + JSON.stringify(e));
+						 	uni.showToast({
+						 		title: '加载图片失败！'+JSON.stringify(e),
+						 		duration: 2000
+						 	});
+							return
+						 })
+					 }
+				  }else{
+					  that.my_login() ;
 				  }
-				  that.my_login() ;
+				  
 				//#endif
 				
 			  }else{
@@ -698,7 +708,6 @@
 			
 			//#endif
         }
-		
     }
 </script>
 

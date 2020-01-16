@@ -12,15 +12,31 @@
   <canvasdrawer :painting="painting" class="canvasdrawer" @getImage="eventGetImage"></canvasdrawer>
 </view>
 <view class="sentbtn">
-    <button @tap="shareToWeixin">分享</button>
+    <button @tap="shareAction">分享</button>
     <button @tap="eventSave">保存</button>
 </view>
+<!-- 底部分享弹窗 -->
+	<uni-popup :show="sharehidden" :type="share_type" :custom="true" >
+		<view class="uni-share">
+			<view class="uni-share-title">分享到</view>
+			<view class="uni-share-content">
+				<view v-for="(item, index) in shareInfo" :key="index" class="uni-share-content-box" @tap="share_to(item)">
+					<view class="uni-share-content-image">
+						<image :src="item.icon" class="image" />
+					</view>
+					<view class="uni-share-content-text">{{ item.text }}</view>
+				</view>
+			</view>
+			<view class="uni-share-btn" @click="share_cancel('share')">取消分享</view>
+		</view>
+	</uni-popup>
 </view>
 </template>
 
 <script>
 
 var util = require("utils/util.js");
+import uniPopup from '@/components/uni-popup/uni-popup.vue'
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
@@ -30,6 +46,8 @@ var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '
 var appid = getApp().globalData.appid;
 var secret = getApp().globalData.secret;
 var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
+var weburl = getApp().globalData.weburl;
+var miniprogram_id = getApp().globalData.miniprogram_id;
 var navList2_init = [{
   id: "gift_logo",
   title: "送礼logo",
@@ -49,6 +67,8 @@ export default {
     return {
       title_name: '二维码',
       title_logo: '/static/images/footer-icon-05.png',
+	  shareImage:weburl+'/uploads/sendheart_appdown.png',
+	  appdown_url:weburl + '/hall/appdown/index.html',
       weburl: weburl,
       appid: appid,
       secret: secret,
@@ -79,12 +99,27 @@ export default {
       windowHeight: "",
       windowWidth: "",
       dkheight: "",
-      loadingHidden: false
+      loadingHidden: false,
+	  sharehidden:false,
+	  share_type:"bottom",
+	  miniprogram_id:miniprogram_id,
+	  shareInfo: [{
+	  		text: '微信好友',
+	  		icon: '/static/images/wx_logo.png',
+	  		name: 'wxfriend'
+	  	},
+	  	{
+	  		text: '微信朋友圈',
+	  		icon: '/static/images/wx2_logo.png',
+	  		name: 'wxcomm'
+	  	},
+	  ]
     };
   },
 
   components: {
-    canvasdrawer
+    canvasdrawer,
+	uniPopup
   },
   props: {},
   onLoad: function (options) {
@@ -133,7 +168,7 @@ export default {
       share_activity_qrcode_cache: share_activity_qrcode,
       share_coupon_qrcode_cache: share_coupon_qrcode,
       share_member_qrcode_cache: share_activity_qrcode,
-	  isSaveImageToPhotosAlbum:false,
+	  isSaveImageToPhotosAlbum:false
     });
     wx.getSystemInfo({
       success: function (res) {
@@ -173,44 +208,145 @@ export default {
     }
   },
   methods: {
+	  /*
 	shareToWeixin: function (scene) {
-		if(!this.isSaveImageToPhotosAlbum){
-			this.eventSave();
+		uni.share({
+		  provider: 'weixin',
+		  type: 2,
+		  title: '送心礼物分享',
+		  scene: scene, //WXSceneSession分享到聊天界面  WXSenceTimeline分享到朋友圈  WXSceneFavorite分享到微信收藏
+		  imageUrl: res.tempFilePaths[0],
+		  success: (res) => {
+		    console.log(res)
+		    uni.showToast({
+		      title: '分享成功！'
+		    })
+		  },
+		  fail: (err) => {
+		    console.log(err)
+			uni.showModal({
+			    title: '分享失败',
+			    content: 'error:'+ JSON.stringify(err)
+			}) 
+		  }
+		})   
+	},
+	*/
+   share_cancel:function(type) {
+	this.sharehidden = false
+   },
+   share_to(e) {
+   	console.log('share_to:',e.text,e.name)
+   	var that = this
+   	var share_name = e.name
+   	switch (share_name) {
+   		case 'wxfriend':  //微信好友
+   			this.shareToWXminiProgram() ;
+   			break
+   		case 'wxcomm'://微信朋友圈
+   			this.shareToWXSenceTimeline() ;
+   			break
+   		case 'appshare'://微信朋友圈
+   			this.shareToAppPush()() ;
+   			break	
+   	}
+   },
+	shareAction() {
+		var that = this 
+		var itemList = ['微信朋友圈', '微信小程序']
+		that.share_type="bottom" ;
+		that.sharehidden = true
+	},
+	shareToWXSenceTimeline: function () { //分享到朋友圈
+		var shareImage = this.shareImage
+		var appdown_url = this.appdown_url
+		if(!shareImage) return ;
+		//#ifdef APP-PLUS
+		uni.share({
+		  provider: 'weixin',
+		  type: 0,
+		  href: appdown_url,
+		  title: '送心礼物',
+		  scene: 'WXSenceTimeline', //WXSceneSession分享到聊天界面  WXSenceTimeline分享到朋友圈  WXSceneFavorite分享到微信收藏
+		  imageUrl: shareImage,
+		  success: (res) => {
+		    console.log(res)
+		  },
+		  fail: (err) => {
+		    console.log(err)
+				var errMsg = err.errMsg
+				if(errMsg.share.fail=='客户端未安装'){
+					uni.showModal({
+					    title: '分享失败',
+					    content: '微信客户端未安装'
+					}) 
+				}else{
+					uni.showModal({
+					    title: '分享失败',
+					    content: errMsg.share.fail
+					}) 
+				}
+		  }
+		})
+		//#endif
+	},
+	shareToWXminiProgram: function () { //分享到微信小程序
+		var that = this
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var miniprogram_id = that.miniprogram_id ;
+		var shareImage = that.shareImage ;
+		//#ifdef APP-PLUS
+		if(plus.os.name === 'iOS'){
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  scene: 'WXSceneSession',
+			  title: '送心礼物',
+			  imageUrl:  'https://sendheart.dreamer-inc.com/uploads/sendheart_appdown.png',
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: 'pages/hall/hall?refername='+username,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+			
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					uni.showModal({
+					    title: '分享失败',
+					    content: 'error:'+ JSON.stringify(err)+' miniprogram_id:'+miniprogram_id
+					}) 
+			  }
+			})
+		}else{
+			uni.share({
+			  provider: 'weixin',
+			  type: 5,
+			  scene: 'WXSceneSession',
+			  title: '送心礼物',
+			  imageUrl: shareImage + '?x-oss-process=image/resize,w_200',
+			  miniProgram: {
+			          id: miniprogram_id,  // gh_aefe7ce896f6
+			          path: 'pages/hall/hall?refername='+username,
+			          type: 0,
+			          webUrl: 'http://uniapp.dcloud.io'
+			      },
+			  success: (ret) => {
+			    console.log(ret)
+			  },
+			  fail: (err) => {
+			    console.log(err)
+					uni.showModal({
+					    title: '分享失败',
+					    content: 'error:'+ JSON.stringify(err)+' miniprogram_id:'+miniprogram_id
+					}) 
+			  }
+			})
 		}
-		        uni.chooseImage({
-		          count: 1,
-		          sizeType: ['compressed'],
-		          sourceType: ['album'],
-		          success: (res) => {
-		            uni.share({
-		              provider: 'weixin',
-		              type: 2,
-		              title: '送心礼物分享',
-		              scene: scene, //WXSceneSession分享到聊天界面  WXSenceTimeline分享到朋友圈  WXSceneFavorite分享到微信收藏
-		              imageUrl: res.tempFilePaths[0],
-		              success: (res) => {
-		                console.log(res)
-		                uni.showToast({
-		                  title: '分享成功！'
-		                })
-						/*
-						uni.showModal({
-						    title: '分享成功',
-						    content: 'res:'+ JSON.stringify(res)
-						})
-						 */
-		              },
-		              fail: (err) => {
-		                console.log(err)
-						uni.showModal({
-						    title: '分享失败',
-						    content: 'error:'+ JSON.stringify(err)
-						}) 
-		              }
-		            })
-		          }
-		        })
-		        
+		//#endif
 	},
     goBack: function () {
       var pages = getCurrentPages();
@@ -293,7 +429,7 @@ export default {
     },
     eventDraw: function () {
 	// #ifdef APP-PLUS 
-		var fontSize = 30 
+		var fontSize = 30
 	// #endif 
 	// #ifndef APP-PLUS 
 		var fontSize = 20 
@@ -310,7 +446,7 @@ export default {
 
       var act_id = that.act_id ? that.act_id : ''; //
 
-      var act_title = that.act_title ? that.act_title : '开启礼物电商时代，200万人都在用的礼物小程序'; //
+      var act_title = that.act_title ? that.act_title : '开启礼物电商时代'; //
 
       var coupons = that.coupons;
       var coupons_json = that.coupons_json;
