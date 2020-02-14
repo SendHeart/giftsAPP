@@ -1,35 +1,33 @@
 <template>
     <view class="content">
 		<view class="butlist">
-			<view @click="back" class="buticon martp10">
+			<view @tap.stop="back" class="buticon martp10">
 				<image src="../../static/livepush/back2.png"></image>	
 				<view class="mar10">结束</view>				
 			</view>
-			<view @click="switchCamera" class="buticon martp10">
+			<view @tap.stop="switchCamera" class="buticon martp10">
 				<image src="../../static/livepush/reversal.png"></image>	
 				<view class="mar10">翻转</view>				
 			</view>
-			<view class="buticon" @click="startPusher">
+			<view class="live-buticon" @tap.stop="startPusher">
+				<image v-if="begin" src="../../static/images/liveplayer.png" class="live-player"></image>
+				<image v-if="!begin" src="../../static/images/liveplayer_s.png" class="live-player">{{contTime}}</image>
+				<!--
 				<view class="x_f"></view>
 				<view :class="begin==true?'givebegin':'give'" >{{contTime}}</view>
+				-->
 				<view class="pulse" v-if="begin"></view> 
 			</view>
 			<view class="buticon martp10" @click="danmuInfo">
 				<image src="../../static/livepush/beautiful.png"></image>	
 				<view class="mar10">查看</view>				
 			</view>
-			<view  class="buticon martp10">  <!--  v-if="begin==false" -->
+			<view  class="buticon martp10"> 
 				<picker :value="index" @change="bindPickerChange" :range="array" range-key='cont'>
 					<image src="../../static/livepush/countdown.png"></image>	
 					<view class="mar10" >倒计时</view>
 				</picker>	
 			</view>
-			<!--
-			<view @click="upload" class="buticon imartp10" v-if="begin">
-				<image src="../../static/livepush/yes.png"></image>	
-				<view class="mar10">完成</view>				
-			</view>			
-			-->
 		</view>
 		 
 		<uni-popup :show="danmuHidden" type="bottom" :custom="true" :mask-click="false">
@@ -144,11 +142,6 @@
 				}
 			});
 			this.queryDanmu()
-		/* 	plus.key.addEventListener("backbutton",()=>{
-				console.log("BackButton Key pressed!" );
-				//this.back()
-				return false
-			}); */
 		},
 		 onBackPress(){
 				this.back()
@@ -225,6 +218,7 @@
 								 })
 							 },1000) 
 							 that.live_status = 0
+							 that.pusher.close();//暂停推流
 							 that.update_liveroom()
 							//this.currentWebview=null
 						} else if (res.cancel) {
@@ -242,8 +236,8 @@
 				var page = pages[pages.length - 1];
 				// #ifdef APP-PLUS
 				var getcurrentWebview = page.$getAppWebview();
-				console.log(this.pages)
-				console.log(this.page)
+				//console.log('pages:',this.pages,' page:',this.page)
+				//console.log(this.page)
 				console.log(JSON.stringify(page.$getAppWebview()))
 				this.currentWebview=getcurrentWebview;
 				// #endif
@@ -294,7 +288,6 @@
 				}else{
 					that.beginlivepush()
 				}
-				
 			},
 			conttimejs(){
 				var that = this
@@ -316,12 +309,14 @@
 				var that = this 
 				that.indextu=0;//关闭计时
 				var live_push_url =  that.pushurl+'?txSecret='+that.txSecret+'&txTime='+that.txTime ;
-				console.log('beginlivepush live_push_url:',live_push_url)
+				console.log('beginlivepush begin:',that.begin,' pause:',that.pause)
 				if(that.begin==false){//未开启推流
 					that.begin=true;//显示录制动画
+					that.pause=false;//推流开关置为默认状态
 					// 设置推流服务器  ***此处需要通过ajax向后端获取
 					that.pusher.setOptions({
-						url: live_push_url //推流地址********************************* 此处设置推流地址
+						'url': live_push_url ,//推流地址********************************* 此处设置推流地址
+						'enable-camera': true,  
 					});
 					that.pusher.start();//推流开启
 					uni.showToast({
@@ -346,12 +341,16 @@
 						that.pause=true;//推流暂停
 						that.live_status = 3 //3暂停
 						that.pusher.pause();//暂停推流
+						/*
+						that.pusher.setStyles({
+							'enable-camera': false,  
+						});
+						*/
 						uni.showToast({
 							title: '暂停录制',
 							icon:'none',
 							duration: 2000,					 
 						});
-						
 						
 						//提示是否上传
 						//this.upload()
@@ -446,7 +445,8 @@
 			 	var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : ''
 			 	var liveid = that.liveid
 			 	var live_status = that.live_status
-			 	
+			 	var live_push_url =  that.pushurl+'?txSecret='+that.txSecret+'&txTime='+that.txTime ;
+				
 			 	uni.request({
 			 	  url: weburl + '/api/client/update_liveroom',
 			 	  method: 'POST',
@@ -457,6 +457,7 @@
 			 		live_status:live_status,
 			 	    access_token: token,
 			 	    shop_type: shop_type,
+					live_push_url:live_push_url,
 			 	  },
 			 	  header: {
 			 	    'Content-Type': 'application/x-www-form-urlencoded',
@@ -498,8 +499,8 @@
 		font-size: 23rpx;
 	}
 	.buticon{
-		height: 50px;
-		width: 50px;
+		height: 80upx;
+		width: 80upx;
 		color: #fff;
 		position: relative;
 		text-align: center;
@@ -514,6 +515,19 @@
 	.martp10{
 		margin-top: 5px;
 	}
+	
+	.live-buticon{
+		height: 80upx;
+		width: 80upx;
+		color: #fff;
+		position: relative;
+		text-align: center;
+	}
+	.live-buticon image{
+		height: 80upx;
+		width: 80upx;
+	}
+	/*
 	.give {
 		width: 60upx;
 		height: 60upx;
@@ -522,8 +536,8 @@
 		box-shadow: 0 0 22upx 0 rgb(252, 94, 20);
 	 	position: absolute; 
 		align-items: center;
-		left:11.8upx;
-		top:11.8upx; 
+		left:10.5upx;
+		top:10.5upx; 
 		font-size: 44upx;
 		line-height: 60upx;
 	}
@@ -534,20 +548,29 @@
 		border-radius: 20%;
 		box-shadow: 0 0 10upx 0 rgb(252, 94, 20);
 	 	position: absolute; 
-		left:11.8upx;
+		left:11.3upx;
 		top:11.8upx; 
 	}
 	.x_f{
-		/* border: 6upx solid #F44336; */
-		width: 80upx;
-		height: 80upx;
+		border: 6upx solid #F44336; 
 		background: #fff;
 		border-radius: 50%;
+		box-shadow: 0 0 28upx 0 rgb(251, 99, 24);
+		width: 80upx;
+		height: 80upx;
 		position: absolute;
 		text-align: center;
 		top:0;
 		left: 0;
-		box-shadow: 0 0 28upx 0 rgb(251, 99, 24);
+	}
+	*/
+	.live-player {
+		width: 50px;
+		height: 50px;
+		position: absolute;
+		text-align: center;
+		top:0;
+		left: 0;
 	}
 	
 	/* 产生动画（向外扩散变大）的圆圈  */

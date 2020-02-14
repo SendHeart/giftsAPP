@@ -1,18 +1,18 @@
 <template>
 <view>
 <view class="page-body" :style="((!modalGoodsHidden||!modalMemberHidden)?'opacity:0.8;':'')">
-  <view class="page-section tc">
-    <view class="goods-list">
-      <view class="live-title" @tap="focus_liveroom">
-        <image :src="live_logo" mode="aspectFit"></image>
-        <view class="live-title-text">
-          <text class="live-title-name">{{live_name}}</text>
-          <text style="color:#999;font-size:20rpx;">{{live_sub_name}}</text>
-        </view>
-        <button :style="(live_focus_status?'background-color:#1d1d1d;color:#f2f2f2':'')">关注</button>
-      </view>   
-      <label @tap="live_member_info"> 
-        <view class="live-member-image"> 
+	<view class="page-section tc">
+		<view class="goods-list" v-if="is_live">
+			<view class="live-title" @tap="focus_liveroom">
+				<image :src="live_logo" mode="aspectFit"></image>
+				<view class="live-title-text">
+				<text class="live-title-name">{{live_name}}</text>
+				<text style="color:#999;font-size:20rpx;">{{live_sub_name}}</text>
+			</view>
+			<button :style="(live_focus_status?'background-color:#1d1d1d;color:#f2f2f2':'')">关注</button>
+		</view>   
+		<label @tap="live_member_info"> 
+		<view class="live-member-image"> 
           <block v-for="(headiimg, headiimgIndex) in live_headimg" :key="headiimgIndex">
             <image :src="headiimg" :style="(headiimgIndex>0?'margin-left:-'+40*headiimgIndex+'rpx;':'')" mode="aspectFit"></image>
           </block>
@@ -20,30 +20,30 @@
         <text class="live-on">{{live_members_info}}</text>
       </label>
     </view>
-    <video id="myVideo" class="slide-image" direction="0" :src="videourl" controls :poster="live_poster" custom-cache="false" autoplay="true" objectFit="contain" @play="bindPlay" @error="playerror" @waiting="playwaiting" vslide-gesture="true">
-    </video>
-  </view>
+	<video id="myVideo" class="slide-image" direction="90" :style="(is_live?'height:'+dkheight+'px;':'')" :src="((is_live &&live_status == 3)?videourl:videourl)" :controls="(is_live?true:false)" :poster="live_poster" :show-center-play-btn="(is_live?true:true)" :enable-progress-gesture="(is_live?false:true)" custom-cache="false" autoplay="true" :objectFit="(is_live?'fill':'contain')" @play="bindPlay" @error="playerror" @waiting="playwaiting" @pause="playwaiting" @ended="playwaiting" vslide-gesture="false"></video>
+	<!-- <cu-video v-if="is_live" class="video" :video_list="videoList" /> -->
+	</view>
 </view>
 
 <view class="footer">
-  <view class="footer-left" hidden>
+  <view class="footer-left">
     <view class="footer-button" @tap="goodsinfo"> 
       <image class="goods-button" src="../../static/images/1.png"></image>
       <text class="goods-num">{{goods_num}}</text>
 	  </view>
-    <view class="footer-button" @tap="sendDanmu"> 
+    <view v-if="is_live" class="footer-button" @tap="sendDanmu"> <!--   -->
       <view class="danmu-list">
         <view class="danmu-button"></view>
         <image class="danmu-button-image" src="../../static/images/u72.png"></image>
       </view>
 	  </view>
-     <view v-if="is_hoster" class="footer-button" @tap="hoster_action"> 
+     <view v-if="is_hoster && is_live" class="footer-button" @tap="hoster_action"> 
       <view class="hoster-list">
          <image class="hoster-button" src="../../static/images/record.png"></image>
       </view>
 	  </view>
   </view>
-  <view class="footer-right" style>
+  <view class="footer-right" >
     <view class="footer-button" @tap="onShareAppMessage"> 
       <view class="share-list">
         <button class="share-button" open-type="share" formType="submit" @tap="onShareAppMessage"></button>
@@ -58,16 +58,60 @@
 	  </view>
   </view>
 </view>
+<uni-popup :show="!errorhidden" type="center" :custom="true" :mask-click="false">
+	<view class="uni-tip">
+		<view class="uni-tip-title">
+			{{errorTitile?errorTitile:'提示信息'}}
+		</view>
+		<view class="uni-tip-content">
+			<view style="height:80px;">
+				<view class="error-note">
+					<text style="margin-top:10rpx;font-size:26rpx;color:#333;">{{error_message}}</text>
+				</view>
+			</view>
+		</view>
+		<view class="uni-tip-group-button">
+			<view class="uni-tip-button" @tap="errorCancelPlay">退出</view>
+		</view>
+	</view>
+</uni-popup>
 
+<!--
 <view :hidden="errorhidden" style="z-index:999;">
-  <modal title="播放错误" :hidden="errorhidden" @confirm="errorConfirmPlay" @cancel="errorCancelPlay" confirm-text="重试" cancel-text="退出">
-    <view :style="'height:' + dkheight-520 + 'px;'">
-      <view class="note">
-        <text style="margin-top:10rpx;font-size:26rpx;color:#333;">{{error_message}}</text>
-      </view>
-    </view>
-  </modal>
+	<modal :title="(errorTitile?errorTitile:'提示信息')" :hidden="errorhidden" no-cancel="true" @confirm="errorCancelPlay" confirm-text="退出">
+		<view style="height:80px;">
+			<view class="error-note">
+				<text style="margin-top:10rpx;font-size:26rpx;color:#333;">{{error_message}}</text>
+			</view>
+		</view>
+	</modal>
 </view>
+-->
+
+<uni-popup :show="!modalMemberHidden" type="top" :custom="true" :mask-click="false">
+	<view class="uni-tip">
+		<view class="modalMemberitle">
+		  <text>{{live_members>0?'在线人数:'+live_members:''}}</text>
+		  <view class="member-return" @tap="modalMemberconfirm">
+		    <image style="width:36rpx;height:36rpx;border-radius:50%;" src="../../static/images/icon-no.png"></image>
+		  </view>
+		</view>
+		<view class="uni-tip-content">
+			<scroll-view class="member-container" :style="'height:' + dkheight-300 + 'px'" scroll-y @scroll="member_scrolltoupper" :scroll-top="member_scrollTop" @scrolltolower="getMoreMemberTapTag">
+			  <block v-for="(member, id) in live_memberList" :key="id">
+			  <view class="member-item" @tap="showMember" :data-m_id="member.m_id" :data-nickname="member.nickname" :data-wx_headimg="member.wx_headimg">
+			    <view>
+			      <image class="member-image" :src="member.wx_headimg" mode="aspectFit"></image>
+			    </view>
+			    <text class="member-title">{{member.wx_nickname}}</text>
+			  </view>
+			  </block>
+			</scroll-view>  
+		</view>
+	</view>
+</uni-popup>
+
+<!--
 <action-sheet :hidden="modalMemberHidden" @change="modalMemberconfirm" mask="true" maskClosable="true" :show="!modalMemberHidden" extClass="background:#333;" tops="40%">
   <view class="modalMemberitle">
     <text>{{live_members>0?'在线人数:'+live_members:''}}</text>
@@ -79,7 +123,7 @@
     <block v-for="(member, id) in live_memberList" :key="id">
     <view class="member-item" @tap="showMember" :data-m_id="member.m_id" :data-nickname="member.nickname" :data-wx_headimg="member.wx_headimg">
       <view>
-        <!-- 缩略图 -->
+        
         <image class="member-image" :src="member.wx_headimg" mode="aspectFit"></image>
       </view>
       <text class="member-title">{{member.wx_nickname}}</text>
@@ -87,6 +131,41 @@
     </block>
   </scroll-view>  
 </action-sheet>
+-->
+<uni-popup :show="!modalGoodsHidden" type="bottom" :custom="true" :mask-click="false">
+	<view class="uni-tip">
+		<view class="modalGoodsTitle">
+		  <text>{{goods_num>0?'商品数:'+goods_num:''}}</text>
+		  <view class="goods-return" @tap="modalGoodsconfirm"> 
+		    <image style="width:36rpx;height:36rpx;border-radius:50%;" src="../../static/images/icon-no.png"></image>
+		  </view>
+		</view> 
+		<view class="uni-tip-content">
+			<scroll-view class="goods-container" :style="'height:' + dkheight-300 + 'px'" scroll-y @scroll="goods_scrolltoupper" :scroll-top="goods_scrollTop" @scrolltolower="getMoreGoodsTapTag">
+			  <block v-for="(goods, id) in venuesItems" :key="id">
+			  <view class="goods-item" @tap="showGoods" :data-goods-id="goods.id" :data-goods-name="goods.name" :data-goods-org="goods.goods_org" :data-goods-shape="goods.shape" :data-goods-info="goods.act_info" :data-goods-price="goods.sell_price" :data-sale="goods.sale" :data-image="(goods.activity_image?goods.activity_image:goods.image)">
+			     <view>
+			      <view class="goods-no">{{goods.goodsno}}</view>
+			      <image class="goods-image" :src="(goods.activity_image?goods.activity_image:goods.image)" mode="aspectFit"></image>
+			    </view>
+			     <view class="goods-text">
+			      <text class="goods-title">{{goods.name}}</text>
+			      <view class="goods-footer">
+			        <view style="width:70%">
+			          <text style="color:#e34c55;">￥{{goods.sell_price}}</text>
+			        </view>
+			        <view style="width:30%; text-align:right;">
+			          <text class="smallbtn2">{{is_hoster?'推荐':'去下单'}}</text>
+			        </view>
+			      </view>
+			    </view>
+			  </view>
+			  </block>
+			</scroll-view>    
+		</view>
+	</view>
+</uni-popup>
+<!--
 <action-sheet :hidden="modalGoodsHidden" @change="modalGoodsconfirm" mask="true" maskClosable="true" :show="!modalGoodsHidden" tops="40%">
   <view class="modalGoodsTitle">
     <text>{{goods_num>0?'商品数:'+goods_num:''}}</text>
@@ -99,7 +178,7 @@
     <view class="goods-item" @tap="showGoods" :data-goods-id="goods.id" :data-goods-name="goods.name" :data-goods-org="goods.goods_org" :data-goods-shape="goods.shape" :data-goods-info="goods.act_info" :data-goods-price="goods.sell_price" :data-sale="goods.sale" :data-image="(goods.activity_image?goods.activity_image:goods.image)">
        <view>
         <view class="goods-no">{{goods.goodsno}}</view>
-        <!-- 缩略图 -->
+       
         <image class="goods-image" :src="(goods.activity_image?goods.activity_image:goods.image)" mode="aspectFit"></image>
       </view>
        <view class="goods-text">
@@ -117,6 +196,25 @@
     </block>
   </scroll-view>  
 </action-sheet>
+-->
+<uni-popup :show="!tanmuHidden" type="bottom" :custom="true" :mask-click="false">
+	<view class="uni-tip">
+		<view class="modalMessageTitle" @tap="modalMessageconfirm">
+		  <view class="message-return">
+		    <image style="width:36rpx;height:36rpx;border-radius:50%;" src="../../static/images/icon-no.png"></image>
+		  </view>
+		</view> 
+		<view class="uni-tip-content">
+			<view class="sendmessage">
+			  <view class="text">   
+			    <input type="text" :value="inputValue" placeholder="说点什么" @input="bindInputDanmu" @blur="bindInputBlur"></input>
+			    <button @tap="bindSendDanmu">发布</button>
+			  </view>
+			</view> 
+		</view>
+	</view>
+</uni-popup>
+<!--
 <action-sheet :hidden="tanmuHidden" @change="modalMessageconfirm" mask="true" maskClosable="true" :show="!tanmuHidden" :extClass="'background-color:#fff;'" tops="40%">
   <view class="modalMessageTitle" @tap="modalMessageconfirm">
     <view class="message-return">
@@ -130,6 +228,26 @@
     </view>
   </view>
 </action-sheet>
+-->
+<uni-popup :show="!modalHosterHidden" type="bottom" :custom="true" :mask-click="false">
+	<view class="uni-tip">
+		<view class="modalLotteryTitle" @tap="modalLotteryconfirm">
+		  <view class="lottery-return">
+		    <image style="width:36rpx;height:36rpx;border-radius:50%;" src="../../static/images/icon-no.png"></image>
+		  </view>
+		</view> 
+		<view class="uni-tip-content">
+			<view class="lottery-action">
+			  <view class="text">
+			    <text>中奖人数：</text>   
+			    <input type="number" confirm-type="send" :value="lotteryValue" placeholder="中奖人数" @input="bindInputLottery" @blur="bindLotteryBlur"></input>
+			    <view class="button" :data-lottery-value="lotteryValue" @tap="modalHosterconfirm">抽奖</view>
+			  </view>
+			</view>
+		</view>
+	</view>
+</uni-popup>
+<!--
 <action-sheet :hidden="modalHosterHidden" mask="true" maskClosable="true" :show="!modalHosterHidden" :extClass="'background-color:#fff;'" tops="40%">
   <view class="modalLotteryTitle" @tap="modalLotteryconfirm">
     <view class="lottery-return">
@@ -144,22 +262,35 @@
     </view>
   </view>
 </action-sheet>
-<view class="danmu-info">
-  <scroll-view :hidden="modalDanmuHidden" class="danmu-scroll" :style="'height:' + dkheight-400 + 'px'" scroll-y @scroll="danmn_scrolltoupper" :scroll-top="danmu_scrollTop" @scrolltolower="queryDanmu"> 
-  <view class="danmu-scroll-list">
-    <block v-for="(danmu, id) in danmuList" :key="id">
-    <view class="danmu-content" :style="(danmu.color?'color:'+danmu.color+';':'')">
-      <view style="display:flex;flex-direction:row;justify-content:flex-start;">
-        <text class="danmu-content-nickname" :style="(danmu.background_color?'background_color:'+danmu.background_color+';':'')">{{danmu.nickname}}</text>
-        <text class="danmu-content-text" :style="(danmu.background_color?'background_color:'+danmu.background_color+';':'')">{{danmu.content}}</text>
-      </view>
-    </view>
+-->
+<!-- 有序弹幕 
+<view class="doommview">
+    <block wx:for="{{doommData}}" wx:key="id">
+        <text wx:if="{{item.display}}" class="aon" style="animation: first {{item.time}}s linear forwards;top:{{item.top}}%;color:{{item.color}};">
+            {{item.text}}
+        </text>
     </block>
-  </view>
-  </scroll-view>  
-  <image :hidden="modalDanmuHidden" @tap="danmuInfo" style="margin-left:30rpx;width:30rpx;height:30rpx;" src="../../static/images/top.png"></image> 
-  <text :hidden="!modalDanmuHidden" @tap="danmuInfo" class="danmu-num-show">{{danmu_num<100?' '+danmu_num+' 99+条新的消息'}}< text>  
-</100?'></text></view>
+</view>
+
+-->
+ 
+<view v-if="is_live" class="danmu-info"> <!-- -->
+	<scroll-view :hidden="modalDanmuHidden" class="danmu-scroll" :style="'height:' + dkheight-360 + 'px'" catchtouchmove="true" scroll-y @scroll="danmn_scrolltoupper" :scroll-top="danmu_scrollTop"> 
+	<view class="danmu-scroll-list">
+		<block v-for="(danmu, id) in danmuList" :key="id">
+		<view class="danmu-content" :style="(danmu.color?'color:'+danmu.color+';':'')">
+			<view style="display:flex;flex-direction:row;justify-content:left;">
+				<text class="danmu-content-nickname" :style="(danmu.background_color?'background_color:'+danmu.background_color+';':'')">{{danmu.nickname}}</text>
+				<text class="danmu-content-text" :style="(danmu.background_color?'background_color:'+danmu.background_color+';':'')">{{danmu.content}}</text>
+			</view>
+		</view>
+		</block>
+	</view>
+	</scroll-view>  
+	<image :hidden="modalDanmuHidden" @tap="danmuInfo" style="margin-left:30rpx;width:30rpx;height:30rpx;" src="../../static/images/top.png"></image> 
+	<text :hidden="!modalDanmuHidden" @tap="danmuInfo" class="danmu-num-show">{{cur_danmu_num > 100?' 99+条新的消息':' '+cur_danmu_num+' 条新的消息'}}</text>
+</view>
+ 
 <!-- 商品推荐弹窗-->
 <view :hidden="modalAdvGoodshidden" class="live-adv-goods">
   <view class="live-adv-goods-title" @tap="modalAdvGoodsconfirm">
@@ -168,7 +299,7 @@
       <image style="width:30rpx;height:30rpx;border-radius:50%;" src="../../static/images/icon-no.png"></image>
     </view>
   </view>
-  <view class="live-adv-goods-item" @tap="is_hoster?'':'showGoods'" :data-goods-id="live_adv_goods[0].id" :data-goods-name="live_adv_goods[0].name" :data-goods-org="live_adv_goods[0].goods_org" :data-goods-shape="live_adv_goods[0].shape" :data-goods-info="live_adv_goods[0].act_info" :data-goods-price="live_adv_goods[0].sell_price" :data-sale="live_adv_goods[0].sale" :data-image="(live_adv_goods[0].activity_image?live_adv_goods[0].activity_image:live_adv_goods[0].image)">
+  <view v-if="live_adv_goods[0]" class="live-adv-goods-item" @tap="is_hoster?'':'showGoods'" :data-goods-id="live_adv_goods[0].id" :data-goods-name="live_adv_goods[0].name" :data-goods-org="live_adv_goods[0].goods_org" :data-goods-shape="live_adv_goods[0].shape" :data-goods-info="live_adv_goods[0].act_info" :data-goods-price="live_adv_goods[0].sell_price" :data-sale="live_adv_goods[0].sale" :data-image="(live_adv_goods[0].activity_image?live_adv_goods[0].activity_image:live_adv_goods[0].image)">
     <view>
       <image class="live-adv-goods-image" :src="(live_adv_goods[0].activity_image?live_adv_goods[0].activity_image:live_adv_goods[0].image)" mode="aspectFit"></image>
     </view>
@@ -217,12 +348,13 @@
 <script>
 var wxparse = require("../../wxParse/wxParse.js");
 var util = require("../../utils/util.js");
-var weburl = getApp().globalData.globalData.weburl;
-var playerurl = getApp().globalData.globalData.playerurl;
-var appid = getApp().globalData.globalData.appid;
-var appsecret = getApp().globalData.globalData.secret;
-var user_type = app.globalData.user_type ? app.globalData.user_type : 0;
-var shop_type = getApp().globalData.globalData.shop_type;
+import uniPopup from '@/components/uni-popup/uni-popup.vue'
+var weburl = getApp().globalData.weburl;
+var playerurl = getApp().globalData.playerurl;
+var appid = getApp().globalData.appid;
+var appsecret = getApp().globalData.secret;
+var user_type = getApp().globalData.user_type ? getApp().globalData.user_type : 0;
+var shop_type = getApp().globalData.shop_type;
 var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
 var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
 var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
@@ -230,6 +362,12 @@ var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
 var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
 var userauth = wx.getStorageSync('userauth') ? wx.getStorageSync('userauth') : '';
 var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
+var doommList = [];
+var i = 0;
+var ids = 0;
+var cycle = null; //计时器
+//计时器
+var videoContext = null;
 function getRandomColor() {
   let rgb = [];
 
@@ -240,7 +378,21 @@ function getRandomColor() {
   }
 
   return '#' + rgb.join('');
+} // 弹幕参数
+
+/*
+class Doomm {
+  constructor(text, top, time, color) {  //内容，顶部距离，运行时间，颜色（参数可自定义增加）
+    this.text = text;
+    this.top = top;
+    this.time = time;
+    this.color = color;
+    this.display = true;
+    this.id = i++;
+  }
 }
+*/
+
 /*
 {
   color: '#000000', // 默认黑色
@@ -252,7 +404,7 @@ function getRandomColor() {
   }
 }
 */
-import actionSheet from "../common/actionsheet/actionsheet";
+
 
 export default {
   data() {
@@ -264,7 +416,11 @@ export default {
       liveid: '3954',
       streamname: 'sendheart_3989.m3u8',
       playerurl: playerurl,
+      advurl: weburl + '/uploads/live_adv_video.mp4',
+	  currentWebview:null,
+	  videoplayer:null,
       videourl: '',
+	  videoList:[],
       liveurl: '',
       live_goods: '',
       errorhidden: true,
@@ -297,7 +453,7 @@ export default {
       share_logo: weburl + '/uploads/video_share_logo.png',
       danmustatus: true,
       tanmuHidden: true,
-      danmu_num: 0,
+      cur_danmu_num: 0,
       danmu_num_max: 200,
       //本地最多保存200条记录
       live_members: 1,
@@ -322,9 +478,15 @@ export default {
       is_goods_loading: false,
       is_member_loading: false,
       is_danmu_loading: false,
+      is_live_loading: false,
       danmu_scrollTop: 0,
       extClass: "background-color:#333;opacity:0.8;",
       input_focus: true,
+      sign_type: '0',
+      is_live: false,
+      doommData: [],
+      onload_options: '' //arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      ,
       live_name: "",
       live_poster: "",
       live_desc: "",
@@ -333,9 +495,12 @@ export default {
       dkheight: "",
       winHeight: "",
       winWidth: "",
+      live_status: "",
       live_hoster: "",
+      errorTitile: "",
       member_all_rows: 0,
       loading_note: "",
+      live_focus_num: "",
       floorstatus: false,
       hidddensearch: false,
       current_danmu_scrollTop: "",
@@ -343,16 +508,10 @@ export default {
     };
   },
 
-  components: {
-    actionSheet
+  components: { 
+	  uniPopup,
   },
   props: {},
-
-  /*
-  onReady(res) {
-    this.ctx = wx.createLivePlayerContext('player')
-  },
-  */
   onLoad: function (options) {
     var that = this;
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
@@ -366,25 +525,41 @@ export default {
     var live_poster = options.live_poster ? options.live_poster : that.poster_image;
     var live_desc = options.live_desc ? options.live_desc : that.share_desc;
     var live_logo = options.live_logo ? options.live_logo : that.share_logo;
+    var is_live = options.is_live ? options.is_live : false;
+    var advurl = options.advurl ? options.advurl : that.advurl;
     var playerurl = that.playerurl;
     var streamname = options.liveid ? 'sendheart_' + liveid + '.m3u8' : that.streamname;
     var refername = options.refername ? options.refername : '';
-    that.setData({
-      m_id: m_id,
-      nickName: userInfo.nickName,
-      liveurl: playerurl + '/' + streamname,
-      live_goods: live_goods,
-      live_name: live_name,
-      live_poster: live_poster,
-      live_desc: live_desc,
-      live_logo: live_logo,
-      liveid: liveid,
-      refername: refername
-    });
+	that.getwebview()
+    if (options) {
+		that.onload_options = options
+    }
+	that.m_id = m_id
+    that.nickName = userInfo.nickName
+    that.liveurl = playerurl + '/' + streamname
+    that.live_goods = live_goods
+    that.live_name = live_name
+    that.live_poster = live_poster
+    that.live_desc = live_desc
+    that.live_logo = live_logo
+    that.liveid = liveid
+    that.is_live = is_live
+    that.refername = refername
+	 
+
     that.query_liveroom_info();
     that.get_goods_list(); //console.log('options:',options)
-
-    console.log('player onLoad videourl:', that.videourl, ' liveid:', liveid, ' live_logo:', live_logo, ' live_name:', live_name, ' live_poster:', live_poster);
+	uni.getSystemInfo({
+      success: function (res) {
+        let winHeight = res.windowHeight;
+        let winWidth = res.windowWidth;
+		that.dkheight = winHeight
+		that.winHeight = winHeight
+		that.winWidth = winHeight
+        console.log(winHeight);
+      }
+    })
+    console.log('player onLoad liveurl:', that.liveurl, ' liveid:', liveid, ' dkheight:', that.dkheight, ' live_name:', live_name, ' playerurl:', playerurl);
   },
   onShow: function () {
     var that = this;
@@ -395,19 +570,6 @@ export default {
         title_logo: '../../images/back.png'
       });
     }
-
-    wx.getSystemInfo({
-      success: function (res) {
-        let winHeight = res.windowHeight;
-        let winWidth = res.windowWidth;
-        console.log(winHeight);
-        that.setData({
-          dkheight: winHeight,
-          winHeight: winHeight,
-          winWidth: winWidth
-        });
-      }
-    });
   },
   onReady: function () {
     var that = this;
@@ -468,6 +630,34 @@ export default {
     danmu_scroll_auto: function () {
       // 获取scroll-view的节点信息
       //创建节点选择器
+      var that = this;
+      var is_live = that.is_live;
+      var danmuList = that.danmuList;
+      var cur_danmu_num = that.cur_danmu_num;
+      var danmu_scrollTop = that.danmu_scrollTop + cur_danmu_num * 25;
+      if (!is_live) return;
+      /*
+      var danmuList = that.data.danmuList
+      for (let i=0; i < danmuList.length;i++){
+        var doomm = {
+          text: danmuList[i]['content'],
+          top: Math.ceil(Math.random() * 100),
+          time: 5 ,
+          color:  getRandomColor(),
+          display:  true,
+          id: i,
+        }
+        if (doommList.length > 5) {
+          doommList.splice(0, 1)
+        }
+        doommList.push(doomm);
+      }
+          
+      that.setData({
+        doommData: doommList
+      })
+      */
+
       var query = wx.createSelectorQuery();
       query.select('.danmu-scroll').boundingClientRect();
       query.select('.danmu-scroll-list').boundingClientRect();
@@ -475,22 +665,27 @@ export default {
         var containerHeight = res[0].height;
         var listHeight = res[1].height; // 滚动条的高度增加
 
-        var interval = setInterval(() => {
-          if (this.danmu_scrollTop < listHeight - containerHeight) {
-            this.setData({
-              danmu_scrollTop: this.danmu_scrollTop + 30
-            });
-          } else {
-            clearInterval(interval);
-            /*
-              this.setData({
-                danmu_scrollTop: 0
-              })
-            */
-          }
-        }, 200);
+        if (danmu_scrollTop > listHeight - containerHeight) {
+          that.setData({
+            danmu_scrollTop: danmu_scrollTop
+          });
+        }
+
+        console.log('containerHeight:', containerHeight, ' listHeight:', listHeight, ' danmu_scrollTop:', danmu_scrollTop, ' cur_danmu_num:', cur_danmu_num, ' danmuList:', that.danmuList);
       });
     },
+	getwebview(){
+		var pages = getCurrentPages();
+		var page = pages[pages.length - 1];
+		// #ifdef APP-PLUS
+		var getcurrentWebview = page.$getAppWebview();
+		console.log('pages:',this.pages,' page:',this.page)
+		//console.log(this.page)
+		console.log(JSON.stringify(page.$getAppWebview()))
+		this.currentWebview=getcurrentWebview;
+		// #endif
+		
+	},
     query_liveroom_info: function (event) {
       //venuesList
       var that = this;
@@ -500,6 +695,17 @@ export default {
       var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : '';
       var liveid = that.liveid;
       var is_hoster = that.is_hoster;
+      var live_status = that.live_status;
+      var is_live = that.is_live;
+      var is_live_loading = that.is_live_loading;
+
+      if (is_live_loading) {
+        return;
+      }
+
+      that.setData({
+        'is_live_loading': true
+      });
       wx.request({
         url: weburl + '/api/client/get_liveroom_list',
         method: 'POST',
@@ -514,7 +720,11 @@ export default {
           'Accept': 'application/json'
         },
         success: function (res) {
-          //console.log('query_liveroom_info:', res.data)
+          console.log('query_liveroom_info:', res.data);
+          that.setData({
+            'is_live_loading': false
+          });
+
           if (res.data.status != 'y') {
             that.setData({
               videourl: that.liveurl,
@@ -526,6 +736,17 @@ export default {
 
 
           var liveinfo = res.data.result;
+
+          if (is_live && live_status == 3 && liveinfo[0]['live_status'] == 1) {
+            //暂停恢复
+            console.log('player rePlay 暂停恢复 重新播放');
+            that.rePlay();
+            return;
+          }
+
+          that.setData({
+            live_status: liveinfo[0]['live_status']
+          });
 
           if (liveinfo[0]['live_status'] == 2) {
             //锁定状态
@@ -541,43 +762,92 @@ export default {
             liveinfo[0]['logo'] = weburl + '/' + liveinfo[0]['logo'];
           }
 
-          var live_focus_num = liveinfo[0]['focus_num'] ? liveinfo[0]['focus_num'] : 0;
-          var live_focus_status = liveinfo[0]['focus_status'] ? liveinfo[0]['focus_status'] : that.live_focus_status;
-          live_focus_num = live_focus_num > 10000 ? (live_focus_num / 10000).toFixed(2) : live_focus_num;
-          var live_sub_name = live_focus_num > 0 ? '人气值:' + live_focus_num : '人气值:1';
           var live_hoster = liveinfo[0]['live_hoster'] ? liveinfo[0]['live_hoster'].split(',') : [];
 
           for (var i = 0; i < live_hoster.length; ++i) {
             if (m_id == live_hoster[i]) is_hoster = true;
           }
 
-          if (liveinfo && liveinfo[0]['live_status'] != 1) {
+          if (liveinfo && liveinfo[0]['live_status'] == 0) {
             //离线 取视频url
-            var videourl = liveinfo[0]['videourl'];
-            that.setData({
-              videourl: videourl ? videourl : that.liveurl,
-              live_logo: liveinfo[0]['logo'],
-              live_sub_name: live_sub_name,
-              live_focus_status: live_focus_status,
-              live_hoster: live_hoster,
-              is_hoster: is_hoster
+            if (!is_live) {
+              //离线视频
+              var videourl = liveinfo[0]['videourl'];
+              that.setData({
+                videourl: videourl ? videourl : that.liveurl,
+                live_logo: liveinfo[0]['logo'],
+                live_name: liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物',
+                live_hoster: live_hoster,
+                is_hoster: is_hoster
+              });
+            } else {
+              //结束了
+              var error_message = '结束了';
+              var errorTitile = '提示信息';
+              that.setData({
+                errorhidden: false,
+                error_message: error_message,
+                errorTitile: errorTitile
+              });
+              return;
+            }
+          } else if (liveinfo && liveinfo[0]['live_status'] == 3) {
+            //暂停
+            wx.showToast({
+              title: '暂停中...',
+              icon: 'loading',
+              duration: 1500
             });
+            that.playwaiting();
+            return;
           } else {
             //在线
             that.setData({
               videourl: that.liveurl,
+              is_live: true,
               live_starttime: liveinfo[0]['endtime'],
               live_logo: liveinfo[0]['logo'],
               live_name: liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物',
-              live_sub_name: live_sub_name,
-              live_focus_status: live_focus_status,
               live_hoster: live_hoster,
               is_hoster: is_hoster
-            }, function () {
-              that.join_liveroom(); //that.query_live_member()
             });
-          } //console.log('query_liveroom_info videourl:', videourl, ' live_starttime:', that.data.live_starttime, ' live_logo:', that.data.live_logo, ' live_name:', that.data.live_name, ' live_hoster:', live_hoster, 'is_hoster:',is_hoster)
-
+			 that.join_liveroom();
+          } 
+		  that.srcList = [
+			{
+			  title:'流畅',
+			  src:that.videourl
+			},
+		  ]
+		   /*
+		  // #ifdef APP-PLUS
+		 
+		  that.videoplayer = plus.video.createVideoPlayer('videoplayer', {
+		  		src:that.videourl,
+		  		top:'100px',
+		  		left:'0px',
+		  		width: '100%',
+		  		height: '200px',
+		  		position: 'static'
+		  	});
+			that.currentWebview.append(that.videoplayer);
+			// #endif
+			*/
+		
+		   that.videoList.push({
+		   	video_id: liveid,
+		   	nickname: that.live_name,
+		   	video_describe: '在线视频',
+		   	cover_url: that.live_poster,
+		   	video_url: that.videourl,
+		   	dianzan: 0,
+		   	pinglun: '',
+		   	zhuanfa: 0,
+		   	is_dianzan: 0,
+		   	flag: false,
+			loop:false,
+		   });
+			console.log('query_liveroom_info videourl:', that.videourl, ' live_starttime:', that.live_starttime, ' live_logo:', that.live_logo, ' live_name:', that.live_name, ' live_hoster:', live_hoster, 'is_hoster:',is_hoster)
         },
         fail: function (e) {
           that.setData({
@@ -596,6 +866,7 @@ export default {
       var sign_type = '1'; //1签到
 
       var refername = that.refername;
+      if (that.sign_type == '1') return;
       wx.request({
         url: weburl + '/api/client/sign_in',
         method: 'POST',
@@ -613,10 +884,18 @@ export default {
           'Accept': 'application/json'
         },
         success: function (res) {
-          wx.showToast({
-            title: '签到完成',
-            icon: 'none',
-            duration: 1500
+          if (that.sign_type == 0) {
+            /*
+            wx.showToast({
+              title: '签到完成',
+              icon: 'none',
+              duration: 1500
+            })
+            */
+          }
+
+          that.setData({
+            sign_type: sign_type
           });
           console.log('join_liveroom 签到完成:', res.data);
         },
@@ -633,6 +912,7 @@ export default {
       var liveid = that.liveid;
       var refername = that.refername;
       var live_focus_status = that.live_focus_status;
+      var live_type = 2;
       if (live_focus_status) return;
       wx.request({
         url: weburl + '/api/client/post_focus',
@@ -640,7 +920,8 @@ export default {
         data: {
           username: username,
           access_token: token,
-          liveid: liveid,
+          post_id: liveid,
+          post_type: live_type,
           refername: refername,
           shop_type: shop_type
         },
@@ -785,7 +1066,7 @@ export default {
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
       var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
       var live_goods = that.live_goods;
-      var live_adv_goods = {};
+      var live_adv_goods = [];
       that.setData({
         loadingHidden: false,
         is_goods_loading: true
@@ -1023,57 +1304,158 @@ export default {
       });
     },
     //点击播放按钮，封面图片隐藏,播放视频
-    bindPlay: function (e) {
-      console.log('player bindPlay 响应', e);
+    bindPlay: function () {
+      var that = this;
       wx.onNetworkStatusChange(function (res) {
         if (res.isConnected) {
-          this.videoContext.play();
+          //
+          console.log('player bindPlay 网络正常 重新播放'); // console.log('player bindPlay 重新播放')
+
+          that.videoContext.play();
         } else {
-          this.playerror(e);
+          console.log('player bindPlay 网络异常，播放错误');
+          that.playerror();
         } //console.log(res.isConnected)
         //console.log(res.networkType)
 
       });
+      /*
+       wx.redirectTo({
+        url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live
+      })
+      wx.reLaunch({
+        url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live
+      })
+      */
+    },
+    //重新播放视频
+    rePlay: function () {
+      var that = this;
+      wx.onNetworkStatusChange(function (res) {
+        if (res.isConnected) {
+          console.log('player rePlay 网络正常 重新播放');
+        } else {
+          console.log('player bindPlay 网络异常，播放错误');
+          that.playerror();
+        }
+      });
+      that.setData({
+        live_status: '1'
+      }); //that.videoContext.stop()
+
+      setTimeout(function () {
+        //that.videoContext = wx.createVideoContext('myVideo')
+        that.videoContext.play();
+      }, 300);
+      /*
+      wx.navigateTo({
+        url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live,
+      }) 
+      */
     },
 
     playerror(e) {
       var that = this;
-      var error_message = '网络错误!';
-      var errorhidden = that.errorhidden;
-      console.log('player playerror 播放错误', e);
-      that.setData({
-        error_message: error_message,
-        errorhidden: !errorhidden
-      });
-      this.videoContext.stop();
+      var error_message = '!';
+      var errorTitile = '';
+      var errorhidden = that.errorhidden; //this.videoContext.pause()
+
+      console.log('player playerror 播放错误', e); //判断异常情况
+
+      that.query_liveroom_info();
+      /*
+      setTimeout(function () {
+        var live_status = that.data.live_status
+        if (live_status == 3) { //暂停
+          error_message = '暂停中'
+          errorTitile = '提示信息'
+        } else if (live_status == 0) {
+          error_message = '结束了'
+          errorTitile = '提示信息'
+        }else{
+          error_message = '网络不给力'
+          errorTitile = '提示信息'
+        }
+          wx.showModal({
+          title: errorTitile,
+          content: error_message,
+          success: function (res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+              that.errorConfirmPlay()
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+              that.errorCancelPlay()
+            }
+          }
+        })
+         
+        that.setData({
+          errorhidden: false,
+          error_message: error_message,
+          errorTitile: errorTitile,
+        })
+        
+      }, 2000)
+      */
+      //that.playwaiting()
     },
 
     playwaiting(e) {
       var that = this;
-      this.videoContext.stop();
-      this.videoContext = wx.createVideoContext('myVideo');
-      this.videoContext.play();
-      console.log('player playwaiting 播放等待', e);
+      /*
+          this.videoContext = wx.createVideoContext('myVideo')
+      this.videoContext.play()
+      */
+
+      console.log('player playwaiting 播放等待'); //that.videoContext.stop()
+
+      that.query_liveroom_info();
     },
 
     errorConfirmPlay(e) {
       var that = this;
       var errorhidden = that.errorhidden;
+      var live_status = that.live_stauts;
+      var is_live = that.is_live;
+      var onload_options = that.onload_options ? that.onload_options : '';
+      /*
       that.setData({
-        errorhidden: !errorhidden
-      });
-      this.videoContext.stop();
-      wx.navigateTo({
-        url: '/pages/player/player?liveid=' + that.liveid + '&live_goods=' + that.live_goods + '&live_name=' + that.shop_name + '&live_poster=' + that.live_poster + '&live_desc=' + that.live_desc + '&live_logo=' + that.live_logo
-      });
+        errorhidden: !errorhidden,
+      })
+      */
+
+      if (live_status == 0 || live_status == 2) {
+        //播放结束
+        wx.navigateBack({
+          delta: 1
+        });
+      } else {
+        that.playwaiting();
+        /*
+        this.videoContext.stop()
+        this.videoContext = wx.createVideoContext('myVideo')
+        */
+        //this.videoContext.play()
+        //this.onLoad(onload_options)
+
+        /*
+        wx.navigateTo({
+          url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo+'&is_live='+is_live
+        })
+        */
+      }
     },
 
     errorCancelPlay(e) {
       var that = this;
-      var errorhidden = that.errorhidden;
+      /*
+      var errorhidden = that.data.errorhidden
       that.setData({
-        errorhidden: !errorhidden
-      });
+        errorhidden: !errorhidden,
+      })
+      */
+
       wx.navigateBack({
         delta: 1
       });
@@ -1190,9 +1572,10 @@ export default {
       var live_adv_goods = [];
       var page = that.page;
       var pagesize = that.pagesize;
-      var pageoffset = that.pageoffset;
+      var pageoffset = parseInt(that.pageoffset);
       var danmustatus = that.danmustatus;
       var is_danmu_loading = that.is_danmu_loading;
+      var cur_danmu_num = 0;
 
       if (!danmustatus || is_danmu_loading) {
         console.log('弹幕信息正在加载 live id:', liveid, 'm_id:', m_id, ' pageoffset:', pageoffset);
@@ -1223,34 +1606,30 @@ export default {
         success: function (res) {
           if (res.data.status == 'y') {
             var danmuServ = res.data.result;
-            var pageoffset = res.data.all_rows; //console.log('获取服务端弹幕信息完成:', res.data)
+            var all_rows = parseInt(res.data.all_rows); //console.log('获取服务端弹幕信息完成:', res.data)
 
-            if (danmuServ && danmuServ.danmu) {
-              for (var i = 0; i < danmuServ.danmu.length; i++) {
-                var nickName = danmuServ.danmu[i]['nickname'] ? danmuServ.danmu[i]['nickname'] + ':' : '';
-                var background_color = nickName ? getRandomColor() : '#e34c55';
-                var cur_danmu = {
-                  nickname: nickName,
-                  content: danmuServ.danmu[i]['content'],
-                  color: getRandomColor(),
-                  background_color: background_color
-                };
+            if (danmuServ && danmuServ.danmu_list) {
+              for (var i = 0; i < danmuServ.danmu_list.length; i++) {
+                if (danmuServ.danmu_list[i].type == 0) {
+                  // 弹幕信息
+                  var nickName = danmuServ.danmu_list[i]['nickname'] ? danmuServ.danmu_list[i]['nickname'] + ':' : '';
+                  var background_color = nickName ? getRandomColor() : '#e34c55';
+                  var cur_danmu = {
+                    nickname: nickName,
+                    content: danmuServ.danmu_list[i]['content'],
+                    color: getRandomColor(),
+                    background_color: background_color
+                  };
 
-                if (danmuList.length > danmu_num_max - 1) {
-                  danmuList.shift();
-                }
+                  if (danmuList.length > danmu_num_max - 1) {
+                    danmuList.shift();
+                  }
 
-                danmuList.push(cur_danmu);
-              }
-
-              console.log('获取服务端弹幕信息完成 live id:', liveid, 'pageoffset:', pageoffset, ' danmuList:', danmuList);
-            }
-
-            if (danmuServ && danmuServ.adv_note) {
-              if (danmuServ.adv_note) {
-                //通知
-                for (var i = 0; i < danmuServ.adv_note.length; i++) {
-                  var cur_adv_note = danmuServ.adv_note[i]['content'] ? JSON.parse(danmuServ.adv_note[i]['content']) : '';
+                  danmuList.push(cur_danmu);
+                  cur_danmu_num = cur_danmu_num + 1;
+                } else if (danmuServ.danmu_list[i].type == 1) {
+                  //note通知
+                  var cur_adv_note = danmuServ.danmu_list[i]['content'] ? JSON.parse(danmuServ.danmu_list[i]['content']) : '';
 
                   if (cur_adv_note['list']) {
                     //note通知
@@ -1267,33 +1646,30 @@ export default {
 
                   live_adv_note.push(cur_adv_note);
                   if (!cur_adv_note['sub_title'] && !cur_adv_note['note']) cur_adv_note['sub_title'] = '很遗憾，您本次没有中奖~';
-                }
-
-                console.log('获取服务端通知信息完成:', live_adv_note, ' pageoffset:', pageoffset);
-              }
-            }
-
-            if (danmuServ && danmuServ.adv_goods) {
-              for (var i = 0; i < danmuServ.adv_goods.length; i++) {
-                if (danmuServ.adv_goods) {
+                } else if (danmuServ.danmu_list[i].type == 2) {
                   //商品推荐
-                  var cur_adv_goods = danmuServ.adv_goods[i]['content'] ? JSON.parse(danmuServ.adv_goods[i]['content']) : '';
+                  var cur_adv_goods = danmuServ.danmu_list[i]['content'] ? JSON.parse(danmuServ.danmu_list[i]['content']) : '';
 
                   if (cur_adv_goods['image'].indexOf("http") < 0) {
                     cur_adv_goods['image'] = weburl + '/' + cur_adv_goods['image'];
                   }
 
-                  live_adv_goods.push(cur_adv_goods); //console.log('获取服务端弹幕信息完成 live id:', liveid, 'danmuList:', danmuList, ' live_adv_goods:', live_adv_goods)
+                  live_adv_goods.push(cur_adv_goods);
                 }
               }
             }
 
-            var danmu_num = that.danmu_num + danmuServ.danmu.length;
+            var live_focus_num = danmuServ.focus_num ? danmuServ.focus_num : 0;
+            var live_focus_status = danmuServ.focus_status ? danmuServ.focus_status : that.live_focus_status;
+            var live_sub_name = live_focus_num > 10000 ? '人气值:' + (live_focus_num / 10000).toFixed(2) + '万' : '人气值:' + live_focus_num;
+            if (all_rows > 0) pageoffset = all_rows;
+            console.log('获取服务端弹幕/商品推荐/通知信息完成 all_rows:', all_rows, 'pageoffset:', pageoffset, ' danmuList:', danmuList);
             that.setData({
+              live_focus_num: live_focus_num,
+              live_sub_name: live_sub_name,
               danmuList: danmuList,
-              pageoffset: pageoffset,
-              danmu_scrollTop: danmuServ.length * 30,
-              danmu_num: danmu_num,
+              pageoffset: all_rows > 0 ? pageoffset : that.pageoffset,
+              cur_danmu_num: cur_danmu_num?cur_danmu_num:0 ,
               modalAdvNotehidden: live_adv_note.length > 0 ? false : that.modalAdvNotehidden,
               live_adv_note: live_adv_note ? live_adv_note : that.live_adv_note,
               modalAdvGoodshidden: live_adv_goods.length > 0 ? false : that.modalAdvGoodshidden,
@@ -1319,7 +1695,7 @@ export default {
       var modalDanmuHidden = that.modalDanmuHidden;
       that.setData({
         modalDanmuHidden: !modalDanmuHidden,
-        danmu_num: 0
+        cur_danmu_num: 0
       });
     },
 

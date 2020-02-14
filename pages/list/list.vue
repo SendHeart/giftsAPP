@@ -176,13 +176,11 @@ export default {
         });
       }
     });
-	
     that.get_menubar();
   },
   onShow: function () {
     var that = this;
     var pages = getCurrentPages();
-
     if (pages.length > 1) {
       that.setData({
         title_logo: '/static/images/back.png'
@@ -608,7 +606,7 @@ export default {
 					angle: 0,
 				});
 			});
-			that.get_goods_list();
+			//that.get_goods_list();
         }
       });
     },

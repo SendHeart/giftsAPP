@@ -1,133 +1,96 @@
 <template>
 <view>
-<!--index.wxml-->
-
-<view class="all-classify" :hidden="hiddenallclassify">
-    <view class="catg-title" @click.stop="openAllTapTag">
-      <view class="catg-titletext">全部分类</view>
-      <view class="catg-claps">
-       <image style src="../../static/images/bottom-close.png"></image>
-      </view>
-    </view>
-    <view class="all-classify-list">
-    <block v-for="(item, index) in navList" :key="index">
-      <view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'all-classify-item ' + (index == activeIndex ? 'all-classify-item-active' : '')" @click.stop="onTapTag">
-        {{item.title}}
-      </view>
-    </block>
-    </view>
-</view>
-<view class="banner">
-    <component is="nav" :navList="navList" :activeIndex="activeIndex" :toView="toView" :navgationHeight="navgationHeight" :is_all_category="is_all_category"></component>
-</view>
-  <!-- 
-<view class="search" style='height:30rpx;'>
-		<input value="{{keyword}}" class="wx-input" placeholder="寻找..."  bindinput='search_goodsnameTapTag'/>
-    <image bindtap='searchTapTag' src="../../images/search-btn.png"></image>
-</view>
-  -->
-
-<scroll-view scroll-y class="container" @scrolltolower="getMoreGoodsTapTag" @scroll="scrolltoupper" :scroll-into-view="'v_' + toView" :scroll-top="scrollTop"> <!--  catchtouchstart='touchStart' catchtouchend="touchEnd"-->
-<view class="goTop" :hidden="!floorstatus" @tap="goTop">
-  <icon style="margin-top:-50rpx;" class="Hui-iconfont iconv-uparrow"></icon>
-  <view class style="margin-top:-5rpx;font-size:22rpx;">TOP</view>
-  <!--<view class='' style="margin-top:-25rpx;font-size:26rpx;">{{page}}/{{all_rows}}</view>-->
-</view>
-  <view class="venues_box">
-  <view class="box-left">
-   <block v-for="(venuesItems_show, m_id) in venuesItems_show" :key="m_id">
-      <block v-for="(item, id) in venuesItems_show" :key="id">
-        <view class="venues_item" v-if="index%2==0"> 
-          <navigator :url="'/pages/player/player?liveid=' + item.liveid + '&live_goods=' + item.live_goods + '&live_name=' + item.shop_name + '&live_poster=' + item.live_poster + '&live_desc=' + item.live_desc + '&live_logo=' + item.logo" hover-class="none">
-            <imageloader :default-image="default_img" mode="aspectFit" :original-image="item.live_poster" width="355rpx" height="355rpx" display="block"></imageloader>
-            <view class="goods-tags">
-              
-            </view>
-            <text class="goods_name">{{item.shop_name}}</text>
-            </navigator>
-            <view class="goods_prom">{{item.live_desc?item.live_desc:''}}</view>
-            <view class="goods_bottom">
-              <view class="goods_tag">
-                <text space="ensp">{{item.live_focus_members>0?'人气值:'+item.live_focus_members:'人气值:1'}} </text>
-              </view>
-              <view class="price-list">
-                 
-              </view>
-          </view>
-        </view>
-      </block>
-    </block>
-  </view>
-  <view class="box-right">
-   <block v-for="(venuesItems_show, m_id) in venuesItems_show" :key="m_id">
-      <block v-for="(item, id) in venuesItems_show" :key="id">
-        <view class="venues_item" v-if="index%2==1"> 
-            <navigator :url="'/pages/player/player?liveid=' + item.liveid + '&live_goods=' + item.live_goods + '&live_name=' + item.shop_name + '&live_poster=' + item.live_poster + '&live_desc=' + item.live_desc + '&live_logo=' + item.logo" hover-class="none">
-          <!--
-             <imageloader  default-image='{{default_img}}' mode='aspectFit' original-image='{{item.logo}}' width="355rpx" height="355rpx" display="block" />
-             -->
-             <image class="mainpic" :src="(item.live_poster?item.live_poster:'')" :mode="((item.shape==5||item.shape==4)?'aspectFit':'aspectFill')"></image>
-            <view class="goods-tags">
-               
-            </view>
-            <text class="goods_name">{{item.shop_name}}</text>
-          </navigator>
-            <view class="goods_prom">{{item.live_desc?item.live_desc:''}}</view>
-            <view class="goods_bottom">
-              <view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
-                 
-              </view>
-              <view class="price-list">
-                 
-              </view>
-          </view>
-        </view>
-      </block>
-    </block>
-    </view>
-</view>
-<view class="loading-show" :hidden="loadingHidden">
-  <text>{{loading_note}}</text>
-</view>
-  <!--使用懒加载替代
-  <button wx:if="{{page<all_rows}}" type="default" size="default" hover-class="button-hover" class="button" bindtap="getMoreGoodsTapTag" style="margin-top:10rpx; margin-bottom:60rpx;">更多</button>
-  <loading hidden="{{loadingHidden}}">
-    加载中...
-  </loading>
--->
-</scroll-view>
+	<view class="all-classify" v-if="hiddenallclassify">
+		<view class="catg-title" @click.stop="openAllTapTag">
+			<view class="catg-titletext">全部分类</view>
+			<view class="catg-claps">
+				<image style src="/static/images/bottom-close.png"></image>
+			</view>
+		</view>
+		<view class="all-classify-list">
+			<block v-for="(item, index) in navList" :key="index">
+				<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'all-classify-item ' + (index == activeIndex ? 'all-classify-item-active' : '')" @tap.stop="onTapTag">
+					{{item.title}}
+				</view>
+			</block>
+		</view>
+	</view>
+	<view class="banner">
+		<view class="top-bar-list">
+			<scroll-view scroll-x="true" @scroll="getleft" :scroll-into-view="'v_' + toView" class="top-bar">
+				<block v-for="(item, index) in navList" :key="index">
+					<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @tap.stop="onTapTag">{{item.title}}</view>
+				</block>
+			</scroll-view>
+			<view class="top-bar-image">
+				<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @tap="openAllTapTag"></image>
+			</view>
+		</view>
+	</view>
+	<!--
+	<mescroll-item :i="0" :activeIndex="activeIndex" :tab="tab" :tab_value="tab_value" ></mescroll-item>
+	 -->
+	<swiper class="swiper container" :style="'height:'+dkheight+''" :current="activeIndex"  circular="true" :duration="duration" @animationfinish="swiperChange">
+		<swiper-item  v-for="(venuesItems, venuesIndex) in venuesList" :key="venuesIndex">
+			<mescroll-item :i="venuesIndex" :activeIndex="activeIndex" :tab="tab" :tab_value="tab_value" ></mescroll-item>
+		</swiper-item>
+	</swiper>
+	 
 </view>
 </template>
-
-<script>
-import defaultData from '../../data';
-var util = require("../../utils/util.js"); //获取应用实例
-var weburl = getApp().globalData.globalData.weburl;
-var shop_type = getApp().globalData.globalData.shop_type;
+<script> 
+ 
+var util = require("utils/util.js"); //获取应用实例
+//import imageloader from "../../common/imageloader/imageloader";
+import MescrollItem from "./mescroll-swiper-item.vue";
+//import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+//var dateUtils = require('../../common/util.js').dateUtils;
+var weburl = getApp().globalData.weburl;
+var shop_type = getApp().globalData.shop_type;
 var navList = [{
-  id: "live_type",
+  id: "is_recommend",
   title: "推荐",
-  value: "0"
+  value: "1"
 }];
-import imageloader from "../common/imageloader/imageloader";
+var navList2 = [{
+  id: "default",
+  title: "最新"
+}, {
+  id: "hot",
+  title: "人气"
+}, {
+  id: "price",
+  title: "价格"
+}];
+
 
 export default {
   data() {
     return {
-      title_name: '送心视频',
-      title_logo: '../../images/footer-icon-05.png',
-      img_discount: '../../images/discount.png',
+      title_name: '商城首页',
+      title_logo: '/static/images/footer-icon-05.png',
+      img_discount: '/static/images/discount.png',
       default_img: weburl + '/uploads/default_goods_image.png',
-      poster_image: weburl + '/uploads/video_poster_image.png',
-      logo_image: weburl + '/uploads/video_logo_image.png',
       activeIndex: 0,
+      activeIndex2: 0,
       navList: navList,
+      navList2: navList2,
       images: [],
       all_rows: 0,
       venuesItems_show: [],
+	  venuesItems: [],
+	  venuesList: [],
       show_max: 1,
+      search_goodsname: null,
+      keyword: '',
       page: 1,
       pagesize: 20,
+      pageoffset: 0,
+      indicatorDots: true,
+      vertical: false,
+      autoplay: true,
+      interval: 3000,
+      duration: 100,
       loadingHidden: true,
       // loading
       is_goodslist_loading: false,
@@ -135,17 +98,21 @@ export default {
       hidden: true,
       scrollTop: 0,
       scrollHeight: 0,
+	  old: {
+	  	scrollTop: 0
+	  },
       tab: 'is_recommend',
       tab_value: "1",
+      tab2: 'default',
+      updown: 0,
+      //升序 降序
       shop_type: shop_type,
       //商家类型 1普通
       scrollLeft: 0,
       toView: 0,
-      hiddenallclassify: true,
-      shop_type: shop_type,
+      hiddenallclassify: false,
       animationData: "",
       floorstatus: false,
-      pageoffset: 0,
       loading_note: "",
       username: "",
       token: "",
@@ -156,17 +123,29 @@ export default {
       windowHeight: "",
       windowWidth: "",
       dkheight: "",
-      keyword: "",
-      index: ""
+      index: "",
+	  status: 'more',
+	  contentText: {
+	  	contentdown: '上拉加载更多',
+	  	contentrefresh: '加载中',
+	  	contentnomore: '没有更多'
+	  },
     };
   },
 
   components: {
-    imageloader
+	MescrollItem
   },
-  props: {},
+  props: {
+  },
+  watch:{
+   
+  },
+  mounted() {
+   
+  },
   onLoad: function (options) {
-    console.log('onLoad', options);
+    //console.log('onLoad', options);
     var that = this;
     var username = options.username ? options.username : wx.getStorageSync('username');
     var token = options.token ? options.token : wx.getStorageSync('token');
@@ -180,12 +159,6 @@ export default {
     }); //that.setNavigation()
     //调用应用实例的方法获取全局数据
 
-    getApp().globalData.getUserInfo(function (userInfo) {
-      //更新数据
-      that.setData({
-        userInfo: userInfo
-      });
-    });
     wx.getSystemInfo({
       success: function (res) {
         that.setData({
@@ -193,9 +166,10 @@ export default {
           windowHeight: res.windowHeight,
           windowWidth: res.windowWidth,
           dkheight: res.windowHeight - 60
-        });
+        })
       }
-    });
+    })
+	console.log('onLoad dkheight:', that.dkheight);
     that.get_menubar();
   },
   onShow: function () {
@@ -204,10 +178,16 @@ export default {
 
     if (pages.length > 1) {
       that.setData({
-        title_logo: '../../images/back.png'
+        title_logo: '/static/images/back.png'
       });
     }
+	/*
+	setTimeout(() => {
+		this.load()
+	}, 100) ;
+	*/
   },
+  // #ifdef MP 
   onShareAppMessage: function () {
     return {
       title: '送心礼物',
@@ -215,21 +195,55 @@ export default {
       path: '/pages/list/list?refername=' + username
     };
   },
+  //#endif
+  
   methods: {
+	  showGoods: function (e) {
+	    var objectId = e.id ; //currentTarget.dataset.objectId;
+	    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+	    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+	    var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
+	    var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
+	    var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
+	    var goods_name = e.name ; //currentTarget.dataset.goodsName;
+	    var goods_price = e.sell_price ; //.dataset.goodsPrice;
+	    var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
+	    var goods_sale = e.sale ; //currentTarget.dataset.sale;
+	    var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
+	    var activity_image = e.activity_image?e.activity_image:''
+	    var sku_id = objectId;
+	    image = image?image:activity_image?activity_image:'' ;
+	    getApp().globalData.hall_gotop = 0;
+	    wx.navigateTo({
+	      url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
+	    });
+	  },
+	  
+	  load: function() {
+	  	uni.createSelectorQuery().selectAll('.lazy').boundingClientRect((images) => {
+	  		images.forEach((image, index) => {
+	  			if (image.top <= this.windowHeight) {
+	  				this.venuesItems[image.dataset.index].show = true;
+	  			}
+	  		})
+	  	}).exec()
+	  },
+	  imageLoad: function(e) {
+	  	this.venuesItems[e.target.dataset.index].loaded = true
+	  },
+	   
     //定位数据  
     getleft: function (e) {
       var that = this;
-      that.setData({
-        scrollLeft: that.scrollLeft + 10
-      });
+	  var scrollLeft = that.scrollLeft
+	  that.scrollLeft = scrollLeft + 10;
+	  
     },
     // 打开全部子分类
     openAllTapTag: function (e) {
       var that = this;
       var hiddenallclassify = that.hiddenallclassify;
-      that.setData({
-        hiddenallclassify: !hiddenallclassify
-      });
+	  that.hiddenallclassify = !hiddenallclassify ;
     },
     goBack: function () {
       var pages = getCurrentPages();
@@ -244,46 +258,30 @@ export default {
         });
       }
     },
-    //事件处理函数
-    swiperchange: function (e) {//console.log(e.detail.current)
-    },
-
-    touchStart(e) {
-      var that = this; // console.log(e)
-
-      that.setData({
-        "startX": e.changedTouches[0].clientX,
-        "startY": e.changedTouches[0].clientY
-      });
-    },
-
-    touchEnd(e) {
-      var that = this;
-      let endX = e.changedTouches[0].clientX;
-      let endY = e.changedTouches[0].clientY;
-      let direction = util.getTouchData(endX, endY, that.startX, that.startY);
-      var toView = that.toView;
-
-      if (direction == 'right') {
-        if (that.toView < that.navList.length) {
-          toView--;
-        }
-      } else if (direction == 'left') {
-        if (that.toView > 0) {
-          toView++;
-        }
-      } else {//that.scrolltoupper(e)
-      }
-
-      that.setData({
-        toView: toView
-      });
-    },
+  // 轮播菜单
+  swiperChange(e){
+  	this.changeTab(e.detail.current)
+  },
+  // 切换菜单
+  changeTab(i){
+	var that = this
+	var navList = that.navList;
+	var index = i
+	var toView = index;
+  	that.activeIndex = i
+	if (index > 2 && index < navList.length) {
+	  toView = index - 2;
+	} else {
+	  toView = 0;
+	}
+	that.toView = toView ? toView : 0 ;
+	that.tab = navList[that.activeIndex].id
+	that.tab_value = navList[that.activeIndex].value
+  },
 
     // 点击获取对应分类的数据
     onTapTag: function (e) {
       var that = this; //var tab = e.currentTarget.id;
-
       var tab = e.currentTarget.dataset.id;
       var tab_value = e.currentTarget.dataset.value;
       var index = e.currentTarget.dataset.index;
@@ -301,68 +299,91 @@ export default {
       if (tab != 'search_goodsname') {
         search_goodsname = '';
       }
-
+	
       that.setData({
-        activeIndex: index,
+        activeIndex: parseInt(index),
         tab: tab,
         tab_value: tab_value,
         page: 1,
+        search_goodsname: search_goodsname,
         toView: toView ? toView : 0,
-        scrollTop: 0,
-        venuesItems_show: []
+        pageoffset: 0,
+		hiddenallclassify:!hiddenallclassify,
       });
-      console.log('toView:' + that.toView);
-      that.get_liveroom_list();
-
+      //console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
+      //that.get_goods_list();
       if (hiddenallclassify == false) {
         that.openAllTapTag();
       }
-
-      console.log(hiddenallclassify);
     },
+	
+    
     // 获取滚动条当前位置
     scrolltoupper: function (e) {
       var that = this;
+	  var scrollTop = e.detail.scrollTop
 
-      if (e.detail.scrollTop > 100) {
+      if ( scrollTop > 100) {
         this.setData({
           floorstatus: true
         });
 
-        if (that.platform == 'ios') {//that.getMoreGoodsTapTag() //苹果手机渲染更快，多给记录
-          //console.log('list scrolltoupper():', e.detail.scrollTop, that.data.platform)
+        if (that.platform == 'ios') {
+			
         }
       } else {
         this.setData({
           floorstatus: false
         });
-      } //console.log('list scrolltoupper():', e.detail.scrollTop)
-
+      } 
+	   
     },
-    //回到顶部
-    goTop: function (e) {
-      // 一键回到顶部
-      var that = this;
-      that.setData({
-        scrollTop: 0,
-        venuesItems_show: [],
-        page: 1,
-        pageoffset: 0
-      });
-      that.get_liveroom_list();
-    },
+	scroll: function(e) {
+		var that = this
+		var activeIndex = that.activeIndex ;
+		var old_scrollTop = that.venuesList[activeIndex].scrollTop  ;//that.old.scrollTop
+		var current_scrollTop = e.detail.scrollTop
+		that.venuesList[activeIndex].scrollTop = current_scrollTop ; //that.old.scrollTop
+		
+		if(current_scrollTop > old_scrollTop +60) {
+			that.getMoreGoodsTapTag() ;
+		}
+		//that.load() ;
+	},
+	//回到顶部
+	goTop: function (e) {
+	  // 一键回到顶部
+	  var that = this;
+	  var activeIndex = that.activeIndex
+	  that.page = 1
+	  that.pageoffset = that.venuesList[activeIndex].pageoffset 
+	  that.venuesList[activeIndex].scrollTop = 0 ;
+	  that.venuesList[activeIndex].venuesItems = [] ;
+	  that.get_goods_list();
+	  //console.log('goTop:', that.scrollTop);  
+	  // 解决view层不同步的问题
+	 
+	  that.$nextTick(function() {
+	  	that.venuesList[activeIndex].scrollTop = 0
+	  });
+	  //that.venuesList[activeIndex].scrollTop = that.old.scrollTop
+	},
+   
+    /*
     searchTapTag: function (e) {
       var that = this;
-      console.log('搜索关键字：' + that.search_goodsname);
+      //console.log('搜索关键字：' + that.search_goodsname);
       that.setData({
         venuesItems_show: []
       });
-      that.get_liveroom_list();
+      that.get_goods_list();
     },
-    getMoreGoodsTapTag: function (e) {
+	*/
+    getMoreGoodsTapTag: function () {
       var that = this;
-      var page = that.page + 1;
-      var all_rows = that.all_rows;
+	  var activeIndex = that.activeIndex;
+      var page = that.venuesList[activeIndex].page + 1;
+      var all_rows = that.venuesList[activeIndex].all_rows;
       var is_goodslist_loading = that.is_goodslist_loading;
       if (is_goodslist_loading) return;
 
@@ -374,22 +395,11 @@ export default {
           duration: 1000
         })
         */
-        that.setData({
-          loadingHidden: false,
-          loading_note: '已经到底了'
-        });
-        setTimeout(function () {
-          that.setData({
-            loadingHidden: true
-          });
-        }, 1000);
+	    that.status = 'nomore';
         return;
       }
-
-      that.setData({
-        page: page
-      });
-      that.get_liveroom_list();
+	  that.venuesList[activeIndex].page = page
+      that.get_goods_list();
     },
     search_goodsnameTapTag: function (e) {
       var that = this;
@@ -398,21 +408,29 @@ export default {
         keyword: keyword
       });
     },
-    get_liveroom_list: function (event) {
+    get_goods_list: function (event) {
       var that = this;
       var page = that.page;
       var pagesize = that.pagesize;
+      var pageoffset = that.pageoffset;
       var username = that.username;
       var token = that.token;
-      var shop_type = that.shop_type;
-      var live_type = that.tab;
-      var live_type_value = that.tab_value;
-      var show_max = that.show_max;
+	  var activeIndex = that.activeIndex;
+	  var live_type = that.tab;
+	  var live_type_value = that.tab_value;
+	  var all_rows = that.all_rows
+      var shop_type = that.shop_type; //var shape = 1
+
+      //var show_max = that.show_max;
+	  
       that.setData({
         is_goodslist_loading: true,
         loadingHidden: false
       });
-      wx.request({
+	  
+	  that.status = 'loading';
+	  
+      uni.request({
         url: weburl + '/api/client/get_liveroom_list',
         method: 'POST',
         data: {
@@ -429,64 +447,50 @@ export default {
           'Accept': 'application/json'
         },
         success: function (res) {
-          var venuesItems_show = that.venuesItems_show;
-          console.log('get_liveroom_list:', res.data, 'page:', page);
           var venuesItems_new = res.data.result;
           var all_rows = res.data.all_rows;
           var pageoffset = res.data.pageoffset;
 
           if (!venuesItems_new) {
+			  /*
             wx.showToast({
               title: '没有搜到记录',
               icon: 'loading',
               duration: 1000
             });
+			*/
             that.setData({
-              venuesItems_show: [],
-              all_rows: 0,
-              is_goodslist_loading: false,
+			  is_goodslist_loading: false,
               keyword: ''
             });
+			that.status = 'nomore';
             return;
-          } //var venuesItems = that.data.venuesItems
-
-
+          } 
+		  var venuesItems = that.venuesList[activeIndex].venuesItems
           if (venuesItems_new) {
             for (var i = 0; i < venuesItems_new.length; i++) {
-              venuesItems_new[i]['live_poster'] = venuesItems_new[i]['live_poster'] ? venuesItems_new[i]['live_poster'] : that.poster_image;
+				venuesItems_new[i]['live_poster'] = venuesItems_new[i]['live_poster'] ? venuesItems_new[i]['live_poster']:that.data.poster_image
+				if (venuesItems_new[i]['live_poster'].indexOf("http") < 0) {
+					venuesItems_new[i]['live_poster'] = weburl + '/' + venuesItems_new[i]['live_poster'];
+				}
+				venuesItems_new[i]['logo'] = venuesItems_new[i]['logo'] ? venuesItems_new[i]['logo']:that.data.logo_image
+				if (venuesItems_new[i]['logo'].indexOf("http") < 0) {
+					venuesItems_new[i]['logo'] = weburl + '/' + venuesItems_new[i]['logo'];
+				}
+			}
 
-              if (venuesItems_new[i]['live_poster'].indexOf("http") < 0) {
-                venuesItems_new[i]['live_poster'] = weburl + '/' + venuesItems_new[i]['live_poster'];
-              }
-
-              venuesItems_new[i]['logo'] = venuesItems_new[i]['logo'] ? venuesItems_new[i]['logo'] : that.logo_image;
-
-              if (venuesItems_new[i]['logo'].indexOf("http") < 0) {
-                venuesItems_new[i]['logo'] = weburl + '/' + venuesItems_new[i]['logo'];
-              }
-            }
-
-            if (page > 1 && venuesItems_new) {} //向后合拼
-            //venuesItems = that.data.venuesItems.concat(venuesItems_new);
-            //更新当前显示页信息
-
-
-            if (venuesItems_show.length >= show_max) {
-              venuesItems_show.shift();
-            }
-
-            that.setData({
-              //venuesItems: venuesItems,
-              ["venuesItems_show[" + (page - 1) + "]"]: venuesItems_new,
-              page: page,
-              all_rows: all_rows,
-              pageoffset: pageoffset,
-              keyword: ''
-            }, function () {
-              that.setData({
-                is_goodslist_loading: false
-              });
-            });
+            //if (page > 1 && venuesItems_new) {
+				 
+			//} //向后合拼
+           venuesItems = that.venuesItems.concat(venuesItems_new);
+		   that.venuesList[activeIndex].venuesItems = that.venuesList[activeIndex].venuesItems.concat(venuesItems);
+		   that.venuesList[activeIndex].page = page ;
+		   that.venuesList[activeIndex].pagesize = pagesize ;
+		   that.venuesList[activeIndex].all_rows = all_rows ;
+		   that.venuesList[activeIndex].pageoffset = pageoffset ;
+			setTimeout(function(){
+				that.is_goodslist_loading = false ;
+			}, 500)
           }
         }
       });
@@ -500,14 +504,15 @@ export default {
         url: weburl + '/api/client/get_menubar',
         method: 'POST',
         data: {
-          menu_type: 2
+          menu_type: 2,
+		  query_type:'APP',  
         },
         header: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Accept': 'application/json'
         },
         success: function (res) {
-          console.log('get_menubar:', res.data.result);
+         // console.log('get_menubar:', res.data.result);
           var navList_new = res.data.result;
 
           if (!navList_new) {
@@ -525,20 +530,31 @@ export default {
               break;
             }
           }
-
-          that.setData({
-            navList: navList_new,
-            index: navlist_toView,
-            activeIndex: navlist_toView,
-            tab: navList_new[navlist_toView]['id'],
-            tab_value: navList_new[navlist_toView]['value'],
-            venuesItems_show: []
-          }, function () {
-            that.setData({
-              loadingHidden: true
-            });
-            that.get_liveroom_list();
-          });
+			that.navList = navList_new ;
+			that.index = navlist_toView ;
+			that.activeIndex = navlist_toView ;
+			that.tab = navList_new[navlist_toView]['id'] ;
+			that.tab_value = navList_new[navlist_toView]['value'] ;
+			that.venuesItems_show = [] ;
+			that.navList.forEach((tabBar) => {
+				that.venuesList.push({
+					venuesItems: [],
+					refreshing: false,
+					refreshFlag: false,
+					refreshText: "",
+					isLoading: false,
+					loadingText: '加载中...',
+					isNoData: false,
+					pulling: false,
+					page: 0,
+					pagesize: that.pagesize,
+					all_rows: that.all_rows,
+					scrollTop:that.scrollTop,
+					angle: 0,
+				});
+			})
+			console.log('get_menubar venuesList:', that.venuesList);
+			//that.get_goods_list();
         }
       });
     },

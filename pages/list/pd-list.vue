@@ -28,7 +28,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="box-right">
+			<view class="box-right" v-if="list.length>1">
 				<view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index" @click="showGoods(item)">
 					<view class="venues_item" v-if="index%2==1"> 
 						<!-- <navigator :url="'/pages/details/details?id=' + item.id + '&activity_image=' + item.activity_image + '&image=' + item.image + '&info=' + item.act_info + '&name=' + item.name + '&gov_price=' + item.gov_price + '&goods_price=' + item.sell_price + '&goods_marketprice=' + item.market_price + '&sale=' + item.sale + '&goods_info=' + item.act_info + '&goods_org=' + item.goods_org + '&goods_tag=' + item.goods_tag + '&goods_shape=' + item.shape+ '&card_type=' + item.card_type" hover-class="none"> -->

@@ -878,6 +878,7 @@ page {
   font-weight: normal;
   margin-left: 10rpx;
 }
+
 .recomment-title text.more {
   font-size: 24rpx;
   line-height: 50rpx;
@@ -886,14 +887,28 @@ page {
   text-align: right;
   display: none;
 }
+
 recomment-title button {
+  line-height: 50rpx;
+  text-align: center;
+  width: 150rpx;
+  height: 40rpx;
+  background-color: #E52445;
+  color: white;
+  font-size: 20rpx;
+  margin:0 auto;
+  border-radius: 10rpx;
+  padding:5rpx 10rpx 5rpx 10rpx;
+}
+
+.recomment-title button {
   line-height: 60rpx;
   text-align: center;
   width: 150rpx;
   height: 60rpx;
   background-color: #E52445;
   color: white;
-  font-size: 25rpx;
+  font-size: 30rpx;
   margin:0 auto;
   border-radius: 10rpx;
   padding:0 auto;

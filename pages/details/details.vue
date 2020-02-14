@@ -1617,7 +1617,8 @@ export default {
           },
           // HTTP 请求中其他额外的 form data
           success: function (res) {
-            var retinfo = JSON.parse(res.data.trim()); //console.log('upimg upload url:', retinfo['result']['img_url'])
+            var retinfo = JSON.parse(res.data.trim()); 
+			console.log('upimg upload url:', retinfo['result']['img_url'])
 
             if (retinfo['status'] == "y") {
               if (is_logo == 1) {
@@ -2875,9 +2876,9 @@ export default {
 			that.sku_delivery_price = sku_delivery_price ;
 			that.add_cart_title = '商品名称' ;
 			that.wishflag = 0 ;
-          console.log('挑选 sku_id:' + commodityAttr[0].id, 'modalHidden:', modalHidden);
+          console.log('挑选 sku_id:' , commodityAttr[0].id, 'modalHidden:', modalHidden);
         } else {
-          console.log('送礼 sku_id:' + commodityAttr[0].id, 'attrValueList:', attrValueList);
+          console.log('送礼 sku_id:' ,commodityAttr[0].id, 'attrValueList:', attrValueList);
           that.modalHidden = !modalHidden ;
           that.sku_id = sku_id ;
           that.sku_sell_price = sku_sell_price ;
@@ -2895,7 +2896,7 @@ export default {
         setTimeout(function () {
           goodsmodel_count = goodsmodel_count + 1;
           if (goodsmodel_count < 15) {
-            wx.showToast({
+            uni.showToast({
               title: "加载中...",
               icon: 'loading',
               duration: 1000

@@ -61,15 +61,14 @@ page {
 }
 .container {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     overflow-x: hidden;
-    margin: 45rpx 0 0 0;
-    padding-bottom: 100rpx;
+	z-index:-1;
 }
 
 .all-classify{ 
- width: 100%;
-  background: rgba(1, 1, 1, 0.9); 
+  width: 100%;
+  background: #1D1D1D; 
   display: flex;
   color: #fff;
   flex-direction: column;
@@ -78,7 +77,7 @@ page {
   white-space: wrap;
   top:0;
   position: fixed;
-  z-index: 999;
+  z-index: 1000;
 } 
 .catg-title {
   display: flex;
@@ -102,24 +101,26 @@ page {
   padding:20rpx;
   margin-left:-20rpx;
 }
+
 .all-classify-list{ 
   display:flex;
   flex-direction: row;
   flex-wrap:wrap;
   color: #eeeeee;
   text-align: left;
-   margin-bottom: 30rpx;
-   padding: 10rpx ;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+  padding: 10rpx ;
 } 
 .all-classify-item {
   color: #eeeeee;
-  width: 150rpx;
+  width: 160rpx;
   height: 50rpx;
   text-align: center;
   /* line-height: 72rpx; */
-  font-size: 26rpx;
+  font-size: 25rpx;
   border-radius: 10rpx;
-  margin:10rpx 15rpx;
+  margin:10rpx 10rpx;
   line-height: 50rpx;
 }
 .all-classify-item-active{
@@ -128,66 +129,61 @@ page {
   background: #E52445;
 }
 
-.top-bar-list{  
+.banner {
+	width: 100%;
+	height: 120rpx;
+	padding-top: 0rpx;
+	position: fixed;
+	top:0rpx;
+	z-index: 999;
+}
+.top-bar-list {  
   display: flex;
   direction: row;
   align-items: left;
   text-align: left;
 } 
 
-.banner {
-	width: 100%;
-  height: 100rpx;
-	padding-top: 0rpx;
-  background: #1d1d1d; 
-	/*margin-left: 15rpx;*/
-  z-index: 99;
-}
-
 /*导航 nav*/
 .top-bar {
-  /*
-  display: flex;
-  flex-direction: row;
-  justify-content:flex-start;
-  flex-wrap: nowrap;
-  height: 162rpx;
-  */
-  
   white-space: nowrap;
   text-align: center;
-  width: 92%;
-  height: 70rpx;
+  width: 91%;
+  height: 60rpx;
   overflow-y: hidden;
-  background: #1d1d1d; 
-  position: fixed;
-  top:0;
-  z-index:99;
-  margin-bottom: 20rpx;
+  background: #1D1D1D; 
+  z-index:999;
+  padding: 15rpx;
+  margin-right:50rpx;
 }
+
 .top-bar-item {
   display:inline-block;
   color: #fff;
   text-align: center;
-  line-height: 50rpx;
+  line-height: 60rpx;
   font-size: 28rpx;
+  z-index:999;
   padding: 0 20rpx;
   margin: 0 10rpx;
   border-radius: 10rpx;
 }
+
 .top-bar-active {
   color: #fff;
   background: #E52445;
 }
+
 .top-bar-image {
   position: fixed; 
   top: 0;   
   right: 0; 
-  width:40rpx;
-  height:30rpx;
-  margin:10rpx auto;
-  z-index:1000;
-  padding-right: 15rpx;
+  width:9%;
+  line-height: 100rpx;
+  margin: 0rpx auto;
+  text-align: center;
+  background: #1D1D1D; 
+  z-index:1001;
 }
 /*辅助导航 nav2*/
 .top-bar2 {
@@ -226,13 +222,14 @@ swiper-item image {
 
 .venues_box {
   padding: 10rpx 0 100rpx 0;
-  margin: 0 auto;
+  margin: 0rpx auto;
   width: 96%;
   overflow: hidden;
-  z-index: 1;
+  z-index: -1;
 }
 
 .venues_item {
+  padding-top:10rpx;
   margin-bottom:15rpx;
   background: #ffffff;
   border-radius: 14rpx;

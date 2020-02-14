@@ -1,0 +1,1316 @@
+<template>
+<view class="nlv__container">
+	<view class="nlv_main">
+	<swiper class="nlv-swiper" :indicator-dots="false" :vertical="false" :current="videoIndex" @change="handleSlider">
+		<swiper-item v-for="(item, index) in vlist" :key="index">
+			<view class="nlv-playerbox">
+				<video 
+				@error="playwaiting" 
+				:id="'myVideo' + index" 
+				:ref="'myVideo' + index" 
+				class="player-video" 
+				:src="item.src" 
+				:autoplay="index == videoIndex" 
+				:controls="false" 
+				:loop="false" 
+				:show-center-play-btn="false"  
+				:show-play-btn="false"
+				:objectFit="video_mode" 
+				:style="{height: video_winHeight, width: video_winWidth}" 
+				>
+				</video>
+				<!--
+				<live-player
+				  :id="'myVideo' + index"   
+				  :ref="'myVideo' + index" 
+				  :src="item.src" 
+				  autoplay
+				  @statechange="statechange"
+				  @error="playwaiting"
+				  :style="{height: winHeight, width: winWidth}"
+				/>
+				-->
+				
+				<view class="nlv_topbar" :style="{ height: headerBarH, 'padding': statusBarH }">
+					<view class="topbar-info">
+						<view class="avator-box">
+							<image class="ta-avator-hoster" :src="item.avator" mode="aspectFill" />
+							<view class="tabox">
+								<text class="ta-name">{{item.author}}</text>
+								<text class="ta-num">{{item.hotNum}}</text>
+							</view>
+							<text class="ta-gz" :class="item.attention ? 'ta-gz-on' : ''" @tap="focus_liveroom(index)">{{item.attention ? '已关注' : '关注'}}</text>
+						</view>
+						<scroll-view class="avator-scroll" scroll-x show-scrollbar="false">
+							<image v-if="live_memberList[0]" class="ta-avator" style="margin-left:10rpx;" :src="live_memberList[0]['wx_headimg']" mode="aspectFill" />
+							<image v-if="live_memberList[1]" class="ta-avator" style="margin-left:20px;" :src="live_memberList[1]['wx_headimg']" mode="aspectFill" />
+							<image v-if="live_memberList[2]" class="ta-avator" style="margin-left:35px;" :src="live_memberList[2]['wx_headimg']" mode="aspectFill" />
+						</scroll-view>
+						<text class="member-num" @tap.stop="goBack">{{item.attentionNum?'在线:'+item.attentionNum:'在线:'+0}}</text>
+						<text class="iconfont" style="padding: 10rpx; width:50rpx;height:50rpx;color:#FFFFFF;font-size: 30rpx;" @tap.stop="goBack">&#xe624;</text>
+					</view>
+					<!-- 
+					<view class="topbar-right"><text class="topbar_ico iconfont" @tap="GoBack">&#xe84f;</text></view>
+					-->
+				</view>
+				
+			<!-- 
+				<view class="nlv-rankbox" :style="{top: headerBarH}">
+					<view class="nlv-rkls">
+						<text class="rkitem">总排名{{item.allRank}}</text><text v-if="item.hourRank" class="rkitem">小时榜第{{item.hourRank}}名</text>
+					</view>
+					<text class="nlv-uid">直播:{{item.uid}}</text>
+				</view>
+			-->
+		</view>
+		</swiper-item>
+	</swiper>
+	</view>
+	
+	<view class="nlv-footToolbar">
+	<!--
+	<view class="nlv-giftTipPanel">
+		<view class="giftip-item">
+			<image class="gt-avator" src="/static/uimg/u__chat_img5.jpg" mode="aspectFill" />
+			<view class="gt-info">
+				<text class="gt-tit">依拉曼💄</text>
+				<text class="gt-subtit">送主播 爱心球</text>
+			</view>
+			<image class="gt-gift" src="/static/gift/gift-img11.png" mode="aspectFill" />
+		</view>
+	</view>	
+	-->
+		<list v-if="modalDanmuHidden" class="nlv-rollMsgPanel" scrollable="true" >
+			<cell v-for="(msgitem, msgidx) in danmuList" :key="msgidx" class="list-item" :ref="'msgitem'" >
+				<view class="nlv-msglist">
+					<view class="msg_bg">
+						<text class="msg_name">{{msgitem.uname}}</text> 
+						<text class="msg_text">{{msgitem.content}}</text>
+					</view>
+				</view>
+			</cell>
+		</list>
+		<!--
+		<scroll-view v-if="modalDanmuHidden" class="nlv-rollMsgPanel" scroll-y show-scrollbar="false">
+		 <view  ref="box" class="box">
+		 	<block v-for="(msgitem, msgidx) in danmuList" :key="msgidx" :ref="'msgitem'">
+		 	 	<view class="nlv-msglist">
+		 	 		<view class="msg_bg">
+		 	 			<text class="msg_name">{{msgitem.uname}}</text> 
+		 	 			<text class="msg_text">{{msgitem.content}}</text>
+		 	 		</view>
+		 	 	</view>
+		 	</block>
+		</view>
+		</scroll-view>
+		-->
+		<view class="nlv-infobox">
+			<view class="nlv_reply" @tap="handleRollMsg(index)">
+				<text class="nlv_reply_text">说点什么...</text>
+			</view>
+			<view class="nlv_btntool">
+				<view class="btn-toolitem" @tap="danmuShow()"> 
+					<text class="iconfont i-btntool" >{{modalDanmuHidden?'&#xe67c;':'&#xe618;'}}</text>
+				</view>
+		 
+				<view class="btn-toolitem" @tap="handleLiveCart(index)">
+					<text class="iconfont i-btntool" style="color: #fff;font-size: 20px;">&#xe61e;</text>
+				</view>
+		<!--
+		<view class="btn-toolitem btn-toolitem-cart" @tap="handleLiveGift">
+			<text class="iconfont i-btntool">&#xe600;</text>
+		</view>
+		-->
+				<view class="btn-toolitem" @tap="live_share">
+					<text class="iconfont i-btntool">&#xe682;</text>
+				</view>
+				<view class="btn-toolitem" @tap="prize_liveroom">
+					<text class="iconfont i-btntool" style="color: #ff4e0e;font-size: 20px;">&#xe63b;</text>
+				</view>
+			</view>
+		</view>
+	</view>
+	<live-cart ref="liveCart" :vlist="vlist" />
+	<live-danmu ref="liveDanmu" :vlist="vlist" />
+	<roll-msg ref="rollMsg" :vlist="vlist" />
+	<live-share ref="liveShare" />
+</view>
+</template>
+
+<script>
+	const liveJson = require('../mock-live.js')
+	import liveCart from './cp-live/cart.vue'
+	import rollMsg from './cp-live/rollmsg'
+	import liveShare from './cp-live/share'
+	import liveDanmu from './cp-live/danmu'
+	var weburl = getApp().globalData.weburl;
+	var playerurl = getApp().globalData.playerurl;
+	var appid = getApp().globalData.appid;
+	var appsecret = getApp().globalData.secret;
+	var user_type = getApp().globalData.user_type ? getApp().globalData.user_type : 0;
+	var shop_type = getApp().globalData.shop_type;
+	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+	var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+	var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
+	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : ''; 
+	
+	let timer = null
+	function getRandomColor() {
+	  let rgb = [];
+	
+	  for (let i = 0; i < 3; ++i) {
+	    let color = Math.floor(Math.random() * 256).toString(16);
+	    color = color.length == 1 ? '0' + color : color;
+	    rgb.push(color);
+	  }
+	
+	  return '#' + rgb.join('');
+	} // 弹幕参数
+	
+	// #ifdef APP-NVUE
+	  const dom = weex.requireModule('dom')
+	  // #endif
+	export default {
+		data() {
+			return {
+				statusBarH: '',
+				headerBarH: '',
+				winHeight: '',
+				winWidth: '',
+				video_winHeight: '',
+				video_winWidth: '',
+				videoIndex: 0,
+				vlist: liveJson,
+				clickNum: 0,	//记录点击次数
+				
+				m_id: m_id,
+				is_hoster: false,
+				nickName: userInfo.nickName,
+				refername: '',
+				liveid: '3954',
+				streamname: 'sendheart_3989.m3u8',
+				playerurl: playerurl,
+				advurl: weburl + '/uploads/live_adv_video.mp4',
+				currentWebview:null,
+				videoplayer:null,
+				videourl: '',
+				videoList:[],
+				liveurl: '',
+				live_members: 1,
+				live_members_info: '',
+				live_memberList:[],
+				live_starttime: 0,
+				live_focus_status: false,
+				live_sub_name: '人气值:1',
+				live_goods: '',
+				live_status: '0',
+				is_live_loading:false,
+				is_live:false,
+				errorhidden: true,
+				error_message: '',
+				poster_image: weburl + '/uploads/video_poster_image.png',
+				video_mode:'fill',
+				page: 1,
+				pagesize: 10,
+				pageoffset: 0,
+				goods_page: 1,
+				goods_pagesize: 20,
+				goods_all_rows: 0,
+				goods_num: 1,
+				venuesItems: [],
+				danmuServ: [],
+				danmuList: [],
+				danmustatus: true,
+				tanmuHidden: true,
+				modalDanmuHidden: true,
+				cur_danmu_num: 0,
+				danmu_num_max: 200,
+				danmu_scrollTop: 0,
+				shareInfo: [
+					{
+						text: '微信好友',
+						icon: '/static/images/wx_logo.png',
+						name: 'wxfriend'
+					},
+					{
+						text: '微信朋友圈',
+						icon: '/static/images/wx2_logo.png',
+						name: 'wxcomm'
+					}
+				],
+				size: {
+					width: 0,
+					height: 0,
+					top: 0,
+					bottom: 0,
+					left: 0,
+					right: 0
+				},	
+			}
+		},
+		components: {
+			liveCart, 
+			rollMsg, 
+			liveShare,
+			liveDanmu
+		},
+		beforeCreate() {
+			// #ifdef APP-PLUS
+			const domModule = weex.requireModule('dom')
+			domModule.addRule('fontFace', {
+				fontFamily: "nvueIcon",
+				'src': "url('../../../static/fonts/iconfont.ttf')"
+			});
+			// #endif
+		},
+		created() {
+			let _sH = uni.getSystemInfoSync().statusBarHeight
+			let _hH = _sH + 20
+			let _wH = uni.getSystemInfoSync().windowHeight
+			let _wW = uni.getSystemInfoSync().windowWidth 
+			let _vH = uni.getSystemInfoSync().windowHeight
+			let _vW = uni.getSystemInfoSync().windowWidth
+			this.statusBarH = '10px'  ;//`${_sH}px`
+			this.headerBarH = `${_hH}px`
+			this.winHeight = `${_wH}px`
+			this.winWidth = `${_wW}px`
+			this.video_winHeight = `${_vH}px`
+			this.video_winWidth = `${_vW}px`
+		},
+		onLoad(options) {
+			var that = this;
+			var index = options.index?options.index:0
+			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
+			var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+			var liveid = options.liveid ? options.liveid : '3954';
+			var live_goods = options.live_goods ? options.live_goods : '';
+			var live_name = options.live_name ? options.live_name : '送心礼物';
+			var live_poster = options.live_poster ? options.live_poster : that.poster_image;
+			var live_desc = options.live_desc ? options.live_desc : that.share_desc;
+			var live_logo = options.live_logo ? options.live_logo : that.share_logo;
+			var live_status = options.live_status ? options.live_status : that.live_status;
+			var advurl = options.advurl ? options.advurl : that.advurl;
+			var playerurl = that.playerurl;
+			var streamname = options.liveid ? 'sendheart_' + liveid + '.m3u8' : that.streamname;
+			var refername = options.refername ? options.refername : '';
+			if (options) {
+				that.onload_options = options
+			}
+			that.m_id = m_id
+			that.nickName = userInfo.nickName
+			that.liveurl = playerurl + '/' + streamname
+			that.live_goods = live_goods
+			that.live_name = live_name
+			that.live_poster = live_poster
+			that.live_desc = live_desc
+			that.live_logo = live_logo
+			that.liveid = liveid
+			that.is_live = live_status==1?true:false
+			that.video_mode = live_status==1?'fill':'contain'
+			that.refername = refername
+			that.query_liveroom_info();
+			//that.get_goods_list();
+			console.log('options:',options,' is_live:',that.is_live)
+			uni.getSystemInfo({
+				success: function (res) {
+			      let winHeight = res.windowHeight;
+			      let winWidth = res.windowWidth;
+					that.dkheight = winHeight
+					that.winHeight = winHeight
+					that.winWidth = winHeight
+			      console.log(winHeight);
+			    }
+			})
+			console.log('player onLoad liveurl:', that.liveurl, ' liveid:', liveid, ' video_mode:', that.video_mode, ' live_name:', live_name, ' playerurl:', playerurl);
+			that.videoIndex = parseInt(index)
+		},
+		onReady() {
+			var that = this
+			that.init()
+			that.query_live_member();
+			setTimeout(function () {
+			  that.queryDanmu();
+			}, 1000);
+		},
+		methods: {
+			query_live_member: function (event) {
+			  var that = this;
+			  var member_page = that.member_page;
+			  var member_pagesize = that.member_pagesize;
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var live_members = that.live_members;
+			  var liveid = that.liveid;
+			  var liver_starttime = that.live_starttime;
+			  var live_memberList = that.live_memberList;
+			  var live_type = 1;
+			  var live_headimg = that.live_headimg;
+			  var live_headimg_max = that.live_headimg_max;
+			  var videoIndex = that.videoIndex?that.videoIndex:0
+			  that.is_member_loading = true
+			  that.loadingHidden = false
+			 
+			  uni.request({
+			    url: weburl + '/api/client/query_live_member',
+			    method: 'POST',
+			    data: {
+			      post_id: liveid,
+			      post_type: live_type,
+			      liver_starttime: liver_starttime,
+			      username: username,
+			      access_token: token,
+			      page: member_page,
+			      pagesize: member_pagesize,
+			      shop_type: shop_type
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+			      console.log('query_live_member:', res.data)
+			      var live_memberList = res.data.result;
+			      var all_rows = res.data.all_rows;
+			
+			      if (!live_memberList) {
+			        if (member_page == 1) {
+						that.live_memberList = []
+						that.member_all_rows = 0
+			        }
+			        return;
+			      }
+			
+			      for (var i = 0; i < live_memberList.length; i++) {
+			        if (live_memberList[i]['wx_headimg'].indexOf("http") < 0) {
+			          live_memberList[i]['wx_headimg'] = weburl + '/' + live_memberList[i]['wx_headimg'];
+			        }
+			
+			        if (i < live_headimg_max) {
+			          if (live_headimg.length > live_headimg_max - 1) live_headimg.shift();
+			          live_headimg.push(live_memberList[i]['wx_headimg']);
+			        }
+			      }
+			
+			      if (member_page > 1 && live_memberList) {
+			        //向后合拼
+			        live_memberList = that.live_memberList.concat(live_memberList);
+			      }
+			
+			      var live_members = (all_rows - member_page) * member_pagesize + live_memberList.length;
+			      live_members = live_members > 10000 ? (live_members / 10000).toFixed(2) : live_members;
+			      var live_members_info = live_members > 10000 ? live_members + '万' : live_members;
+			      that.live_headimg = live_headimg
+				  that.live_memberList = live_memberList
+				  that.member_all_rows = all_rows
+				  that.live_members = live_members
+				  that.member_page = member_page
+				  that.loadingHidden = true
+				  that.is_member_loading = false
+				  that.live_members_info = live_members_info
+				  
+				  that.vlist[videoIndex].attentionNum = that.live_members?that.live_members:0
+					console.log('query_live_member:', JSON.stringify(that.live_memberList), ' all_rows:', all_rows, ' live_headimg:', JSON.stringify(live_headimg))
+			    }
+			  })
+			},
+			saveDanmu: function (danmu) {
+			  var that = this;
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : '';
+			  var nickName = that.nickName;
+			  var liveid = that.liveid;
+			  if (!danmu) return;
+			  uni.request({
+			    url: weburl + '/api/client/save_danmu',
+			    method: 'POST',
+			    data: {
+			      username: username ? username : openid,
+			      m_id: m_id,
+			      liveid: liveid,
+			      access_token: token,
+			      danmu: danmu,
+			      nickname: nickName,
+			      shop_type: shop_type
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+			      if (res.data.status == 'n') {
+			        uni.showToast({
+			          title: res.data.info ? res.data.info : '弹幕上传失败',
+			          icon: 'none',
+			          duration: 2000
+			        });
+			      } else {
+			        uni.showToast({
+			          title: '发布成功',
+			          icon: 'none',
+			          duration: 1500
+			        });
+			        
+			        console.log('弹幕信息保存完成:', that.inputValue);
+			      }
+			    }
+			  });
+			},
+			danmu_scroll_auto: function () {
+			  // 获取scroll-view的节点信息
+			  //创建节点选择器
+				var that = this;
+				var is_live = that.is_live;
+				var danmuList = that.danmuList;
+				var danmuLen = that.danmuList.length>0?that.danmuList.length-1:0
+
+				//const scrollToCell = this.$refs.msgitem[danmuLen];
+				setTimeout(function () {
+				  if(that.$refs.msgitem){
+				  	dom.scrollToElement(that.$refs.msgitem[danmuLen], {})
+				  	console.log('danmu_scroll_auto 弹幕刷新  :', that.$refs.msgitem[danmuLen], ' danmuLen:'+ danmuLen, ' danmuList:', danmuList);
+				  }
+				}, 300);
+				
+			  /*
+			  var cur_danmu_num = that.cur_danmu_num;
+			  var danmu_scrollTop = that.danmu_scrollTop + cur_danmu_num * 25;
+			  const result = dom.getComponentRect(this.$refs.box, option => {
+				console.log('getComponentRect:',option)
+				this.size = option.size
+			  })
+			  */ 
+			
+			  			 
+			  //if (is_live) return;
+			  /*
+			  var query = uni.createSelectorQuery();
+			  query.select('.nlv-rollMsgPanel').boundingClientRect();
+			  query.select('.danmu-scroll-list').boundingClientRect();
+			  console.log('danmu_scroll_auto 弹幕刷新  is_live:'+ is_live+ ' cur_danmu_num:'+ cur_danmu_num+ ' danmuList:'+ danmuList);
+			 
+			  query.exec((res) => {
+			    var containerHeight = res[0].height;
+			    var listHeight = res[1].height; // 滚动条的高度增加
+			
+			    if (danmu_scrollTop > listHeight - containerHeight) {
+					that.danmu_scrollTop = danmu_scrollTop
+			    }
+			    console.log('弹幕信息刷新完成 res:', res, ' listHeight:', listHeight, ' danmu_scrollTop:', danmu_scrollTop, ' cur_danmu_num:', cur_danmu_num, ' danmuList:', that.danmuList);
+			  });
+			  */
+			  
+			},
+			queryDanmu: function () {
+			  var that = this;
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var nickName = this.nickName ? this.nickName + ':' : '';
+			  var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : '';
+			  var liveid = that.liveid;
+			  var danmuList = that.danmuList;
+			  var danmu_num_max = that.danmu_num_max;
+			  var live_adv_note = [];
+			  var live_adv_goods = [];
+			  var page = that.page;
+			  var pagesize = that.pagesize;
+			  var pageoffset = parseInt(that.pageoffset);
+			  var danmustatus = that.danmustatus;
+			  var is_danmu_loading = that.is_danmu_loading;
+			  var cur_danmu_num = 0;
+			  var videoIndex = that.videoIndex
+			  
+			  if (!danmustatus || is_danmu_loading) {
+			    console.log('弹幕信息正在加载 live id:', liveid, 'm_id:', m_id, ' pageoffset:', pageoffset);
+			    return;
+			  }
+			  that.is_danmu_loading = true
+		
+			  //console.log('获取服务端弹幕信息 live id:', liveid, 'm_id:', m_id, ' pageoffset:', pageoffset)
+			
+			  uni.request({
+			    url: weburl + '/api/client/query_danmu',
+			    method: 'POST',
+			    data: {
+			      username: username ? username : openid,
+			      m_id: m_id,
+			      liveid: liveid,
+			      access_token: token,
+			      shop_type: shop_type,
+			      pageoffset: pageoffset,
+			      page: page,
+			      pagesize: pagesize
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+			      if (res.data.status == 'y') {
+			        var danmuServ = res.data.result;
+			        var all_rows = parseInt(res.data.all_rows); 
+					console.log('获取服务端弹幕信息完成:', res.data)
+			
+			        if (danmuServ && danmuServ.danmu_list) {
+			          for (var i = 0; i < danmuServ.danmu_list.length; i++) {
+			            if (danmuServ.danmu_list[i].type == 0) {
+			              // 弹幕信息
+			              var nickName = danmuServ.danmu_list[i]['nickname'] ? danmuServ.danmu_list[i]['nickname'] + ':' : '';
+			              var background_color = nickName ? getRandomColor() : '#e34c55';
+			              var cur_danmu = {
+							id:	danmuServ.danmu_list[i]['id'],
+							uname: nickName,
+			                content: danmuServ.danmu_list[i]['content'],
+			                color: getRandomColor(),
+			                background_color: background_color
+			              };
+			
+			              if (danmuList.length > danmu_num_max - 1) {
+			                danmuList.shift();
+			              }
+			
+			              danmuList.push(cur_danmu);
+			              cur_danmu_num = cur_danmu_num + 1;
+						  
+			            } else if (danmuServ.danmu_list[i].type == 1) {
+			              //note通知
+			              var cur_adv_note = danmuServ.danmu_list[i]['content'] ? JSON.parse(danmuServ.danmu_list[i]['content']) : '';
+			
+			              if (cur_adv_note['list']) {
+			                //note通知
+			                for (var k = 0; k < cur_adv_note['list'].length; k++) {
+			                  if (cur_adv_note['list'][k]['image'].indexOf("http") < 0) {
+			                    cur_adv_note['list'][k]['image'] = weburl + '/' + cur_adv_note['list'][k]['image'];
+			                  }
+			
+			                  if (cur_adv_note['list'][k]['m_id'] == m_id) {
+			                    cur_adv_note['sub_title'] = '恭喜您中奖了!';
+			                  }
+			                }
+			              }
+			
+			              live_adv_note.push(cur_adv_note);
+			              if (!cur_adv_note['sub_title'] && !cur_adv_note['note']) cur_adv_note['sub_title'] = '很遗憾，您本次没有中奖~';
+			            } else if (danmuServ.danmu_list[i].type == 2) {
+			              //商品推荐
+			              var cur_adv_goods = danmuServ.danmu_list[i]['content'] ? JSON.parse(danmuServ.danmu_list[i]['content']) : '';
+			
+			              if (cur_adv_goods['image'].indexOf("http") < 0) {
+			                cur_adv_goods['image'] = weburl + '/' + cur_adv_goods['image'];
+			              }
+			
+			              live_adv_goods.push(cur_adv_goods);
+			            }
+			          }
+			        }
+			
+			        var live_focus_num = danmuServ.focus_num ? danmuServ.focus_num : 0;
+			        var live_focus_status = danmuServ.focus_status ? danmuServ.focus_status : that.live_focus_status;
+			        var live_sub_name = live_focus_num > 10000 ? '人气:' + (live_focus_num / 10000).toFixed(2) + '万' : '人气:' + live_focus_num;
+			        if (all_rows > 0) pageoffset = all_rows;
+			        
+			        that.live_focus_num = live_focus_num
+					that.live_sub_name = live_sub_name
+					that.danmuList = danmuList
+					that.pageoffset = all_rows > 0 ? pageoffset : that.pageoffset
+					that.cur_danmu_num = cur_danmu_num?cur_danmu_num:0
+					that.modalAdvNotehidden = live_adv_note.length > 0 ? false : that.modalAdvNotehidden
+					that.live_adv_note = live_adv_note ? live_adv_note : that.live_adv_note
+					that.modalAdvGoodshidden = live_adv_goods.length > 0 ? false : that.modalAdvGoodshidden
+					that.live_adv_goods = live_adv_goods ? live_adv_goods : that.live_adv_goods
+			      }
+				  that.vlist[videoIndex].hotNum = that.live_sub_name
+				  that.vlist[videoIndex].attention = live_focus_status
+				  that.is_danmu_loading = !that.is_danmu_loading
+				  that.danmu_scroll_auto()
+				  console.log('获取服务端弹幕/商品推荐/通知信息完成 all_rows:', all_rows, 'pageoffset:', pageoffset, ' danmuList:', danmuList);
+			    }
+			  });
+			 
+			  setTimeout(function () {
+			    that.queryDanmu();
+			    that.query_live_member();
+			  }, 1000 * 10);
+			},
+			
+			bindPlay: function () {
+			  var that = this;
+			  uni.onNetworkStatusChange(function (res) {
+			    if (res.isConnected) {
+			      //
+			      console.log('player bindPlay 网络正常 重新播放'); // console.log('player bindPlay 重新播放')
+			      that.videoContext.play();
+			    } else {
+			      console.log('player bindPlay 网络异常，播放错误');
+			      that.playerror();
+			    } //console.log(res.isConnected)
+			    //console.log(res.networkType)
+			
+			  });
+			  /*
+			   wx.redirectTo({
+			    url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live
+			  })
+			  wx.reLaunch({
+			    url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live
+			  })
+			  */
+			},
+			//重新播放视频
+			rePlay: function () {
+			  var that = this;
+			  uni.onNetworkStatusChange(function (res) {
+			    if (res.isConnected) {
+			      console.log('player rePlay 网络正常 重新播放');
+			    } else {
+			      console.log('player bindPlay 网络异常，播放错误');
+			      that.playerror();
+			    }
+			  });
+			  that.setData({
+			    live_status: '1'
+			  }); //that.videoContext.stop()
+			
+			  setTimeout(function () {
+			    //that.videoContext = wx.createVideoContext('myVideo')
+			    that.videoContext.play();
+			  }, 300);
+			  /*
+			  wx.navigateTo({
+			    url: '/pages/player/player?liveid=' + that.data.liveid + '&live_goods=' + that.data.live_goods + '&live_name=' + that.data.shop_name + '&live_poster=' + that.data.live_poster + '&live_desc=' + that.data.live_desc + '&live_logo=' + that.data.live_logo + '&is_live=' + that.data.is_live,
+			  }) 
+			  */
+			},
+			
+			playerror(e) {
+			  var that = this;
+			  var error_message = '!';
+			  var errorTitile = '';
+			  var errorhidden = that.errorhidden; //this.videoContext.pause()
+			
+			  console.log('player playerror 播放错误', e); //判断异常情况
+			
+			  that.query_liveroom_info();
+			 
+			  //that.playwaiting()
+			},
+			
+			playwaiting(e) {
+			  var that = this;
+			  //console.log('player playwaiting 播放等待 e:',e); 
+			  that.query_liveroom_info();
+			},
+			
+			errorConfirmPlay(e) {
+			  var that = this;
+			  var errorhidden = that.errorhidden;
+			  var live_status = that.live_stauts;
+			  var is_live = that.is_live;
+			  var onload_options = that.onload_options ? that.onload_options : '';
+				console.log('player errorConfirmPlay 播放结束 is_live:'+is_live); 
+			  if (live_status == 0 || live_status == 2) {
+			    //播放结束
+			    uni.navigateBack({
+			      delta: 1
+			    });
+			  } else {
+			    that.playwaiting();
+			  }
+			},
+			
+			errorCancelPlay(e) {
+			  var that = this;
+			  uni.navigateBack({
+			    delta: 1
+			  });
+			},
+			danmuShow() {
+			  var that = this;
+			  var modalDanmuHidden = that.modalDanmuHidden; 
+			  that.modalDanmuHidden = !modalDanmuHidden ;
+			  if(that.modalDanmuHidden) that.danmu_scroll_auto()
+			},
+			query_liveroom_info: function (event) {
+			  var that = this;
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : '';
+			  var liveid = that.liveid;
+			  var is_hoster = that.is_hoster;
+			  var live_status = that.live_status;
+			  var is_live = that.is_live;
+			  var is_live_loading = that.is_live_loading;
+			  var videoIndex = that.videoIndex
+			  //console.log('query_liveroom_info 获取直播间信息 is_live_loading:',is_live_loading)
+			  if (is_live_loading) {
+				console.log('query_liveroom_info 正在加载 is_live_loading:',is_live_loading)
+			    return;
+			  }
+			  that.is_live_loading = true
+			  
+			  uni.request({
+			    url: weburl + '/api/client/get_liveroom_list',
+			    method: 'POST',
+			    data: {
+			      username: username,
+			      access_token: token,
+			      liveid: liveid,
+			      shop_type: shop_type
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+				  that.is_live_loading = false
+			      if (res.data.status != 'y') {
+						that.videourl = that.liveurl
+						that.live_focus_status = true
+						return;
+			      }
+				  
+			      var liveinfo = res.data.result;
+			      if (is_live && live_status == 3 && liveinfo[0]['live_status'] == 1) {
+			        //暂停恢复
+			        //console.log('player rePlay 暂停恢复 重新播放');
+			        that.rePlay();
+			        return;
+			      }
+				  that.live_status = liveinfo[0]['live_status']
+			     
+			      if (liveinfo[0]['live_status'] == 2) {
+			        //锁定状态
+			        uni.showToast({
+			          title: '暂无视频',
+			          icon: 'none',
+			          duration: 1500
+			        });
+			        return;
+			      }
+			
+			      if (liveinfo[0]['logo'].indexOf("http") < 0) {
+			        liveinfo[0]['logo'] = weburl + '/' + liveinfo[0]['logo'];
+			      }
+			
+			      var live_hoster = liveinfo[0]['live_hoster'] ? liveinfo[0]['live_hoster'].split(',') : [];
+			      for (var i = 0; i < live_hoster.length; ++i) {
+			        if (m_id == live_hoster[i]) is_hoster = true;
+			      }
+			
+			      if (liveinfo && liveinfo[0]['live_status'] == 0) {
+					    var videourl = liveinfo[0]['videourl'];
+						that.videourl = videourl ? videourl : that.liveurl
+						that.live_logo = liveinfo[0]['logo']
+						that.live_name = liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物'
+						that.live_hoster = live_hoster
+						that.is_hoster = is_hoster
+						that.video_mode = that.is_live?'cover':'contain'
+						console.log('query_liveroom_info 离线视频:'+ that.videourl +' is_live:' +is_live);
+						
+						//离线 取视频url
+						if(that.live_status==1) {
+							//结束了
+							var error_message = '结束了';
+							var errorTitile = '提示信息';
+							that.errorhidden = false
+							that.error_message = error_message
+							that.errorTitile = errorTitile
+							that.errorConfirmPlay()
+							console.log('query_liveroom_info 视频结束了:'+ that.videourl +' is_live:' +is_live);
+							return
+						}  
+			      }else if(liveinfo && liveinfo[0]['live_status'] == 3) {
+			        //暂停
+			        uni.showToast({
+			          title: '暂停中...',
+			          icon: 'loading',
+			          duration: 1500
+			        });
+			        that.playwaiting();
+			        return;
+			      } else {
+			        //在线
+					that.videourl = that.liveurl
+					that.live_starttime = liveinfo[0]['endtime']
+					that.live_logo = liveinfo[0]['logo']
+					that.live_name = liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物'
+					that.live_hoster = live_hoster
+					that.is_hoster = is_hoster
+					that.is_live = true
+			      } 
+				  that.vlist[videoIndex].src = that.videourl
+				  that.vlist[videoIndex].author = that.live_name
+				  that.vlist[videoIndex].attentionNum = that.live_members
+				  that.vlist[videoIndex].avator = that.live_logo
+				  that.video_mode = that.is_live?'cover':'contain'
+				  console.log('query_liveroom_info videourl:', that.vlist[videoIndex].src, ' video_mode:', that.video_mode, ' live_logo:', that.live_logo, ' live_name:', that.live_name, ' live_hoster:', live_hoster, 'is_hoster:',is_hoster)
+			    },
+			    fail: function (e) {
+					that.videourl = that.liveurl
+			    }
+			  });
+			},
+			focus_liveroom: function (index) {
+			  var that = this;
+			  var videoIndex = index
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var liveid = that.liveid;
+			  var refername = that.refername;
+			  var live_focus_status = that.live_focus_status;
+			  var live_type = 2;
+			  if (live_focus_status) return;
+			  uni.request({
+			    url: weburl + '/api/client/post_focus',
+			    method: 'POST',
+			    data: {
+			      username: username,
+			      access_token: token,
+			      post_id: liveid,
+			      post_type: live_type,
+			      refername: refername,
+			      shop_type: shop_type
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+			      uni.showToast({
+			        title: '关注成功',
+			        icon: 'none',
+			        duration: 1000
+			      });
+				  that.live_focus_status = true
+			      that.vlist[videoIndex].attention = that.live_focus_status
+			      console.log('join_liveroom 关注完成:', res.data);
+			    },
+			    fail: function (e) {
+			      console.log('join_liveroom 关注失败:', res.data);
+			    }
+			  });
+			},
+			prize_liveroom: function () {
+			  var that = this;
+			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			  var liveid = that.liveid;
+			  var post_type = '2'; //点赞
+			
+			  uni.request({
+			    url: weburl + '/api/client/post_prize',
+			    method: 'POST',
+			    data: {
+			      username: username,
+			      access_token: token,
+			      post_id: liveid,
+			      post_type: post_type,
+			      shop_type: shop_type
+			    },
+			    header: {
+			      'Content-Type': 'application/x-www-form-urlencoded',
+			      'Accept': 'application/json'
+			    },
+			    success: function (res) {
+			      uni.showToast({
+			        title: '点赞完成',
+			        icon: 'none',
+			        duration: 1500
+			      });
+			      console.log('prize_liveroom 点赞完成:', res.data);
+			    },
+			    fail: function (e) {
+			      console.log('prize_liveroom 点赞失败:', res.data);
+			    }
+			  });
+			},
+			
+			init() {
+				this.videoContextList = []
+				for(var i = 0; i < this.vlist.length; i++) {
+				// this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
+					// #ifdef APP-PLUS-NVUE
+					this.videoContextList.push(this.$refs['myVideo' + i][0])
+					// #endif
+					// #ifndef APP-PLUS
+					this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
+					// #endif
+					}
+				},
+				handleSlider(e) {
+					let curIndex = e.detail.current
+					if(this.videoIndex >= 0){
+						this.videoContextList[this.videoIndex].pause()
+						this.videoContextList[this.videoIndex].seek(0)
+					}
+					if(curIndex === this.videoIndex + 1) {
+						this.videoContextList[this.videoIndex + 1].play()
+					}else if(curIndex === this.videoIndex - 1) {
+						this.videoContextList[this.videoIndex - 1].play()
+					}
+					this.videoIndex = curIndex
+				},
+				play(index) {
+					this.videoContextList[index].play()
+				},
+				pause(index) {
+					this.videoContextList[index].pause()
+				},
+				handleAttention(index) {
+					let vlist = this.vlist
+					vlist[index].attention =! vlist[index].attention
+					this.vlist = vlist
+				},
+				handleRollMsg(index) {
+					var that = this
+					var options = {
+						index:index,
+						liveid:that.liveid,
+						is_hoster:that.is_hoster,
+					}
+					console.log('handleLiverollMsg:',options)
+					this.$refs.rollMsg.show(JSON.stringify(options))
+				},
+				handleLiveCart(index) {
+					var that = this
+					var options = {
+						index:index,
+						liveid:that.liveid,
+						live_goods:that.live_goods,
+						is_hoster:that.is_hoster,
+					}
+					console.log('handleLiveCart:',options)
+					this.$refs.liveCart.show(JSON.stringify(options))
+				},
+				handleLiveDanmu(index) {
+					var that = this
+					var options = {
+						index:index,
+						liveid:that.liveid,
+						live_goods:that.live_goods,
+						is_hoster:that.is_hoster,
+					}
+					console.log('handleLiveDanmu:',options)
+					this.$refs.liveDanmu.show(JSON.stringify(options))
+				},
+				live_share() {
+					var that = this
+					var options = {
+						index:that.videoIndex,
+						liveid:that.liveid,
+						liveroom_name:that.live_name,
+						liveroom_logo:that.live_logo,
+						liveroom_goods:that.live_goods,
+						liveroom_poster:that.live_poster,
+						liveroom_desc:that.live_desc,
+						is_hoster:that.is_hoster,
+					}
+					this.$refs.liveShare.show(JSON.stringify(options))
+				},
+				
+				goBack: function () {
+				  var pages = getCurrentPages();
+			
+				  if (pages.length > 1) {
+				    uni.navigateBack({
+				      changed: true
+				    }); //返回上一页
+				  } else {
+				    uni.switchTab({
+				      url: '../hall/hall'
+				    });
+				  }
+				},
+			},
+		
+			setData: function (obj) {
+				let that = this;
+				let keys = [];
+				let val, data;
+				Object.keys(obj).forEach(function (key) {
+					keys = key.split('.');
+					val = obj[key];
+					data = that.$data;
+					keys.forEach(function (key2, index) {
+					if (index + 1 == keys.length) {
+						that.$set(data, key2, val);
+					} else {
+						if (!data[key2]) {
+							that.$set(data, key2, {});
+						}
+					}
+					data = data[key2];
+					});
+				});
+			}
+	}
+</script>
+<style scoped>
+.iconfont {
+	font-family: nvueIcon;
+}
+.nlv__container {
+	flex: 1; 
+	height: 100%;
+}
+.nlv-headToolbar {
+	position: absolute; 
+	left: 0; 
+	right: 0; 
+	top: 0;
+}
+.nlv_topbar {
+	position: absolute; 
+	left: 0; 
+	right: 0; 
+	top: 20; 
+	flex:1;
+	flex-direction: row;
+	align-items: center;
+	z-index: 1001;
+}
+.topbar-info {
+	flex: 1; 
+	flex-direction: row; 
+	justify-content: space-around;
+	align-items: center; 
+	padding-left: 20upx;
+}
+.avator-box {
+	background-color: #444;
+	border-radius: 20px; 
+	flex-direction: row; 
+	align-items: center; 
+	padding-right: 3px; 
+	height: 30px;
+}
+.ta-avator-hoster {
+	border-radius: 50%; 
+	margin-right: 5upx; 
+	height: 30px; 
+	width: 30px;
+	padding: 5px;
+	position: relative;
+}
+.ta-avator {
+	border-radius: 50%; 
+	margin-right: 5upx; 
+	height: 30px; 
+	width: 30px;
+	padding: 5px;
+	position: absolute;
+}
+.tabox {
+	text-overflow: ellipsis; 
+	width: 180upx;
+}
+.ta-name {
+	color: #fff; 
+	font-size: 24upx;
+}
+.ta-num {
+	color: #999; 
+	font-size: 24upx;
+}
+.ta-gz {
+	background-image: linear-gradient(to right, #ff540a, #ff0f33);
+	border-radius: 20px; 
+	color: #fff; 
+	font-size: 24upx; 
+	text-align: center; 
+	padding: 4px 0; 
+	width: 45px;
+}
+.ta-gz-on {
+	background-color: rgba(255,255,255,.2); 
+	background-image: none;
+}
+.avator-scroll {
+	/* #ifndef APP-PLUS-NVUE */
+	white-space: nowrap;
+	/* #endif */
+	flex-direction: row; padding: 0 10upx; height: 30px; width: 200upx;
+}
+.member-num {
+	background-color: rgba(0,0,0,.4);
+	border-radius: 20px; 
+	color: #fff; 
+	font-size: 24upx; 
+	text-align: center; 
+	padding: 5px 7px;
+}
+.topbar-right {
+	flex-direction: row;
+}
+.topbar_ico {
+	color: #fff; 
+	font-size: 40upx; 
+	padding: 15upx; 
+	position: relative; 
+	z-index: 1001;
+}
+.nlv-rankbox {
+	position: absolute; 
+	left: 0; 
+	right: 0; 
+	z-index: 1001;
+}
+.nlv-rkls {
+	flex-direction: row; 
+	align-items: center;
+}
+.rkitem {
+	background-image: linear-gradient(to right, rgba(255, 56, 166, .5), rgba(57, 159, 255, .5)); 
+	border-radius: 20px; 
+	color: #fff; 
+	font-size: 24upx; 
+	margin-left: 20upx; 
+	padding: 2px 5px;
+}
+.nlv-uid {
+	color: rgba(255,255,255,.5); 
+	font-size: 28upx; 
+	position: absolute; 
+	right: 20upx; 
+	top: 0;
+}
+.nlv_main {
+	flex: 1; 
+	height: 100%;
+}
+.nlv-swiper {
+	flex: 1;
+}
+.nlv-playerbox {
+	flex: 1;
+}
+.player-video {
+	height: 100%; 
+	width: 100%;
+}
+.nlv-footToolbar {
+	position: absolute; 
+	left: 0; 
+	right: 0; 
+	bottom: 0;
+}
+.nlv-giftTipPanel {
+	flex-direction: row; 
+	margin-left: 20upx;
+	margin-bottom: 20upx;
+}
+.giftip-item {
+	background-color: rgba(0,0,0,.3);
+	border-radius: 50px; 
+	padding: 4px; 
+	padding-right: 50px; 
+	flex-direction: row; 
+	align-items: center;
+}
+.gt-avator {
+	border-radius: 50%; 
+	height: 36px; 
+	width: 36px;
+}
+.gt-info {
+	padding: 0 20upx; 
+	overflow: hidden;
+	 width: 230upx;
+}
+.gt-tit {
+	color: #fff; 
+	font-size: 28upx; 
+	overflow: hidden;
+	height: 40upx; 
+	line-height: 40upx;
+}
+.gt-subtit {
+	color: rgba(255,255,255,.7); 
+	font-size: 24upx;
+}
+.gt-gift {
+	height: 70px; 
+	width: 70px; 
+	position: absolute; 
+	top: -30upx; 
+	right: -5px;
+}
+.nlv-rollMsgPanel {
+	margin-left: 20upx; 
+	margin-bottom: 20upx; 
+	height: 400upx; 
+}
+.nlv-msglist {
+	margin-top: 10upx; 
+	flex-direction: column; 
+	align-items: flex-start;
+}
+.msg_bg {
+	background-color: rgba(0,0,0,.3); 
+	border-radius: 12px; 
+	padding: 4px 7px; 
+	flex-direction: row; 
+	flex-wrap: wrap;
+	padding: 0 20rpx;
+}
+.msg_name {
+	color: #fff81f; 
+	font-size: 28upx;
+}
+.msg_text {
+	color: rgba(255,255,255,1); 
+	font-size: 28upx;
+	overflow:hidden;
+	text-overflow:ellipsis;  
+	lines:2;
+}
+.nlv-infobox {
+	padding: 20upx; 
+	flex: 1; 
+	flex-direction: row; 
+	align-items: center;
+}
+.nlv_reply {
+	flex:1; 
+	flex-direction: row; 
+	background-color: rgba(0,0,0,.3); 
+	border-radius: 50upx; 
+	padding: 23upx;
+}
+.nlv_reply_text {
+	color: #fff; 
+	font-size: 30upx;
+}
+.nlv_btntool {
+	flex-direction: row; 
+	justify-content: flex-end;
+}
+.btn-toolitem {
+	background-color: rgba(0,0,0,.3); 
+	border-radius: 50%; 
+	align-items: center; 
+	justify-content: center; 
+	margin-left: 10upx; 
+	height: 75upx; 
+	width: 75upx;
+}
+.btn-toolitem-cart {
+	background-image: linear-gradient(to right, #ff955d, #f93b37);
+}
+.i-btntool {
+	color: #fff; 
+	font-size: 40upx;
+}
+
+</style>

@@ -183,6 +183,27 @@
 				"navigationBarTitleText": "送心直播"
 			}
 		},
+		{
+			"path": "pages/live/live",
+			"style": {
+				"navigationBarTitleText": "视频空间"
+			}
+		},
+		{
+			"path": "pages/uLive/index",
+			"style": {
+				"navigationBarTitleText": "视频播放"
+			}
+		},
+		{
+			"path": "pages/uLive/subnvue/live",
+			"style": {
+				//"navigationBarTitleText": "视频",
+				"app-plus": {
+				   "titleNView": false //禁用原生导航栏
+				}
+			}
+		},
 		
 	/*
 	{

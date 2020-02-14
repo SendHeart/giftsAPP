@@ -226,11 +226,11 @@
 <script>
 var QQMapWX = require("utils/qqmap-wx-jssdk.min.js");
 var qqmapsdk;
-var qqmapkey = getApp().globalData.globalData.mapkey;
-var weburl = getApp().globalData.globalData.weburl;
+var qqmapkey = getApp().globalData.mapkey;
+var weburl = getApp().globalData.weburl;
 var util = require("utils/util.js");
 var now = new Date().getTime();
-var shop_type = getApp().globalData.globalData.shop_type;
+var shop_type = getApp().globalData.shop_type;
 const myaudio = wx.createInnerAudioContext();
 
 export default {

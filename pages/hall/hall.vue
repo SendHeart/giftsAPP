@@ -187,6 +187,7 @@
 				<view class="recomment-title" @tap="bindPickGoods">
 				  <text>精选清单<text class="title_ex">达人推荐</text></text>
 				  <text class="more">更多...</text>
+				   <button wx:if="is_video_play==1" type="primary" @tap.stop='videoPlayer'>视频</button>
 				  <!--
 				  <button type="primary" @tap.stop='bindPlayer'>看直播</button>
 				  -->
@@ -361,6 +362,7 @@ export default {
       notehidden: false,
       dkheight: 2000,
       scrollTop: 0,
+	  is_video_play:0,
 	  old: {
 	  	scrollTop: 0
 	  },
@@ -708,7 +710,7 @@ export default {
 			if (app.currentUserNotificationSettings) {  
 				var settings = app.currentUserNotificationSettings();  
 				enabledTypes = settings.plusGetAttribute("types");  
-				console.log("enabledTypes1:" + enabledTypes);  
+				//console.log("enabledTypes1:" + enabledTypes);  
 				if (enabledTypes == 0) {  
 					plus.nativeUI.confirm("推送设置没有开启，是否去开启？", function(e) {  
 						if (e.index == 0) {  
@@ -751,6 +753,14 @@ export default {
 	imageLoad: function(e) {
 		this.recommentslist[e.target.dataset.index].loaded = true
 	},
+	
+	videoPlayer: function (e) {
+	    var that = this;
+		uni.navigateTo({
+	      url: '/pages/live/live?streamaname='
+	    })
+	},
+	 
 	//定位数据
 	getleft: function (e) {
 	  var that = this;
@@ -907,8 +917,8 @@ export default {
 
         });
         wx.onSocketMessage(function (res) {
-          var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-          var response = JSON.parse(res.data.trim(), true);
+          var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+          var response = res.data?JSON.parse(res.data.trim(), true):'';
           var messageHidden = that.messageHidden;
           //console.log('收到服务器内容：' + res.data.trim());
 
@@ -921,7 +931,7 @@ export default {
             that.resp_message = resp_message ;
 			that.messages_num =  messages_num + 1 ;
 			if(resp_message['type']=='7' && resp_message['webview_url']){
-				var message_content =  JSON.parse(resp_message['content'].trim(), true);
+				var message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
 				that.main_prom_image = message_content['image']?message_content['image']:'' ;
 				that.main_prom_title = resp_message['title'] ? resp_message['title'] : '送心礼物' ;
 				that.messageHidden = !messageHidden ;
@@ -1914,6 +1924,7 @@ export default {
 		that.middle6_note = navList_new[16] ? navList_new[16]['note'] : '' ;	
 		that.middle7_note = navList_new[17] ? navList_new[17]['note'] : '' ;
 		that.middle8_note = navList_new[18] ? navList_new[18]['note'] : '' ; 
+		that.is_video_play = navList_new[19] ? navList_new[19]['value'] : 0 ;
 	},
     get_project_gift_para: function () {
       var that = this;
