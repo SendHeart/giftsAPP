@@ -1515,8 +1515,8 @@
 			
 			{
 				"pagePath": "pages/member/friends/friends",
-				"iconPath": "/static/images/wish.png",
-				"selectedIconPath": "/static/images/wish_s.png",
+				"iconPath": "/static/images/friend.png",
+				"selectedIconPath": "/static/images/friend_s.png",
 				"text": "好友"
 			},
 			{
