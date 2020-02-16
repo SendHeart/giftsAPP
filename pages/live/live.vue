@@ -35,7 +35,6 @@
 			<mescroll-item :i="venuesIndex" :activeIndex="activeIndex" :tab="tab" :tab_value="tab_value" ></mescroll-item>
 		</swiper-item>
 	</swiper>
-	 
 </view>
 </template>
 <script> 
@@ -147,19 +146,12 @@ export default {
   onLoad: function (options) {
     //console.log('onLoad', options);
     var that = this;
-    var username = options.username ? options.username : wx.getStorageSync('username');
-    var token = options.token ? options.token : wx.getStorageSync('token');
-    var navlist_toView = options.navlist ? options.navlist : 0;
-    var navlist_title = options.navlist_title ? options.navlist_title : '';
-    that.setData({
-      username: username,
-      token: token,
-      navlist_toView: navlist_toView,
-      navlist_title: navlist_title
-    }); //that.setNavigation()
-    //调用应用实例的方法获取全局数据
+    that.username = options.username ? options.username : wx.getStorageSync('username');
+    that.token = options.token ? options.token : wx.getStorageSync('token');
+    that.navlist_toView = options.navlist ? options.navlist : 0;
+    that.navlist_title = options.navlist_title ? options.navlist_title : '';
 
-    wx.getSystemInfo({
+    uni.getSystemInfo({
       success: function (res) {
         that.setData({
           platform: res.platform,
