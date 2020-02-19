@@ -13,7 +13,7 @@
 	-->
 		<view class="wrap_editor">
 			<textarea class="editor" v-model="editorText" show-confirm-bar="false" cursor-spacing="15" :selection-start="editorLastCursor" :selection-end="editorLastCursor" auto-height 
-					@input="bindEditorInput" @focus="bindEditorFocus" @blur="bindEditorBlur" placeholder="说点什么"				
+					@input="bindEditorInput" @focus="bindEditorFocus" @blur="bindEditorBlur" placeholder="说点什么"	placeholder-style="height:1.2;line-height:1.2;margin:0 auto;"			
 	/>
 		</view>
 		<!--
@@ -215,10 +215,10 @@
 .floatInput-body {
 	overflow: hidden; 
 	position: fixed; 
-	bottom: 0; 
+	bottom: 50; 
 	left: 0; 
 	right: 0; 
-	z-index: 201911;
+	z-index: 10001;
 }
 .wrap_fastMsgTpl {
 	/* #ifndef APP-PLUS-NVUE */
