@@ -32,8 +32,8 @@
 	<view  hidden="{{!notehidden}}" style='margin:10rpx;font-size:26rpx;color:#999;height:120rpx;' >{{share_goods_title?'分享语: '+share_goods_title:'分享语为空'}}</view>
 	-->
 	
-  <view class="sentbtn2">
-    <button class v-if="share_art_id==0  && share_order_shape!=5 && share_order_shape!=4" @tap="sharegoods">修改留言</button>
+  <view class="sentbtn2" v-if="share_art_id==0  && share_live_id==0 && share_order_shape!=5 && share_order_shape!=4" @tap="sharegoods">
+    <button >修改留言</button>
   </view>
   <view class="sentbtn">
     <form @submit="formSubmit" data-name="eventSave" report-submit="true">
@@ -230,6 +230,10 @@ export default {
       share_order_bg: "",
       share_order_image: "",
       share_order_wx_headimg: "",
+	  share_live_id: "0",
+	  share_live_logo: "",
+	  share_live_name: "",
+	  share_live_wx_headimg: "",
       loadingHidden: false,
       send_status: 0,
 	  isSaveImageToPhotosAlbum:false,
@@ -293,7 +297,7 @@ export default {
     var that = this;
 	console.log('options:',options)
     var is_back = options.is_back ? options.is_back : 0;
-    if (is_back == 1) options = wx.getStorageSync('wishshare_options');
+    if (is_back == 1) options = uni.getStorageSync('wishshare_options');
     var share_order_id = options.share_order_id ? options.share_order_id : 0;
     var share_order_shape = options.share_order_shape ? options.share_order_shape : 1;
     var card_type = options.card_type ? options.card_type : 0;
@@ -302,14 +306,14 @@ export default {
 	that.userauth_shoper = userauth.shoper ;
 	that.avatarUrl = userInfo.avatarUrl ;
 	that.share_goods_avatarUrl =  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
-    wx.setStorageSync('wishshare_options', options);
+    uni.setStorageSync('wishshare_options', options);
     that.get_project_gift_para();
 	console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
     if (share_order_id > 0 && (parseInt(share_order_shape) == 5 || parseInt(share_order_shape) == 4)) {
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
-      wx.request({
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+      var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+      uni.request({
         url: weburl + '/api/client/query_order',
         method: 'POST',
         data: {
@@ -348,7 +352,7 @@ export default {
             var voice_url = m_desc['voice'];
 
             if (voice_url) {
-              wx.downloadFile({
+              uni.downloadFile({
                 url: voice_url,
                 //音频文件url                  
                 success: res => {
@@ -374,7 +378,7 @@ export default {
               card_type: m_desc['card_template'] ? m_desc['card_template'][0]['type'] : card_type
             }); //console.log('card card_template:', that.data.card_template, ' card_love_info:', card_love_info)
 
-            wx.setNavigationBarTitle({
+            uni.setNavigationBarTitle({
               title: '互动分享'
             });
           }
@@ -383,7 +387,7 @@ export default {
       });
     }
 
-    wx.getSystemInfo({
+    uni.getSystemInfo({
       success: function (res) {
         console.log('wishshare getSystemInfo:', res);
         that.setData({
@@ -1049,8 +1053,8 @@ export default {
     },
     reloadData: function () {
       var that = this;
-      var options = wx.getStorageSync('wishshare_options');
-      var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
+      var options = uni.getStorageSync('wishshare_options');
+      var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
       var task = options.task ? options.task : 0;
       var task_image = options.image ? options.image : '';
       var msg_id = options.msg_id ? options.msg_id : '';
@@ -1064,7 +1068,7 @@ export default {
       var share_goods_org = options.share_goods_org ? options.share_goods_org : '1'; //5虚拟商品 1自营商品
 	  var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
       var share_goods_shape = options.share_goods_shape ? options.share_goods_shape : '1'; //5贺卡请柬 4互动卡 1普通商品
-	  var qr_type  = options.qr_type ? options.qr_type : 'wishshare';
+	  var qr_type  = 'wishshare';
       var share_goods_price = options.share_goods_price ? options.share_goods_price : 0;
       var share_goods_image = options.share_goods_image ? options.share_goods_image : '';
       var share_goods_image2 = options.share_goods_image2 ? options.share_goods_image2 : '';
@@ -1094,7 +1098,12 @@ export default {
       var share_order_bg = options.share_order_bg ? options.share_order_bg : '';
       var share_order_image = options.share_order_image ? options.share_order_image : '';
       var share_order_wx_headimg = options.share_order_wx_headimg ? options.share_order_wx_headimg : that.avatarUrl;
-      console.log('wishshare reloadData options:', options, 'share_order_wx_headimg:', share_order_wx_headimg, ' avatarUrl:', that.avatarUrl, 'share_goods_id:', share_goods_id, '');
+      
+	  var share_live_id = options.liveid ? options.liveid : '0'
+	  var share_live_name = options.liveroom_name ? options.liveroom_name : ''
+	  var share_live_logo = options.liveroom_logo ? options.liveroom_logo : ''
+	  var share_live_wx_headimg = options.share_live_wx_headimg ? options.share_live_wx_headimg : '';
+	  console.log('wishshare reloadData options:', options, 'share_order_wx_headimg:', share_order_wx_headimg, ' avatarUrl:', that.avatarUrl, 'share_goods_id:', share_goods_id, '');
 		if(share_order_wx_headimg){
 			if (share_order_wx_headimg.indexOf("https://wx.qlogo.cn") >= 0) {
 			  share_order_wx_headimg = share_order_wx_headimg.replace('https://wx.qlogo.cn', weburl + '/qlogo');
@@ -1129,26 +1138,29 @@ export default {
         share_goods_title: activity_id > 0 ? share_activity_title : share_goods_title,
         share_goods_desc: share_goods_desc,
         share_goods_qrcode_cache: share_goods_qrcode_cache,
-        share_order_shape: share_order_shape,
-        share_order_id: share_order_id,
-        share_order_note: share_order_note,
-        share_order_bg: share_order_bg,
-        share_order_image: share_order_image,
-        share_order_wx_headimg: share_order_wx_headimg, //cardvoice: cardvoice,
-        //cardvoicetime: cardvoicetime,
-		nickname:userInfo.nickname
-
+		 
       });
-
+		that.qr_type = qr_type
+	    that.share_order_shape = share_order_shape
+		that.share_order_id = share_order_id
+		that.share_order_note = share_order_note
+		that.share_order_bg = share_order_bg
+		that.share_order_image = share_order_image
+		that.share_order_wx_headimg = share_order_wx_headimg
+		that.nickname = userInfo.nickname
+		that.share_live_id = share_live_id 
+		that.share_live_name = share_live_name 
+		that.share_live_logo = share_live_logo 
+	  
       if (activity_name) {
         var title_len = activity_name.length;
 
         if (title_len > 13) {
-          wx.setNavigationBarTitle({
+          uni.setNavigationBarTitle({
             title: activity_name.substring(0, 10) + '...'
           });
         } else {
-          wx.setNavigationBarTitle({
+          uni.setNavigationBarTitle({
             title: activity_name
           });
         }
@@ -1181,14 +1193,15 @@ export default {
       var share_order_shape = that.share_order_shape + 0;
       var activity_id = that.activity_id + 0;
       var share_goods_id = that.share_goods_id + 0;
+	  var share_live_id = that.share_live_id + 0;
       wx.showToast({
         title: share_order_shape == 5 || share_order_shape == 4 ? "加载中" : "开始生成海报",
         icon: 'loading',
         duration: 1500
       });
-      console.log('share_image_creat share_goods_id:', share_goods_id, ' share_order_shape:', share_order_shape);
+      console.log('share_image_creat share_goods_id:', share_goods_id, ' share_live_id:', share_live_id);
 
-      if (share_goods_id > 0 || activity_id > 0 || share_order_shape > 0) {
+      if (share_goods_id > 0 || activity_id > 0 || share_order_shape > 0|| share_live_id > 0) {
         that.eventDraw();
         that.setData({
           loadingHidden: false
@@ -1251,7 +1264,7 @@ export default {
       var m_id = that.m_id;
       var wechat_share = that.wechat_share ? that.wechat_share : that.task_image;
       var shop_type = that.shop_type;
-      var qr_type = 'wishshare';
+      var qr_type = that.qr_type?that.qr_type:'wishshare';
       var task = that.task;
       var msg_id = that.msg_id;
       var activity_id = that.activity_id ? that.activity_id : 0;
@@ -1292,12 +1305,19 @@ export default {
 
       var share_order_wx_headimg = that.share_order_wx_headimg;
       var share_order_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_order_id=' + share_order_id + '&share_order_shape=' + share_order_shape + '&m_id=' + m_id;
+	
+		var share_live_id = that.share_live_id
+		var share_live_name = that.share_live_name
+		var share_live_logo = that.share_live_logo
+		var share_live_wx_headimg = that.share_live_wx_headimg ? that.share_live_wx_headimg : that.avatarUrl;
+		var share_live_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_live_id=' + share_live_id + '&m_id=' + m_id;
+			
 		/*
 	  wx.showLoading({
         title: '生成中' //mask: true
       });
 	   */
-      console.log('wishshare eventDraw share_order_shape:', share_order_shape, ' card_name_info:', card_name_info,' share_goods_id:',share_goods_id);
+      console.log('wishshare eventDraw share_order_shape:', share_order_shape, ' card_name_info:', card_name_info,' share_live_id:',share_live_id);
 
       if (activity_id > 0) {
         console.log('activity_id:', activity_id);
@@ -1374,7 +1394,6 @@ export default {
               width: 360,
               height: 600
             }, 
-		
 			{
               type: 'image',
               url: share_goods_wx_headimg,
@@ -1384,7 +1403,6 @@ export default {
               height: 32,
               radius: 16
             },
-			 
 			{
               type: 'text',
               content: '来自' + nickname + '的分享',
@@ -1922,7 +1940,81 @@ export default {
               height: 90
             }]
           }
-        });
+        })
+	  } else if (share_live_id > 0) {
+		  console.log('share_live_id:', share_live_id);
+		  that.setData({
+		    painting: {
+		      width: 360,
+		      height: 600,
+		      windowHeight: that.windowHeight,
+		      windowWidth: that.windowWidth,
+		      clear: true,
+		      background: 'white',
+		      views: [
+			  {
+				type: 'image',
+				url: share_goods_bg,
+				top: 10,
+				left: 0,
+				width: 360,
+				height: 510
+			  }, {
+		        type: 'image',
+		        url: share_live_logo,
+				top: 80,
+				left: 60,
+				width: 240,
+		        height: 240
+		      },  {
+              type: 'text',
+              content: share_live_name,
+              fontSize: 14,
+              color: '#333',
+              textAlign: 'left',
+              top: 350,
+              left: 56,
+              bolder: true,
+              lineHeight: 25,
+              MaxLineNumber: 2,
+              breakWord: true,
+              width: 240
+            },  {
+              type: 'rect',
+              top: 400,
+              left: 56,
+              background: '#eeeeee',
+              width: 280,
+              height: 1
+            }, {
+              type: 'text',
+              content: '长按识别二维码查看详情',
+              fontSize: 16,
+              color: '#333',
+              textAlign: 'left',
+              top: 410,
+              left: 56,
+              breakWord: false,
+              bolder: true
+            }, {
+              type: 'text',
+              content: '送心礼物，开启礼物社交时代!',
+              fontSize: 13,
+              color: '#999',
+              textAlign: 'left',
+              top: 440,
+              left: 56,
+              breakWord: false
+            }, {
+              type: 'image',
+              url: share_live_qrcode,
+              top: 405,
+              left: 260,
+              width: 60,
+              height: 60
+            }]
+		    }
+		  });
       } else {
         console.log('其他 else');
         that.setData({

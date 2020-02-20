@@ -499,8 +499,8 @@
 		font-size: 23rpx;
 	}
 	.buticon{
-		height: 80upx;
-		width: 80upx;
+		height: 100upx;
+		width: 100upx;
 		color: #fff;
 		position: relative;
 		text-align: center;

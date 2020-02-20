@@ -2288,7 +2288,7 @@ export default {
           has_registerdue: that.has_registerdue,
           has_actiondue: that.has_actiondue
         }];
-        wx.setStorageSync('card_register_info', JSON.stringify(card_register_info[0]));
+        uni.setStorageSync('card_register_info', JSON.stringify(card_register_info[0]));
         console.log('card_register_info:', wx.getStorageSync('card_register_info'));
       } else if (card_type == 2) {
         var card_name_info = [{
@@ -2305,7 +2305,7 @@ export default {
           card_name_note: that.card_name_note,
           has_shlogo: that.has_shlogo
         }];
-        wx.setStorageSync('card_name_info', JSON.stringify(card_name_info[0]));
+        uni.setStorageSync('card_name_info', JSON.stringify(card_name_info[0]));
         console.log('card_name_info:', wx.getStorageSync('card_name_info'));
       } else if (card_type == 4) {
         var card_love_info = [{
@@ -2317,7 +2317,7 @@ export default {
           card_love_logo: that.card_love_logo,
           has_shlogo: that.has_shlogo
         }];
-        wx.setStorageSync('card_love_info', JSON.stringify(card_love_info[0]));
+        uni.setStorageSync('card_love_info', JSON.stringify(card_love_info[0]));
         console.log('card_love_info:', wx.getStorageSync('card_love_info'));
       } else if (card_type == 10) {
         var card_cele_info = [{
@@ -2326,7 +2326,7 @@ export default {
           card_cele_logo: that.card_cele_logo,
           has_shlogo: that.has_shlogo
         }];
-        wx.setStorageSync('card_cele_info', JSON.stringify(card_cele_info[0]));
+        uni.setStorageSync('card_cele_info', JSON.stringify(card_cele_info[0]));
         console.log('card_cele_info:', wx.getStorageSync('card_cele_info'));
       }
 
@@ -2390,7 +2390,7 @@ export default {
           register_end_time: end_time
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: "结束时间小于开始时间",
           icon: 'none',
           duration: 1500
@@ -2428,7 +2428,7 @@ export default {
           action_end_date: end_date
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: "结束时间小于开始时间",
           icon: 'none',
           duration: 1500
@@ -2450,7 +2450,7 @@ export default {
           action_end_time: end_time
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: "结束时间小于开始时间",
           icon: 'none',
           duration: 1500
@@ -2515,7 +2515,7 @@ export default {
 		if (share_goods_shape != 5 && share_goods_shape != 4) {//
 			console.log('商品分享 share_goods_id:',share_goods_id,' share_goods_qrcode:',share_goods_qrcode)
 			
-			wx.navigateTo({
+			uni.navigateTo({
 				url: '/pages/wish/wishshare/wishshare?share_goods_id=' + share_goods_id + '&share_goods_shape=' + share_goods_shape + '&share_goods_org=' + share_goods_org + '&share_goods_name=' + share_goods_name + '&share_goods_price=' + share_goods_price + '&share_goods_image=' + share_goods_image + '&share_goods_wx_headimg=' + share_goods_wx_headimg + '&share_goods_title=' + share_goods_title + '&share_goods_desc=' + share_goods_desc + '&share_goods_image2=' + that.image_pic[cur_img_id]['url'] + '&qr_type=' + qr_type+ '&card_type=' + card_type
 			});
 			/*

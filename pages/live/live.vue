@@ -150,6 +150,7 @@ export default {
     that.token = options.token ? options.token : wx.getStorageSync('token');
     that.navlist_toView = options.navlist ? options.navlist : 0;
     that.navlist_title = options.navlist_title ? options.navlist_title : '';
+	that.liveid =  options.liveid ? options.liveid : 0;
 
     uni.getSystemInfo({
       success: function (res) {
@@ -550,6 +551,13 @@ export default {
         }
       });
     },
+	
+	onBackPress(e) {
+		wx.switchTab({
+		  url: '../hall/hall'
+		});
+		return true
+	}, 
     setData: function (obj) {
       let that = this;
       let keys = [];

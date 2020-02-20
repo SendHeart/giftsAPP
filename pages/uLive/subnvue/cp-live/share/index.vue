@@ -108,7 +108,16 @@
 				}
 			},
 			shareToWXSenceTimeline: function () { //分享到朋友圈
-				var liveroom_logo = this.liveroom_logo
+				var that = this 
+				var liveroom_logo = that.liveroom_logo
+				var liveroom_name = that.liveroom_name
+			
+				var liveid = that.liveid
+				uni.navigateTo({
+					url: '/pages/wish/wishshare/wishshare?liveid=' + liveid + '&liveroom_name=' + liveroom_name+ '&liveroom_logo=' + liveroom_logo
+				});
+				
+				return 
 				//#ifdef APP-PLUS
 				uni.share({
 				  provider: 'weixin',

@@ -12,9 +12,9 @@
 				:src="item.src" 
 				:autoplay="index == videoIndex" 
 				:controls="false" 
+				:enable-progress-gesture ="video_control" 
 				:loop="false" 
-				:show-center-play-btn="false"  
-				:show-play-btn="false"
+				:show-center-play-btn="video_control"  
 				:objectFit="video_mode" 
 				:style="{height: video_winHeight, width: video_winWidth}" 
 				>
@@ -263,13 +263,14 @@
 				live_sub_name: '人气值:1',
 				live_goods: '',
 				live_status: '0',
-				live_adv_goods:[{}],
+				live_adv_goods:[],
 				is_live_loading:false,
 				is_live:false,
 				errorhidden: true,
 				error_message: '',
 				poster_image: weburl + '/uploads/video_poster_image.png',
 				video_mode:'fill',
+				video_control:false,
 				page: 1,
 				pagesize: 10,
 				pageoffset: 0,
@@ -374,6 +375,7 @@
 			that.liveid = liveid
 			that.is_live = live_status==1?true:false
 			that.video_mode = live_status==1?'fill':'contain'
+			that.video_control = live_status==1?false:true
 			that.refername = refername
 			that.query_liveroom_info();
 			//that.get_goods_list();
@@ -399,6 +401,11 @@
 			  that.queryDanmu();
 			}, 1000);
 		},
+		onUnload: function () {
+		    //销毁定时器
+		    console.log("+++++++++onUnload++++++++++")
+		    clearInterval(this.Timer_queryDanmu);
+		  },
 		methods: {
 			modalAdvGoodsconfirm: function () {
 			    var that = this
@@ -439,25 +446,24 @@
 				var that = this 
 				var liveid = that.liveid
 				
-				if(that.live_status == 1 && live_status==0){
+				if(that.is_live && live_status==0){
+					that.is_live = false
+					that.live_status = 0                 
 					uni.showModal({
 						title: '提示',
 						content: '播放结束了',
-										showCancel:false,
+						showCancel:false,
 						success:(res)=> {
 							if (res.confirm) {
-								 console.log('播放结束了');
+								console.log('播放结束了');
+								
 								uni.navigateTo({
 									url: '/pages/live/live?liveid=' + that.liveid 
 								});
-								
 							}
 						}
 					})
-				}else{
-					//that.goBack()
 				}
-				
 			}, 
 			query_live_member: function (event) {
 			  var that = this;
@@ -535,7 +541,7 @@
 					that.is_member_loading = false
 					that.live_members_info = live_members_info
 					that.vlist[videoIndex].attentionNum = that.live_members?that.live_members:0
-					if(live_memberList[0]['live_status']==0 && that.live_status==1){
+					if(live_memberList[0]['live_status']==0 && is_live){
 						that.live_end(live_memberList[0]['live_status'])
 					} 
 					that.live_status = live_memberList[0]['live_status']
@@ -762,11 +768,11 @@
 				  //console.log('获取服务端弹幕/商品推荐/通知信息完成 all_rows:', all_rows, 'live_adv_goods:', JSON.stringify(that.live_adv_goods), ' danmuList:', danmuList);
 			    }
 			  });
-			 
-			  setTimeout(function () {
+			  var Timer_queryDanmu = setTimeout(function () {
 			    that.queryDanmu();
 			    that.query_live_member();
 			  }, 1000 * 10);
+			  that.Timer_queryDanmu = Timer_queryDanmu
 			},
 			
 			bindPlay: function () {

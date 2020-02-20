@@ -91,7 +91,8 @@
 					this.mescroll.resetUpScroll()
 					this.mescroll.scrollTo(0, 0)
 				}
-			}
+			},
+		
 		},
 		mounted() {
 			// 第一个tab,自动加载数据
