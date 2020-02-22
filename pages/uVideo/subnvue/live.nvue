@@ -1,6 +1,17 @@
 <template>
 <view class="nlv__container">
 	<view class="nlv_main">
+		<!--
+		<live-player v-if="is_live==true"
+		  :id="'myVideo' + index"   
+		  :ref="'myVideo' + index" 
+		  :src="vlist[videoIndex].src" 
+		  :autoplay="true"
+		  @statechange="statechange"
+		  @error="playwaiting"
+		  :style="{height: winHeight, width: winWidth}"
+		/>
+		-->
 	<swiper class="nlv-swiper" :indicator-dots="false" :vertical="true" :current="videoIndex" @change="handleSlider">
 		<swiper-item v-for="(item, index) in vlist" :key="index">
 			<view class="nlv-playerbox">
@@ -15,10 +26,19 @@
 				:enable-progress-gesture ="video_control" 
 				:loop="false" 
 				:show-center-play-btn="video_control"  
-				:objectFit="video_mode" 
+				:objectFit="contain" 
 				:style="{height: video_winHeight, width: video_winWidth}" 
 				>
-			</video>
+				</video>
+				
+			<!-- 
+				<view class="nlv-rankbox" :style="{top: headerBarH}">
+					<view class="nlv-rkls">
+						<text class="rkitem">总排名{{item.allRank}}</text><text v-if="item.hourRank" class="rkitem">小时榜第{{item.hourRank}}名</text>
+					</view>
+					<text class="nlv-uid">直播:{{item.uid}}</text>
+				</view>
+			-->
 		</view>
 		</swiper-item>
 	</swiper>
@@ -247,7 +267,7 @@
 				errorhidden: true,
 				error_message: '',
 				poster_image: weburl + '/uploads/video_poster_image.png',
-				video_mode:'cover',
+				video_mode:'fill',
 				video_control:false,
 				page: 1,
 				pagesize: 10,
@@ -352,7 +372,7 @@
 			that.live_logo = live_logo
 			that.liveid = liveid
 			that.is_live = live_status==1?true:false
-			that.video_mode = live_status==1?'cover':'cover'
+			that.video_mode = live_status==1?'fill':'contain'
 			that.video_control = live_status==1?false:true
 			that.refername = refername
 			that.query_liveroom_info();
@@ -923,7 +943,7 @@
 						that.live_name = liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物'
 						that.live_hoster = live_hoster
 						that.is_hoster = is_hoster
-						that.video_mode = that.is_live?'cover':'cover'
+						that.video_mode = that.is_live?'cover':'contain'
 						console.log('query_liveroom_info 离线视频:'+ that.videourl +' is_live:' +is_live);
 						
 						//离线 取视频url
@@ -961,7 +981,7 @@
 				  that.vlist[videoIndex].author = that.live_name
 				  that.vlist[videoIndex].attentionNum = that.live_members
 				  that.vlist[videoIndex].avator = that.live_logo
-				  that.video_mode = that.is_live?'cover':'cover'
+				  that.video_mode = that.is_live?'cover':'contain'
 				  console.log('query_liveroom_info videourl:', JSON.stringify(that.vlist), ' video_mode:', that.video_mode, ' that.live_status:', that.live_status, ' live_name:', that.live_name, ' live_hoster:', live_hoster, 'is_hoster:',is_hoster)
 			    },
 			    fail: function (e) {
@@ -1049,111 +1069,109 @@
 			init() {
 				this.videoContextList = []
 				for(var i = 0; i < this.vlist.length; i++) {
-				// this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
+					// this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
 					// #ifdef APP-PLUS-NVUE
 					this.videoContextList.push(this.$refs['myVideo' + i][0])
 					// #endif
 					// #ifndef APP-PLUS
 					this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
 					// #endif
-					}
-				},
-				handleSlider(e) {
-					let curIndex = e.detail.current
-					if(this.videoIndex >= 0){
-						this.videoContextList[this.videoIndex].pause()
-						this.videoContextList[this.videoIndex].seek(0)
-					}
-					if(curIndex === this.videoIndex + 1) {
-						this.videoContextList[this.videoIndex + 1].play()
-					}else if(curIndex === this.videoIndex - 1) {
-						this.videoContextList[this.videoIndex - 1].play()
-					}
-					this.videoIndex = curIndex
-				},
-				play(index) {
-					this.videoContextList[index].play()
-				},
-				pause(index) {
-					this.videoContextList[index].pause()
-				},
-				handleAttention(index) {
-					let vlist = this.vlist
-					vlist[index].attention =! vlist[index].attention
-					this.vlist = vlist
-				},
-				handleRollMsg(index) {
-					var that = this
-					var options = {
-						index:index,
-						liveid:that.liveid,
-						is_hoster:that.is_hoster,
-					}
-					console.log('handleLiverollMsg:',options)
-					this.$refs.rollMsg.show(JSON.stringify(options))
-				},
-				handleLiveCart(index) {
-					var that = this
-					var options = {
-						index:index,
-						liveid:that.liveid,
-						live_goods:that.live_goods,
-						is_hoster:that.is_hoster,
-					}
-					console.log('handleLiveCart:',options)
-					this.$refs.liveCart.show(JSON.stringify(options))
-				},
-				handleLiveDanmu(index) {
-					var that = this
-					var options = {
-						index:index,
-						liveid:that.liveid,
-						live_goods:that.live_goods,
-						is_hoster:that.is_hoster,
-					}
-					console.log('handleLiveDanmu:',options)
-					this.$refs.liveDanmu.show(JSON.stringify(options))
-				},
-				live_share() {
-					var that = this
-					var options = {
-						index:that.videoIndex,
-						liveid:that.liveid,
-						liveroom_name:that.live_name,
-						liveroom_logo:that.live_logo,
-						liveroom_goods:that.live_goods,
-						liveroom_poster:that.live_poster,
-						liveroom_desc:that.live_desc,
-						is_hoster:that.is_hoster,
-					}
-					this.$refs.liveShare.show(JSON.stringify(options))
-				},
-				handleAdvGoods(index) {
-					var that = this
-					var options = {
-						index:index,
-						liveid:that.liveid,
-						is_hoster:that.is_hoster,
-						live_adv_goods:that.live_adv_goods,
-					}
-					console.log('handleAdvGoods:',options)
-					this.$refs.advGoods.show(JSON.stringify(options))
-				},
-				goBack: function () {
-				  var pages = getCurrentPages();
-			
-				  if (pages.length > 1) {
-				    uni.navigateBack({
-				      changed: true
-				    }); //返回上一页
-				  } else {
-				    uni.switchTab({
-				      url: '../hall/hall'
-				    });
-				  }
-				},
+				}
 			},
-		
+			handleSlider(e) {
+				let curIndex = e.detail.current
+				if(this.videoIndex >= 0){
+					this.videoContextList[this.videoIndex].pause()
+					this.videoContextList[this.videoIndex].seek(0)
+				}
+				if(curIndex === this.videoIndex + 1) {
+					this.videoContextList[this.videoIndex + 1].play()
+				}else if(curIndex === this.videoIndex - 1) {
+					this.videoContextList[this.videoIndex - 1].play()
+				}
+				this.videoIndex = curIndex
+			},
+			play(index) {
+				this.videoContextList[index].play()
+			},
+			pause(index) {
+				this.videoContextList[index].pause()
+			},
+			handleAttention(index) {
+				let vlist = this.vlist
+				vlist[index].attention =! vlist[index].attention
+				this.vlist = vlist
+			},
+			handleRollMsg(index) {
+				var that = this
+				var options = {
+					index:index,
+					liveid:that.liveid,
+					is_hoster:that.is_hoster,
+				}
+				console.log('handleLiverollMsg:',options)
+				this.$refs.rollMsg.show(JSON.stringify(options))
+			},
+			handleLiveCart(index) {
+				var that = this
+				var options = {
+					index:index,
+					liveid:that.liveid,
+					live_goods:that.live_goods,
+					is_hoster:that.is_hoster,
+				}
+				console.log('handleLiveCart:',options)
+				this.$refs.liveCart.show(JSON.stringify(options))
+			},
+			handleLiveDanmu(index) {
+				var that = this
+				var options = {
+					index:index,
+					liveid:that.liveid,
+					live_goods:that.live_goods,
+					is_hoster:that.is_hoster,
+				}
+				console.log('handleLiveDanmu:',options)
+				this.$refs.liveDanmu.show(JSON.stringify(options))
+			},
+			live_share() {
+				var that = this
+				var options = {
+					index:that.videoIndex,
+					liveid:that.liveid,
+					liveroom_name:that.live_name,
+					liveroom_logo:that.live_logo,
+					liveroom_goods:that.live_goods,
+					liveroom_poster:that.live_poster,
+					liveroom_desc:that.live_desc,
+					is_hoster:that.is_hoster,
+				}
+				this.$refs.liveShare.show(JSON.stringify(options))
+			},
+			handleAdvGoods(index) {
+				var that = this
+				var options = {
+					index:index,
+					liveid:that.liveid,
+					is_hoster:that.is_hoster,
+					live_adv_goods:that.live_adv_goods,
+				}
+				console.log('handleAdvGoods:',options)
+				this.$refs.advGoods.show(JSON.stringify(options))
+			},
+			goBack: function () {
+			  var pages = getCurrentPages();
+						
+			  if (pages.length > 1) {
+			    uni.navigateBack({
+			      changed: true
+			    }); //返回上一页
+			  } else {
+			    uni.switchTab({
+			      url: '../hall/hall'
+			    });
+			  }
+			},
 			setData: function (obj) {
 				let that = this;
 				let keys = [];
@@ -1174,6 +1192,7 @@
 					});
 				});
 			}
+		},
 	}
 </script>
 <style scoped>

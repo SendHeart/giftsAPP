@@ -198,6 +198,15 @@
 		{
 			"path": "pages/uLive/subnvue/live",
 			"style": {
+				//"navigationBarTitleText": "直播",
+				"app-plus": {
+				   "titleNView": false //禁用原生导航栏
+				}
+			}
+		},
+		{
+			"path": "pages/uVideo/subnvue/live",
+			"style": {
 				//"navigationBarTitleText": "视频",
 				"app-plus": {
 				   "titleNView": false //禁用原生导航栏

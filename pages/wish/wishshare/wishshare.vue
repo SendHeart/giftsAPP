@@ -685,10 +685,17 @@ export default {
 		var share_goods_org = this.share_goods_org? this.share_goods_org:4 ;
 		var share_goods_shape = this.share_goods_shape? this.share_goods_shape:1 ;
 		var share_goods_image = this.share_goods_image?this.share_goods_image:'';
+		var share_live_id = this.share_live_id?this.share_live_id:0 ;
+		var share_live_name = this.share_live_name?this.share_live_name:'' ;
 	 	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		var share_goods_title = this.share_goods_title
 		var payload = '/pages/details/details?id=' + share_goods_id ;
+		if(share_live_id>0) {
+			payload = '/pages/uLive/subnvue/live?liveid=' + share_live_id ;
+			share_goods_name = share_live_name
+			share_goods_title = share_live_name
+		}
 		//+ '&goods_shape=' + share_goods_shape + '&goods_org=' + share_goods_org + '&goods_price=' + share_goods_price + '&name=' + share_goods_name + '&image=' + share_goods_image + '&token=' + token + '&username=' + username 
 		uni.request({
 		  url: weburl + '/api/app_client/app_push',
@@ -710,7 +717,7 @@ export default {
 		    console.log('shareToAppPush() : ', res.data);
 			 if(res.data.status == 'y'){
 				 uni.showToast({
-				   title: 'APP推送完成'+share_goods_title,
+				   title: 'APP推送完成'+share_goods_title+' '+share_live_id,
 				   icon: 'none',
 				   duration: 1000
 				 });
@@ -751,7 +758,7 @@ export default {
 				this.shareToWXSenceTimeline() ;
 				break
 			case 'appshare'://微信朋友圈
-				this.shareToAppPush()() ;
+				this.shareToAppPush() ;
 				break	
 		}
 	},
@@ -1389,7 +1396,7 @@ export default {
 			  {
               type: 'image',
               url: share_goods_bg,
-              top: 10,
+              top: 0,
               left: 0,
               width: 360,
               height: 600
@@ -1946,7 +1953,7 @@ export default {
 		  that.setData({
 		    painting: {
 		      width: 360,
-		      height: 600,
+		      height: 510,
 		      windowHeight: that.windowHeight,
 		      windowWidth: that.windowWidth,
 		      clear: true,
@@ -1955,7 +1962,7 @@ export default {
 			  {
 				type: 'image',
 				url: share_goods_bg,
-				top: 10,
+				top: 0,
 				left: 0,
 				width: 360,
 				height: 510

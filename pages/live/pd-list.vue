@@ -151,9 +151,16 @@
 			   var live_status = e.live_status
 			   var is_live = e.live_status==1?true:false
 			   console.log('onLoad live showGoods e:', e,' is_live:',is_live);
-			   uni.navigateTo({
-			     url: '/pages/uLive/subnvue/live?index=0&liveid='+liveid+'&live_goods='+live_goods+'&live_name='+shop_name+'&live_poster='+live_poster+'&live_desc='+live_desc+'&live_logo='+logo+'&live_status='+live_status
-			   });
+			   if(live_status==1){
+				   uni.navigateTo({
+				     url: '/pages/uLive/subnvue/live?index=0&liveid='+liveid+'&live_goods='+live_goods+'&live_name='+shop_name+'&live_poster='+live_poster+'&live_desc='+live_desc+'&live_logo='+logo+'&live_status='+live_status
+				   });
+			   }else{
+				   uni.navigateTo({
+				     url: '/pages/uVideo/subnvue/live?index=0&liveid='+liveid+'&live_goods='+live_goods+'&live_name='+shop_name+'&live_poster='+live_poster+'&live_desc='+live_desc+'&live_logo='+logo+'&live_status='+live_status
+				   });
+			   }
+			   
 			 },
 			
 		}
