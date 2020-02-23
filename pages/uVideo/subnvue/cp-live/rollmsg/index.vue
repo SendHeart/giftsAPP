@@ -13,8 +13,8 @@
 	-->
 		<view class="wrap_editor">
 			<textarea class="editor" v-model="editorText" show-confirm-bar="false" cursor-spacing="15" :selection-start="editorLastCursor" :selection-end="editorLastCursor" auto-height 
-					@input="bindEditorInput" @focus="bindEditorFocus" @blur="bindEditorBlur" placeholder="说点什么"	placeholder-style="height:1.2;line-height:1.2;margin:0 auto;"			
-	/>
+				@input="bindEditorInput" @focus="bindEditorFocus" @blur="bindEditorBlur" placeholder="说点什么"	placeholder-style="height:1.2;line-height:1.2;margin:0 auto;"	
+			/>
 		</view>
 		<!--
 		<view class="wrap_editor_btn" @tap="handleShowEmotion">
@@ -251,7 +251,8 @@
 }
 .editor {
 	font-size: 14px; 
-	line-height: 1.2;
+	line-height: 30rpx;
+	height: 30rpx;
 }
 .wrap_editor_btn {
 	justify-content: center; 
