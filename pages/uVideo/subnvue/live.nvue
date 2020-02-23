@@ -12,33 +12,27 @@
 		  :style="{height: winHeight, width: winWidth}"
 		/>
 		-->
-	<swiper class="nlv-swiper" :indicator-dots="false" :vertical="true" :current="videoIndex" @change="handleSlider">
-		<swiper-item v-for="(item, index) in vlist" :key="index">
+	<swiper class="nlv-swiper" :indicator-dots="false" :vertical="true" :current="videoIndex" :circular="true" :duration="300" @change="handleSlider">
+		<swiper-item v-for="(item, video_index) in vlist" :key="video_index">
 			<view class="nlv-playerbox">
 				<video
-				@error="playwaiting" 
-				:id="'myVideo' + index" 
-				:ref="'myVideo' + index" 
+				:id="'myVideo_' + video_index" 
+				:ref="'myVideo_' + video_index" 
 				class="player-video" 
 				:src="item.src" 
-				:autoplay="true" 
-				:controls="false" 
-				:enable-progress-gesture ="video_control" 
+				:autoplay="false" 
+				:controls="true" 
+				:page-gesture="false"
+				:enable-progress-gesture ="true" 
 				:loop="false" 
-				:show-center-play-btn="video_control"  
+				:show-center-play-btn="true"  
+				:show-mute-btn="true"
+				:play-btn-position="center" 
 				:objectFit="contain" 
 				:style="{height: video_winHeight, width: video_winWidth}" 
+				@ended="playend"
 				>
 				</video>
-				
-			<!-- 
-				<view class="nlv-rankbox" :style="{top: headerBarH}">
-					<view class="nlv-rkls">
-						<text class="rkitem">总排名{{item.allRank}}</text><text v-if="item.hourRank" class="rkitem">小时榜第{{item.hourRank}}名</text>
-					</view>
-					<text class="nlv-uid">直播:{{item.uid}}</text>
-				</view>
-			-->
 		</view>
 		</swiper-item>
 	</swiper>
@@ -252,6 +246,7 @@
 				videoplayer:null,
 				videourl: '',
 				videoList:[],
+				videoContextList:[],
 				liveurl: '',
 				live_members: 1,
 				live_members_info: '',
@@ -389,13 +384,12 @@
 			    }
 			})
 			console.log('player onLoad liveurl:', that.liveurl, ' liveid:', liveid, ' video_mode:', that.video_mode, ' live_name:', live_name, ' playerurl:', playerurl);
-			that.videoIndex = parseInt(index)
+			that.videoIndex = index
 		},
 		onReady() {
 			var that = this 
-			that.init()
 			that.query_live_member();
-			setTimeout(function () {
+			setTimeout(function () { 
 			  that.queryDanmu();
 			}, 1000);
 		},
@@ -779,7 +773,9 @@
 			    if (res.isConnected) {
 			      //
 			      console.log('player bindPlay 网络正常 重新播放'); // console.log('player bindPlay 重新播放')
-			      that.videoContext.play();
+			     //that.videoContext.play();
+				  //that.videoContextList[this.videoIndex].play()
+				  that.$refs['myVideo_'+this.videoIndex][0].play()
 			    } else {
 			      console.log('player bindPlay 网络异常，播放错误');
 			      that.playerror();
@@ -810,7 +806,9 @@
 			  that.live_status = 1 
 			  setTimeout(function () {
 			    //that.videoContext = wx.createVideoContext('myVideo')
-			    that.videoContext.play();
+			    //that.videoContext.play();
+				 //that.videoContextList[this.videoIndex].play()
+				 that.$refs['myVideo_'+this.videoIndex][0].play()
 			  }, 300);
 			  /*
 			  wx.navigateTo({
@@ -977,12 +975,23 @@
 					that.is_hoster = is_hoster
 					that.is_live = true
 			      } 
-				  that.vlist[videoIndex].src = that.videourl
-				  that.vlist[videoIndex].author = that.live_name
-				  that.vlist[videoIndex].attentionNum = that.live_members
-				  that.vlist[videoIndex].avator = that.live_logo
+				  that.vlist[0].src = that.videourl
+				  that.vlist[0].author = that.live_name
+				  that.vlist[0].attentionNum = that.live_members
+				  that.vlist[0].avator = that.live_logo
 				  that.video_mode = that.is_live?'cover':'contain'
+				  
+				  if(liveinfo[0]['videolist'] && liveinfo[0]['videolist'].length>0){
+						for(var i = 0; i < liveinfo[0]['videolist'].length; i++) {
+							that.vlist.push(liveinfo[0]['videolist'][i])
+						}
+				  }
+				  //that.video_init()
 				  console.log('query_liveroom_info videourl:', JSON.stringify(that.vlist), ' video_mode:', that.video_mode, ' that.live_status:', that.live_status, ' live_name:', that.live_name, ' live_hoster:', live_hoster, 'is_hoster:',is_hoster)
+				  setTimeout(function () {
+				    that.$refs['myVideo_0'][0].play()
+				  }, 100);
+				  
 			    },
 			    fail: function (e) {
 					that.videourl = that.liveurl
@@ -1065,11 +1074,9 @@
 			    }
 			  });
 			},
-			
-			init() {
+			video_init() {
 				this.videoContextList = []
 				for(var i = 0; i < this.vlist.length; i++) {
-					// this.videoContextList.push(uni.createVideoContext('myVideo' + i, this))
 					// #ifdef APP-PLUS-NVUE
 					this.videoContextList.push(this.$refs['myVideo' + i][0])
 					// #endif
@@ -1078,24 +1085,43 @@
 					// #endif
 				}
 			},
-			handleSlider(e) {
-				let curIndex = e.detail.current
-				if(this.videoIndex >= 0){
-					this.videoContextList[this.videoIndex].pause()
-					this.videoContextList[this.videoIndex].seek(0)
+			handleSlider(event) {
+				var that = this
+				var videoIndex = that.videoIndex
+				var current = event.detail.current
+				var source = event.detail.source
+				console.log('handleSlider event:', event); 
+				if(videoIndex >=0) {
+					that.$refs['myVideo_'+videoIndex][0].pause()
 				}
-				if(curIndex === this.videoIndex + 1) {
-					this.videoContextList[this.videoIndex + 1].play()
-				}else if(curIndex === this.videoIndex - 1) {
-					this.videoContextList[this.videoIndex - 1].play()
+				if(current >= 0) {
+					that.$refs['myVideo_'+current][0].play()
 				}
-				this.videoIndex = curIndex
+				if (source === 'touch') {
+					
+				}
+				that.videoIndex = current
+				console.log('handleSlider source:', source,' current:',current, ' videoIndex:',videoIndex); 
+			},
+			playend() {
+				var that = this
+				var videoIndex = that.videoIndex
+				var vlist_len = that.vlist.length
+				var slider_index = videoIndex + 1
+				slider_index = slider_index<vlist_len?slider_index:0
+				
+				var next_slide={
+					"detail":{
+						"current":parseInt(slider_index)
+					},
+				}
+				that.handleSlider(next_slide)
 			},
 			play(index) {
-				this.videoContextList[index].play()
+				this.$refs['myVideo_'+index][0].play()
 			},
 			pause(index) {
-				this.videoContextList[index].pause()
+				this.$refs['myVideo_'+index][0].pause()
 			},
 			handleAttention(index) {
 				let vlist = this.vlist
@@ -1225,6 +1251,7 @@
 	justify-content: space-around;
 	align-items: center; 
 	padding-left: 20upx;
+	padding-right: 20upx;
 }
 .avator-box {
 	background-color: #444;
@@ -1279,7 +1306,7 @@
 	/* #ifndef APP-PLUS-NVUE */
 	white-space: nowrap;
 	/* #endif */
-	flex-direction: row; padding: 0 10upx; height: 30px; width: 200upx;
+	flex-direction: row; padding: 0 10upx; height: 30px; width: 180upx;
 }
 .member-num {
 	background-color: rgba(0,0,0,.4);
@@ -1342,7 +1369,7 @@
 	position: absolute; 
 	left: 0; 
 	right: 0; 
-	bottom: 0;
+	bottom: 30;
 }
 .nlv-giftTipPanel {
 	flex-direction: row; 
