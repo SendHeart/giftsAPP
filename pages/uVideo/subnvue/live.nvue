@@ -23,12 +23,16 @@
 				:autoplay="false" 
 				:controls="true" 
 				:page-gesture="false"
-				:enable-progress-gesture ="true" 
+				:vslide-gesture="false"
+				:vslide-gesture-in-fullscreen="false"
+				:enable-progress-gesture ="false" 
+				:enable-play-gesture="false"
+				
 				:loop="false" 
 				:show-center-play-btn="true"  
 				:show-mute-btn="true"
-				:play-btn-position="center" 
-				:objectFit="contain" 
+				:play-btn-position="'bottom'" 
+				:objectFit="item.objectfit?item.objectfit:'contain'" 
 				:style="{height: video_winHeight, width: video_winWidth}" 
 				@ended="playend"
 				>
@@ -383,6 +387,13 @@
 			      console.log(winHeight);
 			    }
 			})
+			// #ifdef APP-PLUS
+			if (uni.getSystemInfoSync().platform == "ios") {
+				that.video_control = "true";
+			} else if (uni.getSystemInfoSync().platform == "android") {
+				that.video_control = "false";
+			}
+			// #endif
 			console.log('player onLoad liveurl:', that.liveurl, ' liveid:', liveid, ' video_mode:', that.video_mode, ' live_name:', live_name, ' playerurl:', playerurl);
 			that.videoIndex = index
 		},
@@ -753,7 +764,10 @@
 					that.live_adv_note = live_adv_note ? live_adv_note : that.live_adv_note
 			      }
 				  that.vlist[videoIndex].hotNum = that.live_sub_name
-				  that.vlist[videoIndex].attention = live_focus_status
+				  
+				  for(var i=0;i<that.vlist.length;i++){
+					  that.vlist[i].attention = live_focus_status
+				  }
 				  that.is_danmu_loading = !that.is_danmu_loading 
 				  that.danmu_scroll_auto()
 				 
@@ -983,7 +997,10 @@
 				  
 				  if(liveinfo[0]['videolist'] && liveinfo[0]['videolist'].length>0){
 						for(var i = 0; i < liveinfo[0]['videolist'].length; i++) {
+							liveinfo[0]['videolist'][i]['attentionNum'] = that.vlist[0].attentionNum
+							liveinfo[0]['videolist'][i]['attention'] = that.vlist[0].attention
 							that.vlist.push(liveinfo[0]['videolist'][i])
+							
 						}
 				  }
 				  //that.video_init()
@@ -1031,7 +1048,9 @@
 			        duration: 1000
 			      });
 				  that.live_focus_status = true
-			      that.vlist[videoIndex].attention = that.live_focus_status
+				  for(var i=0;i<that.vlist.length;i++){
+					   that.vlist[i].attention = that.live_focus_status
+				  }
 			      console.log('join_liveroom 关注完成:', res.data);
 			    },
 			    fail: function (e) {
