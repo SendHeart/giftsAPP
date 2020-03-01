@@ -63,71 +63,36 @@
 		<view class="topbar-right"><text class="topbar_ico iconfont" @tap="GoBack">&#xe84f;</text></view>
 		-->
 	</view>
-	<view class="nlv-footToolbar">
-	<!--
-	<view class="nlv-giftTipPanel">
-		<view class="giftip-item">
-			<image class="gt-avator" src="/static/uimg/u__chat_img5.jpg" mode="aspectFill" />
-			<view class="gt-info">
-				<text class="gt-tit">依拉曼💄</text>
-				<text class="gt-subtit">送主播 爱心球</text>
-			</view>
-			<image class="gt-gift" src="/static/gift/gift-img11.png" mode="aspectFill" />
-		</view>
-	</view>	
-	-->
-		<list v-if="modalDanmuHidden && is_live" class="nlv-rollMsgPanel" scrollable="true" >
-			<cell v-for="(msgitem, msgidx) in danmuList" :key="msgidx" class="list-item" :ref="'msgitem'" >
-				<view class="nlv-msglist">
-					<view class="msg_bg">
-						<text class="msg_name">{{msgitem.uname}}</text> 
-						<text class="msg_text">{{msgitem.content}}</text>
-					</view>
+	<list v-if="modalDanmuHidden && is_live" class="nlv-rollMsgPanel" scrollable="true" >
+		<cell v-for="(msgitem, msgidx) in danmuList" :key="msgidx" class="list-item" :ref="'msgitem'" >
+			<view class="nlv-msglist">
+				<view class="msg_bg">
+					<text class="msg_name">{{msgitem.uname}}</text> 
+					<text class="msg_text">{{msgitem.content}}</text>
 				</view>
-			</cell>
-		</list>
-		
-		<!--
-		<scroll-view v-if="modalDanmuHidden" class="nlv-rollMsgPanel" scroll-y show-scrollbar="false">
-		 <view  ref="box" class="box">
-		 	<block v-for="(msgitem, msgidx) in danmuList" :key="msgidx" :ref="'msgitem'">
-		 	 	<view class="nlv-msglist">
-		 	 		<view class="msg_bg">
-		 	 			<text class="msg_name">{{msgitem.uname}}</text> 
-		 	 			<text class="msg_text">{{msgitem.content}}</text>
-		 	 		</view>
-		 	 	</view>
-		 	</block>
-		</view>
-		</scroll-view>
-		-->
-		
+			</view>
+		</cell>
+	</list>
+	<view class="nlv-footToolbar">
 		<view class="nlv-infobox">
 			<view class="nlv_reply" @tap="handleRollMsg(index)">
 				<text class="nlv_reply_text">说点什么...</text>
 			</view>
-			<view class="nlv_btntool">
-				<view v-if="is_live" class="btn-toolitem" @tap="danmuShow()"> 
-					<text class="iconfont i-btntool" >{{modalDanmuHidden?'&#xe67c;':'&#xe618;'}}</text>
-				</view>
-		 
-				<view class="btn-toolitem" @tap="handleLiveCart(index)">
-					<text class="iconfont i-btntool" style="color: #fff;font-size: 20px;">&#xe61e;</text>
-				</view>
-		<!--
-		<view class="btn-toolitem btn-toolitem-cart" @tap="handleLiveGift">
-			<text class="iconfont i-btntool">&#xe600;</text>
-		</view>
-		-->
-				<view class="btn-toolitem" @tap="live_share">
-					<text class="iconfont i-btntool">&#xe682;</text>
-				</view>
-				<view class="btn-toolitem" @tap="prize_liveroom">
-					<text class="iconfont i-btntool" style="color: #ff4e0e;font-size: 20px;">&#xe63b;</text>
-				</view>
+			<view v-if="is_live" class="btn-toolitem" @tap="danmuShow()">
+				<text class="iconfont i-btntool" >{{modalDanmuHidden?'&#xe67c;':'&#xe618;'}}</text>
+			</view>
+			<view class="btn-toolitem" style="z-index:1001;" @tap.stop="handleLiveCart(index)">
+				<text class="iconfont i-btntool" style="color: #fff;font-size: 20px;">&#xe61e;</text>
+			</view>
+			<view class="btn-toolitem" style="z-index:1001;" @tap.stop="live_share">
+				<text class="iconfont i-btntool">&#xe682;</text>
+			</view>
+			<view class="btn-toolitem" style="z-index:1001;" :data-img="live_prize_image"  @tap.stop="prize_liveroom">
+				<text class="iconfont i-btntool" style="color: #ff4e0e;font-size: 20px;">{{live_prize_status?'&#xe63b;':'&#xe870;'}}</text>
 			</view>
 		</view>
 	</view>
+	
 	<!-- 商品推荐弹窗-->
 	<view v-if="modalAdvGoodshidden && live_adv_goods.length>0 && is_live" class="live-adv-goods" :style="'width:'+advgoods_winWidth" >
 		<view class="live-adv-goods-title"  @tap.stop="modalAdvGoodsconfirm">
@@ -138,7 +103,7 @@
 		</view>
 		<view class="live-adv-goods-item" @tap.stop="showAdvGoods" >
 			<view>
-				<image class="live-adv-goods-image"  :src="live_adv_goods.length>0?(live_adv_goods[0].activity_image?live_adv_goods[0].activity_image:live_adv_goods[0].image):''" mode="aspectFit" />
+				<image class="live-adv-goods-image" :src="live_adv_goods.length>0?(live_adv_goods[0].activity_image?live_adv_goods[0].activity_image:live_adv_goods[0].image):''" mode="aspectFit" />
 			</view>
 			<view class="live-adv-goods-text">
 				<text class="live-adv-goods-name">{{live_adv_goods.length>0?live_adv_goods[0].name:''}}</text>
@@ -185,6 +150,8 @@
 	<live-danmu ref="liveDanmu" :vlist="vlist" />
 	<roll-msg ref="rollMsg" :vlist="vlist" />
 	<live-share ref="liveShare" />
+	<!-- 加入购物车动画 cartx 和 carty 是购物车位置在屏幕位置的比例 例如左上角x0.1 y0.1 右下角 x0.9 y0.9-->
+	<shopCarAnimation ref="carAnmation"></shopCarAnimation>
 </view>
 </template>
 
@@ -194,6 +161,7 @@
 	import rollMsg from './cp-live/rollmsg'
 	import liveShare from './cp-live/share'
 	import liveDanmu from './cp-live/danmu'
+	import shopCarAnimation from '@/components/fly-in-cart/fly-in-cart.vue'
 	
 	var weburl = getApp().globalData.weburl;
 	var playerurl = getApp().globalData.playerurl;
@@ -209,6 +177,7 @@
 	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : ''; 
 	
 	let timer = null
+	
 	function getRandomColor() {
 	  let rgb = [];
 	
@@ -257,12 +226,16 @@
 				live_memberList:[],
 				live_starttime: 0,
 				live_focus_status: false,
+				live_prize_status: false,
 				live_sub_name: '人气值:1',
 				live_goods: '',
 				live_status: '0',
 				live_adv_goods:[],
 				is_live_loading:false,
 				is_live:false,
+				clientX:0,
+				clientY:0,
+				live_prize_image:'/static/images/heart1.png',
 				errorhidden: true,
 				error_message: '',
 				poster_image: weburl + '/uploads/video_poster_image.png',
@@ -313,6 +286,7 @@
 			rollMsg, 
 			liveShare,
 			liveDanmu,
+			shopCarAnimation,
 		},
 		beforeCreate() {
 			// #ifdef APP-PLUS
@@ -397,18 +371,19 @@
 			console.log('player onLoad liveurl:', that.liveurl, ' liveid:', liveid, ' video_mode:', that.video_mode, ' live_name:', live_name, ' playerurl:', playerurl);
 			that.videoIndex = index
 		},
-		onReady() {
+		onReady: function() {
 			var that = this 
 			that.query_live_member();
 			setTimeout(function () { 
 			  that.queryDanmu();
 			}, 1000);
 		},
-		onUnload: function () {
+		onUnload: function() {
 		    //销毁定时器
 		    console.log("+++++++++onUnload++++++++++")
 		    clearInterval(this.Timer_queryDanmu);
-		  },
+		},
+		
 		methods: {
 			modalAdvGoodsconfirm: function () {
 			    var that = this
@@ -1058,14 +1033,20 @@
 			    }
 			  });
 			},
-			prize_liveroom: function () {
+			prize_liveroom: function (e) {
 			  var that = this;
 			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 			  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 			  var liveid = that.liveid;
 			  var post_type = '2'; //点赞
-			
+			  var live_prize_status = that.live_prize_status
+			  
+			  console.log('直播点赞 prize_liveroom:');
+			  
+			  this.$refs.carAnmation.prizeShow();
+			  if (live_prize_status) return 
+			  
 			  uni.request({
 			    url: weburl + '/api/client/post_prize',
 			    method: 'POST',
@@ -1081,11 +1062,14 @@
 			      'Accept': 'application/json'
 			    },
 			    success: function (res) {
+					/*
 			      uni.showToast({
 			        title: '点赞完成',
 			        icon: 'none',
 			        duration: 1500
 			      });
+				  */
+				  that.live_prize_status = true 
 			      console.log('prize_liveroom 点赞完成:', res.data);
 			    },
 			    fail: function (e) {
@@ -1179,6 +1163,7 @@
 				console.log('handleLiveDanmu:',options)
 				this.$refs.liveDanmu.show(JSON.stringify(options))
 			},
+			
 			live_share() {
 				var that = this
 				var options = {
@@ -1204,6 +1189,7 @@
 				console.log('handleAdvGoods:',options)
 				this.$refs.advGoods.show(JSON.stringify(options))
 			},
+			
 			goBack: function () {
 			  var pages = getCurrentPages();
 						
@@ -1213,7 +1199,7 @@
 			    }); //返回上一页
 			  } else {
 			    uni.switchTab({
-			      url: '../hall/hall'
+			      url: '/pages/hall/hall'
 			    });
 			  }
 			},
@@ -1388,7 +1374,7 @@
 	position: absolute; 
 	left: 0; 
 	right: 0; 
-	bottom: 30;
+	bottom: 35;
 }
 .nlv-giftTipPanel {
 	flex-direction: row; 
@@ -1434,7 +1420,8 @@
 .nlv-rollMsgPanel {
 	margin-left: 20upx; 
 	margin-bottom: 20upx; 
-	height: 400upx; 
+	height: 400upx;
+	z-index:-1;
 }
 .nlv-msglist {
 	margin-top: 10upx; 
@@ -1480,6 +1467,7 @@
 .nlv_btntool {
 	flex-direction: row; 
 	justify-content: flex-end;
+	z-index:1001;
 }
 .btn-toolitem {
 	background-color: rgba(0,0,0,.3); 
@@ -1575,6 +1563,5 @@
   height: 30rpx;
   padding: 1rpx;
 }
-
 
 </style>

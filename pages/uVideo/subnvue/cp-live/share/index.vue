@@ -16,7 +16,6 @@
 				</view>
 			</view>
 			
-			
 			<swiper class="gift-swiper" :indicator-dots="false" :duration="200" indicator-color="#dbdbdb" indicator-active-color="#999">
 				<swiper-item v-for="(item,index) in giftList" :key="index">
 				<view class="gift__cells">

@@ -210,7 +210,7 @@
 	right: 0; 
 	top: 0; 
 	bottom: 0; 
-	z-index: 201910;
+	z-index: 999;
 }
 .floatInput-body {
 	overflow: hidden; 
@@ -218,7 +218,7 @@
 	bottom: 50; 
 	left: 0; 
 	right: 0; 
-	z-index: 10001;
+	z-index: 999;
 }
 .wrap_fastMsgTpl {
 	/* #ifndef APP-PLUS-NVUE */
