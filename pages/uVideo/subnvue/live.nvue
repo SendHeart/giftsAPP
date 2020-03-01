@@ -56,7 +56,7 @@
 				<image v-if="live_memberList[1]" class="ta-avator" style="margin-left:20px;" :src="live_memberList[1]['wx_headimg']" mode="aspectFill" />
 				<image v-if="live_memberList[2]" class="ta-avator" style="margin-left:35px;" :src="live_memberList[2]['wx_headimg']" mode="aspectFill" />
 			</scroll-view>
-			<text class="member-num" @tap.stop="goBack">{{vlist[videoIndex].attentionNum?'在线:'+vlist[videoIndex].attentionNum:'在线:'+0}}</text>
+			<text class="member-num" @tap.stop="goBack">{{vlist[0].attentionNum?'在线:'+vlist[0].attentionNum:'在线:'+0}}</text>
 			<text class="iconfont" style="padding: 10rpx; width:50rpx;height:50rpx;color:#FFFFFF;font-size: 30rpx;" @tap.stop="goBack">&#xe624;</text>
 		</view>
 		<!-- 
