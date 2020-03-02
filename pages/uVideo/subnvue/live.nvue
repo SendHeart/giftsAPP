@@ -63,19 +63,20 @@
 		<view class="topbar-right"><text class="topbar_ico iconfont" @tap="GoBack">&#xe84f;</text></view>
 		-->
 	</view>
-	<list v-if="modalDanmuHidden && is_live" class="nlv-rollMsgPanel" scrollable="true" >
-		<cell v-for="(msgitem, msgidx) in danmuList" :key="msgidx" class="list-item" :ref="'msgitem'" >
-			<view class="nlv-msglist">
-				<view class="msg_bg">
-					<text class="msg_name">{{msgitem.uname}}</text> 
-					<text class="msg_text">{{msgitem.content}}</text>
-				</view>
-			</view>
-		</cell>
-	</list>
+	
 	<view class="nlv-footToolbar">
+		<list v-if="modalDanmuHidden && is_live" class="nlv-rollMsgPanel" scrollable="true" >
+			<cell v-for="(msgitem, msgidx) in danmuList" :key="msgidx" class="list-item" :ref="'msgitem'" >
+				<view class="nlv-msglist">
+					<view class="msg_bg">
+						<text class="msg_name">{{msgitem.uname}}</text> 
+						<text class="msg_text">{{msgitem.content}}</text>
+					</view>
+				</view>
+			</cell>
+		</list>
 		<view class="nlv-infobox">
-			<view class="nlv_reply" @tap="handleRollMsg(index)">
+			<view v-if="is_live" class="nlv_reply" @tap="handleRollMsg(index)">
 				<text class="nlv_reply_text">说点什么...</text>
 			</view>
 			<view v-if="is_live" class="btn-toolitem" @tap="danmuShow()">
@@ -930,7 +931,7 @@
 						that.live_name = liveinfo[0]['shop_name'] ? liveinfo[0]['shop_name'] : '送心礼物'
 						that.live_hoster = live_hoster
 						that.is_hoster = is_hoster
-						that.video_mode = that.is_live?'cover':'contain'
+						that.video_mode = liveinfo[0]['objectfit']?liveinfo[0]['objectfit']:'contain'
 						console.log('query_liveroom_info 离线视频:'+ that.videourl +' is_live:' +is_live);
 						
 						//离线 取视频url
@@ -968,7 +969,8 @@
 				  that.vlist[0].author = that.live_name
 				  that.vlist[0].attentionNum = that.live_members
 				  that.vlist[0].avator = that.live_logo
-				  that.video_mode = that.is_live?'cover':'contain'
+				  that.video_mode = liveinfo[0]['objectfit']?liveinfo[0]['objectfit']:'contain'
+				  that.vlist[0].objectfit = that.video_mode
 				  
 				  if(liveinfo[0]['videolist'] && liveinfo[0]['videolist'].length>0){
 						for(var i = 0; i < liveinfo[0]['videolist'].length; i++) {
@@ -1111,6 +1113,7 @@
 				var videoIndex = that.videoIndex
 				var vlist_len = that.vlist.length
 				var slider_index = videoIndex + 1
+				var is_live = that.is_live
 				slider_index = slider_index<vlist_len?slider_index:0
 				
 				var next_slide={
@@ -1118,7 +1121,7 @@
 						"current":parseInt(slider_index)
 					},
 				}
-				that.handleSlider(next_slide)
+				if(that.vlist.length>1) that.handleSlider(next_slide)
 			},
 			play(index) {
 				this.$refs['myVideo_'+index][0].play()
@@ -1452,6 +1455,7 @@
 	flex: 1; 
 	flex-direction: row; 
 	align-items: center;
+	justify-content: flex-end;
 }
 .nlv_reply {
 	flex:1; 

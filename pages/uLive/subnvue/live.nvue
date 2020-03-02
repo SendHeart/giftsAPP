@@ -105,7 +105,7 @@
 					<text class="iconfont i-btntool">&#xe682;</text>
 				</view>
 				<view class="btn-toolitem" @tap="prize_liveroom">
-					<text class="iconfont i-btntool" style="color: #ff4e0e;font-size: 20px;">&#xe63b;</text>
+					<text class="iconfont i-btntool" style="color: #ff4e0e;font-size: 20px;">{{live_prize_status?'&#xe63b;':'&#xe870;'}}</text>
 				</view>
 			</view>
 		</view>
@@ -167,6 +167,7 @@
 	<live-danmu ref="liveDanmu" :vlist="vlist" />
 	<roll-msg ref="rollMsg" :vlist="vlist" />
 	<live-share ref="liveShare" />
+	<shopCarAnimation ref="carAnmation"></shopCarAnimation>
 </view>
 </template>
 
@@ -176,6 +177,7 @@
 	import rollMsg from './cp-live/rollmsg'
 	import liveShare from './cp-live/share'
 	import liveDanmu from './cp-live/danmu'
+	import shopCarAnimation from '@/components/fly-in-cart/fly-in-cart.vue'
 	
 	var weburl = getApp().globalData.weburl;
 	var playerurl = getApp().globalData.playerurl;
@@ -238,6 +240,7 @@
 				live_memberList:[],
 				live_starttime: 0,
 				live_focus_status: false,
+				live_prize_status: false,
 				live_sub_name: '人气值:1',
 				live_goods: '',
 				live_status: '0',
@@ -294,6 +297,7 @@
 			rollMsg, 
 			liveShare,
 			liveDanmu,
+			shopCarAnimation,
 		},
 		beforeCreate() {
 			// #ifdef APP-PLUS
@@ -1017,6 +1021,11 @@
 			  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 			  var liveid = that.liveid;
 			  var post_type = '2'; //点赞
+			  var live_prize_status = that.live_prize_status
+			  
+			  this.$refs.carAnmation.prizeShow();
+			  
+			if (live_prize_status) return 
 			
 			  uni.request({
 			    url: weburl + '/api/client/post_prize',
@@ -1033,11 +1042,15 @@
 			      'Accept': 'application/json'
 			    },
 			    success: function (res) {
+					/*
 			      uni.showToast({
 			        title: '点赞完成',
 			        icon: 'none',
 			        duration: 1500
 			      });
+				  */
+				 
+				  that.live_prize_status = true 
 			      console.log('prize_liveroom 点赞完成:', res.data);
 			    },
 			    fail: function (e) {
