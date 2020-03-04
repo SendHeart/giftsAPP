@@ -12,8 +12,7 @@
 	<switch color="#feb719" style="transform: scale(0.7,0.7)" />
 	-->
 		<view class="wrap_editor">
-			<textarea class="editor" v-model="editorText" show-confirm-bar="false" cursor-spacing="15" :selection-start="editorLastCursor" :selection-end="editorLastCursor" auto-height 
-					@input="bindEditorInput" @focus="bindEditorFocus" @blur="bindEditorBlur" placeholder="说点什么"	placeholder-style="height:30rpx;line-height:1.2;margin:0 auto;"			
+			<textarea class="editor" v-model="editorText" cursor-spacing="15" show-confirm-bar="false" @blur="bindEditorBlur" auto-height placeholder="说点什么"	placeholder-style="height:30rpx;line-height:30rpx;margin:0 auto;"			
 	/>
 		</view>
 		<!--
@@ -107,11 +106,14 @@
 				this.showEmotionView = true
 			},
 			bindEditorInput(e) {
-				this.editorLastCursor = e.detail.cursor
+				//this.editorLastCursor = e.detail.cursor
+				console.log('直播聊天 说点什么 bindEditorInput:', e);
 			},
 			bindEditorFocus(e) {},
 			bindEditorBlur(e) {
-				this.editorLastCursor = e.detail.cursor
+				//this.editorLastCursor = e.detail.cursor
+				this.EditorText = e.detail.value
+				console.log('直播聊天 说点什么 bindEditorBlur:', e);
 			},
 			handleEmotionTaped(emoj) {
 				if(emoj == 'del') return
@@ -251,7 +253,8 @@
 }
 .editor {
 	font-size: 14px; 
-	line-height: 30rpx;
+	height: 35rpx;
+	line-height: 35rpx;
 }
 .wrap_editor_btn {
 	justify-content: center; 

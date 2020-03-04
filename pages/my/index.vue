@@ -66,6 +66,10 @@
 		 	<image src="/static/images/u633.png" class="png" mode="aspectFit"></image>
 		 	<text class="text-grey">用户协议</text>
 		</view>
+		<view @tap="navigateToPrivacy" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
+		 	<image src="/static/images/u621.png" class="png" mode="aspectFit"></image>
+		 	<text class="text-grey">隐私政策</text>
+		</view>
 		<view @tap="navigateToCustomerService" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;margin-bottom:50rpx;'"  >
 		 	<image src="/static/images/u631.png" class="png" mode="aspectFit"></image>
 		 	<text class="text-grey" >联系客服</text>
@@ -786,6 +790,46 @@ export default {
         //that.showAgreementinfo();
       }
     },
+	navigateToPrivacy: function () {
+	  var that = this;
+	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+	  var art_id = '27'; //送心隐私政策
+	
+	  var art_cat_id = '9'; //送心协议类
+	  var shop_type = that.shop_type;
+	  //var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
+	
+	  uni.showToast({
+	      title: '加载中',
+	      icon: 'loading',
+	      duration: 1500
+	  });
+	  uni.request({
+	    url: weburl + '/api/client/query_art',
+	    method: 'POST',
+	    data: {
+	      username: username,
+	      access_token: token,
+	      art_id: art_id,
+	      art_cat_id: art_cat_id,
+	      shop_type: shop_type
+	    },
+	    header: {
+	      'Content-Type': 'application/x-www-form-urlencoded',
+	      'Accept': 'application/json'
+	    },
+	    success: function (res) {
+	  	var privacyInfo = res.data.result
+	  	that.privacyInfo = res.data.result
+	      console.log('送心隐私政策:', that.privacyInfo);
+	  	that.modalHiddenPlaysx = true ;
+	  	that.article = that.privacyInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+	  	that.article_title ="送心隐私政策";
+	      //that.showAgreementinfo();
+	    }
+	  });
+	},
 	showPlaysxinfo:function () {
 		var that = this
 		var modalHiddenPlaysx = this.modalHiddenPlaysx;
