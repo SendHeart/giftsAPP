@@ -564,6 +564,7 @@ export default {
     that.initSocketMessage();
     setInterval(function () {
       that.initSocketMessage();
+	  that.gift_para_interval = 1 ; //获取业务参数
     }, 20000);
     setInterval(function () {//that.reSend()
     }, 5000);
@@ -1898,6 +1899,7 @@ export default {
 	set_project_gift_para: function () {
 		var that = this;
 		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
+		that.gift_para_interval = 0
 		that.navList2 = navList_new ;
 		that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner ;
 		that.middle1_img = navList_new[11] ? navList_new[11]['img'] : '' ;
@@ -1930,8 +1932,9 @@ export default {
       var that = this;
 	  var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
       var hall_banner = that.hall_banner;
+	  var gift_para_interval = that.gift_para_interval
       //console.log('hall get_project_gift_para navList2:', navList_new);
-	  if(navList_new) {
+	  if(navList_new && gift_para_interval>0) {
 		  that.set_project_gift_para()
 		  return ;
 	  } ;

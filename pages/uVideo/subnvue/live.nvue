@@ -1095,7 +1095,7 @@
 				var videoIndex = that.videoIndex
 				var current = event.detail.current
 				var source = event.detail.source
-				console.log('handleSlider event:', event); 
+				console.log('handleSlider event:', event,' videoIndex:',videoIndex); 
 				if(videoIndex >=0) {
 					that.$refs['myVideo_'+videoIndex][0].pause()
 				}

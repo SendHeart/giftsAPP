@@ -1,10 +1,8 @@
-
 <template>
 <view class="wrap__giftPanel" v-if="showGiftView">
 	<view class="wrapgift-mask" @tap="close"></view>
 	<scroll-view class="wrapgift-body">
 		<view class="wrap_giftlist">
-			
 			<view class="gift-head" @tap.stop="close">
 				<!--
 				<view class="gift-menu">
@@ -82,6 +80,7 @@
 				var index = options.index?options.index:0
 				this.liveid = options.liveid?options.liveid:3989
 				this.liveroom_name = options.liveroom_name?options.liveroom_name:this.liveroom_name,
+				this.liveroom_desc = options.liveroom_desc?options.liveroom_desc:this.liveroom_desc,
 				this.liveroom_logo = options.liveroom_logo?options.liveroom_logo:this.liveroom_logo,
 				this.liveroom_goods = options.liveroom_goods?options.liveroom_goods:this.liveroom_goods
 				this.liveroom_poster = options.liveroom_poster?options.liveroom_poster:this.liveroom_poster
@@ -110,7 +109,8 @@
 				var that = this 
 				var liveroom_logo = that.liveroom_logo
 				var liveroom_name = that.liveroom_name
-			
+				var liveroom_desc = that.liveroom_desc
+				liveroom_name = liveroom_desc?liveroom_desc:liveroom_name
 				var liveid = that.liveid
 				uni.navigateTo({
 					url: '/pages/wish/wishshare/wishshare?liveid=' + liveid + '&liveroom_name=' + liveroom_name+ '&liveroom_logo=' + liveroom_logo
@@ -169,7 +169,7 @@
 					  provider: 'weixin',
 					  type: 5,
 					  scene: 'WXSceneSession',
-					  title: liveroom_name,
+					  title: liveroom_desc?liveroom_desc:liveroom_name,
 					  imageUrl:  'https://sendheart.dreamer-inc.com/uploads/liveroom_share_logo.png',
 					  miniProgram: {
 					          id: miniprogram_id,  // gh_aefe7ce896f6
@@ -199,7 +199,7 @@
 					  provider: 'weixin',
 					  type: 5,
 					  scene: 'WXSceneSession',
-					  title: liveroom_name,
+					  title: liveroom_desc?liveroom_desc:liveroom_name,
 					  imageUrl: liveroom_logo + '?x-oss-process=image/resize,w_200',
 					  miniProgram: {
 					          id: miniprogram_id,  // gh_aefe7ce896f6
