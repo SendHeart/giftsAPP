@@ -409,8 +409,8 @@ export default {
         var liveid = 0
         var carts = that.carts;
         var cartselected = [];
-        var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-        var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+        var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+        var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
         // 遍历selected 
         var index = 0;
         for (var i = 0; i < carts.length; i++) {
@@ -427,14 +427,12 @@ export default {
           return
         }
     
-        that.setData({
-          amount: amount,
-          carts: carts,
-          cartIds: cartIds,
-          username: username,
-          token: token,
-    
-        });
+        that.amount = amount,
+        that.carts = carts
+        that.cartIds = cartIds
+        that.username = username
+        that.token = token
+		
         //that.confirmOrder()
     
         /*
@@ -442,7 +440,7 @@ export default {
           url: '../order/checkout/checkout?cartIds=' + cartIds + '&amount=' + that.data.total + '&carts=' + JSON.stringify(cartselected) + '&username=' + username + '&token=' + token
         });
         */
-        wx.navigateTo({
+        uni.navigateTo({
           url: '/pages/order/checkout/checkout?cartIds=' + cartIds + '&amount=' + amount + '&carts=' + JSON.stringify(cartselected) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_image=' + share_goods_image + '&liveid=' + liveid + '&username=' + username + '&token=' + token
         })
         /*
@@ -465,7 +463,6 @@ export default {
         var order_note = that.note;
         if (!order_note) order_note = '送你一份心意，愿美好长存!'; //默认祝福
         console.log('附言:' + order_note)
-    
     
         wx.request({
           url: weburl + '/api/client/add_order',
