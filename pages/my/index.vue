@@ -14,6 +14,10 @@
 	</view>
 	<scroll-view :scroll-y="modalName==null" class="page" :class="modalName!=null?'show':''" >
 	<view class="menu-area">
+		<view v-if="userauth.shoper!=0" @tap="navigateToRecharge" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'">
+			  <image src="/static/images/icon-tk.png" />
+			  <text>会员充值</text>
+		  </view>
 		<view v-if="userauth_coupon==1" @tap="navigateToCoupon" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'">
 			<image src="/static/images/iconfont-card.png" />
 			<text class="text-grey">发优惠券/红包/积分奖励</text>
@@ -60,7 +64,7 @@
 	<view class="menu-area">	
 		<view @tap="navigateToPlaysx" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
 		 	<image src="/static/images/u628.png" class="png" mode="aspectFit"></image>
-		 	<text class="text-grey">如何玩转送心</text>
+		 	<text class="text-grey">什么是会员制</text>
 		</view>  
 		<view @tap="navigateToAgreement" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'"  >
 		 	<image src="/static/images/u633.png" class="png" mode="aspectFit"></image>
@@ -81,7 +85,7 @@
 			<view class="uni-tip-title">{{article_title}}</view>
 			<view class="uni-tip-content">
 				<scroll-view scroll-y >
-					<uParse :content="article" @preview="preview" @navigate="navigate" />
+					<uParse :content="article"  /> <!-- @preview="preview" @navigate="navigate" -->
 				</scroll-view>
 			</view>
 			<view class="uni-tip-group-button">
@@ -210,7 +214,8 @@ export default {
 	  userauth_location:0,
 	  userauth_article:0,
 	  new_img_arr:"",
-	  scan_result:""
+	  scan_result:"",
+	  windowHeight:'500px',
     };
   },
 
@@ -231,7 +236,10 @@ export default {
     var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
     var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
     var frompage = options.frompage ? options.frompage : '';
-    var art_id = options.art_id ? options.art_id : 0;
+
+	var art_id = options.art_id ? options.art_id:0
+		art_id =  art_id>0?art_id:getApp().globalData.art_id
+		
     var art_cat_id = options.art_cat_id ? options.art_cat_id : 0;
     var art_title = options.art_title ? options.art_title : '';
     var refer_id = options.mid ? options.mid : 0;
@@ -254,6 +262,9 @@ export default {
 	that.art_cat_id = art_cat_id ;
 	that.art_title = art_title ;
 	that.refer_id = refer_id ;
+	if (art_id>0){
+	      that.navigateToPlaysx()
+	    }
 	console.log('my index onLoad() userauth:', userauth, 'user_name:', that.user_name);
   },
   onShow: function () {
@@ -274,10 +285,8 @@ export default {
     console.log('my index onShow() user_phone:', user_phone, 'userauth:', userauth);
 	
     if (!user_name || user_name == '') {
-     modalHiddenUserName = !modalHiddenUserName;
-     that.setData({
-       modalHiddenUserName: modalHiddenUserName
-     }); 
+     that.modalHiddenUserName = !modalHiddenUserName;
+	   
     } else if (isReadAgreement == 0 && username) {
      //已登录未阅读用户购买协议
      that.navigateToAgreement();
@@ -437,6 +446,112 @@ export default {
 		});
 	   
 	},
+	
+	navigateToRecharge: function () {
+	    var that = this
+	    var is_recharge = 1
+	    var recharge_type = 1
+	    wx.request({
+	      url: weburl + '/api/client/add_cart',
+	      method: 'POST',
+	      data: {
+	        username: username,
+	        access_token: token,
+	        shop_type:shop_type,
+	        is_recharge: is_recharge,
+	        recharge_type:recharge_type,
+	      },
+	      header: {
+	        'Content-Type': 'application/x-www-form-urlencoded',
+	        'Accept': 'application/json'
+	      },
+	      success: function (res) {
+	        console.log('My navigateToRecharge res data:'+ JSON.stringify(res.data));
+	        //var result =  res.data.result
+	        wx.showToast({
+	          title: '会员充值',
+	          icon:'loading',
+	          duration: 2000
+	        })
+			
+			//that.recharge_skuid = res.data.result.recharge_skuid,
+			//that.recharge_price = res.data.result.recharge_price,
+			//that.recharge_image = res.data.result.recharge_image
+			
+	        getApp().globalData.from_page = '/pages/my/index'
+			that.queryCart(res.data.result)
+	        
+	      }
+	    })  
+	},
+
+	queryCart: function (options) {
+	    var that = this
+	    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+	    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+	    var order_type = 'recharge'
+	    var order_shape = '8'
+	    var order_note = '会员充值'; 
+	    var recharge_image = options.recharge_image
+	    var buynum = 1
+	    var sku_sell_price = options.recharge_price
+	    var amount = parseFloat(sku_sell_price) * buynum
+	    var sku_id = options.recharge_skuid
+	    var is_buymyself = 1
+	    var goods_shape = 7 
+	
+	    wx.request({
+	      url: weburl + '/api/client/query_cart',
+	      method: 'POST',
+	      data: {
+	        username: username,
+	        access_token: token,
+	        shop_type: shop_type,
+	        sku_id: sku_id,
+	        goods_shape:goods_shape
+	      },
+	      header: {
+	        'Content-Type': 'application/x-www-form-urlencoded',
+	        'Accept': 'application/json'
+	      },
+	      success: function (res) {
+	        
+	        var carts = [];
+	        if (!res.data.result) {
+	          wx.showToast({
+	            title: '会员充值:' + res.data.info,
+	            icon: 'none',
+	            duration: 1500
+	          })
+	          return
+	        }
+	        var cartlist = res.data.result.list;
+	        var index = 0;
+	        for (var key in cartlist) {
+	          cartlist[key]['sku_list'][0]['image'] = recharge_image
+	          for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
+	            if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
+	              cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image']
+	            } 
+	            cartlist[key]['sku_list'][i]['selected'] = true
+	            cartlist[key]['sku_list'][i]['shop_id'] = key
+	            cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id']
+	            carts[index] = cartlist[key]['sku_list'][i]
+	            index++;
+	          }
+	        }
+	
+	       that.carts = carts
+	       that.all_rows = carts.length
+	       that.is_buymyself = is_buymyself
+			console.log('my index queryCart sku_id:'+sku_id +' amount:'+amount+' carts:' + JSON.stringify(cartlist));
+	        uni.navigateTo({
+	          url: '/pages/order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + order_shape + '&order_image=' + recharge_image + '&recharge=1&username=' + username + '&token=' + token
+	        })
+	      }
+	    })
+	},
+	  
     goBack: function () {
       var that = this;
       var pages = getCurrentPages();
@@ -467,21 +582,21 @@ export default {
       var bank_name = that.bank_info[selected_index]['bank_name'];
       var bank_id = that.bank_info[selected_index]['id'];
       console.log('picker发送选择改变，携带值为', e.detail.value);
-      that.setData({
-        index: selected_index,
-        bank_name: bank_name,
-        bank_id: bank_id
-      });
+     
+	  that.index = selected_index
+	  that.bank_name = bank_name
+	  that.bank_id = bank_id
+	  
       console.log('自定义值:', that.bank_info[selected_index]['bank_name']);
     },
+	
     bindchangeBankcardno: function (e) {
-      var that = this;
-      var bankcard_no = e.detail.value;
-      that.setData({
-        bankcard_no: bankcard_no
-      });
-      console.log('bankcard_no:' + that.bankcard_no);
+		var that = this;
+		var bankcard_no = e.detail.value;
+		that.bankcard_no = bankcard_no
+		console.log('bankcard_no:' + that.bankcard_no);
     },
+	
     bindchangeBankcardname: function (e) {
       var that = this;
       var bankcard_name = e.detail.value;
@@ -513,12 +628,10 @@ export default {
           if (res.data.status == 'y') {
             var bank_info = res.data.result;
             var index = that.index;
-            that.setData({
-              bank_info: bank_info,
-              modalHiddenBankcard: !that.modalHiddenBankcard,
-              bank_name: bank_info[index]['bank_name'],
-              bank_id: bank_info[index]['id']
-            });
+			that.bank_info = bank_info,
+			that.modalHiddenBankcard = !that.modalHiddenBankcard
+			that.bank_name = bank_info[index]['bank_name']
+			that.bank_id = bank_info[index]['id']
             console.log('获取银行列表完成:', res.data.result); //获取我的银行列表
 
             wx.request({
@@ -535,20 +648,17 @@ export default {
               },
               success: function (res) {
                 if (res.data.status == 'y') {
-                  var mbank_info = res.data.result;
-                  that.setData({
-                    bank_name: mbank_info[0]['bank_name'],
-                    bank_id: mbank_info[0]['bank_id'],
-                    bankcard_no: mbank_info[0]['bank_cardno'],
-                    bankcard_name: mbank_info[0]['bank_cardname']
-                  });
+					var mbank_info = res.data.result;
+					that.bank_name = mbank_info[0]['bank_name']
+					that.bank_id = mbank_info[0]['bank_id']
+					that.bankcard_no = mbank_info[0]['bank_cardno']
+					that.bankcard_name = mbank_info[0]['bank_cardname']
 
                   if (mbank_info[0]['id']) {
                     for (var i = 0; i < that.bank_info.length; i++) {
                       if (that.bank_info[i]['id'] == mbank_info[0]['bank_id']) {
-                        that.setData({
-                          index: i
-                        }); //console.log('获取我的银行列表 index:', i, 'my bank id:', mbank_info[0]['bank_id'])
+                       that.index = i
+						//console.log('获取我的银行列表 index:', i, 'my bank id:', mbank_info[0]['bank_id'])
                       }
                     }
                   }
@@ -701,16 +811,12 @@ export default {
 	user_nicknameTapTag: function () {
 	  var that = this;
 	  var hiddenNickname = that.hiddenNickname
-	  that.setData({
-	    hiddenNickname: !hiddenNickname
-	  });
+	  that.hiddenNickname = !hiddenNickname
 	},
     user_nameTapTag: function (e) {
-      var that = this;
-      var user_name = e.detail.value;
-      that.setData({
-        user_name: user_name
-      });
+		var that = this;
+		var user_name = e.detail.value;
+		that.user_name = user_name
     },
     //按钮点击事件  获取姓名
     modalBindconfirmUsername: function () {
@@ -725,18 +831,14 @@ export default {
         that.getUserName(user_name, user_gender);
       } else {
         var needUserName = '需要您的姓名和性别';
-        that.setData({
-          needUserName: needUserName
-        });
+        that.needUserName = needUserName
       }
     },
     radiochange: function (e) {
       var that = this;
       var user_gender = e.detail.value; //console.log('radio发生change事件，携带的value值为：', e.detail.value)
 
-      that.setData({
-        user_gender: user_gender
-      });
+      that.user_gender = user_gender
       wx.setStorageSync('user_gender', user_gender);
     },
     navigateToAgreement: function () {
@@ -772,9 +874,7 @@ export default {
           },
           success: function (res) {
 			var agreementInfo = res.data.result
-            that.setData({
-              agreementInfo: res.data.result
-            });
+            that.agreementInfo = res.data.result
             console.log('送心协议:', that.agreementInfo);
 			that.modalHiddenPlaysx = true ;
 			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
@@ -836,22 +936,16 @@ export default {
 		var playsxinfoshowflag = this.playsxinfoshowflag;
 		var playsxInfo = this.playsxInfo
 	
-		that.setData({
-			modalHiddenPlaysx: !modalHiddenPlaysx
-		});
+		that.modalHiddenPlaysx = !modalHiddenPlaysx
 			
 		if (!this.modalHiddenPlaysx && playsxinfoshowflag == 0) {
 	    uni.getSystemInfo({
 	      success: function (res) {
 	        let winHeight = res.windowHeight; //console.log(winHeight);
-	        that.setData({
-	          dkheight: winHeight - winHeight * 0.05 - 20
-	        });
+	       that.dkheight = winHeight - winHeight * 0.05 - 20
 	      }
 	    });
-	    this.setData({
-	      playsxinfoshowflag: 1
-	    });
+	    this.playsxinfoshowflag = 1
 	    var dkcontent2 = this.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
 	    wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5);
 	  }
@@ -862,7 +956,10 @@ export default {
       var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var art_id = that.art_id ? that.art_id : '22'; //玩转送心
       var art_cat_id = that.art_cat_id ? that.art_cat_id : '9'; //送心协议类
-      var art_title = that.art_title ? art_title = that.art_title : '如何玩转送心';
+       var art_id = that.art_id ? that.art_id:'28'  //22玩转送心 28什么是会员制
+		var art_cat_id = that.art_cat_id ? that.art_cat_id:'9'  //送心协议类
+		var art_title = that.art_title ? art_title = that.art_title :'如何玩转送心'
+	 // var art_title = that.art_title ? art_title = that.art_title : '如何玩转送心';
       var playsxinfoshowflag = that.playsxinfoshowflag;
 	 
       if (playsxinfoshowflag == 0) {
@@ -887,9 +984,9 @@ export default {
           success: function (res) {
 			var playsxInfo = res.data.result ;
 			that.playsxInfo = playsxInfo ;
-            console.log('玩转送心:', that.playsxInfo);
+            console.log('什么是会员制:', that.playsxInfo);
 			that.modalHiddenPlaysx = true ;
-			that.article_title ="玩转送心";
+			that.article_title ="什么是会员制";
 			that.article = playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
 			 
 			/*
@@ -912,7 +1009,7 @@ export default {
           }
         });
       } else {
-		  that.article_title ="玩转送心";
+		  that.article_title ="什么是会员制";
 		  that.modalHiddenPlaysx = !that.modalHiddenPlaysx ;
 		  that.article = that.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
 		 // this.modalHiddenPlaysx = false ;
@@ -964,54 +1061,42 @@ export default {
       let winPage = this; //var hideviewagreementinfo = winPage.data.hideviewagreementinfo
       var modalHiddenAgreement = winPage.modalHiddenAgreement;
       var agreementinfoshowflag = winPage.agreementinfoshowflag ? winPage.agreementinfoshowflag : 0;
-      this.setData({
-        modalHiddenAgreement: !modalHiddenAgreement
-      });
+      this.modalHiddenAgreement = !modalHiddenAgreement
 			
       if (!winPage.modalHiddenAgreement && agreementinfoshowflag == 0) {
         uni.getSystemInfo({
           success: function (res) {
             let winHeight = res.windowHeight;
             console.log(winHeight);
-            winPage.setData({
-              dkheight: winHeight - winHeight * 0.05 - 120
-            });
+            winPage.dkheight = winHeight - winHeight * 0.05 - 120
           }
         });
-        winPage.setData({
-          agreementinfoshowflag: 1
-        });
-        wxparse.wxParse('dkcontent1', 'html', winPage.data.agreementInfo[0]['desc'], winPage, 5);
+        winPage.agreementinfoshowflag = 1
+        wxparse.wxParse('dkcontent1', 'html', winPage.agreementInfo[0]['desc'], winPage, 5);
       }
     },
     
     showArt: function () {
       let winPage = this;
-      var modalHiddenArt = winPage.data.modalHiddenArt;
-      var modalHiddenArtInfo = winPage.data.modalHiddenArtInfo;
-      var artinfoshowflag = winPage.data.artinfoshowflag;
-      var art_index = winPage.data.art_index ? winPage.data.art_index : 0;
-      winPage.setData({
-        modalHiddenArt: !modalHiddenArt,
-        modalHiddenArtInfo: !modalHiddenArtInfo
-      });
+      var modalHiddenArt = winPage.modalHiddenArt;
+      var modalHiddenArtInfo = winPage.modalHiddenArtInfo;
+      var artinfoshowflag = winPage.artinfoshowflag;
+      var art_index = winPage.art_index ? winPage.art_index : 0;
+      winPage.modalHiddenArt = !modalHiddenArt,
+      winPage.modalHiddenArtInfo = !modalHiddenArtInfo
       console.log('my index showArt() modalHiddenArtInfo:', modalHiddenArtInfo, 'artinfoshowflag:', artinfoshowflag, 'art_index:', art_index);
 
-      if (!winPage.data.modalHiddenArtInfo && artinfoshowflag == 0) {
+      if (!winPage.modalHiddenArtInfo && artinfoshowflag == 0) {
         wx.getSystemInfo({
           success: function (res) {
             let winHeight = res.windowHeight;
             console.log('my index showArt():', winHeight, 'art_index:', art_index);
-            winPage.setData({
-              dkheight: winHeight - winHeight * 0.05 - 120
-            });
+            winPagedkheight = winHeight - winHeight * 0.05 - 120
           }
         });
-        winPage.setData({
-          artinfoshowflag: 1,
-          art_index: art_index
-        });
-        var dkcontent2 = winPage.data.article[art_index]['desc'].replace('<img ', '<img style="max-width:100%;height:auto;margin:0 auto;" '); //console.log('my index showArt() dkcontent2:', dkcontent2);
+        winPage.artinfoshowflag = 1
+        winPage.art_index = art_index
+        var dkcontent2 = winPage.article[art_index]['desc'].replace('<img ', '<img style="max-width:100%;height:auto;margin:0 auto;" '); //console.log('my index showArt() dkcontent2:', dkcontent2);
 
         wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5); // wxparse.wxParse('dkcontent2', 'html', winPage.data.article[art_index]['desc'], winPage, 5)
       }
@@ -1106,10 +1191,8 @@ export default {
         success: function (res) {
           console.log(res.data.result);
           var webviewurl = res.data.result;
-          that.setData({
-            webviewurl: webviewurl,
-            modalHiddenCele: !that.modalHiddenCele
-          });
+          this.webviewurl = webviewurl
+          this.modalHiddenCele = !that.modalHiddenCele
         }
       });
     },
@@ -1119,18 +1202,14 @@ export default {
       var web_url = that.webviewurl[selected_index]['url'];
       var web_id = that.webviewurl[selected_index]['id'];
       console.log('celebration picker发送选择改变，携带值为', e.detail.value);
-      that.setData({
-        web_url: web_url,
-        web_id: web_id,
-        index: selected_index
-      });
+      that.web_url = web_url
+      that.web_id = web_id
+      that.index = selected_index
     },
     //确定按钮点击事件  祝福贺卡
     modalBindconfirmCele: function () {
       var that = this;
-      that.setData({
-        modalHiddenCele: !that.modalHiddenCele
-      });
+     that.modalHiddenCele = !that.modalHiddenCele
       wx.navigateTo({
         url: '../member/aboutus/aboutus?url=' + that.web_url
       });
@@ -1138,9 +1217,7 @@ export default {
     //取消按钮点击事件  祝福贺卡
     modalBindcancelCele: function () {
       var that = this;
-      that.setData({
-        modalHiddenCele: !that.modalHiddenCele
-      });
+      that.modalHiddenCele = !that.modalHiddenCele
     },
     //按钮点击事件  获取手机号
     modalBindconfirmPhone: function () {
@@ -1153,9 +1230,7 @@ export default {
         });
       } else {
         var needPhoneNumber = '需要您的手机号授权';
-        that.setData({
-          needPhoneNumber: needPhoneNumber
-        });
+        that.needPhoneNumber = needPhoneNumber
       }
     },
     bindArtPickerChange: function (e) {
@@ -1166,13 +1241,11 @@ export default {
       var art_id = that.article[selected_index]['id'];
       var art_cat_id = that.article[selected_index]['cat_id'];
       console.log('article picker发送选择改变，携带值为', e.detail.value);
-      that.setData({
-        art_title: art_title,
-        art_id: art_id,
-        art_cat_id: art_cat_id,
-        art_index: selected_index,
-        art_image: art_image ? art_image : that.share_art_image
-      });
+      that.art_title =  art_title
+      that.art_id = art_id
+      that.art_cat_id = art_cat_id
+      that.art_index = selected_index
+      that.art_image = art_image ? art_image : that.share_art_image
     },
     //确定按钮点击事件  文章
     modalBindconfirmArt: function () {
@@ -1182,33 +1255,25 @@ export default {
     //取消按钮点击事件 文章
     modalBindcancelArt: function () {
       var that = this;
-      that.setData({
-        modalHiddenArtInfo: true,
-        modalHiddenArt: true,
-        artinfoshowflag: 0
-      });
+      that.modalHiddenArtInfo = true
+      that.modalHiddenArt = true
+      that.artinfoshowflag = 0
     },
     //确定按钮点击事件  文章内容
     modalBindconfirmArtInfo: function () {
       var that = this;
-      that.setData({
-        modalHiddenArtInfo: true,
-        modalHiddenArt: true,
-        artinfoshowflag: 0
-      });
-      that.setData({
-        art_id: 0,
-        art_cat_id: 0
-      });
+      that.modalHiddenArtInfo = true
+      that.modalHiddenArt = true
+      that.artinfoshowflag = 0
+      that.art_id = 0
+      that.art_cat_id = 0
     },
     //确定按钮点击事件  文章分享
     modalBindShareArtInfo: function () {
       var that = this;
-      that.setData({
-        modalHiddenArtInfo: true,
-        modalHiddenArt: true,
-        artinfoshowflag: 0
-      });
+      that.modalHiddenArtInfo = true
+      that.modalHiddenArt = true
+      that.artinfoshowflag = 0
       var selected_index = that.art_index;
       var art_title = that.article[selected_index]['title'];
       var art_image = that.article[selected_index]['image'] ? that.article[selected_index]['image'] : that.share_art_image;
@@ -1218,10 +1283,8 @@ export default {
       wx.navigateTo({
         url: '/pages/wish/wishshare/wishshare?share_art_id=' + art_id + '&share_art_cat_id=' + art_cat_id + '&share_art_image=' + art_image + '&share_art_wx_headimg=' + art_wx_headimg + '&share_art_title=' + art_title
       });
-      that.setData({
-        art_id: 0,
-        art_cat_id: 0
-      });
+      that.art_id = 0
+      that.art_cat_id = 0
     },
     navigateToMessage: function (e) {
       wx.navigateTo({
@@ -1276,9 +1339,7 @@ export default {
     //确定按钮点击事件  银行卡
     modalBindconfirmBankcard: function () {
       var that = this;
-      that.setData({
-        modalHiddenBankcard: !that.modalHiddenBankcard
-      });
+      that.modalHiddenBankcard = !that.modalHiddenBankcard
       that.band_bank_card();
     },
     //取消按钮点击事件  银行卡
@@ -1291,9 +1352,7 @@ export default {
     //确定按钮点击事件  用户协议
     modalBindconfirmAgreement: function () {
       var that = this;
-      that.setData({
-        modalHiddenAgreement: !that.modalHiddenAgreement
-      });
+      that.modalHiddenAgreement = !that.modalHiddenAgreement
       wx.setStorageSync('isReadAgreement', 1); //协议阅读标志
 
       that.goBack();
@@ -1306,27 +1365,21 @@ export default {
     },
     //确定按钮点击事件  玩转送心
     modalBindconfirmPlaysx: function () {
-      this.setData({
-        modalHiddenPlaysx: !this.modalHiddenPlaysx,
-        art_id: 0,
-        art_cat_id: 0,
-        playsxinfoshowflag: 0
-      });
+      this.modalHiddenPlaysx = !this.modalHiddenPlaysx
+      this.art_id = 0
+      this.art_cat_id = 0
+      this.playsxinfoshowflag = 0
 	  if(this.article_title=='送心协议'){
-		  this.setData({
-		    modalHiddenAgreement: !this.modalHiddenAgreement
-		  });
+		  this.modalHiddenAgreement = !this.modalHiddenAgreement
 		  uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
 	  }
     },
     //取消按钮点击事件  玩转送心
     modalBindcancelPlaysx: function () {
-      this.setData({
-        modalHiddenPlaysx: !this.modalHiddenPlaysx,
-        art_id: 0,
-        art_cat_id: 0,
-        playsxinfoshowflag: 0
-      });
+      this.modalHiddenPlaysx = !this.modalHiddenPlaysx
+      this.art_id = 0
+      this.art_cat_id = 0
+      this.playsxinfoshowflag = 0
     },
     get_project_gift_para: function () {
       var that = this;
@@ -1386,23 +1439,21 @@ export default {
           }
         });
       } else {
-        that.setData({
-          navList2: navList_new,
-          hall_banner: navList_new[3] ? navList_new[3] : hall_banner,
-          //首页banner图
-          middle1_img: navList_new[11]['img'],
-          middle2_img: navList_new[12]['img'],
-          middle3_img: navList_new[13]['img'],
-          middle4_img: navList_new[14]['img'],
-          middle1_title: navList_new[11]['title'],
-          middle2_title: navList_new[12]['title'],
-          middle3_title: navList_new[13]['title'],
-          middle4_title: navList_new[14]['title'],
-          middle1_note: navList_new[11]['note'],
-          middle2_note: navList_new[12]['note'],
-          middle3_note: navList_new[13]['note'],
-          middle4_note: navList_new[14]['note']
-        });
+        that.navList2 = navList_new
+        that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
+        //首页banner图
+        that.middle1_img = navList_new[11]['img']
+        that.middle2_img = navList_new[12]['img']
+        that.middle3_img = navList_new[13]['img']
+        that.middle4_img = navList_new[14]['img']
+        that.middle1_title = navList_new[11]['title']
+        that.middle2_title = navList_new[12]['title']
+        that.middle3_title = navList_new[13]['title']
+        that.middle4_titl = navList_new[14]['title']
+        that.middle1_note = navList_new[11]['note']
+        that.middle2_note = navList_new[12]['note']
+        that.middle3_note = navList_new[13]['note']
+        that.middle4_note = navList_new[14]['note']
       }
 
       setTimeout(function () {

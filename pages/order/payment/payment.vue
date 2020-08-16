@@ -89,7 +89,8 @@ export default {
       address_detailInfo: "",
       address_nationalCode: "",
       address_telNumber: "",
-      receive_status: 0
+      receive_status: 0,
+		order_shape:0,
     };
   },
 
@@ -161,7 +162,8 @@ export default {
             totalFee: totalFee ? totalFee : order_price,
             sku_id: sku_id,
             is_buymyself: is_buymyself,
-            received: received
+            received: received,
+			order_shape:orderObjects[0]['shape'],
           });
           if (is_buymyself == 0 && received == 0 || totalFee == 0) that.pay();
         } else {
@@ -306,6 +308,7 @@ export default {
       var shop_type = that.shop_type;
       var is_buymyself = that.is_buymyself;
       var received = that.received;
+		var order_shape = that.data.order_shape
       console.log('payment username', username, ' totalFee:', totalFee, ' is_buymyself:', is_buymyself, ' received:', received); //统一下单接口对接
 
       if (totalFee <= 0) {
@@ -368,7 +371,7 @@ export default {
 				  })
 				  */
 
-                  if (received == 1) {
+                  if (received == 1  && order_shape!=8) {
                     wx.navigateTo({
                       url: '/pages/lottery/lottery?lottery_type=0' + '&order_no=' + orderNo
                     });
@@ -528,6 +531,7 @@ export default {
       var that = this;
       var shop_type = that.shop_type;
       var order_no = that.orderNo;
+	  var order_shape = that.data.order_shape
       var goods_flag = that.goods_flag;
       var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
       var nickname = that.userInfo.nickName;
@@ -542,6 +546,13 @@ export default {
       var address_telNumber = that.address_telNumber;
       var is_buymyself = that.is_buymyself; //通讯录权限
 
+		if(order_shape == 8 ) {
+			wx.switchTab({
+				url: '/pages/index/index',
+			})
+			return ; //充值订单无需设置收货地址
+		}
+			
       wx.getSetting({
         success(res) {
           if (!res.authSetting['scope.address']) {

@@ -2,6 +2,19 @@
 	<view class="page" :style="'height:'+windowHeight">
 		<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d" style="z-index:9;"></uni-nav-bar>
 		<view class="search">
+		    <view class="wx-input" @tap='searchTapTag'>
+		      <image @tap='searchTapTag' src="/static/images/search-btn.png"></image>
+		      <text></text>
+		    </view>
+		    <view class="page-title">
+		      <text>会员制购物商城</text>
+		    </view>
+		    <view class="page-title2" @tap="messagesTapTag">
+		       <text>了解什么是会员制</text>
+		    </view>
+		</view>
+		<!--
+		<view class="search">
 			<view class="userinfo" @tap="userTapTag">
 				<image class="userinfo-avatar" :src="(userInfo.avatarUrl?userInfo.avatarUrl:default_avatar)" background-size="cover"></image>
 			</view>
@@ -14,6 +27,7 @@
 				<image class="icon-message" src="../../static/images/u72.png"></image>
 			</view>
 		</view>
+		-->
 		<mescroll-uni top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
 		<view class="container" scroll-y > <!-- :style="'height:'+dkheight+'px;'"  @scrolltoupper="scrolltoupper" :scroll-top="scrollTop" @scroll="scroll" -->
 			<view class="banner">
@@ -310,6 +324,7 @@ var username = uni.getStorageSync('username') ? uni.getStorageSync('username') :
 var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+var user_group_id = uni.getStorageSync('useruser_group_idInfo') ? uni.getStorageSync('user_group_id') : '0'
 var navList2_init = [{
   id: "gift_logo",
   title: "送礼logo",
@@ -346,23 +361,24 @@ var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') :
 export default {
   data() {
     return {
-      title_name: '送心',
-      title_logo: '/static/images/footer-icon-05.png',
-      img_discount: '/static/images/discount.png',
-      img_service: weburl + '/uploads/service.png',
-      img_service2: weburl + '/uploads/service2.png',
-      default_img: weburl + '/uploads/default_goods_image.png',
-      default_avatar: weburl + '/uploads/avatar.png',
-      platform: '',
-      pagesize: pagesize,
-      pageoffset: 0,
-      hidden: true,
-      resp_message: {},
-      messageHidden: true,
-      notehidden: false,
-      dkheight: 2000,
-      scrollTop: 0,
-	  is_video_play:0,
+		user_group_id:user_group_id,
+		title_name: '送心',
+		title_logo: '/static/images/footer-icon-05.png',
+		img_discount: '/static/images/discount.png',
+		img_service: weburl + '/uploads/service.png',
+		img_service2: weburl + '/uploads/service2.png',
+		default_img: weburl + '/uploads/default_goods_image.png',
+		default_avatar: weburl + '/uploads/avatar.png',
+		platform: '',
+		pagesize: pagesize,
+		pageoffset: 0,
+		hidden: true,
+		resp_message: {},
+		messageHidden: true,
+		notehidden: false,
+		dkheight: 2000,
+		scrollTop: 0,
+		is_video_play:0,
 	  old: {
 	  	scrollTop: 0
 	  },
@@ -576,8 +592,8 @@ export default {
   //事件处理函数
   onShow: function () {
     var that = this;
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-    var username = wx.getStorageSync('username');
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+    var username = uni.getStorageSync('username');
     var refername = that.refername;
 	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
     var msg_id = that.msg_id;
@@ -651,7 +667,7 @@ export default {
 
         if (username != refername) {
           //保留分享人信息
-          wx.setStorageSync('taskrefername', refername);
+          uni.setStorageSync('taskrefername', refername);
         }
 
         wx.request({
@@ -885,7 +901,7 @@ export default {
       var remindTitle = socketOpen ? '正在关闭' : '正在连接';
 
       if (!socketOpen) {
-        wx.connectSocket({
+        uni.connectSocket({
           url: wssurl + '/wss'
         });
         wx.onSocketError(function (res) {
@@ -1019,6 +1035,7 @@ export default {
         url: banner_link + '&username=' + username + '&token=' + token
       });
     },
+	/*
     messagesTapTag: function () {
       var that = this;
       that.setData({
@@ -1031,6 +1048,22 @@ export default {
         url: '/pages/member/message/message'
       });
     },
+	*/
+	messagesTapTag: function () {
+	    var that = this
+	    that.setData({
+	      messages_num: 0
+	    })
+	    getApp().globalData.messageflag = 1 //1系统消息
+	    console.log('hall messagesTapTag: messageflag:', getApp().globalData.messageflag)
+	   
+	   getApp().globalData.my_index = 1 //1系统消息
+	   getApp().globalData.art_id = 28 //1系统消息
+	    wx.switchTab({
+	      url: '/pages/my/index'
+	    })
+	},
+	
     userTapTag: function () {
       wx.switchTab({
         url: '../my/index'
@@ -1959,7 +1992,7 @@ export default {
           if (!navList_new) {
             return;
           } else {
-            wx.setStorageSync('navList2', navList_new);
+            uni.setStorageSync('navList2', navList_new);
 			that.set_project_gift_para()
           }
         }

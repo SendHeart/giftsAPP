@@ -2,6 +2,7 @@
 	var wxToast = require("./toast/toast.vue");
 	const weburl = 'https://sendheart.dreamer-inc.com';
 	const wssurl = 'wss://sendheart.dreamer-inc.com';
+	const playerurl = 'http://play.dreamer-inc.com/live'
 	const face_licenseIDAndroid = 'sendheartAppFace-face-android' //百度人脸识别 licenseID
 	const face_licenseIDIOS = 'sendheartAppFace-face-ios' //百度人脸识别 licenseID
 	import Vue from 'vue'
@@ -17,6 +18,8 @@
 			var face_licenseIDIOS = that.$options.globalData.face_licenseIDIOS;
 			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
 			var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1' ;
+			var playerurl = that.$options.globalData.playerurl;
+			var art_id =0
 			var clientinfo = ''
             // #ifdef APP-PLUS
 			clientinfo = plus.push.getClientInfo() ; //用户推送信息
@@ -35,7 +38,7 @@
                     version: plus.runtime.version,
                     imei: plus.device.imei,
 					platform:plus.os.name,
-					clientinfo:JSON.stringify(clientinfo),
+					clientinfo:clientinfo?JSON.stringify(clientinfo):'{}',
 					type:0 , //0 整包升级
                 },
 				header: {
@@ -71,7 +74,7 @@
 								version: plus.runtime.version,
 								imei: plus.device.imei,
 								platform:plus.os.name,
-								clientinfo:JSON.stringify(clientinfo),
+								clientinfo:clientinfo?JSON.stringify(clientinfo):'{}',
 								type:1 , //1 wgt包升级
 							},
 							header: {
@@ -144,7 +147,7 @@
 				if (payload) {
 				// payload 按照规范是 Object，但实际推送过来有可能是 String，需要多一步处理；
 					if (typeof payload === 'string') {
-						payload = JSON.parse(payload);
+						payload = payload?JSON.parse(payload):'{}';
 					}
 					if (typeof payload === 'object') {
 						if(payload.url){
@@ -170,7 +173,7 @@
 				//这里的示例以json字符串去解析，实际上也可以做字符串匹配
 					if (typeof (msg.payload) ==string) {
 						try {
-							payload = JSON.parse(msg.payload);
+							payload = msg.payload?JSON.parse(msg.payload):'';
 						} catch (error) {
 							wx.showToast({
 							  title: '获取消息:'+error,
@@ -302,14 +305,12 @@
 		globalData: {
 			test: '',
 			appid: 'wx986f630cc3d1a7fc',
-			//  小程序开发账号  wxe59fb5712b45adb7
 			secret: 'add3c71b7907a7ce99722d0e9cbac7f1',
-			//   9666f44dd87410cf85949f3a053dc14a
 			md5_key:'9666f44dd87410cf85949f3a053dc14a',
-			miniprogram_id:'gh_89f1da9a2991', //微信小程序原始ID
+			miniprogram_id:'gh_89f1da9a2991', 
 			weburl: weburl,
-			//https://xcx.itoldfarmer.com
 			wssurl: wssurl,
+			playerurl:playerurl,
 			uploadurl: 'https://sendheart.dreamer-inc.com/api/upload/index4',
 			httpserviceurl: 'https://sendheart.dreamer-inc.com/api/upload/http_service',
 			mapkey: 'SSPBZ-ALR32-4BWUC-CLUXY-HAFM3-3ABQF',

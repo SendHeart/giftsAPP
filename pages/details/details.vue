@@ -548,14 +548,15 @@
 					<text>+心愿单</text>
 				</button>  
 			</form>
-			<form v-if="has_cardpayed==0" @submit="formSubmit" data-name="buyMyself" report-submit="true" style="width:28%;">
-				<button class="add-cart2" formType="submit">{{(goodsshape==5||goodsshape==4)?'立即使用':'立即购买'}}</button>  
-			</form>
 			<form v-if="goodsorg!=5" @submit="formSubmit" data-name="buyGift" report-submit="true" style="width:28%;">
-				<button class="add-cart" formType="submit">
-					<text>发起送礼</text>
+				<button class="add-cart2" formType="submit">
+					<text>+购物车</text>
 				</button>  
 			</form>
+			<form v-if="has_cardpayed==0" @submit="formSubmit" data-name="buyMyself" report-submit="true" style="width:28%;">
+				<button class="add-cart" formType="submit">{{(goodsshape==5||goodsshape==4)?'立即购买':'立即购买'}}</button>  
+			</form>
+			
 			<form v-if="goodsorg==5 && has_cardpayed!=0" @submit="formSubmit" data-name="sharecard" report-submit="true" style="width:28%;">
 				<button class="add-cart" formType="submit">
 					<text>预览</text>
@@ -1711,7 +1712,7 @@ export default {
     returnTapTag: function () {
       var that = this;
       wx.switchTab({
-        url: '/pages/hall/hall'
+        url: '/pages/cart/cart'
       });
     },
 	
@@ -3075,13 +3076,14 @@ export default {
           getApp().globalData.from_page = '/pages/details/details';
 
           if (wishflag == 1) {
-            wx.switchTab({
-              url: '/pages/wish/wish'
-            });
-            /*
             wx.navigateTo({
               url: '/pages/wish/wish'
             })
+            /*
+			wx.switchTab({
+			  url: '/pages/wish/wish'
+			});
+           
             */
           } else {
             if (is_buymyself == 1) {
@@ -3090,7 +3092,7 @@ export default {
               console.log('details insertCart wishflag:', wishflag);
               getApp().globalData.hall_gotop = 1;
               wx.switchTab({
-                url: '/pages/hall/hall'
+                url: '/pages/cart/cart'
               });
             }
           }

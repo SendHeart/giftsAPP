@@ -136,72 +136,74 @@
 var util = require("../../../utils/util.js");
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
-
+var member_group_id = wx.getStorageSync('member_group_id') ? wx.getStorageSync('member_group_id') : 0
+var member_group_name = wx.getStorageSync('member_group_name') ? wx.getStorageSync('member_group_name') : 0 
 export default {
   data() {
     return {
-      title_name: '送出礼品',
-      title_logo: '/static/images/footer-icon-05.png',
-      amount: 0,
-      carts: [],
-      cartIds: null,
-      addressList: [],
-	  addressData:[],
-      addressIndex: 0,
-	  address_id: 0,
-      username: null,
-      token: null,
-      page: 1,
-      pagesize: 5,
-      page_num: 0,
-      page_red: 1,
-      page_red_num: 0,
-      all_rows: 0,
-      all_red_rows: 0,
-      shop_type: shop_type,
-      showmorehidden: false,
-      modalHiddenCoupon: true,
-      couponType: 1,
-      selectedAllStatus: false,
-      selectedRedAllStatus: false,
-      discountpay: 0,
+		title_name: '送出礼品',
+		title_logo: '/static/images/footer-icon-05.png',
+		amount: 0,
+		carts: [],
+		cartIds: null,
+		addressList: [],
+		addressData:[],
+		addressIndex: 0,
+		address_id: 0,
+		username: null,
+		token: null,
+		page: 1,
+		pagesize: 5,
+		page_num: 0,
+		page_red: 1,
+		page_red_num: 0,
+		all_rows: 0,
+		all_red_rows: 0,
+		shop_type: shop_type,
+		showmorehidden: false,
+		modalHiddenCoupon: true,
+		couponType: 1,
+		selectedAllStatus: false,
+		selectedRedAllStatus: false,
+		discountpay: 0,
       //折扣差额
-      payamount: 0,
+		payamount: 0,
       //实际支付金额
-      order_num: 1 //订单份数
-      ,
-      dkheight: "",
-      delivery_price: "",
-      order_type: "",
-      order_note: "",
-      order_image: "",
-      is_buymyself: "",
-      order_shape: "",
-      order_voice: "",
-      order_voicetime: "",
-      order_color: "",
-      card_register_info: "",
-      card_name_info: "",
-      card_cele_info: "",
-      card_love_info: "",
-      card_template: "",
-      coupons_list: "",
-      selected_coupon_id: "",
-      selected_coupon_name: "",
-      selected_coupon_content: "",
-      selected_coupon_footer: "",
-      selected_coupon_starttime: "",
-      selected_coupon_endtime: "",
-      selected_coupon_type: "",
-      selected_coupon_amount: "",
-      selected_coupon_index: "",
-      selected_couponimage: "",
-      coupons_quan_list: "",
-      selected_coupon_quan_index: "",
-      selected_coupon_quan_amount: "",
-      coupons_red_list: "",
-      selected_coupon_red_index: "",
-      selected_coupon_red_amount: ""
+		order_num: 1 ,//订单份数
+		dkheight: "",
+		delivery_price: "",
+		order_type: "",
+		order_note: "",
+		order_image: "",
+		is_buymyself: "",
+		order_shape: "",
+		order_voice: "",
+		order_voicetime: "",
+		order_color: "",
+		card_register_info: "",
+		card_name_info: "",
+		card_cele_info: "",
+		card_love_info: "",
+		card_template: "",
+		coupons_list: "",
+		selected_coupon_id: "",
+		selected_coupon_name: "",
+		selected_coupon_content: "",
+		selected_coupon_footer: "",
+		selected_coupon_starttime: "",
+		selected_coupon_endtime: "",
+		selected_coupon_type: "",
+		selected_coupon_amount: "",
+		selected_coupon_index: "",
+		selected_couponimage: "",
+		coupons_quan_list: "",
+		selected_coupon_quan_index: "",
+		selected_coupon_quan_amount: "",
+		coupons_red_list: "",
+		selected_coupon_red_index: "",
+		selected_coupon_red_amount: "",
+		member_group_name:member_group_name,
+		member_group_id:member_group_id,
     };
   },
 
@@ -210,12 +212,13 @@ export default {
   onLoad: function (options) {
     var that = this;
 	/*
-	wx.showToast({
-	  title: '加载中 carts:'+options.carts+' amount:'+options.amount,
-	  icon: 'loading',
-	  duration: 1000
-	});
+	
 	*/
+   wx.showToast({
+     title: '加载中',
+     icon: 'loading',
+     duration: 1000
+   });
     that.readCarts(options);
     wx.getSystemInfo({
       success: function (res) {
