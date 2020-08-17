@@ -132,6 +132,7 @@ export default {
 	    machine_location_id: current_shop_info['id'], //售货机 所属 shop_id
 	    is_buymyself:1,
 	    goodsshape:1,
+		is_video_play:false,
     };
   },
 

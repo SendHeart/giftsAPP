@@ -1,12 +1,16 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
+	<!-- 
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
+	-->
+	
 	<view v-if="hidddensearch" class="search">
 		<view class="wx-input">
 	    <input name="search" :value="keyword" placeholder="搜索订单" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="orderSearch"></input>
-	    <image @tap="orderSearch" src="../../static/images/search-btn.png"></image>
+	    <image @click="orderSearch" src="../../static/images/search-btn.png"></image>
 	    </view>
 	</view>
+	<!-- 
 	<view class="top-bar2">
 	  <block v-for="(item, index) in navList_order" :key="index">
 	    <view :id="'v_' + index" :data-id="index" :data-title="item.title" :data-tab="item.id" :class="'top-bar-item2 ' + (index == TabCur ? 'top-bar-active2' : '')" @click.stop="onOrderTapTag">
@@ -14,29 +18,35 @@
 	    </view>
 	  </block>
 	</view>
+	-->
 	
-	<mescroll-uni top="260" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
-		<view class="order-item" v-for="(item,order_idx) in orders" :key="order_idx"  >
+	<mescroll-body ref="mescrollRef" top="150" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
+		<view sclass="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,order_idx) in orders" :key="order_idx"  >
+			<view class="order-item">
 			<view class="shop-text">
-				<text>{{(item.shape!=5 && item.shape!=4)?'礼物单号:':'订单号:'}}{{item.order_no}}</text>
+				<text>{{(item.shape!=5 && item.shape!=4)?'订单号:':'订单号:'}}{{item.order_no}}</text>
+				 <!--
 				<text :hidden="((item.gift_status==2 && giftflag ==0 && item.shape!=4 && item.shape!=5 )?false:true)" class="status2">对方已接受</text>
 				<text :hidden="((item.status==2 && item.gift_status==0 && giftflag ==0 && item.shape!=4 && item.shape!=5)?false:true)" class="status">已支付未送出</text>
 				<text :hidden="((item.gift_status==1 && giftflag ==0 && item.shape!=4 && item.shape!=5)?false:true)" class="status">对方未接受</text>
 				<text :hidden="((item.gift_status==1 && giftflag ==0 && item.status==2 && item.sec>=0 && item.order_price>0 && item.shape!=4 && item.shape!=5)?false:true)" class="status">自动退</text>
 				<text :hidden="((item.gift_status==1 && giftflag ==0 && item.status==2 && item.sec>=0 && item.order_price>0 && item.shape!=4 && item.shape!=5)?false:true)" class="status">{{item.hour}}:{{item.minus}}:{{item.sec}}</text>
+				<view :hidden="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status==1)?false:true)" class="">已回收</view>
+				 -->
+				
 				<text :hidden="((giftflag==0 && item.status == 8 && item.shape!=4 && item.shape!=5)?false:true)" class="status2">已取消</text>
 				<text :hidden="((item.status==10 && giftflag ==0 && item.shape!=4 && item.shape!=5)?false:true )" class="status">退款中</text>
 				<text :hidden="((item.status==6 && giftflag ==0 && item.shape!=4 && item.shape!=5)?false:true )" class="status2">已退款</text>
 				<text :hidden="((item.gift_status==2 && giftflag ==1 && item.status == 3 && item.shape!=4 && item.shape!=5)?false:true)" class="status2">已发货</text>
 				<text :hidden="((item.gift_status==2 && giftflag ==1 && item.status == 2 && mapping.status==1 && item.shape!=4 && item.shape!=5)?false:true)" class="status2">未发货</text>
-				<view :hidden="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status==1)?false:true)" class="">已回收</view>
+				
 			</view>
 			<view v-for="(mapping, sku_idx) in item['order_sku']" :key="sku_idx" class="carts-item">
-				<view @tap="detailTapTag(item.order_no,item.order_id)">
+				<view @click="detailTapTag(item.order_no,item.order_id)">
 					<image class="carts-image" :src="mapping.sku_image" mode="aspectFit"></image>
 				</view>
-				<view class="carts-text" @tap="detailTapTag(item.order_no,item.order_id)" >
-					<text class="carts-title">{{mapping.goods_name}}</text>
+				<view class="carts-text">
+					<text class="carts-title" @click="detailTapTag(item.order_no,item.order_id)" >{{mapping.goods_name}}</text>
 					<view :hidden="(item['card_type']==0?false:true)" class="carts-sku">
 						<view v-for="(sku_value, index) in mapping['sku_value']" :key="index">
 							<text>{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}</text>
@@ -58,31 +68,42 @@
 					<view v-if="(item['card_type']==0?false:true)" class="carts-subtitle">
 						<text>x{{mapping.sku_num}}</text>
 					</view>
+					<!--
 					<view v-if="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status!=1 && item.shape!=5 && item.rcv_openid == username)?false:true )" @tap="modalinput_buyin" :data-order_index="order_idx" :data-id="mapping.id" :data-sku_index="sku_idx" :data-goods_id="mapping.goods_id" :data-goods_skuid="mapping.sku_id" :data-order_sku_price="mapping.sku_sell_price_real" :data-order_sku_num="mapping.sku_num" :class="((item.status==2 && giftflag==1 && item.gift_status==2 && mapping.status!=1) ? '': 'hidden') + ' recyclebtn'">
 						<image src="../../static/images/recycle.png"></image>礼物回收
 					</view>
+					-->
+					<view @click="comment(mapping)" :class="(((item.status==4 || item.status==5) && item.gift_status==2) ? '': 'hidden') + ' commbtn'">写评论</view>
 				</view>
-				<view @tap="comment" :data-sku_id="mapping.id" :data-goods_id="mapping.goods_id" :data-goods_skuid="mapping.sku_id" :class="(((item.status==4 || item.status==5) && item.gift_status==2) ? '': 'hidden') + ' commbtn'">写评论</view>
+				
 			</view>
 			<view class="order-footer">
 				<view style="width:70%">
 					<text style="width:20%">共:{{item.order_sku_num}}件{{item.buy_num>1?' (份数:'+item.buy_num+')':''}}</text>
 					<text style="color:#e34c55;">￥{{item.order_price}}</text>
-					<text @tap="pay" :data-object_id="item.order_no" :data-total_fee="item.amount" :class="((((item.status==1 && item.gift_status==2) ||(item.status==2 && item.payment_status==2)) && item.rcv_id && giftflag==0) ? '': 'hidden') + ' smallbtn'" style="background:#e34c55;color:#fff;">去支付</text>
-					<text @tap="cancel_order" :data-object_id="item.order_no" :data-index="order_idx" :class="((item.status==1 && item.gift_status==0 && giftflag==0) ? '': 'hidden') + ' smallbtn'">取消</text>
+					<text @click="pay" :data-object_id="item.order_no" :data-total_fee="item.order_price" :class="((((item.status==1 && item.gift_status==2) ||(item.status==2 && item.payment_status==2)) && item.rcv_id && giftflag==0) ? '': 'hidden') + ' smallbtn'" style="background:#e34c55;color:#fff;">去支付</text>
+					<text @click="cancel_order" :data-object_id="item.order_no" :data-index="order_idx" :class="((item.status==1 && item.gift_status==0 && giftflag==0) ? '': 'hidden') + ' smallbtn'">取消</text>
+					<!--
 					<text @tap="send" :data-object_id="item.order_no" :data-index="order_idx" :class="((item.status<=2 && item.status>0 && item.gift_status>=0 && item.gift_status<=2 && !item.rcv_openid && giftflag==0) ? '': 'hidden') + ' smallbtn'">重发</text>
-					<text style="width:20%;" @tap="receive" :data-object_id="item.id" :class="((item.status==3 && item.gift_status==2 && giftflag==1 && item.rcv_openid == username) ? '': 'hidden') + ' smallbtn'">确认收货</text>
 					<text @tap="accept" :data-object_id="item.order_no" :data-total_fee="item.amount" :data-order_id="item.id" :class="((item.gift_status==1 && giftflag ==1) ? '': 'hidden') + ' smallbtn'">接受</text>
+					 -->
+					<text style="width:20%;" @click="receive" :data-object_id="item.id" :class="((item.status==3 && item.gift_status==2 && giftflag==1 && item.rcv_openid == username) ? '': 'hidden') + ' smallbtn'">确认收货</text>
+					
 				</view>
 				<view style="width:30%; text-align:right;">
+					 <!--
 					<text :hidden="((giftflag==1 && item.status==2)?false:true)" @tap="sendAginTapTag" class="smallbtn2">回赠</text>
 					<text :hidden="((giftflag==0 && item.status==2 && item.gift_status==1 && currenttime>item.duetime && item.shape!=4 && item.shape!=5)?false:true)" :data-id="item.order_no" :data-index="order_idx" @tap="sendOtherTapTag" class="smallbtn2">转送</text>
+					 -->
+					
 					<text :hidden="((giftflag==0 && item.status==2 && item.order_price>0 && item.gift_status==1 && currenttime>item.duetime && item.shape!=4 && item.shape!=5)?false:true)" :data-id="item.order_no" :data-index="order_idx" @tap="refundTapTag" class="smallbtn2">退款</text>
 				</view>
 			</view>	
+			</view>
 		</view>
-	</mescroll-uni>
-
+	</mescroll-body>
+	
+	<!-- 
 	<view :hidden="hiddenmodalput" @change="shareConfirmCardLove" class="cu-modal bottom-modal"  :class="!hiddenmodalput?'show':''" :style="dkheight + 'px'">
 		<view class="cu-dialog">
 			<view class="cu-bar bg-white justify-end">
@@ -109,14 +130,18 @@
 			</view>
 		</view>
 	</view>
+	-->
 </view>
 </template>
 
 <script>
 import uniIcons from '@/components/uni-icons/uni-icons.vue' ;
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
-import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
-
+//import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
+// 引入mescroll-mixins.js
+import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+// 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
 
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 var dateUtils = require('../../common/util.js');
@@ -133,11 +158,11 @@ var navList_order = [{
   title: "我收到的"
 }];
 var now = new Date().getTime();
-var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
-var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
+var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
+var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 
 export default {
-  data() {
+	data() {
     return {
       title_name: '礼物袋',
       title_logo: '/static/images/history_s.png',
@@ -224,26 +249,44 @@ export default {
 	  isInit: false, // 列表是否已经初始化
 	  scrollY: 0
     };
-  },
-
-  components: {
+	},
+	mixins: [MescrollMixin], // 使用mixin
+	components: {
 	  uniIcons,
 	  uniNavBar,
 	  //uniLoadMore,
-	  MescrollUni
-  },
-  props: {},
+	  //MescrollUni,
+	  MescrollBody,
+	},
+	props: {},
   
-  onLoad: function (options) {
+	onLoad: function (options) {
     // 订单状态，已下单为1，已付为2，已发货为3，已收货为4 5已经评价 6退款 7部分退款 8用户取消订单 9作废订单 10退款中
     var that = this;
     var order_status = parseInt(options.status ? options.status : 0);
-    var username = wx.getStorageSync('username');
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-    that.get_project_gift_para(); //that.reloadData()
+    var username = uni.getStorageSync('username')?uni.getStorageSync('username'):'';
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+    var bar_title = options.bar_title ? options.bar_title : '我的订单';
+	that.get_project_gift_para(); //that.reloadData()
 	that.orders = []
     // 存为全局变量，控制支付按钮是否显示
-
+	if (order_status == 1) {
+	      bar_title = '待付款订单'
+	    } else if( order_status == 2){
+	      bar_title = '待发货订单'
+	    }else if( order_status == 3){
+	      bar_title = '待收货订单'
+	    }else if( order_status == 4){
+	      bar_title = '待评价订单'
+	    }else if( order_status == 5){
+	      bar_title = '退换货订单'
+	    } else{
+	      bar_title = '全部订单'
+	    }
+	wx.setNavigationBarTitle({
+	      title: bar_title
+	})
+	
     if (order_status) {
 		that.order_status = order_status
     }
@@ -261,7 +304,7 @@ export default {
     //console.log('index onShow() orders:', orders);
 	
     if (!username) {
-      wx.navigateTo({
+      uni.navigateTo({
        url: '/pages/login/login?frompage=/pages/index/index'
       });
 	  
@@ -269,17 +312,14 @@ export default {
 		//that.reloadData();
 		uni.getSystemInfo({
 			  success: function (res) {
-			    that.setData({
-			      windowWidth: res.windowWidth,
-			      windowHeight: res.windowHeight,
-			      dkheight: res.windowHeight - 60 ,
-			    });
+			    that.windowWidth = res.windowWidth
+			    that.windowHeight = res.windowHeight
+			    that.dkheight = res.windowHeight - 60 
 			  }
 			});
 		if (!user_name || user_name == '') {
-		  modalHiddenUserName = !modalHiddenUserName;
-			 that.modalHiddenUserName = modalHiddenUserName
-			}
+		  that.modalHiddenUserName = !modalHiddenUserName;
+		}
 	}
   },
   onReady: function () {},
@@ -308,20 +348,16 @@ export default {
 	  this.mescroll.triggerDownScroll();
 	  
     },
-    searchTagTap: function () {
-      var that = this;
-      var hidddensearch = that.hidddensearch;
-      that.setData({
-        hidddensearch: !hidddensearch
-      });
-    },
-    search_goodsnameTapTag: function (e) {
-      var that = this;
-      var keyword = e.detail.value;
-      that.setData({
-        keyword: keyword
-      });
-	   console.log('index search_goodsnameTapTag keyword:', e.detail.value);
+	searchTagTap: function () {
+		var that = this;
+		var hidddensearch = that.hidddensearch;
+		that.hidddensearch = !hidddensearch
+	},
+	search_goodsnameTapTag: function (e) {
+		var that = this;
+		var keyword = e.detail.value;
+		that.keyword = keyword
+		console.log('index search_goodsnameTapTag keyword:', e.detail.value);
     },
     getPhoneNumber: function (e) {
       var that = this;
@@ -354,9 +390,7 @@ export default {
             var result = res.data.result;
             var phoneNumber = result.phoneNumber;
             wx.setStorageSync('user_phone', phoneNumber);
-            that.setData({
-              modalHiddenPhone: !that.modalHiddenPhone
-            });
+            that.modalHiddenPhone = !that.modalHiddenPhone
             that.reloadData();
           }
         });
@@ -747,7 +781,7 @@ export default {
 				that.is_loading = false
 				that.status = page_num>page?'more':'nomore';
 				that.loadingHidden = false
-		        //console.log('reloadData page:' + page + ' pagesize:' + pagesize, ' current time:', currenttime, 'current scrollTop', scrollTop, ' orders', that.orders);
+		        console.log('reloadData page:' + page + ' pagesize:' + pagesize, ' current time:', currenttime, 'current scrollTop', scrollTop, ' orders', JSON.stringify(that.orders));
 		      }
 				console.log('加载 page:', that.page, 'page_num:',that.page_num);
 				successCallback && successCallback(orderObjects)
@@ -859,7 +893,7 @@ export default {
         }
       }
 
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../order/transfer/transfer?receive=-1&order_no=' + order_no + '&orders=' + JSON.stringify(order_send)
       });
     },
@@ -911,13 +945,7 @@ export default {
       var card_type = that.card_type ? that.card_type : 0;
       var tab2 = that.tab2;
       console.log('index detail 订单 order no:' + order_no+' oder id:'+order_id);
-      /*
-      wx.navigateTo({
-        url: '../order/orderdetail/orderdetail?order_id=' + order_id + '&order_object=' + JSON.stringify(order_object) + '&giftflag=' + that.data.giftflag + '&card_type=' + card_type + '&send_rcv=' + tab2  
-      })
-      */
-
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/order/orderdetail/orderdetail?order_id=' + order_id + '&order_no=' + order_no + '&giftflag=' + that.giftflag + '&card_type=' + card_type + '&send_rcv=' + tab2
       });
     },
@@ -1212,11 +1240,11 @@ export default {
       });
     },
     comment: function (e) {
-      var goods_id = e.currentTarget.dataset.goods_id;
-      var goods_skuid = e.currentTarget.dataset.goods_skuid;
-      var order_skuid = e.currentTarget.dataset.sku_id;
-      console.log('礼物评价 goods_id:', goods_id, 'goods skuid:', goods_skuid, 'order skuid:', order_skuid);
-      wx.navigateTo({
+      var goods_id = e.goods_id;
+      var goods_skuid = e.sku_id;
+      var order_skuid = e.id;
+      console.log('礼物评价 goods_id:', goods_id, 'goods skuid:', goods_skuid, 'order skuid:', order_skuid,' sku info:',JSON.stringify(e));
+      uni.navigateTo({
         url: '../goods/comment/comment?goods_id=' + goods_id + '&goods_skuid=' + goods_skuid + '&order_skuid=' + order_skuid
       });
     },
@@ -1238,15 +1266,15 @@ export default {
         }
       }
 
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../order/receive/receive?order_no=' + order_no + '&order_id=' + order_id + '&receive=1' + '&order_shape=' + order_accept[0]['shape'] + '&goods_flag=0'
       });
     },
     pay: function (e) {
       var order_no = e.currentTarget.dataset.object_id;
       var totalFee = e.currentTarget.dataset.total_fee;
-      console.log('pay order_no:', order_no);
-      wx.navigateTo({
+      console.log('pay order_no:', order_no,' totalFee:',totalFee);
+      uni.navigateTo({
         url: '../order/payment/payment?orderNo=' + order_no + '&totalFee=' + totalFee + '&received=1'
       });
     },
@@ -1362,7 +1390,7 @@ export default {
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
       var goods_id = e.currentTarget.dataset.goodsId;
       var goods_name = e.currentTarget.dataset.goodsName;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../details/details?sku_id=' + skuId + '&goods_name=' + goods_name + '&id=' + goods_id + '&token=' + token + '&username=' + username
       });
     },

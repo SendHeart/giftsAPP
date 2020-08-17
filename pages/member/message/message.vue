@@ -1,10 +1,10 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
+	
+	<!--
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d">
 		
 	</uni-nav-bar>
-	<!--
-
 	<scroll-view scroll-x class="bg-black nav text-center">
 		<view class="cu-item" :class="index==TabCur?'text-red cur':''" v-for="(item,index) in navList_order" :key="index" @tap="onOrderTapTag" :data-id="index" :data-tab="item.id">
 			{{item.title}}
@@ -320,10 +320,8 @@ export default {
     }
 
     console.log('message onShow messageflag:', getApp().globalData.messageflag, 'activeIndex2:', activeIndex2);
-    that.setData({
-      TabCur: TabCur,
-      messageflag: getApp().globalData.messageflag
-    });
+   that.TabCur = TabCur
+   that.messageflag = getApp().globalData.messageflag
 
     if (TabCur == 0) {
       that.get_ai_rules();
@@ -404,26 +402,20 @@ export default {
         that.selectBtnTap();
       } else if (form_name == 'addCart') {
         var goods_id = e.currentTarget.dataset.goodsId;
-        that.setData({
-          goods_id: goods_id
-        });
+        that.goods_id = goods_id
         that.addCart();
       } else if (form_name == 'selectBtn_next') {
         var selected_num = that.selected_num + 1;
         var rules_length = that.rules_length - 1;
-        this.setData({
-          selected_num: selected_num <= rules_length ? selected_num : rules_length,
-          selected_all: selected_num == rules_length ? true : false,
-          selected_start: selected_num == 0 ? true : false
-        });
+        that.selected_num = selected_num <= rules_length ? selected_num : rules_length
+        that.selected_all= selected_num == rules_length ? true : false
+        that.selected_start = selected_num == 0 ? true : false
       } else if (form_name == 'selectBtn_last') {
         var selected_num = that.selected_num - 1;
         var rules_length = that.rules_length - 1;
-        this.setData({
-          selected_num: selected_num <= 0 ? 0 : selected_num,
-          selected_all: selected_num == rules_length ? true : false,
-          selected_start: selected_num == 0 ? true : false
-        });
+        that.selected_num = selected_num <= 0 ? 0 : selected_num
+        that.selected_all = selected_num == rules_length ? true : false
+        that.selected_start = selected_num == 0 ? true : false
       }
     },
     
@@ -482,14 +474,13 @@ export default {
         message_type = 5;
       }
 
-      that.setData({
-        activeIndex2: index,
-        tab2: tab,
-        page: 1,
-        messageflag: messageflag,
-        message_type: message_type,
-        message_list: []
-      });
+     that.activeIndex2 = index
+     that.tab2 = tab
+     that.page = 1
+     that.messageflag = messageflag
+     that.message_type = message_type
+     that.message_list = []
+	 
       console.log('tab:' + tab, ' messageflag:', messageflag, 'activeIndex2:', that.activeIndex2); //that.reloadData()
 
       if (that.TabCur == 0) {
@@ -501,9 +492,7 @@ export default {
     bindChangeNum: function (e) {
       var that = this;
       var withdrawNum = e.detail.value;
-      that.setData({
-        withdrawNum: withdrawNum
-      });
+      that.withdrawNum = withdrawNum
       console.log('withdrawNum:' + that.withdrawNum);
     },
     bindChangeWx: function (e) {
@@ -787,11 +776,9 @@ export default {
               message_list = that.message_list.concat(message_list);
             }
 
-            that.setData({
-              message_list: message_list,
-              task_list: task_list,
-              page_num: page_num.toFixed(0)
-            });
+            that.message_list = message_list
+            that.task_list = task_list
+            that.page_num = page_num.toFixed(0)
             console.log('获取消息:', that.message_list, that.task_list);
           } else {
             wx.showToast({
@@ -861,13 +848,9 @@ export default {
       var shop_type = that.shop_type;
       var rule_list = that.rule_list;
       var rule_select = [];
-      that.setData({
-        isLoadingTrue: true
-      });
+		that.isLoadingTrue = true
       setTimeout(function () {
-        that.setData({
-          isLoadingTrue: false
-        });
+        that.isLoadingTrue = false
       }, 3000);
 
       if (wx.pageScrollTo) {
@@ -915,19 +898,15 @@ export default {
               rule_goods_list[i]['image'] = rule_goods_list[i]['activity_image'] == "" ? rule_goods_list[i]['image'] : rule_goods_list[i]['activity_image'];
             }
 
-            that.setData({
-              rule_goods_list: rule_goods_list,
-              select_goods_list: rule_goods_list[0],
-              select_goods_1: rule_goods_list[1] ? rule_goods_list[1] : '',
-              select_goods_2: rule_goods_list[2] ? rule_goods_list[2] : '',
-              messageflag: 3
-            });
+           that.rule_goods_list = rule_goods_list
+           that.select_goods_list = rule_goods_list[0]
+           that.select_goods_1 = rule_goods_list[1] ? rule_goods_list[1] : ''
+           that.select_goods_2 = rule_goods_list[2] ? rule_goods_list[2] : ''
+           that.messageflag = 3
             getApp().globalData.messageflag = that.messageflag;
             console.log('get_ai_rules 智能选品列表:', that.rule_goods_list);
           } else {
-            that.setData({
-              messageflag: 9
-            });
+            that.messageflag = 9
             console.log('get_ai_rules 暂无推荐的商品:', that.noselected);
           }
         }
@@ -983,10 +962,8 @@ export default {
               }
             }
 
-            that.setData({
-              commodityAttr: commodityAttr,
-              sku_id: commodityAttr[0]['id']
-            });
+            that.commodityAttr = commodityAttr
+            that.sku_id = commodityAttr[0]['id']
             console.log('goods sku id:', that.sku_id);
             that.insertCart(that.sku_id, username, 0);
             if (!attrValueList) return;
@@ -997,9 +974,7 @@ export default {
               }
             }
 
-            that.setData({
-              attrValueList: attrValueList
-            });
+            that.attrValueList = attrValueList
           }
         });
       }
@@ -1078,11 +1053,8 @@ export default {
         });
         return;
       }
-
-      that.setData({
-        page: page
-      });
-      that.get_member_messages();
+		that.page = page
+		that.get_member_messages();
     },
     goBack: function () {
       var pages = getCurrentPages();

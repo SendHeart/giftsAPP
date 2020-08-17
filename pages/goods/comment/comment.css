@@ -257,6 +257,7 @@ margin-left: 20rpx;
 
 .container {
   width: 100%;
+  background: #fff;
 }
 .comm-title {
   display: flex;

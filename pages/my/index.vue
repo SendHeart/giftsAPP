@@ -14,6 +14,35 @@
 	</view>
 	<scroll-view :scroll-y="modalName==null" class="page" :class="modalName!=null?'show':''" >
 	<view class="menu-area">
+	 <view @tap="navigateToOrder" class="tableviewcell linegray" :style="'width:'+windowWidth-35+'px;'" :data-status="0">
+		  <image src="/static/images/order.png" />
+		  <text>全部订单</text>
+	  </view>
+	  <view class="order-area">
+		<view @tap="navigateToOrder" class="order" :data-status="1">
+			<image src="/static/images/daifukuan.png" />
+			<text>待付款</text>
+		</view>
+		<view @tap="navigateToOrder" class="order" :data-status="2">
+			<image src="/static/images/daifahuo.png" />
+			<text>待发货</text>
+		</view>
+		<view @tap="navigateToOrder" class="order" :data-status="3">
+			<image src="/static/images/daishouhuo.png" />
+			<text>待收货</text>
+		</view>
+	  <view @tap="navigateToOrder" class="order" :data-status="4">
+			<image src="/static/images/dpl.png" />
+			<text>待评价</text>
+		</view>
+	  	<view @tap="navigateToOrder" class="order" :data-status="5">
+			<image src="/static/images/iconfont-help.png" />
+			<text>退换货</text>
+		</view>
+	</view>
+	</view>
+
+	<view class="menu-area">
 		<view v-if="userauth.shoper!=0" @tap="navigateToRecharge" class="tableviewcell linegray" :style="'width:'+windowWidth+'px;'">
 			  <image src="/static/images/icon-tk.png" />
 			  <text>会员充值</text>
@@ -215,7 +244,7 @@ export default {
 	  userauth_article:0,
 	  new_img_arr:"",
 	  scan_result:"",
-	  windowHeight:'500px',
+	  windowHeight:'500',
     };
   },
 
@@ -447,6 +476,13 @@ export default {
 	   
 	},
 	
+	navigateToOrder: function (e) {
+		var status = e.currentTarget.dataset.status
+		wx.navigateTo({
+			url: '/pages/index/index?status=' + status
+		})
+	},
+	  
 	navigateToRecharge: function () {
 	    var that = this
 	    var is_recharge = 1
@@ -600,9 +636,7 @@ export default {
     bindchangeBankcardname: function (e) {
       var that = this;
       var bankcard_name = e.detail.value;
-      that.setData({
-        bankcard_name: bankcard_name
-      });
+      that.bankcard_name = bankcard_name
       console.log('bankcard_name:' + that.bankcard_name);
     },
     //绑定银行卡
@@ -825,9 +859,7 @@ export default {
       var user_gender = that.user_gender;
 
       if (user_name && user_gender) {
-        that.setData({
-          modalHiddenUserName: !that.modalHiddenUserName
-        });
+       that.modalHiddenUserName = !that.modalHiddenUserName
         that.getUserName(user_name, user_gender);
       } else {
         var needUserName = '需要您的姓名和性别';
@@ -1225,9 +1257,7 @@ export default {
       var user_phone = wx.getStorageSync('user_phone') ? wx.getStorageSync('user_phone') : '';
 
       if (user_phone) {
-        that.setData({
-          modalHiddenPhone: !that.modalHiddenPhone
-        });
+         that.modalHiddenPhone = !that.modalHiddenPhone
       } else {
         var needPhoneNumber = '需要您的手机号授权';
         that.needPhoneNumber = needPhoneNumber
@@ -1345,9 +1375,7 @@ export default {
     //取消按钮点击事件  银行卡
     modalBindcancelBankcard: function () {
       var that = this;
-      that.setData({
-        modalHiddenBankcard: !that.modalHiddenBankcard
-      });
+      that.modalHiddenBankcard = !that.modalHiddenBankcard
     },
     //确定按钮点击事件  用户协议
     modalBindconfirmAgreement: function () {
@@ -1359,9 +1387,7 @@ export default {
     },
     //取消按钮点击事件  用户协议
     modalBindcancelAgreement: function () {
-      this.setData({
-        modalHiddenAgreement: !this.modalHiddenAgreement
-      });
+      this.modalHiddenAgreement = !this.modalHiddenAgreement
     },
     //确定按钮点击事件  玩转送心
     modalBindconfirmPlaysx: function () {
@@ -1383,7 +1409,7 @@ export default {
     },
     get_project_gift_para: function () {
       var that = this;
-      var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
+      var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
       var shop_type = that.shop_type;
       var hall_banner = that.hall_banner;
       console.log('hall get_project_gift_para navList2:', navList_new);
@@ -1417,24 +1443,22 @@ export default {
                */
               return;
             } else {
-              wx.setStorageSync('navList2', navList_new);
-              that.setData({
-                navList2: navList_new,
-                hall_banner: navList_new[3] ? navList_new[3] : hall_banner,
-                //首页banner图
-                middle1_img: navList_new[11]['img'],
-                middle2_img: navList_new[12]['img'],
-                middle3_img: navList_new[13]['img'],
-                middle4_img: navList_new[14]['img'],
-                middle1_title: navList_new[11]['title'],
-                middle2_title: navList_new[12]['title'],
-                middle3_title: navList_new[13]['title'],
-                middle4_title: navList_new[14]['title'],
-                middle1_note: navList_new[11]['note'],
-                middle2_note: navList_new[12]['note'],
-                middle3_note: navList_new[13]['note'],
-                middle4_note: navList_new[14]['note']
-              });
+              uni.setStorageSync('navList2', navList_new);
+              that.navList2 = navList_new
+              that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
+              //首页banner图
+              that.middle1_img = navList_new[11]['img']
+              that.middle2_img = navList_new[12]['img']
+              that.middle3_img = navList_new[13]['img']
+              that.middle4_img = navList_new[14]['img']
+              that.middle1_title = navList_new[11]['title']
+              that.middle2_title = navList_new[12]['title']
+              that.middle3_title = navList_new[13]['title']
+              that.middle4_title = navList_new[14]['title']
+              that.middle1_note = navList_new[11]['note']
+              that.middle2_note = navList_new[12]['note']
+              that.middle3_note = navList_new[13]['note']
+              that.middle4_note = navList_new[14]['note']
             }
           }
         });
@@ -1457,9 +1481,7 @@ export default {
       }
 
       setTimeout(function () {
-        that.setData({
-          loadingHidden: true
-        });
+       that.loadingHidden = true
       }, 1500);
     },
 
@@ -1467,9 +1489,7 @@ export default {
    	wx.chooseImage({
 		sizeType: ['original', 'compressed'],
    		success: (res) => {
-   			this.setData({
-   			  new_img_arr: res.tempFilePaths
-   			});
+   			that.new_img_arr = res.tempFilePaths
 			console.log('本次上传图片本地:', this.new_img_arr);
 			this.upload(is_logo);
    		},

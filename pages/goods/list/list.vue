@@ -31,9 +31,9 @@
 		</block>
 	</view>
 </view>
-<mescroll-uni top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+<mescroll-body top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 	<pd-list :list="pdList"></pd-list>
-</mescroll-uni>
+</mescroll-body>
 <!--
 <view class="loading-show" :hidden="loadingHidden">
   <text>{{loading_note}}</text>
@@ -47,7 +47,12 @@ var util = require("utils/util.js"); //获取应用实例
 //import imageloader from "../../../common/imageloader/imageloader";
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 //var dateUtils = require('../../../common/util.js').dateUtils;
-import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+//import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+// 引入mescroll-mixins.js
+import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+// 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+
 import PdList from "./pd-list.vue";
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
@@ -152,16 +157,19 @@ export default {
 	  isInit: false, // 列表是否已经初始化
 	  scrollY: 0
     };
-  },
-
-  components: {
-	// imageloader,
-	//uniLoadMore,
-	MescrollUni,
-	PdList,
-  },
-  props: {},
-  onLoad: function (options) {
+	},
+  
+	mixins: [MescrollMixin], // 使用mixin
+	components: {
+		// imageloader,
+		//uniLoadMore,
+		//MescrollUni,
+		MescrollBody,
+		PdList,
+	},
+	props: {},
+	
+	onLoad: function (options) {
     //console.log('onLoad', options);
     var that = this;
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';

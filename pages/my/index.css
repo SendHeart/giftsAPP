@@ -186,29 +186,30 @@ page {
 
 /*order*/
 .order-area {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background: white;
-  margin: 20rpx 0;
-  padding: 20rpx 0;
+	display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+	width: 100%;
+    background: white;
+    margin: 20rpx 0;
+    padding: 20rpx 0;
 }
 
 .order {
-	width: 33.3%;
+	width: 20%;
 	text-align: center;
 }
 
 .order image {
-	width: 90rpx;
-	height: 90rpx;
+	width: 40rpx;
+	height: 40rpx;
 }
 
 .order text{
-	display: block;
-	font-size: 30rpx;
-	color: #333;
+		display: block;
+		font-size: 28rpx;
+		color: #333;
 }
 /** 修改button默认的点击态样式类**/
 .button-hover {
@@ -281,7 +282,8 @@ page {
   padding: 20rpx 0;
   font-size: 32rpx;
 }
-prd-detail {
+
+.prd-detail {
   margin: 5rpx 0 15rpx 0;
   color: #999;
 }
@@ -372,12 +374,12 @@ prd-detail {
 .radiog {
   text-align: center;
 }
-radio .wx-radio-input{
+.radio .wx-radio-input{
   height: 26rpx;
   width: 26rpx;
   /* 自定义样式.... */
 } 
-radio .wx-radio-input.wx-radio-input-checked::before{
+.radio .wx-radio-input.wx-radio-input-checked::before{
   background-color: #e02e24;
   border: 1rpx solid #e02e24;
   /* 自定义样式.... */
@@ -421,4 +423,5 @@ radio .wx-radio-input.wx-radio-input-checked::before{
 		color: #3b4144;
 	}
 
+	
 

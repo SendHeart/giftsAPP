@@ -1,7 +1,7 @@
 <template>
 <view>
 <view class="container">
-  <view class="carts-item" @tap="showGoods" :data-sku-id="goods_skuid" :data-goods-id="goodsid" :data-goods-name="goodsname" :data-goods-price="commodityAttr[0].sell_price">
+  <view class="carts-item" @tap="showGoods">
       <view>
         <!-- 缩略图 -->
         <image class="carts-image" :src="goods_img" mode="aspectFill"></image>
@@ -10,7 +10,7 @@
         <!-- 商品标题 --> 
         <text class="carts-title">{{goodsname}}</text>
         <text class="carts-subtitle">{{goodsinfo?goodsinfo:'高端大气'}}</text>
-        <text class="carts-price">{{commodityAttr[0].sell_price?'￥'+commodityAttr[0].sell_price:''}}</text>
+        <text class="carts-price">{{goodsprice?'￥'+goodsprice:''}}</text>
     </view>
   </view>
 </view>
@@ -26,7 +26,7 @@
       </view>
     </view>
  
-<form @submit="formSubmit" id="2" @reset="formReset">  
+<form @submit="formSubmit" id="2">  
    <view class="sendmessage">
     <view class="note">
       <textarea @blur="bindTextAreaBlur" :value="content" placeholder="评论内容" maxlength="140"></textarea>
@@ -111,17 +111,12 @@ export default {
   props: {},
   onLoad: function (options) {
     var that = this;
-    var goods_id = options.goods_id ? options.goods_id : 0;
-    var goods_skuid = options.goods_skuid ? options.goods_skuid : 0;
-    var order_skuid = options.order_skuid ? options.order_skuid : 0;
-    var comm_type = options.comm_type ? options.comm_type : 0;
-    that.setData({
-      goods_id: goods_id,
-      goods_skuid: goods_skuid,
-      order_skuid: order_skuid,
-      comm_type: comm_type
-    });
-    console.log('comment onload comm_type:', comm_type, ' goods_id:', goods_id, 'goods_skuid:', goods_skuid, ' order_skuid:'.order_skuid);
+    this.goods_id = options.goods_id ? options.goods_id : 0;
+    this.goods_skuid = options.goods_skuid ? options.goods_skuid : 0;
+    this.order_skuid = options.order_skuid ? options.order_skuid : 0;
+    this.comm_type = options.comm_type ? options.comm_type : 0;
+    
+    console.log('comment onload options:', options);
     that.get_goods_list();
   },
   methods: {
@@ -167,15 +162,13 @@ export default {
           console.log('获取单个产品信息:', goods_info);
 
           if (goods_info) {
-            that.setData({
-              goodsid: goods_info[0]['id'],
-              goodsname: goods_info[0]['name'],
-              goodsinfo: goods_info[0]['act_info'],
-              goodstag: goods_info[0]['goods_tag'],
-              goodsprice: goods_info[0]['sell_price'],
-              goodssale: goods_info[0]['sale'],
-              goods_img: goods_info[0]['image']
-            }); //that.get_order_comment()
+            that.goodsid = goods_info[0]['id']
+            that.goodsname = goods_info[0]['name']
+            that.goodsinfo = goods_info[0]['act_info']
+            that.goodstag = goods_info[0]['goods_tag']
+            that.goodsprice = goods_info[0]['sell_price']
+            that.goodssale = goods_info[0]['sale']
+            that.goods_img = goods_info[0]['image']
             // 商品SKU
 
             wx.request({
@@ -184,7 +177,7 @@ export default {
               data: {
                 username: username,
                 access_token: token,
-                goods_id: that.goodsid,
+                goods_id: goods_id,
                 sku_id: goods_skuid,
                 page: page
               },
@@ -193,7 +186,7 @@ export default {
                 'Accept': 'application/json'
               },
               success: function (res) {
-                console.log('商品SKU:', res.data.result);
+                console.log('商品SKU:'+ res.data.result);
                 var attrValueList = res.data.result.spec_select_list;
                 var commodityAttr = res.data.result.sku_list;
                 if (!commodityAttr) return;
@@ -206,9 +199,8 @@ export default {
                   }
                 }
 
-                that.setData({
-                  commodityAttr: commodityAttr
-                });
+               that.commodityAttr = commodityAttr
+			   that.goodsprice = commodityAttr[0]['sell_price']
                 if (!attrValueList) return;
 
                 for (var i = 0; i < attrValueList.length; i++) {
@@ -219,9 +211,7 @@ export default {
                   }
                 }
 
-                that.setData({
-                  attrValueList: attrValueList
-                });
+               that.attrValueList = attrValueList
               }
             });
           } else {
@@ -277,13 +267,11 @@ export default {
               if (comm_list[0]['img1'] != 'undefined' && comm_list[0]['img1'] != '') img_arr[0] = comm_list[0]['img1'];
               if (comm_list[0]['img2'] != 'undefined' && comm_list[0]['img2'] != '') img_arr[1] = comm_list[0]['img2'];
               if (comm_list[0]['img3'] != 'undefined' && comm_list[0]['img3'] != '') img_arr[2] = comm_list[0]['img3'];
-              that.setData({
-                comm_list: that.comm_list.concat(comm_list),
-                all_rows: all_rows,
-                img_arr: img_arr,
-                comment_level: comm_list[0]['level'],
-                content: comm_list[0]['desc']
-              });
+              that.comm_list = that.comm_list.concat(comm_list)
+              that.all_rows = all_rows
+              that.img_arr = img_arr
+              that.comment_level = comm_list[0]['level']
+              that.content = comm_list[0]['desc']
               console.log('comm_list:', comm_list, 'img list:', img_arr);
             }
           }
@@ -301,9 +289,7 @@ export default {
         comment_level = star_id;
       }
 
-      that.setData({
-        comment_level: comment_level
-      });
+      that.comment_level = comment_level
     },
     formSubmit: function (e) {
       var id = e.target.id;
@@ -342,9 +328,7 @@ export default {
 
             if (retinfo['status'] == "y") {
               new_img_url.push(retinfo['result']['img_url']);
-              that.setData({
-                new_img_url: new_img_url
-              });
+              that.new_img_url = new_img_url
               count--;
               console.log('图片上传完成:', that.new_img_url, ' count:', count);
 
@@ -362,9 +346,7 @@ export default {
       });
       var content = that.content;
       if (!content) {
-        that.setData({
-          content: '图片:'
-        });
+        that.content = '图片:'
       }
     },
     upimg: function () {
@@ -376,10 +358,7 @@ export default {
         wx.chooseImage({
           sizeType: ['original', 'compressed'],
           success: function (res) {
-            that.setData({
-              //img_arr: all_img_arr.concat(res.tempFilePaths),
-              new_img_arr: new_img_arr.concat(res.tempFilePaths)
-            });
+           that.new_img_arr = new_img_arr.concat(res.tempFilePaths)
             console.log('本次上传图片:', that.new_img_arr);
           }
         });
@@ -405,9 +384,7 @@ export default {
         }
       }
 
-      that.setData({
-        img_arr: img_tmp
-      });
+      that.img_arr = img_tmp
     },
     cancel_new_upimg: function (e) {
       var that = this;
@@ -424,9 +401,7 @@ export default {
         }
       }
 
-      that.setData({
-        new_img_arr: img_tmp
-      });
+     that.new_img_arr = img_tmp
     },
     bindTextAreaBlur: function (e) {
       var that = this;

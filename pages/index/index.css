@@ -60,7 +60,6 @@ page {
 }
 
 .order-item {
-  position: relative;
   width: 96%;
   height: 100%;
   margin: 0rpx auto;
@@ -152,7 +151,6 @@ page {
   flex-direction: row;
   justify-content: space-around;
   height: 140rpx;
-  /*width属性解决标题文字太短而缩略图偏移*/
   border-bottom: 1rpx solid #f2f2f2;
   padding: 10rpx;
 }
@@ -489,7 +487,7 @@ radio .wx-radio-input.wx-radio-input-checked::before{
 	justify-content: center;/*子项横轴上居中对齐*/
 	align-items: center;/*子项纵轴上居中对齐*/
   padding: 4rpx 10rpx 8rpx 10rpx;
-  top:50rpx;
+  top:0rpx;
   position: fixed;
   z-index:999;
 }

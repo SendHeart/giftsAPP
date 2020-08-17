@@ -28,7 +28,7 @@
 			</view>
 		</view>
 		-->
-		<mescroll-uni top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
+		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
 		<view class="container" scroll-y > <!-- :style="'height:'+dkheight+'px;'"  @scrolltoupper="scrolltoupper" :scroll-top="scrollTop" @scroll="scroll" -->
 			<view class="banner">
 				<swiper class="swiper-box" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)"
@@ -252,7 +252,7 @@
 			</view>
 		</view>
 		<pd-list :list="pdList"></pd-list>
-		</mescroll-uni>
+		</mescroll-body>
 		<view class="main_message" :hidden="messageHidden" :style="'height:' + dkheight + 'px;'">
 		  <view class="t_w">
 		    <!--右上角图标开始-->
@@ -306,7 +306,12 @@ import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
 //var dateUtils = require('../../common/util.js').dateUtils;
 import uniIcons from '@/components/uni-icons/uni-icons.vue'
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
-import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+//import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+// 引入mescroll-mixins.js
+import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+// 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+
 import PdList from "./pd-list.vue";
 import push from "@/common/push.js"
 //获取应用实例
@@ -511,15 +516,17 @@ export default {
 	  scrollY: 0
     }
   },
-
-  components: {
+	
+	mixins: [MescrollMixin], // 使用mixin
+	components: {
  //   imageloader,
-	uniPopup,
+		uniPopup,
 	//uniLoadMore,  
-	uniIcons,
-	uniNavBar,
-	MescrollUni,
-	PdList,
+		uniIcons,
+		uniNavBar,
+	//MescrollUni,
+		MescrollBody,
+		PdList,
   },
   props: {
   },
@@ -560,15 +567,13 @@ export default {
       message: message,
       message_type: 1
     };
-    that.setData({
-      message: JSON.stringify(message_info),
-      refername: refername,
-      msg_id: msg_id,
-      art_id: art_id,
-      art_cat_id: art_cat_id,
-      art_title: art_title,
-      page_type: page_type
-    });
+    that.message = JSON.stringify(message_info)
+    that.refername = refername
+    that.msg_id = msg_id
+    that.art_id = art_id
+    that.art_cat_id = art_cat_id
+    that.art_title = art_title
+    that.page_type = page_type
  
     if (art_id > 0 || art_cat_id > 0) {
       wx.navigateTo({
@@ -624,9 +629,7 @@ export default {
 	}, 6000*10)
 	 */
     if (pages.length > 1) {
-      that.setData({
-        title_logo: '../../images/back.png'
-      });
+      that.title_logo = '../../images/back.png'
     }
 
     if (!username) {
@@ -690,13 +693,11 @@ export default {
             //console.log('hall get_task_refer:', res.data);
           }
         });
-        that.setData({
-          messageHidden: !that.messageHidden,
-          main_prom_image: that.navList2[10]['img'],
-          main_prom_title: that.navList2[10]['title'] ? that.navList2[10]['title'] : '送心礼物',
-          main_prom_note: that.navList2[10]['note'] ? that.navList2[10]['note'] : '送心礼物欢迎您！',
-          notehidden: !that.notehidden
-        });
+        that.messageHidden = !that.messageHidden
+        that.main_prom_image = that.navList2[10]['img']
+        that.main_prom_title = that.navList2[10]['title'] ? that.navList2[10]['title'] : '黑贝会'
+        that.main_prom_note = that.navList2[10]['note'] ? that.navList2[10]['note'] : '黑贝会欢迎您！'
+        that.notehidden = !that.notehidden
       }
     }
 
@@ -907,17 +908,13 @@ export default {
         wx.onSocketError(function (res) {
           socketOpen = false;
           //console.log('WebSocket连接打开失败，请检查！');
-          that.setData({
-            socktBtnTitle: '连接socket'
-          });
+          that.socktBtnTitle = '连接socket'
           wx.hideToast();
         });
         wx.onSocketOpen(function (res) {
           //console.log('WebSocket连接已打开', wssurl + '/wss');
           wx.hideToast();
-          that.setData({
-            socktBtnTitle: '断开socket'
-          });
+          that.socktBtnTitle = '断开socket'
           socketOpen = true;
           var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
           var uid = username + '_' + shop_type;
@@ -926,9 +923,7 @@ export default {
           });
 
           for (var i = 0; i < socketMsgQueue.length; i++) {
-            that.setData({
-              message: socketMsgQueue[i]
-            });
+            that.message = socketMsgQueue[i]
             that.sendSocketMessage();
           } //socketMsgQueue = []
 
@@ -973,9 +968,7 @@ export default {
           socketOpen = false;
           console.log('WebSocket 已关闭！');
           wx.hideToast();
-          that.setData({
-            socktBtnTitle: '连接socket'
-          });
+          that.socktBtnTitle = '连接socket'
         });
       } else {//wx.closeSocket()
       }
@@ -1051,9 +1044,7 @@ export default {
 	*/
 	messagesTapTag: function () {
 	    var that = this
-	    that.setData({
-	      messages_num: 0
-	    })
+	   that.messages_num = 0
 	    getApp().globalData.messageflag = 1 //1系统消息
 	    console.log('hall messagesTapTag: messageflag:', getApp().globalData.messageflag)
 	   
@@ -1076,9 +1067,7 @@ export default {
     },
     bindTextAreaBlur: function (e) {
       var that = this;
-      that.setData({
-        note: e.detail.value
-      });
+      that.note = e.detail.value
     },
     bindMinus: function (e) {
       var that = this;
@@ -1102,10 +1091,8 @@ export default {
       var minusStatuses = that.minusStatuses;
       minusStatuses[index] = minusStatus; // 将数值与状态写回
 
-      that.setData({
-        carts: carts,
-        minusStatuses: minusStatuses
-      }); // update database
+      that.carts = carts
+      that.minusStatuses = minusStatuses
 
       var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
@@ -1115,9 +1102,7 @@ export default {
       this.sum();
 
       if (num_cur == 0) {
-        that.setData({
-          deleteindex: index
-        });
+        that.deleteindex = index
         that.deleteFun();
       }
     },
@@ -1142,10 +1127,8 @@ export default {
       var minusStatuses = that.minusStatuses;
       minusStatuses[index] = minusStatus; // 将数值与状态写回
 
-      that.setData({
-        carts: carts,
-        minusStatuses: minusStatuses
-      }); // update database
+      that.carts = carts
+      that.minusStatuses = minusStatuses
 
       var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
@@ -1164,9 +1147,7 @@ export default {
       var num = parseInt(e.detail.value);
       carts[index]['num'] = num; // 将数值与状态写回
 
-      this.setData({
-        carts: carts
-      });
+     this.carts = carts
       wx.hideLoading();
       this.sum();
     },
@@ -1187,13 +1168,11 @@ export default {
       var carts = that.carts; // 对勾选状态取反
 
       carts[index]['selected'] = !selected; // 写回经点击修改后的数组
+		
+		that.carts = carts
 
-      that.setData({
-        carts: carts
-      }); // update database
-
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var sku_id = carts[index]['id'];
       var buy_num = carts[index]['num'];
       that.updateCart(username, sku_id, buy_num, token);
@@ -1216,10 +1195,8 @@ export default {
         carts[i]['selected'] = selectedAllStatus; // update selected status to db
       }
 
-      this.setData({
-        selectedAllStatus: selectedAllStatus,
-        carts: carts
-      });
+      this.selectedAllStatus = selectedAllStatus
+      this.carts = carts
       wx.hideLoading();
       this.sum();
     },
@@ -1404,11 +1381,8 @@ export default {
 	        var showmorehidden = true; // false
 	      }
 	  	
-	      that.setData({
-	        carts: new_carts,
-	        //all_rows: all_rows,
-	        showmorehidden: showmorehidden
-	      });
+	      that.carts = new_carts
+	      that.showmorehidden = showmorehidden
 	      //that.$options.methods.sum();
 	      //that.$options.methods.query_cart();
 	    }
@@ -1445,10 +1419,8 @@ export default {
 
       total = total.toFixed(2); // 写回经点击修改后的数组
 
-      this.setData({
-        carts: carts,
-        total: total
-      });
+      this.carts = carts
+      this.total = total
     },
     showGoods: function (e) {
       // 点击购物车某件商品跳转到商品详情
@@ -1522,10 +1494,8 @@ export default {
       var that = this;
       var messageHidden = that.messageHidden;
 	  var resp_message = that.resp_message ;
-      that.setData({
-        messageHidden: !messageHidden,
-        notehidden: !that.notehidden
-      });
+      that.messageHidden = !messageHidden
+      that.notehidden = !that.notehidden
 	  if(resp_message['type']=='6' ){
 		wx.navigateTo({
 			url: '/pages/member/task/task'
@@ -1541,10 +1511,8 @@ export default {
     //取消按钮点击事件  
     messageCandel: function () {
       var that = this;
-      that.setData({
-        messageHidden: true,
-        notehidden: !that.notehidden
-      });
+      that.messageHidden = true,
+      that.notehidden = !that.notehidden
     },
     query_cart: function () {
       var that = this;
@@ -1828,10 +1796,8 @@ export default {
 	  	
 	  that.status = 'loading';
        
-	  that.setData({
-        is_reloading: true,
-        loadingHidden: false
-      });
+	  that.is_reloading = true,
+	  that.loadingHidden = false
 	  
 	 /*
       uni.request({
@@ -1920,10 +1886,8 @@ export default {
           if (res.data.result) {
             var gifts_rcv = res.data.result['giftgetnum'];
             var gifts_send = res.data.result['giftsendnum'];
-            that.setData({
-              gifts_rcv: gifts_rcv,
-              gifts_send: gifts_send
-            });
+           that.gifts_rcv = gifts_rcv
+           that.gifts_send = gifts_send
           }
         }
       });
@@ -1931,7 +1895,7 @@ export default {
 	
 	set_project_gift_para: function () {
 		var that = this;
-		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
 		that.gift_para_interval = 0
 		that.navList2 = navList_new ;
 		that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner ;

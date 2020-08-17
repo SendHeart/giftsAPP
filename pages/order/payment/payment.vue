@@ -104,8 +104,8 @@ export default {
 
     var received = options.received ? options.received : 0; //未支付礼物订单支付
 
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
     var shop_type = that.shop_type;
     var navList2 = that.navList2; //that.setNavigation()
 
@@ -124,7 +124,7 @@ export default {
         'Accept': 'application/json'
       },
       success: function (res) {
-        console.log('payment onload:', res.data.result);
+        //console.log('payment onload:', res.data.result);
         var orderObjects = res.data.result;
         var sku_id = that.sku_id;
 
@@ -152,20 +152,17 @@ export default {
           }
 
           totalFee = order_price.toFixed(2) * 100; //totalFee = totalFee.toFixed(0)
-
-        
-          that.setData({
-            orders: orderObjects,
-            orderNo: orderNo,
-            username: username,
-            token: token,
-            totalFee: totalFee ? totalFee : order_price,
-            sku_id: sku_id,
-            is_buymyself: is_buymyself,
-            received: received,
-			order_shape:orderObjects[0]['shape'],
-          });
-          if (is_buymyself == 0 && received == 0 || totalFee == 0) that.pay();
+			that.orders = orderObjects
+			that.orderNo = orderNo
+			that.username = username
+			that.token = token
+			that.totalFee = totalFee ? totalFee : order_price
+			that.sku_id = sku_id
+			that.is_buymyself = is_buymyself
+			that.received = received
+			that.order_shape = orderObjects[0]['shape']
+			console.log('payment onload orderObjects:', orderObjects);
+			if (is_buymyself == 0 && received == 0 || totalFee == 0) that.pay();
         } else {
           wx.showToast({
             title: res.data.info,
@@ -198,15 +195,15 @@ export default {
   methods: {
     formSubmit: function (e) {
       var that = this;
-      var formId = e.detail.formId;
+      //var formId = e.detail.formId;
       var form_name = e.currentTarget.dataset.name;
-      console.log('formSubmit() formID：', formId, ' form name:', form_name);
+      console.log('formSubmit() form name:', form_name);
 
       if (form_name == 'pay') {
         that.pay();
       }
 
-      if (formId) that.submintFromId(formId);
+      //if (formId) that.submintFromId(formId);
     },
     //提交formId，让服务器保存到数据库里
     submintFromId: function (formId) {
@@ -283,33 +280,29 @@ export default {
                */
               return;
             } else {
-              that.setData({
-                navList2: navList_new
-              });
-              console.log('payment get_project_gift_para navList_new:', navList_new);
+				that.navList2 = navList_new
+				console.log('payment get_project_gift_para navList_new:', navList_new);
             }
           }
         });
       }
 
       setTimeout(function () {
-        that.setData({
-          loadingHidden: true
-        });
+        that.loadingHidden = true
       }, 1500);
     },
     pay: function () {
-      var that = this;
+		var that = this;
       //var openId = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var totalFee = that.totalFee;
-      var orderNo = that.orderNo;
-	  var orders = that.orders ;
-      var shop_type = that.shop_type;
-      var is_buymyself = that.is_buymyself;
-      var received = that.received;
-		var order_shape = that.data.order_shape
-      console.log('payment username', username, ' totalFee:', totalFee, ' is_buymyself:', is_buymyself, ' received:', received); //统一下单接口对接
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var totalFee = that.totalFee;
+		var orderNo = that.orderNo;
+		var orders = that.orders ;
+		var shop_type = that.shop_type;
+		var is_buymyself = that.is_buymyself;
+		var received = that.received;
+		var order_shape = that.order_shape
+		console.log('payment username', username, ' totalFee:', totalFee, ' is_buymyself:', is_buymyself, ' received:', received); //统一下单接口对接
 
       if (totalFee <= 0) {
         that.delete_cart();
@@ -371,7 +364,7 @@ export default {
 				  })
 				  */
 
-                  if (received == 1  && order_shape!=8) {
+                  if (received == 1  && order_shape!=8 && order_shape!=7) {
                     wx.navigateTo({
                       url: '/pages/lottery/lottery?lottery_type=0' + '&order_no=' + orderNo
                     });
@@ -531,7 +524,7 @@ export default {
       var that = this;
       var shop_type = that.shop_type;
       var order_no = that.orderNo;
-	  var order_shape = that.data.order_shape
+	  var order_shape = that.order_shape
       var goods_flag = that.goods_flag;
       var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
       var nickname = that.userInfo.nickName;
@@ -546,7 +539,7 @@ export default {
       var address_telNumber = that.address_telNumber;
       var is_buymyself = that.is_buymyself; //通讯录权限
 
-		if(order_shape == 8 ) {
+		if(order_shape == 8 || order_shape == 7) {
 			wx.switchTab({
 				url: '/pages/index/index',
 			})
