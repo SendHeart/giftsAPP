@@ -1517,9 +1517,7 @@ export default {
         });
         that.wishCart();
       } else if (form_name == 'mycommTapTag') {
-        that.setData({
-          is_buymyself: 0
-        });
+        that.is_buymyself = 0
         that.mycommTapTag();
       } else if (form_name == 'myblessing') {
         that.myblessing();
@@ -1705,7 +1703,7 @@ export default {
       var that = this;
       var goods_skuid = that.commodityAttr[0]['id'];
       var goods_id = that.goodsid;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../goods/comment/comment?goods_id=' + goods_id + '&goods_skuid=' + goods_skuid + '&comm_type=' + 1
       });
     },

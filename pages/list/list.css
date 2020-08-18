@@ -154,11 +154,12 @@ page {
   text-align: center;
   width: 91%;
   height: 60rpx;
-  overflow-y: hidden;
+  overflow: hidden;
   background: #1D1D1D; 
   z-index:999;
   padding: 15rpx;
   margin-right:50rpx;
+   -webkit-overflow-scrolling: touch;
 }
 
 .top-bar-item {
@@ -188,6 +189,13 @@ page {
   text-align: center;
   background: #1D1D1D; 
   z-index:1001;
+}
+
+.top-bar-scroll-item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-bottom: 1px solid #e8e8e8;
 }
 /*辅助导航 nav2*/
 .top-bar2 {

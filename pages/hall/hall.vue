@@ -13,30 +13,55 @@
 		       <text>了解什么是会员制</text>
 		    </view>
 		</view>
-		<!--
-		<view class="search">
-			<view class="userinfo" @tap="userTapTag">
-				<image class="userinfo-avatar" :src="(userInfo.avatarUrl?userInfo.avatarUrl:default_avatar)" background-size="cover"></image>
+		<view class="all-classify" v-if="hiddenallclassify">
+			<view class="catg-title" @click.stop="openAllTapTag">
+				<view class="catg-titletext">全部分类</view>
+				<view class="catg-claps">
+					<image style src="/static/images/bottom-close.png"></image>
+				</view>
 			</view>
-			<view class="wx-input" @tap="searchTapTag">
-				<image @tap="searchTapTag" src="/static/images/search-btn.png"></image>
-				<text>好礼搜一下</text>
-			</view>
-			<view class="messages" @tap.stop="messagesTapTag">
-				<view class="message-num" :style="(messages_num==0?'display:none':'')">{{messages_num}}</view>
-				<image class="icon-message" src="../../static/images/u72.png"></image>
+			<view class="all-classify-list">
+				<block v-for="(item, index) in navList" :key="index">
+					<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'all-classify-item ' + (index == activeIndex ? 'all-classify-item-active' : '')" @click="onTapTag">
+						{{item.title}}
+					</view>
+				</block>
 			</view>
 		</view>
-		-->
+		<view class="top-banner">
+			<view class="top-bar-list">
+				<!--
+				
+				<swiper class="top-bar" :vertical="false" :display-multiple-items="5">
+					<swiper-item v-for="(item, index) in navList" :key="index">
+						<view class="top-bar-scroll-item">
+							<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+						</view>
+					</swiper-item>
+				</swiper>
+				<view scroll-x="true" class="top-bar">
+					<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+				</view>
+				-->
+				<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
+					<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+				</scroll-view>
+		
+				<view class="top-bar-image">
+					<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @tap="openAllTapTag"></image>
+				</view>
+				
+			</view>
+		</view>
 		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
-		<view class="container" scroll-y > <!-- :style="'height:'+dkheight+'px;'"  @scrolltoupper="scrolltoupper" :scroll-top="scrollTop" @scroll="scroll" -->
+		<view class="container" scroll-y >
 			<view class="banner">
 				<swiper class="swiper-box" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)"
 				 :vertical="vertical" :autoplay="autoplay" :interval="interval" :duration="duration" :circular="circular"
 				 easing-function="easeInOutCubic">
 					<block v-for="(banner_list, index) in hall_banner" :key="index">
 						<swiper-item>
-							<view @tap="bannerTapTag" :data-bannerlink="banner_list.link">
+							<view @click="bannerTapTag" :data-bannerlink="banner_list.link">
 								<image :src="banner_list.img" class="slide-image" mode="aspectFill"></image>
 							</view>
 						</swiper-item>
@@ -50,6 +75,7 @@
 			</view>
 			-->
 			<view class="wrap">
+				<!--
 				<view class="middle-goods">
 					<view v-if="middle8_img" class="image-btnbuy" @tap="bindAIPickGoods" data-goods-type="8" :data-middle-title="middle8_title">
 						<image class="pick-goods-image" :src="middle8_img" mode="aspectFill"></image>
@@ -82,7 +108,8 @@
 						<text class="snum">{{gifts_send}}</text>
 					</view>
 				</view>
-
+				-->
+				<!--
 				<view class="carts-list">
 					<view v-for="(item, cart_idx) in carts" :key="cart_idx" @tap="showGoods(item)" class="carts-container" 
 					 :hidden="(item.hidden==1?false:false)" >
@@ -90,7 +117,7 @@
 							<image class="carts-image" :src="(item.activity_image?item.activity_image:item.image)" mode="aspectFit"  :data-object-id="item.id" :data-goods-id="item.goods_id"
 					 :data-goods-name="item.name" :data-goods-org="item.goods_org" :data-goods-shape="item.shape" :data-goods-info="item.act_info"
 					 :data-goods-price="item.sell_price" :data-sale="item.sale" :data-image="(item.activity_image?item.activity_image:item.image)"></image>
-							<!-- 商品标题 -->
+							 
 							<view class="carts-text">
 								<view class="carts-title">
 									<text>{{item.name}}</text>
@@ -101,14 +128,14 @@
 										</text>
 									</view>
 									<view class="carts-en-price">￥{{item.sell_price}} x{{item.num}}</view>
-									<!-- 数量加减 -->
+									 
 									<view class="stepper">
-										<!-- 减号 -->
+										 
 										<text v-if="cart_idx=='99999'" class="normal" :data-index="cart_idx" @tap="bindMinus">-</text>
-										<!-- 数值 -->
+										 
 										<input v-if="cart_idx=='99999'" type="number" :data-index="cart_idx" catchchange="bindManual" @click.stop="bindManualTapped"
 										 :value="item.num"></input>
-										<!-- 加号 -->
+										 
 										<text v-if="cart_idx=='99999'" class="normal" :data-index="cart_idx" @tap="bindPlus">+</text>
 									</view>
 								</view>
@@ -119,6 +146,8 @@
 						</view>
 					</view>
 				</view>
+				-->
+				<!--
 				<view class="pick-goods jcleft" style="border-bottom:0;">
 					<view class="pick-goods-text">
 						<text class="pick-goods-slogan">附赠留言</text>
@@ -127,7 +156,8 @@
 						<textarea @blur="bindTextAreaBlur" @input="bindTextAreaBlur" placeholder="送你一份礼物，愿你喜欢！" maxlength="56" style="height: 50rpx;line-height:50rpx; font-size:24rpx;" />
 					</view>
 				</view>
-	
+				-->
+				<!--
 				<uni-popup :show="deletecarthidden" type="center" :custom="true" :mask-click="false">
 					<view class="uni-tip">
 						<view class="uni-tip-title">确定移除该礼物吗?</view>
@@ -140,6 +170,8 @@
 						</view>
 					</view>
 				</uni-popup>
+				-->
+				<!--
 				<view class="pick-goods">
 				  <view style="width:60%;">
 				    <image class="serviceimg" :hidden="buyhidden1" :src="(img_service?img_service:'../../images/service.png')" mode="aspectFill"></image>
@@ -155,10 +187,10 @@
 				<view class="btnconfirm">
 					<view v-if="carts[0]">
 						<form @submit="formSubmit" :hidden="buyhidden1" data-name="sendgift" data-type="0" report-submit="true">
-						  <button class="send-button" formType="submit">
-						    <image src="../../static/images/packed.png"></image>
+							<button class="send-button" formType="submit">
+								<image src="../../static/images/packed.png"></image>
 						    打包送出
-											</button>
+							</button>
 						</form>
 					</view>
 				  <view v-if="!carts[0]">
@@ -182,6 +214,8 @@
 				  	</form>
 				  </view>
 				</view>
+				-->
+				<!--
 				<view v-if="friends[0]" class="recomment-title" @tap="bindPickFriends">
 				  <text>我的好友<text class="title_ex"></text></text>
 				  <text class="more">更多...</text>
@@ -198,13 +232,12 @@
 						</block>
 					</scroll-view>
 				</view>
+				-->
+				<!--
 				<view class="recomment-title" @tap="bindPickGoods">
 				  <text>精选清单<text class="title_ex">达人推荐</text></text>
 				  <text class="more">更多...</text>
 				   <button wx:if="is_video_play==1" type="primary" @tap.stop='videoPlayer'>视频</button>
-				  <!--
-				  <button type="primary" @tap.stop='bindPlayer'>看直播</button>
-				  -->
 				</view>
 				<view class="middle-goods">
 				  <view v-if="middle1_img" class="image-btn" @tap="bindMiddleGoods" data-goods-type="1" :data-middle-title="middle1_title" style="border-top-left-radius:14rpx;">
@@ -245,6 +278,7 @@
 				    </view>
 				  </view>
 				</view>
+				-->
 				<view v-if="pdList.length>0" class="recomment-title" @tap="bindPickGoods">
 				  <text>近期热门<text class="title_ex">大家都在送</text></text>
 				  <text class="more">更多...</text>
@@ -263,7 +297,7 @@
 		    <view v-if="main_prom_image" class="main_red" :style="'width:600rpx;height:683rpx;background-image:url(' + main_prom_image + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%; text-align: center;align-items: center;padding:20rpx;z-index:9999;'" @tap="messageConfirm">
 		      <!--
 		    <text class="" style='margin-top:250rpx;font-size:40rpx;color:#fff;'>{{main_prom_note?'':''}}</text>
-		  -->
+			-->
 		    </view>
 		  </view>
 		</view>
@@ -330,6 +364,11 @@ var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var user_group_id = uni.getStorageSync('useruser_group_idInfo') ? uni.getStorageSync('user_group_id') : '0'
+var navList = [{
+  id: "is_recommend",
+  title: "推荐",
+  value: "1"
+}];
 var navList2_init = [{
   id: "gift_logo",
   title: "送礼logo",
@@ -382,139 +421,148 @@ export default {
 		messageHidden: true,
 		notehidden: false,
 		dkheight: 2000,
-		scrollTop: 0,
+		scrollLeft: 0,
+		toView: 0,
+		hiddenallclassify: false,
+		animationData: "",
+		floorstatus: false,
 		is_video_play:0,
-	  old: {
-	  	scrollTop: 0
-	  },
-      current_scrollTop: 0,
-      scrollHeight: 500,
-      indicatorDots: true,
-      vertical: false,
-      autoplay: true,
-      interval: 7000,
-      duration: 300,
-      circular: true,
-      hall_banner: weburl + "/uploads/songxin_banner.png",
-      //默认的banner图
-      banner_link: "pages/list/list?navlist=1",
-      //默认的banner图 跳转链接
-      gifts_rcv: 0,
-      gifts_send: 0,
-      messages_num: 0,
-      note: '',
-      username: null,
-      token: null,
-      recommentslist: [],
-      recommentslist_show: [],
-      show_max: 20,
-      minusStatuses: [],
-      selectedAllStatus: true,
-      total: '',
-      startX: 0,
-      itemLefts: [],
-      showmorehidden: true,
-      loadingHidden: true,
-      all_rows: 0,
-      rall_rows: 0,
-      windowWidth: 380,
-      windowHeight: 1100,
-      carts: [],
-      cartIds: [],
-	  friends: [],
-	  modalFriendinfoHidden:true,
-	  friend_wx_nickname :'',
-	  friend_full_name :'',
-	  friend_address:'',
-	  friend_tel :'',
-	  scrollLeft: 0,
-      amount: 0,
-      nickname: userInfo.nickName ,
-      avatarUrl: userInfo.avatarUrl ,
-	  userInfo:userInfo ,
-      shop_type: shop_type,
-      navList2: navList2,
-      socktBtnTitle: '连接socket',
-      message: '',
-      text: text,
-      content: '',
-      buyhidden1: false,
-      buyhidden2: true,
-      page: 1,
-	  friends_page:1,
-	  friends_pagesize:10,
-      rpage_num: 1,
-	  isPush:false,
-      toView: 0,
-      floorstatus: false,
-      touchstop: false,
-      loading_note: "",
-      deleteindex: "",
-      is_buymyself: "",
-      middle1_img: "",
-      middle2_img: "",
-      middle3_img: "",
-      middle4_img: "",
-      middle5_img: "",
-      middle6_img: "",
-      middle7_img: "",
-      middle8_img: "",
-      middle1_title: "",
-      middle2_title: "",
-      middle3_title: "",
-      middle4_title: "",
-      middle5_title: "",
-      middle6_title: "",
-      middle7_title: "",
-      middle8_title: "",
-      middle1_note: "",
-      middle2_note: "",
-      middle3_note: "",
-      middle4_note: "",
-      middle5_note: "",
-      middle6_note: "",
-      middle7_note: "",
-      middle8_note: "",
-      refername: "",
-      msg_id: "",
-      art_id: "",
-      art_cat_id: "",
-      art_title: "",
-      page_type: "",
-      main_prom_image: "",
-      main_prom_title: "",
-      main_prom_note: "",
-	  deletecarthidden:false,
-	  deletegooodsname:'',
-	  is_reloading: false,
-	  status: 'more',
-	  contentText: {
-	  	contentdown: '上拉加载更多',
-	  	contentrefresh: '加载中',
-	  	contentnomore: '没有更多'
-	  },
-	  downOption:{
-	  	auto:false, // 不自动加载
-	  	use:false,
-	  	isLock:true,
-	  },
-	  upOption:{
-	  	auto:false, // 不自动加载
-		onScroll:true,
-	  	page: {
-	  	 	num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
-	  	 	size: 20, // 每页数据的数量
-	  	},
-	  	noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
-	  	empty:{
-	  		tip: '~ 空空如也 ~', // 提示
-	  		btnText: '去看看'
-	  	}
-	  },
-	  pdList: [] ,// 数据列表
-	  isInit: false, // 列表是否已经初始化
-	  scrollY: 0
-    }
+		activeIndex: 0,
+		activeIndex2: 0,
+		navList: navList,
+		navList2: navList2,
+		old: {
+			scrollTop: 0
+		},
+		current_scrollTop: 0,
+		scrollHeight: 500,
+		indicatorDots: true,
+		vertical: false,
+		autoplay: true,
+		interval: 7000,
+		duration: 300,
+		circular: true,
+		hall_banner: weburl + "/uploads/songxin_banner.png",
+		//默认的banner图
+		banner_link: "pages/list/list?navlist=1",
+		//默认的banner图 跳转链接
+		gifts_rcv: 0,
+		gifts_send: 0,
+		messages_num: 0,
+		note: '',
+		username: null,
+		token: null,
+		recommentslist: [],
+		recommentslist_show: [],
+		show_max: 20,
+		minusStatuses: [],
+		selectedAllStatus: true,
+		total: '',
+		startX: 0,
+		itemLefts: [],
+		showmorehidden: true,
+		loadingHidden: true,
+		all_rows: 0,
+		rall_rows: 0,
+		windowWidth: 380,
+		windowHeight: 1100,
+		carts: [],
+		cartIds: [],
+		friends: [],
+		modalFriendinfoHidden:true,
+		friend_wx_nickname :'',
+		friend_full_name :'',
+		friend_address:'',
+		friend_tel :'',
+
+		amount: 0,
+		nickname: userInfo.nickName ,
+		avatarUrl: userInfo.avatarUrl ,
+		userInfo:userInfo ,
+		shop_type: shop_type,
+		tab: 'is_recommend',
+		tab_value: "1",
+		tab2: 'default',
+		socktBtnTitle: '连接socket',
+		message: '',
+		text: text,
+		content: '',
+		buyhidden1: false,
+		buyhidden2: true,
+		page: 1,
+		friends_page:1,
+		friends_pagesize:10,
+		rpage_num: 1,
+		isPush:false,
+		
+		touchstop: false,
+		loading_note: "",
+		deleteindex: "",
+		is_buymyself: "",
+		middle1_img: "",
+		middle2_img: "",
+		middle3_img: "",
+		middle4_img: "",
+		middle5_img: "",
+		middle6_img: "",
+		middle7_img: "",
+		middle8_img: "",
+		middle1_title: "",
+		middle2_title: "",
+		middle3_title: "",
+		middle4_title: "",
+		middle5_title: "",
+		middle6_title: "",
+		middle7_title: "",
+		middle8_title: "",
+		middle1_note: "",
+		middle2_note: "",
+		middle3_note: "",
+		middle4_note: "",
+		middle5_note: "",
+		middle6_note: "",
+		middle7_note: "",
+		middle8_note: "",
+		refername: "",
+		msg_id: "",
+		art_id: "",
+		art_cat_id: "",
+		art_title: "",
+		page_type: "",
+		main_prom_image: "",
+		main_prom_title: "",
+		main_prom_note: "",
+		deletecarthidden:false,
+		deletegooodsname:'',
+		is_reloading: false,
+		status: 'more',
+		contentText: {
+			contentdown: '上拉加载更多',
+			contentrefresh: '加载中',
+			contentnomore: '没有更多'
+		},
+		downOption:{
+			auto:false, // 不自动加载
+			use:false,
+			isLock:true,
+		},
+		upOption:{
+			auto:false, // 不自动加载
+			onScroll:true,
+			page: {
+				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+				size: 20, // 每页数据的数量
+			},
+			noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+			empty:{
+				tip: '~ 空空如也 ~', // 提示
+				btnText: '去看看'
+			}
+		},
+		pdList: [] ,// 数据列表
+		isInit: false, // 列表是否已经初始化
+		scrollY: 0
+	}
   },
 	
 	mixins: [MescrollMixin], // 使用mixin
@@ -524,8 +572,8 @@ export default {
 	//uniLoadMore,  
 		uniIcons,
 		uniNavBar,
-	//MescrollUni,
-		MescrollBody,
+		//MescrollUni,
+		//MescrollBody,
 		PdList,
   },
   props: {
@@ -592,6 +640,7 @@ export default {
 	that.get_project_gift_para();
 	that.reloadData();
     that.sum();
+	that.get_menubar();
 	//that.query_friends();
   },
   //事件处理函数
@@ -815,20 +864,65 @@ export default {
 	 },
 
 	bindFriendinfo: function (e) {
-    var that = this
+		var that = this
     //var index = e.currentTarget.dataset.index
     //var friends = that.friends
-    var friend_wx_nickname = e.wx_nickname 
-    var friend_full_name = e.full_name
-    var friend_address = e.address
-    var friend_tel = e.tel
+		var friend_wx_nickname = e.wx_nickname 
+		var friend_full_name = e.full_name
+		var friend_address = e.address
+		var friend_tel = e.tel
    
-    wx.navigateTo({
-      url: '/pages/member/friendinfo/friendinfo?friendinfo=' + JSON.stringify(e)
-    })
-    console.log('bindFriendinfo() friend_full_name', friend_full_name, ' friend_address:', friend_address)
-  },
-	 scroll: function(e) {
+		uni.navigateTo({
+		url: '/pages/member/friendinfo/friendinfo?friendinfo=' + JSON.stringify(e)
+		})
+		console.log('bindFriendinfo() friend_full_name', friend_full_name, ' friend_address:', friend_address)
+	},
+	// 点击获取对应分类的数据
+	onTapTag: function (e) {
+		var that = this; //var tab = e.currentTarget.id;
+		var tab = e.currentTarget.dataset.id;
+		var tab_value = e.currentTarget.dataset.value;
+		var index = e.currentTarget.dataset.index;
+		var search_goodsname = e.currentTarget.dataset.title;
+		var navList = that.navList;
+		var toView = index;
+		var hiddenallclassify = that.hiddenallclassify;
+	
+		if (index > 2 && index < navList.length) {
+			toView = index - 2;
+		} else {
+			toView = 0;
+		}
+	
+		if (tab != 'search_goodsname') {
+			search_goodsname = '';
+		}
+	
+		that.activeIndex = parseInt(index)
+		that.tab = tab 
+		that.tab_value = tab_value
+		that.page = 1
+		that.search_goodsname = search_goodsname
+		that.toView = toView ? toView : 0
+		that.pageoffset = 0
+	  	that.hiddenallclassify = !hiddenallclassify
+		//console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
+		 
+		that.downCallback(that.mescroll)
+		that.get_project_gift_para()
+		if (hiddenallclassify == false) {
+			that.openAllTapTag();
+		}
+	},
+	
+	// 打开全部子分类
+	openAllTapTag: function (e) {
+	  var that = this;
+	  var hiddenallclassify = that.hiddenallclassify;
+	  that.hiddenallclassify = !hiddenallclassify ;
+	},
+	
+	scroll: function(e) {
 	 	var that = this
 	 	var old_scrollTop = that.old.scrollTop
 	 	var current_scrollTop = that.mescroll.scrollTop
@@ -1024,7 +1118,7 @@ export default {
     bannerTapTag: function (e) {
       var that = this;
       var banner_link = e.currentTarget.dataset.bannerlink;
-      wx.navigateTo({
+      uni.navigateTo({
         url: banner_link + '&username=' + username + '&token=' + token
       });
     },
@@ -1050,18 +1144,18 @@ export default {
 	   
 	   getApp().globalData.my_index = 1 //1系统消息
 	   getApp().globalData.art_id = 28 //1系统消息
-	    wx.switchTab({
+	    uni.switchTab({
 	      url: '/pages/my/index'
 	    })
 	},
 	
     userTapTag: function () {
-      wx.switchTab({
+      uni.switchTab({
         url: '../my/index'
       });
     },
     usergiftTapTag: function () {
-      wx.switchTab({
+      uni.switchTab({
         url: '../index/index'
       });
     },
@@ -1098,7 +1192,7 @@ export default {
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
       var sku_id = carts[index]['id'];
       that.updateCart(username, sku_id, num, token);
-      wx.hideLoading();
+      uni.hideLoading();
       this.sum();
 
       if (num_cur == 0) {
@@ -1134,11 +1228,11 @@ export default {
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
       var sku_id = carts[index]['id'];
       that.updateCart(username, sku_id, num, token);
-      wx.hideLoading();
+      uni.hideLoading();
       //that.$options.methods.sum();
     },
     bindManual: function (e) {
-      wx.showLoading({
+      uni.showLoading({
         title: '操作中',
         mask: true
       });
@@ -1148,39 +1242,40 @@ export default {
       carts[index]['num'] = num; // 将数值与状态写回
 
      this.carts = carts
-      wx.hideLoading();
+      uni.hideLoading();
       this.sum();
     },
     bindManualTapped: function () {// 什么都不做，只为打断跳转
     },
     bindCheckbox: function (e) {
-      wx.showLoading({
-        title: '操作中',
-        mask: true
-      });
-      var that = this;
+		uni.showLoading({
+			title: '操作中',
+			mask: true
+		});
+		var that = this;
       /*绑定点击事件，将checkbox样式改变为选中与非选中*/
       //拿到下标值，以在carts作遍历指示用
 
-      var index = parseInt(e.currentTarget.dataset.index); //原始的icon状态
+		var index = parseInt(e.currentTarget.dataset.index); //原始的icon状态
 
-      var selected = that.carts[index]['selected'];
-      var carts = that.carts; // 对勾选状态取反
+		var selected = that.carts[index]['selected'];
+		var carts = that.carts; // 对勾选状态取反
 
-      carts[index]['selected'] = !selected; // 写回经点击修改后的数组
+		carts[index]['selected'] = !selected; // 写回经点击修改后的数组
 		
 		that.carts = carts
 
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var sku_id = carts[index]['id'];
-      var buy_num = carts[index]['num'];
-      that.updateCart(username, sku_id, buy_num, token);
-      wx.hideLoading();
-      that.sum();
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var sku_id = carts[index]['id'];
+		var buy_num = carts[index]['num'];
+		that.updateCart(username, sku_id, buy_num, token);
+		uni.hideLoading();
+		that.sum();
     },
+	
     bindSelectAll: function () {
-      wx.showLoading({
+      uni.showLoading({
         title: '操作中',
         mask: true
       }); // 环境中目前已选状态
@@ -1267,7 +1362,7 @@ export default {
         duration: 1500
       });
 	 */
-	  wx.navigateTo({
+	  uni.navigateTo({
         url: '../order/checkout/checkout?cartIds=' + cartIds + '&amount=' + total + '&carts=' + JSON.stringify(cartselected) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_note=' + order_note + '&username=' + username + '&token=' + token
       });
 	 
@@ -1601,53 +1696,54 @@ export default {
 	  	var that = this
 	  	that.modalFriendinfoHidden = !that.modalFriendinfoHidden
 	},
+	
 	query_friends: function () {
-	  var that = this;
-	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-	  var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-	  var shop_type = that.shop_type;
-	  var weburl = getApp().globalData.weburl;
-	  var friends_page  = that.friends_page
-	  var friends_pagesize = that.friends_pagesize 
-	  if (!username) {
-		return;
-	  } 
-	  uni.request({
-	    url: weburl + '/api/client/get_member_friends',
-	    method: 'POST',
-	    data: {
-	      username: username ? username : openid,
-	      access_token: token,
-		  type:3 ,  // 3送心礼物好友
-	      shop_type: shop_type,
-		  page:friends_page,
-		  pagesize:friends_pagesize,
-	    },
-	    header: {
-	      'Content-Type': 'application/x-www-form-urlencoded',
-	      'Accept': 'application/json'
-	    },
-	    success: function (res) {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var shop_type = that.shop_type;
+		var weburl = getApp().globalData.weburl;
+		var friends_page  = that.friends_page
+		var friends_pagesize = that.friends_pagesize 
+		if (!username) {
+			return;
+		} 
+		uni.request({
+			url: weburl + '/api/client/get_member_friends',
+			method: 'POST',
+			data: {
+				username: username ? username : openid,
+				access_token: token,
+				type:3 ,  // 3送心礼物好友
+				shop_type: shop_type,
+			page:friends_page,
+			pagesize:friends_pagesize,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
 	     // console.log('hall query_friends:', res.data);
-	      if (!res.data.result) {
-	        return;
-	      }
+				if (!res.data.result) {
+					return;
+				}
 	
-	      var friends_list = res.data.result;
-	      var index = 0;
+				var friends_list = res.data.result;
+				var index = 0;
 	
-	      if(friends_list) {
-	        for (var i = 0; i < friends_list.length; i++) {
-	          if (friends_list[i]['wx_headimg'].indexOf("http") < 0) {
-	            friends_list[i]['wx_headimg'] = weburl + '/' + friends_list[i]['wx_headimg'];
-	          }
-	        }
-	      }
-		  that.friends = friends_list;
-		  console.log('hall query_friends friends:', that.friends);
-	    }
-	  })
+				if(friends_list) {
+					for (var i = 0; i < friends_list.length; i++) {
+						if (friends_list[i]['wx_headimg'].indexOf("http") < 0) {
+							friends_list[i]['wx_headimg'] = weburl + '/' + friends_list[i]['wx_headimg'];
+						}
+					}
+				}
+				that.friends = friends_list;
+				console.log('hall query_friends friends:', that.friends);
+			}
+		})
 	},
 	// mescroll组件初始化的回调,可获取到mescroll对象
 	mescrollInit(mescroll) {
@@ -1670,7 +1766,7 @@ export default {
 		//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
 		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
-			console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
+			//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
 			mescroll.endSuccess(curPageData.length);
 			//设置列表数据
 			if(mescroll.num == 1|| this.page == 1) {
@@ -1704,6 +1800,8 @@ export default {
 		var pagesize = that.pagesize;
 		var pageoffset = that.pageoffset;
 		var all_rows = that.all_rows
+		var goods_type = that.tab
+		var goods_type_value = that.tab_value
 	
 		if(page > all_rows && page>1) {
 			console.log('加载完成 page:', page, 'all_rows:',all_rows);
@@ -1720,13 +1818,15 @@ export default {
 			  url: weburl + '/api/client/query_member_goods_prom',
 			  method: 'POST',
 			  data: {
-			  username: username,
-			  access_token: token,
-			  shop_type: shop_type,
-			  query_type: 'app',
-			  page: page,
-			  pagesize: pagesize,
-			  pageoffset: pageoffset
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				query_type: 'app',
+				page: page,
+				pagesize: pagesize,
+				pageoffset: pageoffset,
+				goods_type: goods_type, 
+				goods_type_value: goods_type_value, 
 			  },
 			  header: {
 			    'Content-Type': 'application/x-www-form-urlencoded',
@@ -1782,22 +1882,22 @@ export default {
 			errorCallback && errorCallback();
 		}
 	},
-    reloadData: function () {
-      var that = this;
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var minusStatuses = [];
-      var page = that.page;
-      var pagesize = that.pagesize;
-      var pageoffset = that.pageoffset;
-      var shop_type = that.shop_type;
-	  var weburl = getApp().globalData.weburl;
-	  	
-	  that.status = 'loading';
+		
+	reloadData: function () {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var minusStatuses = [];
+		var page = that.page;
+		var pagesize = that.pagesize;
+		var pageoffset = that.pageoffset;
+		var shop_type = that.shop_type;
+		var weburl = getApp().globalData.weburl;
+		that.status = 'loading';
        
-	  that.is_reloading = true,
-	  that.loadingHidden = false
+		that.is_reloading = true,
+		that.loadingHidden = false
 	  
 	 /*
       uni.request({
@@ -1862,35 +1962,35 @@ export default {
         }
       });
 	  */
-      var gifts_rcv = that.gifts_rcv;
-      var gifts_send = that.gifts_send;
-      var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
+		var gifts_rcv = that.gifts_rcv;
+		var gifts_send = that.gifts_send;
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
       //console.log("openid:" + openid + ' username:' + username); // 送收礼物信息查询
 
-      uni.request({
-        url: weburl + '/api/client/query_member_gift',
-        method: 'POST',
-        data: {
-          username: username ? username : openid,
-          access_token: token,
-          openid: openid,
-          shop_type: shop_type
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
+		uni.request({
+			url: weburl + '/api/client/query_member_gift',
+			method: 'POST',
+			data: {
+				username: username ? username : openid,
+				access_token: token,
+				openid: openid,
+				shop_type: shop_type,
+			},
+			header: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Accept': 'application/json'
+			},
+			success: function (res) {
           //console.log('会员礼物收送信息获取:', res.data);
 
-          if (res.data.result) {
-            var gifts_rcv = res.data.result['giftgetnum'];
-            var gifts_send = res.data.result['giftsendnum'];
-           that.gifts_rcv = gifts_rcv
-           that.gifts_send = gifts_send
-          }
-        }
-      });
+				if (res.data.result) {
+					var gifts_rcv = res.data.result['giftgetnum'];
+					var gifts_send = res.data.result['giftsendnum'];
+					that.gifts_rcv = gifts_rcv
+					that.gifts_send = gifts_send
+				}
+			}
+		});
     },
 	
 	set_project_gift_para: function () {
@@ -1930,6 +2030,7 @@ export default {
 	  var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
       var hall_banner = that.hall_banner;
 	  var gift_para_interval = that.gift_para_interval
+	  var cat_id = that.tab_value>0? that.tab_value:1
       //console.log('hall get_project_gift_para navList2:', navList_new);
 	  if(navList_new && gift_para_interval>0) {
 		  that.set_project_gift_para()
@@ -1942,7 +2043,8 @@ export default {
           type: 2,
 		  query_type:'APP',  
           //暂定 1首页单图片 2首页轮播  
-          shop_type: shop_type
+          shop_type: shop_type,
+		   cat_id:cat_id,
         },
         header: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -1951,7 +2053,7 @@ export default {
         success: function (res) {
           //console.log('get_project_gift_para:', res.data)
           navList_new = res.data.result;
-          //console.log('get_project_gift_para:', navList_new);
+          console.log('get_project_gift_para:', navList_new);
       	
           if (!navList_new) {
             return;
@@ -1984,6 +2086,68 @@ export default {
 	  //obj['buyhidden2'] = e.detail.value; 
 	  that.buyhidden1 =  e.detail.value ;
     },
+	
+	get_menubar: function (event) {
+	  //获取菜单项
+	  var that = this;
+	  var navlist_toView = that.navlist_toView;
+	  var navlist_title = that.navlist_title;
+	  uni.request({
+	    url: weburl + '/api/client/get_menubar',
+	    method: 'POST',
+	    data: {
+	      menu_type: 1,
+		  query_type:'APP',  
+	    },
+	    header: {
+	      'Content-Type': 'application/x-www-form-urlencoded',
+	      'Accept': 'application/json'
+	    },
+	    success: function (res) {
+			// console.log('get_menubar:', res.data.result);
+			var navList_new = res.data.result;
+	
+			if (!navList_new) {
+				wx.showToast({
+				title: '没有菜单项',
+				icon: 'loading',
+				duration: 1500
+				});
+				return;
+			}
+	
+			for (var i = 0; i < navList_new.length; i++) {
+				if (navList_new[i]['title'].indexOf(navlist_title) >= 0) {
+					navlist_toView = i;
+					break;
+				}
+			}
+			that.navList = navList_new ;
+			that.index = navlist_toView ;
+			that.activeIndex = navlist_toView ;
+			that.tab = navList_new[navlist_toView]['id'] ;
+			that.tab_value = navList_new[navlist_toView]['value'] ;
+			that.venuesItems_show = [] ;
+			that.navList.forEach((tabBar) => {
+				that.venuesList.push({
+					venuesItems: [],
+					refreshing: false,
+					refreshFlag: false,
+					refreshText: "",
+					isLoading: false,
+					loadingText: '加载中...',
+					isNoData: false,
+					pulling: false,
+					page: 0,
+					pagesize: that.pagesize,
+					all_rows: that.all_rows,
+					scrollTop:that.scrollTop,
+					angle: 0,
+				});
+			});
+		}
+		})
+	},
     setData: function (obj) {
       let that = this;
       let keys = [];

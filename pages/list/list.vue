@@ -9,7 +9,7 @@
 		</view>
 		<view class="all-classify-list">
 			<block v-for="(item, index) in navList" :key="index">
-				<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'all-classify-item ' + (index == activeIndex ? 'all-classify-item-active' : '')" @tap.stop="onTapTag">
+				<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'all-classify-item ' + (index == activeIndex ? 'all-classify-item-active' : '')" @click="onTapTag">
 					{{item.title}}
 				</view>
 			</block>
@@ -17,14 +17,27 @@
 	</view>
 	<view class="banner">
 		<view class="top-bar-list">
-			<scroll-view scroll-x="true" @scroll="getleft" :scroll-into-view="'v_' + toView" class="top-bar">
-				<block v-for="(item, index) in navList" :key="index">
-					<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @tap.stop="onTapTag">{{item.title}}</view>
-				</block>
+			<!--
+			<me-tabs v-model="activeIndex" :tabs="navList" :nameKey="title" :fixed="true" :tab-width="130"></me-tabs>
+			<swiper class="top-bar" :vertical="false" :display-multiple-items="5">
+				<swiper-item v-for="(item, index) in navList" :key="index">
+					<view class="top-bar-scroll-item">
+						<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+					</view>
+				</swiper-item>
+			</swiper>
+			-->
+			<!-- #ifdef APP-PLUS -->
+			
+			<!-- #endif -->
+			<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
+				<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
 			</scroll-view>
+		
 			<view class="top-bar-image">
 				<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @tap="openAllTapTag"></image>
 			</view>
+			
 		</view>
 		<view class="top-bar2">
 			<block v-for="(item, index) in navList2" :key="index">
@@ -36,6 +49,7 @@
 			</block>
 		</view>
 	</view>
+	
 	<swiper class="swiper container" :style="'height:'+dkheight+''" :current="activeIndex"  circular="true" :duration="duration" @animationfinish="swiperChange">
 		<swiper-item  v-for="(venuesItems, venuesIndex) in venuesList" :key="venuesIndex">
 			<mescroll-item :i="venuesIndex" :activeIndex="activeIndex" :tab="tab" :tab_value="tab_value" :tab2="tab2" :updown="updown"></mescroll-item>
@@ -136,37 +150,35 @@ export default {
 	  	contentnomore: '没有更多'
 	  },
     };
-  },
-
-  components: {
-   // imageloader,
-	//uniLoadMore,
-	MescrollItem
-  },
-  props: {
-  },
-  watch:{
+},
+	components: {
+		// imageloader,
+		//uniLoadMore,
+		MescrollItem
+	},
+	props: {
+	},
+	watch:{
    
-  },
-  mounted() {
+	},
+	mounted() {
    
-  },
-  onLoad: function (options) {
+	},
+	
+	onLoad: function (options) {
     //console.log('onLoad', options);
     var that = this;
     var username = options.username ? options.username : wx.getStorageSync('username');
     var token = options.token ? options.token : wx.getStorageSync('token');
     var navlist_toView = options.navlist ? options.navlist : 0;
     var navlist_title = options.navlist_title ? options.navlist_title : '';
-    that.setData({
-      username: username,
-      token: token,
-      navlist_toView: navlist_toView,
-      navlist_title: navlist_title
-    }); //that.setNavigation()
+    that.username = username
+    that.token = token
+    that.navlist_toView = navlist_toView
+    that.navlist_title = navlist_title
     //调用应用实例的方法获取全局数据
 
-    wx.getSystemInfo({
+    uni.getSystemInfo({
       success: function (res) {
         that.setData({
           platform: res.platform,
@@ -182,9 +194,7 @@ export default {
     var that = this;
     var pages = getCurrentPages();
     if (pages.length > 1) {
-      that.setData({
-        title_logo: '/static/images/back.png'
-      });
+      that.title_logo = '/static/images/back.png'
     }
 	/*
 	setTimeout(() => {
@@ -219,7 +229,7 @@ export default {
 	    var sku_id = objectId;
 	    image = image?image:activity_image?activity_image:'' ;
 	    getApp().globalData.hall_gotop = 0;
-	    wx.navigateTo({
+	    uni.navigateTo({
 	      url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
 	    });
 	  },
@@ -264,25 +274,25 @@ export default {
       }
     },
   // 轮播菜单
-  swiperChange(e){
-  	this.changeTab(e.detail.current)
-  },
+	swiperChange(e){
+		this.changeTab(e.detail.current)
+	},
   // 切换菜单
-  changeTab(i){
-	var that = this
-	var navList = that.navList;
-	var index = i
-	var toView = index;
-  	that.activeIndex = i
-	if (index > 2 && index < navList.length) {
-	  toView = index - 2;
-	} else {
-	  toView = 0;
-	}
-	that.toView = toView ? toView : 0 ;
-	that.tab = navList[that.activeIndex].id
-	that.tab_value = navList[that.activeIndex].value
-  },
+	changeTab(i){
+		var that = this
+		var navList = that.navList;
+		var index = i
+		var toView = index;
+		that.activeIndex = i
+		if (index > 2 && index < navList.length) {
+			toView = index - 2;
+		} else {
+		toView = 0;
+		}
+		that.toView = toView ? toView : 0 ;
+		that.tab = navList[that.activeIndex].id
+		that.tab_value = navList[that.activeIndex].value
+	},
 
     // 点击获取对应分类的数据
     onTapTag: function (e) {
@@ -305,19 +315,14 @@ export default {
         search_goodsname = '';
       }
 	
-      that.setData({
-        activeIndex: parseInt(index),
-        tab: tab,
-        tab_value: tab_value,
-        page: 1,
-        search_goodsname: search_goodsname,
-        toView: toView ? toView : 0,
-       // scrollTop: 0,
-        //venuesItems_show: [],
-		//venuesItems: [],
-        pageoffset: 0,
-		hiddenallclassify:!hiddenallclassify,
-      });
+		that.activeIndex = parseInt(index)
+		that.tab = tab 
+		that.tab_value = tab_value
+		that.page = 1
+		that.search_goodsname = search_goodsname
+		that.toView = toView ? toView : 0
+		that.pageoffset = 0
+      	that.hiddenallclassify = !hiddenallclassify
       //console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
       that.get_goods_list();
       if (hiddenallclassify == false) {
@@ -553,7 +558,7 @@ export default {
       var that = this;
       var navlist_toView = that.navlist_toView;
       var navlist_title = that.navlist_title;
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/get_menubar',
         method: 'POST',
         data: {

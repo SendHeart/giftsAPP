@@ -1,17 +1,21 @@
 <template>
-	<mescroll-uni top="160" :fixed="false" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<mescroll-uni ref="mescrollRef" top="160" :fixed="false" height="100%" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 		<pd-list :list="pdList"></pd-list>
 	</mescroll-uni>
 </template>
 
 <script>
-	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
+	//import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
+	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
+	import MescrollMoreItemMixin from "@/components/mescroll-uni/mixins/mescroll-more-item.js";
+	
 	import PdList from "./pd-list.vue";
 	var weburl = getApp().globalData.weburl;
 	var shop_type = getApp().globalData.shop_type;
 	export default {
+		mixins: [MescrollMixin,MescrollMoreItemMixin], // 注意此处还需使用MescrollMoreItemMixin (必须写在MescrollMixin后面)
 		components: {
-			MescrollUni,
+			//MescrollUni,
 			PdList
 		},
 		data() {
@@ -201,7 +205,7 @@
 				var keyword = that.keyword?that.keyword:'';
 				console.log('activeIndex:', activeIndex, 'goods_type:', that.tab,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown);
 				if(page > all_rows && page>1) {
-					console.log('加载完成 page:', page, 'all_rows:',all_rows,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown);
+					//console.log('加载完成 page:', page, 'all_rows:',all_rows,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown);
 					that.is_goodslist_loading = false ;
 					successCallback && successCallback('n');
 					return ;

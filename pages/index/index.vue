@@ -141,7 +141,7 @@ import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
 // 引入mescroll-mixins.js
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 // 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
-import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
 
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 var dateUtils = require('../../common/util.js');
@@ -256,7 +256,7 @@ export default {
 	  uniNavBar,
 	  //uniLoadMore,
 	  //MescrollUni,
-	  MescrollBody,
+	  //MescrollBody,
 	},
 	props: {},
   
@@ -574,6 +574,7 @@ export default {
     },
 	
    // 获取滚动条当前位置
+   /*
    scrolltoupper: function (e) {
    	var that = this
    	if (e.detail.scrollTop > 100) {
@@ -584,6 +585,8 @@ export default {
    	
    	that.current_scrollTop = e.detail.scrollTop
    },
+   */
+  
    scroll: function(e) {
    	var that = this
    	var old_scrollTop = that.old.scrollTop

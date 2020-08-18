@@ -42,9 +42,11 @@
  <form @submit="formSubmit" data-name="pay" report-submit="true" v-if="is_buymyself==1||received==1" style="width:100%;">  
   <button class="btnpay" type="primary" formType="submit">微信支付</button> <!-- bindtap="pay"    -->
 </form>
+<!--
 <view v-if="is_buymyself==1||received==1" class="pay_recomment" style="margin-top:10rpx;">
    <image :src="navList2[6].img" background-size="cover" mode="widthFix"></image>
 </view>
+-->
 </view>
 </template>
 

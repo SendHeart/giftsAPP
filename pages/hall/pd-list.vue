@@ -122,7 +122,7 @@
 			   		  username:username
 			   } ;
 			   uni.setStorageSync('show_goods_options', show_goods_options);
-			   wx.navigateTo({
+			   uni.navigateTo({
 			     url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
 			   });
 			 },

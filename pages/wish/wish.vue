@@ -1,8 +1,12 @@
 <template>
 <view>
+	<!--
 	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
+	-->
 	<view class="userinfo_my" :hidden="!shareflag" :style="'background-image: url(' + wish_banner + ');background-size:cover;'">
+		<!--
 		<text class="userinfo-nickname" style="margin-top:20rpx;">我的心愿单</text>
+		-->
 		<view class="banner" :hidden="!shareflag">
 			<form @submit="formSubmit" data-name="onShareAppMessage" report-submit="true" v-if="carts.length>0">
 				<button @tap="shareToWXminiProgram" formType="submit" class="btnshare">

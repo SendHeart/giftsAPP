@@ -8,13 +8,13 @@
 </template>
 
 <script>
-	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
+	//import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
 	import PdList from "./pd-list.vue";
 	var weburl = getApp().globalData.weburl;
 	var shop_type = getApp().globalData.shop_type;
 	export default {
 		components: {
-			MescrollUni,
+			//MescrollUni,
 			PdList
 		},
 		data() {

@@ -26,40 +26,134 @@ page {
   color: transparent;
   display: none;
 }
- 
-.top-bar-list {  
+
+.all-classify{ 
+  width: 100%;
+  background: #1D1D1D; 
   display: flex;
-  direction: row;
-  align-items: left;
+  color: #fff;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  white-space: wrap;
+  top:0;
+  margin-top: 50rpx;
+  position: fixed;
+  z-index: 1002;
+} 
+.catg-title {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background: #1d1d1d;
+
+}
+.catg-titletext {
+  font-size:32rpx;
+  width:95%;
+  align-items:right;
+}
+.catg-claps {
+  width:5%;
+  align-items:right;
+}
+.catg-claps image {
+  width:20rpx;
+  height:20rpx;
+  padding:20rpx;
+  margin-left:-20rpx;
+}
+.all-classify-list{ 
+  display:flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  color: #eeeeee;
   text-align: left;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+  padding: 10rpx ;
+} 
+.all-classify-item {
+  color: #eeeeee;
+  width: 160rpx;
+  height: 50rpx;
+  text-align: center;
+  /* line-height: 72rpx; */
+  font-size: 25rpx;
+  border-radius: 10rpx;
+  margin:10rpx 10rpx;
+  line-height: 50rpx;
+}
+.all-classify-item-active{
+  color: #fff;
+  font-size: 26rpx;
+  background: #E52445;
+}
+
+.top-banner {
+	width: 100%;
+	height: 120rpx;
+	padding-top: 0rpx;
+	position: fixed;
+	top:0;
+	margin-top:80rpx;
+	background: #1d1d1d;
+	z-index: 1001;
+}
+
+.top-bar-list {  
+	display: flex;
+	direction: row;
+	align-items: left;
+	text-align: left;
 } 
 
+/*导航 nav*/
 .top-bar {
-  white-space: nowrap;
-  text-align: left;
-  width: 100%;
-  height: 150rpx;
-  overflow-y: hidden;
-  background: #1D1D1D; 
-  z-index:99;
-  padding: 15rpx;
-  margin-right:50rpx;
+	white-space: nowrap;
+	text-align: center;
+	width: 91%;
+	line-height: 85rpx;
+	overflow: hidden;
+	background: #1D1D1D; 
+	padding: 15rpx;
+	margin-right:50rpx;
 }
 
 .top-bar-item {
   display:inline-block;
   color: #fff;
-  text-align: center;
-  line-height: 120rpx;
-  font-size: 28rpx;
+  height: 65rpx;
+  line-height:65rpx;
+  font-size: 26rpx;
   z-index:999;
-  padding: 0 20rpx;
-  margin: 0 10rpx;
+  padding: 0 15rpx;
+  margin: 0 auto;
+  border-radius: 10rpx;
 }
 
 .top-bar-active {
   color: #fff;
   background: #E52445;
+}
+
+.top-bar-image {
+  position: fixed; 
+  top: 0;   
+  right: 0; 
+  width:8%;
+  line-height: 60rpx;
+  margin-top: 105rpx;
+  text-align: center;
+  background: #1D1D1D; 
+  z-index:9;
+}
+
+.top-bar-scroll-item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	border-bottom: 1px solid #e8e8e8;
 }
 
 /* 返回顶部 */
@@ -116,9 +210,10 @@ page {
 	padding: 10rpx 0rpx 8rpx 0rpx;
 	background: #1d1d1d;
 	position: fixed;
-	top:40rpx;
-	margin-bottom: 20rpx;
-	z-index: 1000;
+	top:0;
+	margin-top:30rpx;
+	margin-bottom: 0rpx;
+	z-index: 1002;
 }
 
 .userinfo {
@@ -517,8 +612,6 @@ page {
   padding: 25rpx;
   z-index: 1;
 }
-
-
 
 /*底部按钮*/
 

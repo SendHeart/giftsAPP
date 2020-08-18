@@ -14,28 +14,28 @@
 	</view>
 	<scroll-view :scroll-y="modalName==null" class="page" :class="modalName!=null?'show':''" >
 	<view class="menu-area">
-	 <view @tap="navigateToOrder" class="tableviewcell linegray" :style="'width:'+windowWidth-35+'px;'" :data-status="0">
+	 <view @click="navigateToOrder" class="tableviewcell linegray" :style="'width:'+windowWidth-35+'px;'" :data-status="0">
 		  <image src="/static/images/order.png" />
 		  <text>全部订单</text>
 	  </view>
 	  <view class="order-area">
-		<view @tap="navigateToOrder" class="order" :data-status="1">
+		<view @click="navigateToOrder" class="order" :data-status="1">
 			<image src="/static/images/daifukuan.png" />
 			<text>待付款</text>
 		</view>
-		<view @tap="navigateToOrder" class="order" :data-status="2">
+		<view @click="navigateToOrder" class="order" :data-status="2">
 			<image src="/static/images/daifahuo.png" />
 			<text>待发货</text>
 		</view>
-		<view @tap="navigateToOrder" class="order" :data-status="3">
+		<view @click="navigateToOrder" class="order" :data-status="3">
 			<image src="/static/images/daishouhuo.png" />
 			<text>待收货</text>
 		</view>
-	  <view @tap="navigateToOrder" class="order" :data-status="4">
+	  <view @click="navigateToOrder" class="order" :data-status="4">
 			<image src="/static/images/dpl.png" />
 			<text>待评价</text>
 		</view>
-	  	<view @tap="navigateToOrder" class="order" :data-status="5">
+	  	<view @click="navigateToOrder" class="order" :data-status="5">
 			<image src="/static/images/iconfont-help.png" />
 			<text>退换货</text>
 		</view>
@@ -478,7 +478,7 @@ export default {
 	
 	navigateToOrder: function (e) {
 		var status = e.currentTarget.dataset.status
-		wx.navigateTo({
+		uni.navigateTo({
 			url: '/pages/index/index?status=' + status
 		})
 	},
@@ -516,7 +516,6 @@ export default {
 			
 	        getApp().globalData.from_page = '/pages/my/index'
 			that.queryCart(res.data.result)
-	        
 	      }
 	    })  
 	},
