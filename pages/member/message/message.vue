@@ -1,10 +1,8 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
-	
+	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
 	<!--
-	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d">
-		
-	</uni-nav-bar>
+	
 	<scroll-view scroll-x class="bg-black nav text-center">
 		<view class="cu-item" :class="index==TabCur?'text-red cur':''" v-for="(item,index) in navList_order" :key="index" @tap="onOrderTapTag" :data-id="index" :data-tab="item.id">
 			{{item.title}}

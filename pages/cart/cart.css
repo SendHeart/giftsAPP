@@ -339,6 +339,54 @@ page {
 	border: 0;
 }
 
+.price-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding:10rpx;
+}
+
+.price-market {
+  text-indent: 0;
+  color: #999;
+  font-size: 24rpx;
+  line-height: 1.8;
+  text-decoration:line-through;
+  margin-right: 4rpx;
+  display: none;
+}
+.price-market::first-letter {
+  font-size: 20rpx;
+}
+.price-now {
+  text-indent: 0;
+  color: #EC4844;
+  font-size: 26rpx;
+  margin-right: 24rpx;
+  line-height: 1.8;
+  font-weight: bold;
+}
+
+.price-now::first-letter {
+  font-size: 20rpx;
+}
+
+.recomm-goods-tags {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding:10rpx 0 0 10rpx;
+}
+.left-tag {
+  height: 32rpx;
+  line-height: 32rpx;
+  color: #EC4844;
+  font-size: 24rpx;
+  text-align: center;
+  border: 2rpx #EC4844 solid;
+  border-radius: 6rpx;
+  padding: 2rpx 6rpx;
+}
 /*推荐商品列表头*/
 .recomment-title {
 	height: 50rpx;
@@ -354,30 +402,35 @@ page {
 }
 
 /*推荐商品列表头*/
-.item {
-  height: 180rpx;
+.recomm-item {
+  height: 260rpx;
   margin-left: 0rpx;
   margin-top: 0rpx;
   background: white;
   border-bottom: 1px solid #eee;
   padding:25rpx;
   overflow: hidden;
+  color: #444;
+  font-size: 26rpx;
+  font-weight: bold;
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item .img {
-  width: 180rpx;
-  height: 170rpx;
+.recomm-item .recomm-img {
+  width: 210rpx;
+  height: 220rpx;
   margin-right: 10rpx;
   margin-top: 10rpx;
-   margin-left: 10rpx;
+  margin-left: 10rpx;
   float: left;
 }
 
-.item .img_tag {
+.recomm-item .recomm-img-tag {
 	width: 5%;
 	height: 30rpx;
 }
-
 
 /*商品列表头*/
 .carts-more {
@@ -387,11 +440,11 @@ page {
 	justify-content: center;/*子项横轴上居中对齐*/
 	bottom: 0;
 	border-top: 1px solid #eee;	
-  border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #eee;
 	background: white;
-  padding:25rpx;
-  margin-bottom: 80rpx;
-  z-index: 1;
+	padding:25rpx;
+	margin-bottom: 80rpx;
+	z-index: 1;
 }
 
 .note {

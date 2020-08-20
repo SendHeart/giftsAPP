@@ -93,7 +93,7 @@ page {
 .top-banner {
 	width: 100%;
 	height: 120rpx;
-	padding-top: 0rpx;
+	padding: 0 auto;
 	position: fixed;
 	top:0;
 	margin-top:80rpx;
@@ -113,22 +113,20 @@ page {
 	white-space: nowrap;
 	text-align: center;
 	width: 91%;
-	line-height: 85rpx;
-	overflow: hidden;
+	height: 110rpx;
+	line-height: 110rpx;
+	overflow-x: hidden;
 	background: #1D1D1D; 
-	padding: 15rpx;
-	margin-right:50rpx;
 }
 
 .top-bar-item {
   display:inline-block;
   color: #fff;
-  height: 65rpx;
-  line-height:65rpx;
-  font-size: 26rpx;
-  z-index:999;
-  padding: 0 15rpx;
-  margin: 0 auto;
+  height: 50rpx;
+  line-height:50rpx;
+  font-size: 27rpx;
+  z-index:99;
+  padding: 5rpx 5rpx 5rpx 5rpx;
   border-radius: 10rpx;
 }
 
@@ -1021,31 +1019,6 @@ recomment-title button {
   border-radius: 10rpx;
   padding:0 auto;
 }
-/*推荐商品列表头*/
-
-.item {
-  height: 180rpx;
-  margin-left: 0rpx;
-  margin-top: 0rpx;
-  background: white;
-  border-bottom: 1px solid #eee;
-  padding: 25rpx;
-  overflow: hidden;
-}
-
-.item .img {
-  width: 180rpx;
-  height: 170rpx;
-  margin-right: 10rpx;
-  margin-top: 10rpx;
-  margin-left: 10rpx;
-  float: left;
-}
-
-.item .img_tag {
-  width: 5%;
-  height: 30rpx;
-}
 
 .prom-goods-list {
   width: 100%;
@@ -1176,6 +1149,37 @@ recomment-title button {
 
 .price-now::first-letter {
   font-size: 20rpx;
+}
+
+/*推荐商品列表头*/
+.recomm-item {
+  height: 260rpx;
+  margin-left: 0rpx;
+  margin-top: 0rpx;
+  background: white;
+  border-bottom: 1px solid #eee;
+  padding:25rpx;
+  overflow: hidden;
+  color: #444;
+  font-size: 26rpx;
+  font-weight: bold;
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recomm-item .recomm-img {
+  width: 210rpx;
+  height: 220rpx;
+  margin-right: 10rpx;
+  margin-top: 10rpx;
+  margin-left: 10rpx;
+  float: left;
+}
+
+.recomm-item .recomm-img-tag {
+	width: 5%;
+	height: 30rpx;
 }
 
 .left-tag {

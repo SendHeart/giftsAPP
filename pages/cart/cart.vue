@@ -36,7 +36,6 @@
 	<!-- 
 	<button type="warn" :data-index="cart_idx" class="delete-button" @tap="delete(cart_item)" :data-object-id="item.objectId"><text>删除</text></button>
 	-->
-    
     </view>
 </view>
 <view class="carts-footer">
@@ -50,18 +49,23 @@
 <view class="recomment-title">
     <text>精品推荐</text>
 </view>
-<view v-for="(item,index) in recommentList" class="item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
-   <image class="img" :src="item.image"></image>
+<view v-for="(item,index) in recommentList" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
+   <image class="recomm-img" :src="item.image"></image>
     <text style="font-size:12px;">{{item.name}}</text>
     <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
-    <!--     
-    <view style="font-size:10px;color:gray;"><image class="img_tag" src="../../images/u48.png"></image>{{item.goods_tag}}</view>
-    -->    
-		<view>￥{{item.sell_price}}元</view> 
- </view>
- 
- <view class="carts-more" :hidden="rshowmorehidden">
-   <!-- <text bindtap="bindShowMoreR" >更多[{{page}}/{{rpage_num}}]</text> --> 
+    <view class="recomm-goods-tags">
+      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+    </view>    
+	<view class="price-list">
+		<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
+   		<view class="price-now">￥{{item.sell_price}}</view>
+	</view>
+</view>
+
+<view class="carts-more" :hidden="rshowmorehidden">
+	<!-- 
+	 <text bindtap="bindShowMoreR" >更多[{{page}}/{{rpage_num}}]</text> 
+	-->
 </view>
 </view>
 </template>
@@ -88,8 +92,8 @@ var navList2_init = [
 ]
 var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : []
 export default {
-  data() {
-    return {
+	data() {
+	return {
 		navList2: navList2,
 	    hidden: true,
 	    scrollTop: 0,
@@ -133,72 +137,57 @@ export default {
 	    is_buymyself:1,
 	    goodsshape:1,
 		is_video_play:false,
-    };
-  },
+	}
+	},
 
-  components: {},
-  props: {},
-  onLoad: function (options) {
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-    this.setData({
-      username: username,
-      token: token
-    });
-     this.get_project_gift_para()
-  },
+	components: {},
+	props: {},
+	onLoad: function (options) {
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		this.username = username
+		this.token = token
+		this.get_project_gift_para()
+	},
   
-  onShow: function () {
-	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-	var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-	var that = this 
+	onShow: function () {
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var that = this 
         if (!username) {//登录
-          uni.navigateTo({
-            url: '../login/login?wechat=1'
-          })
-        }
-        uni.getSystemInfo({
-          success: function (res) {
-            let winHeight = res.windowHeight;
-            that.setData({
-              windowWidth: res.windowWidth,
-              windowHeight: res.windowHeight,
-              dkheight: winHeight - 60,
-              scrollTop: that.scrollTop + 10
-            })
-          }
-        })
+			uni.navigateTo({
+				url: '../login/login?wechat=1'
+			})
+		}
+		uni.getSystemInfo({
+			success: function (res) {
+				let winHeight = res.windowHeight;
+				that.windowWidth = res.windowWidth
+				that.windowHeight = res.windowHeight
+				that.dkheight = winHeight - 60
+				that.scrollTop = that.scrollTop + 10
+			}
+		})
     
-        that.setData({
-          username: username
-        })
+        that.username = username
         that.reloadData(username, token);
         // sum
         that.sum();
-  },
-  methods: {
+	},
+
+	methods: {
     //事件处理函数
-    bindTextAreaBlur: function (e) {
+	bindTextAreaBlur: function (e) {
         var that = this;
-        that.setData({
-          note: e.detail.value
-        })
-    
-      },
-      bindMinus: function (e) {
-        // loading提示
-        /*
-        wx.showLoading({
-          title: '操作中',
-          mask: true
-        });
-        */
-	   
+        that.note = e.detail.value
+	},
+	
+	bindMinus: function (e) {
         var that = this
-        var index = parseInt(e.currentTarget.dataset.index)
-        var num = this.carts[index]['num']
+        var index = e.currentTarget.dataset.index
+        var num = that.carts[index]['num']
         var num_cur = num
-        //console.log('bindMinus carts index:'+e.currentTarget.dataset.index) 
+        console.log('bindMinus carts index:'+e.currentTarget.dataset.index) 
         if (num_cur > 1) {
           num--
         } else {
@@ -206,36 +195,28 @@ export default {
         }
     
         //var minusStatus = num <= 1 ? 'disabled' : 'normal';
-        var minusStatus = num <= 1 ? 'normal' : 'normal';  //减到0视同删除
+		that.minusStatuses[index]  = num <= 1 ? 'normal' : 'normal';  //减到0视同删除
         // 购物车数据
-        var carts = this.carts
-        carts[index]['num'] = num
+		that.carts[index]['num'] = num
         // 按钮可用状态
-        var minusStatuses = this.minusStatuses
-        minusStatuses[index] = minusStatus
-        // 将数值与状态写回
-        this.setData({
-          carts: carts,
-          minusStatuses: minusStatuses
-        })
-		
+     
         // update database
         var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
         var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-        var sku_id = this.carts[index]['id'];
+        var sku_id = that.carts[index]['id'];
 		
-        this.updateCart(username, sku_id, num, token)
+        that.updateCart(username, sku_id, num, token)
         uni.hideLoading()
-        this.sum()
+        that.sum()
         if (num_cur == 0) {
-          this.setData({
-            deleteindex: index,
-          })
-		  console.log('bindMinus carts[index][id]:',this.carts[index]['id'])
-          this.delete()
+			that.deleteindex = index
+			console.log('bindMinus carts[index][id]:',that.carts[index]['id'])
+			that.delete()
         }
-      },
-      bindPlus: function (e) {
+	},
+	
+	bindPlus: function (e) {
+		var that  = this
         wx.showLoading({
           title: '操作中',
           mask: true
@@ -247,25 +228,24 @@ export default {
         // 只有大于一件的时候，才能normal状态，否则disable状态
         var minusStatus = num <= 1 ? 'disabled' : 'normal';
         // 购物车数据
-        var carts = this.carts;
+        var carts = that.carts;
         carts[index]['num'] = num;
         // 按钮可用状态
-        var minusStatuses = this.minusStatuses;
+        var minusStatuses = that.minusStatuses;
         minusStatuses[index] = minusStatus;
         // 将数值与状态写回
-        this.setData({
-          carts: carts,
-          minusStatuses: minusStatuses
-        });
+        that.carts = carts
+        that.minusStatuses = minusStatuses
         // update database
         var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
         var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
         var sku_id = carts[index]['id']
-        this.updateCart(username, sku_id, num, token);
+        that.updateCart(username, sku_id, num, token);
         wx.hideLoading();
-        this.sum();
-      },
-      bindManual: function (e) {
+        that.sum();
+	},
+	
+	bindManual: function (e) {
         wx.showLoading({
           title: '',
           mask: true
@@ -280,11 +260,13 @@ export default {
         });
         wx.hideLoading();
         this.sum();
-      },
-      bindManualTapped: function () {
+	},
+	
+	bindManualTapped: function () {
         // 什么都不做，只为打断跳转
-      },
-      bindCheckbox: function (e) {
+	},
+	
+	bindCheckbox: function (e) {
         wx.showLoading({
           title: '操作中',
           mask: true
@@ -310,8 +292,9 @@ export default {
         that.updateCart(username, sku_id, buy_num, token);
         wx.hideLoading();
         that.sum();
-      },
-      bindSelectAll: function () {
+	},
+	
+	bindSelectAll: function () {
         wx.showLoading({
           title: '操作中',
           mask: true
@@ -335,13 +318,15 @@ export default {
         wx.hideLoading();
         this.sum();
     
-      },
-      bindPickGoods: function () {
-        wx.navigateTo({
+	},
+	
+	bindPickGoods: function () {
+        uni.navigateTo({
           url: '../classify/classify?username=' + username + '&token=' + token
         });
-      },
-      bindShowMore: function () {
+	},
+	
+	bindShowMore: function () {
         var that = this;
         var carts = that.carts
         // 遍历 设置 hidden
@@ -354,8 +339,9 @@ export default {
           showmorehidden: true
     
         });
-      },
-      bindShowLess: function () {
+	},
+	
+	bindShowLess: function () {
         var that = this;
         var carts = that.carts
         // 遍历 设置 hidden
@@ -363,13 +349,11 @@ export default {
           if (i > 1) carts[i]['hidden'] = 1;
         }
     
-        that.setData({
-          carts: carts,
-          showmorehidden: false
-    
-        });
-      },
-      bindShowMoreR: function () {
+        that.carts = carts
+        that.showmorehidden = false
+	},
+	
+	bindShowMoreR: function () {
         var that = this;
         var recommentList = that.recommentList
         // 遍历 设置 hidden
@@ -377,12 +361,11 @@ export default {
           recommentList[i]['hidden'] = 0;
         }
     
-        that.setData({
-          recommentList: recommentList,
-          rshowmorehidden: true
-        });
-      },
-      bindShowLessR: function () {
+        that.recommentList = recommentList
+        that.rshowmorehidden = true
+	},
+	
+	bindShowLessR: function () {
         var that = this;
         var recommentList = that.recommentList
         // 遍历 设置 hidden
@@ -390,14 +373,11 @@ export default {
           if (i > 1) recommentList[i]['hidden'] = 1;
         }
     
-        that.setData({
-          recommentList: recommentList,
-          rshowmorehidden: false
+        that.recommentList = recommentList
+        that.rshowmorehidden = false
+	},
     
-        });
-      },
-    
-      bindCheckout: function () {
+	bindCheckout: function () {
         var that = this;
         var order_type = 'gift'
         var order_note = that.note
@@ -449,9 +429,9 @@ export default {
           url: '../order/checkout/checkout?cartIds=' + cartIds + '&amount=' + amount + '&carts=' + JSON.stringify(cartselected) + '&order_type=' + order_type + '&order_note=' + order_note + '&username=' + username + '&token=' + token
         });
         */
-      },
+	},
     
-      confirmOrder: function () {
+	confirmOrder: function () {
         // submit order
         var that = this;
         var carts = that.carts;
@@ -498,20 +478,20 @@ export default {
                 duration: 1500
               });
             }
-            wx.navigateTo({
+            uni.navigateTo({
               url: '../order/payment/payment?orderNo=' + order_data['order_no'] + '&totalFee=' + order_data['order_pay']
             });
           }
         })
     
-      },
+	},
     
-      delete: function () {
+	delete: function () {
         var that = this
         var shop_type = that.shop_type
-        var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : ''
-        var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1'
-        var index = this.deleteindex?this.deleteindex:0
+        var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+        var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+        var index = that.deleteindex?that.deleteindex:0
         /*
 		var objectId = 0
         if (e) {
@@ -523,9 +503,9 @@ export default {
 		*/
 	
         //index = parseInt(index)
-        var carts = this.carts;
+        var carts = that.carts;
 		console.log('delete index:'+index);
-        var sku_id = this.carts[index]['id'];
+        var sku_id = that.carts[index]['id'];
     
         // 购物车单个删除
         console.log('delete:',sku_id);
@@ -566,11 +546,9 @@ export default {
                     var all_rows = new_carts.length;
                     var showmorehidden = true; // false
                   }
-                  that.setData({
-                    carts: new_carts,
-                    all_rows: all_rows,
-                    showmorehidden: showmorehidden
-                  })
+                 that.carts = new_carts
+                 that.all_rows = all_rows 
+                 that.showmorehidden = showmorehidden
                   that.sum()
                 }
               })
@@ -580,10 +558,12 @@ export default {
             }
           }
         })
-      },
-      calcIds: function () {
+	},
+	
+	calcIds: function () {
         // 遍历取出已勾选的cid
         // var buys = [];
+		var that = this
         var cartIds = [];
         for (var i = 0; i < this.carts.length; i++) {
           if (this.carts[i]['selected']) {
@@ -594,8 +574,10 @@ export default {
         }
     
         return cartIds;
-      },
-      sum: function () {
+	},
+	
+	sum: function () {
+		var that = this
         var carts = this.carts;
         // 计算总金额
         var total = 0;
@@ -606,12 +588,11 @@ export default {
         }
         total = total.toFixed(2);
         // 写回经点击修改后的数组
-        this.setData({
-          carts: carts,
-          total: total
-        });
-      },
-      showGoods: function (e) {
+        that.carts = carts
+        that.total = total
+	},
+	
+	showGoods: function (e) {
         // 点击购物车某件商品跳转到商品详情
         var objectId = e.id ; //currentTarget.dataset.objectId;
         var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
@@ -642,51 +623,49 @@ export default {
         		  username:username
         } ;
         uni.setStorageSync('show_goods_options', show_goods_options);
-        wx.navigateTo({
+        uni.navigateTo({
           url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
         });
-      },
-      touchStart: function (e) {
+	},
+	
+	touchStart: function (e) {
         var startX = e.touches[0].clientX;
-        this.setData({
-          startX: startX,
-          itemLefts: []
-        });
-      },
-      touchMove: function (e) {
-        var index = e.currentTarget.dataset.index;
-        var movedX = e.touches[0].clientX;
-        var distance = this.startX - movedX;
-        var itemLefts = this.itemLefts;
-        itemLefts[index] = -distance;
-        this.setData({
-          itemLefts: itemLefts
-        });
-      },
-      touchEnd: function (e) {
-        var index = e.currentTarget.dataset.index;
-        var endX = e.changedTouches[0].clientX;
-        var distance = this.startX - endX;
+        this.startX = startX
+        this.itemLefts = []
+	},
+	
+	touchMove: function (e) {
+		var index = e.currentTarget.dataset.index;
+		var movedX = e.touches[0].clientX;
+		var distance = this.startX - movedX;
+		var itemLefts = this.itemLefts;
+		itemLefts[index] = -distance;
+		this.itemLefts = itemLefts
+	},
+	
+	touchEnd: function (e) {
+		var index = e.currentTarget.dataset.index;
+		var endX = e.changedTouches[0].clientX;
+		var distance = this.startX - endX;
         // button width is 60
-        var buttonWidth = 60;
-        if (distance <= 0) {
-          distance = 0;
-        } else {
-          if (distance >= buttonWidth) {
-            distance = buttonWidth;
-          } else if (distance >= buttonWidth / 2) {
-            distance = buttonWidth;
-          } else {
-            distance = 0;
-          }
-        }
+		var buttonWidth = 60;
+		if (distance <= 0) {
+			distance = 0;
+		} else {
+			if (distance >= buttonWidth) {
+				distance = buttonWidth;
+			} else if (distance >= buttonWidth / 2) {
+				distance = buttonWidth;
+			} else {
+				distance = 0;
+			}
+		}
         var itemLefts = this.itemLefts;
         itemLefts[index] = -distance;
-        this.setData({
-          itemLefts: itemLefts
-        });
-      },
-      updateCart: function (username, sku_id, buy_num, token) {
+        this.itemLefts = itemLefts
+	},
+	
+	updateCart: function (username, sku_id, buy_num, token) {
         var that = this
         var shop_type = that.shop_type
         var token = that.token;
@@ -707,18 +686,12 @@ export default {
             'Accept': 'application/json'
           },
           success: function (res) {
-            console.log('updateCart:',res);
-          /*
-            wx.showToast({
-              title: '已更新',
-              icon: 'success',
-              duration: 1000
-            })
-            */
+            //console.log('updateCart:',res);
           }
         })
-      },
-      reloadData: function (username, token) {
+	},
+	
+	reloadData: function (username, token) {
         // auto login
         var that = this;
         var minusStatuses = []
@@ -727,52 +700,46 @@ export default {
         var pagesize = that.pagesize
         // cart info
         uni.request({
-          url: weburl + '/api/client/query_cart',
-          method: 'POST',
-          data: { 
-            username: username, 
-            access_token: token,
-            shop_type:shop_type,
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            var carts = []
-            var cartlist = res.data.result.list;
-            var showmorehidden;
+			url: weburl + '/api/client/query_cart',
+			method: 'POST',
+			data: { 
+				username: username, 
+				access_token: token,
+				shop_type:shop_type,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var carts = []
+				var cartlist = res.data.result.list;
+				var showmorehidden;
 			//console.log('reloadData cartlist:'+JSON.stringify(cartlist));
-            var index = 0;
-            for (var key in cartlist) {
-				
-              for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
-                if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
-                  cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image'];
-                }
+				var index = 0;
+				for (var key in cartlist) {
+					for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
+						if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
+							cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image'];
+						}
                 
-                if (cartlist[key]['sku_list'][i]['sku_note']) {
-                  cartlist[key]['sku_list'][i]['sku_note'] = cartlist[key]['sku_list'][i]['sku_note'].substr(0, 13) + '...';
-                }
+						if (cartlist[key]['sku_list'][i]['sku_note']) {
+							cartlist[key]['sku_list'][i]['sku_note'] = cartlist[key]['sku_list'][i]['sku_note'].substr(0, 13) + '...';
+						}
     
-                cartlist[key]['sku_list'][i]['selected'] = '';
-                cartlist[key]['sku_list'][i]['shop_id'] = key;
-                cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id'];
-                /*
-                if (index > 1) {
-                  cartlist[key]['sku_list'][i]['hidden'] = 1;
-                }
-                */
-                carts[index] = cartlist[key]['sku_list'][i];
-                minusStatuses[index] = cartlist[key]['sku_list'][i]['num'] <= 1 ? 'disabled' : 'normal';
-                index++;
-              }
-            }
-            if (index > 1) {
-              showmorehidden = false
-            } else {
-              showmorehidden = true
-            }
+						cartlist[key]['sku_list'][i]['selected'] = '';
+						cartlist[key]['sku_list'][i]['shop_id'] = key;
+						cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id'];
+						carts[index] = cartlist[key]['sku_list'][i];
+						minusStatuses[index] = cartlist[key]['sku_list'][i]['num'] <= 1 ? 'disabled' : 'normal';
+						index++;
+					}
+				}
+				if (index > 1) {
+					showmorehidden = false
+				} else {
+					showmorehidden = true
+				}
             //倒序
             /*
             var k = carts.length
@@ -790,42 +757,41 @@ export default {
               j++
             }
             */
-            console.log('reloadData carts:'+JSON.stringify(carts));
-            that.setData({
-              carts: carts,
-              minusStatuses: minusStatuses,
-			  selectedAllStatus:false,
-              showmorehidden: showmorehidden,
-              all_rows: carts.length
-            });
-          }
-        })
+            //console.log('reloadData carts:'+JSON.stringify(carts));
+				that.carts = carts
+				that.minusStatuses = minusStatuses
+				that.selectedAllStatus = false
+				that.showmorehidden = showmorehidden
+				that.all_rows = carts.length
+			}
+		})
     
         // recommend goods info
         uni.request({
-          url: weburl + '/api/client/query_member_goods_prom',
-          method: 'POST',
-          data: {
-            username: username,
-            access_token: token,
-            shop_type:shop_type,
-            page: page,
-            pagesize: pagesize 
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            console.log('会员推荐商品列表获取:', res.data);
+			url: weburl + '/api/client/query_member_goods_prom',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type:shop_type,
+				query_type:'cart', //购物车推荐商品
+				page: page,
+				pagesize: pagesize 
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+            //console.log('会员推荐商品列表获取:', res.data);
       
-            var recommentslist = res.data.result;
-            var rshowmorehidden;
-            if (recommentslist) {
-              for (var i = 0; i < recommentslist.length; i++) {
-                if (recommentslist[i]['image'].indexOf("http") < 0) {
-                  recommentslist[i]['image'] = weburl + '/' + recommentslist[i]['image'];
-                }
+				var recommentslist = res.data.result;
+				var rshowmorehidden;
+				if (recommentslist) {
+					for (var i = 0; i < recommentslist.length; i++) {
+						if (recommentslist[i]['image'].indexOf("http") < 0) {
+							recommentslist[i]['image'] = weburl + '/' + recommentslist[i]['image'];
+						}
                
                /*
                 recommentslist[i]['name'] = recommentslist[i]['name'].substr(0, 13) + '...';
@@ -833,151 +799,136 @@ export default {
                  recommentslist[i]['hidden'] = 1;
                 }
                 */
-              }
-              if (recommentslist.length > 0) {
-                rshowmorehidden = false
-              } else {
-                rshowmorehidden = true
-              }
-              var rpage_num = that.rpage_num
-              rpage_num = (recommentslist.length / pagesize + 0.5)
-              that.setData({
-                recommentList: recommentslist,
-                rshowmorehidden: rshowmorehidden,
-                rall_rows: recommentslist.length,
-                rpage_num: rpage_num.toFixed(0),
-              })
-            }
-          }
-        })
-    
-       
-    
-      },
-      showCart: function () {
-        wx.switchTab({
+					}
+					if (recommentslist.length > 0) {
+						rshowmorehidden = false
+					} else {
+						rshowmorehidden = true
+					}
+					var rpage_num = that.rpage_num
+					rpage_num = (recommentslist.length / pagesize + 0.5)
+					that.recommentList = recommentslist
+					that.rshowmorehidden = rshowmorehidden
+					that.rall_rows = recommentslist.length
+					that.rpage_num = rpage_num.toFixed(0)
+				}
+			}
+		})
+	},
+	
+	showCart: function () {
+        uni.switchTab({
           url: '../../cart/cart'
         });
-      },
+	},
     
-      showCartToast: function (message) {
-    
+	showCartToast: function (message) {
         wx.showToast({
           title: message ? message : '已完成',
           icon: 'success',
           duration: 1000
         });
-      },
+	},
     
-      onGotUserInfo: function (e) {
+	onGotUserInfo: function (e) {
         console.log(e.detail.errMsg)
         console.log(e.detail.userInfo)
         console.log(e.detail.rawData)
-      },
-      get_project_gift_para: function () {
+	},
+	
+	get_project_gift_para: function () {
         var that = this
         var navList_new = that.navList2
         var shop_type = that.shop_type
         var hall_banner = that.hall_banner
         var gift_para_interval = that.gift_para_interval
         console.log('hall get_project_gift_para navList2:', navList_new, ' is_video_play', that.is_video_play)
-        if (navList_new.length == 0 || gift_para_interval>0){
-          //项目列表
-          uni.request({
-            url: weburl + '/api/client/get_project_gift_para',
-            method: 'POST',
-            data: {
-              type: 2,  //暂定 1首页单图片 2首页轮播  
-              shop_type: shop_type,
-            },
-            header: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Accept': 'application/json'
-            },
-            success: function (res) {
-              //console.log('get_project_gift_para:', res.data)
-              navList_new = res.data.result;
-              console.log('get_project_gift_para:', navList_new)
-              if (!navList_new) {
-                /*
-                 wx.showToast({
-                   title: '没有菜单项2',
-                   icon: 'loading',
-                   duration: 1500
-                 });
-                 */
-                return
-              }else{
-                that.setData({
-                  gift_para_interval: 0,
-                  navList2: navList_new,
-                  hall_banner: navList_new[3] ? navList_new[3]:hall_banner, //首页banner图
-                  middle1_img: navList_new[11] ? navList_new[11]['img'] : '',
-                  middle2_img: navList_new[12] ? navList_new[12]['img'] : '',
-                  middle3_img: navList_new[13] ? navList_new[13]['img'] : '',
-                  middle4_img: navList_new[14] ? navList_new[14]['img'] : '',
-                  middle5_img: navList_new[15] ? navList_new[15]['img'] : '',
-                  middle6_img: navList_new[16] ? navList_new[16]['img'] : '',
-                  middle7_img: navList_new[17] ? navList_new[17]['img'] : '',
-                  middle8_img: navList_new[18] ? navList_new[18]['img'] : '',
-    
-                  middle1_title: navList_new[11] ? navList_new[11]['title'] : '',
-                  middle2_title: navList_new[12] ? navList_new[12]['title'] : '',
-                  middle3_title: navList_new[13] ? navList_new[13]['title'] : '',
-                  middle4_title: navList_new[14] ? navList_new[14]['title'] : '',
-                  middle5_title: navList_new[15] ? navList_new[15]['title'] : '',
-                  middle6_title: navList_new[16] ? navList_new[16]['title'] : '',
-                  middle7_title: navList_new[17] ? navList_new[17]['title'] : '',
-                  middle8_title: navList_new[18] ? navList_new[18]['title'] : '',
-    
-                  middle1_note: navList_new[11] ? navList_new[11]['note'] : '',
-                  middle2_note: navList_new[12] ? navList_new[12]['note'] : '',
-                  middle3_note: navList_new[13] ? navList_new[13]['note'] : '',
-                  middle4_note: navList_new[14] ? navList_new[14]['note'] : '',
-                  middle5_note: navList_new[15] ? navList_new[15]['note'] : '',
-                  middle6_note: navList_new[16] ? navList_new[16]['note'] : '',
-                  middle7_note: navList_new[17] ? navList_new[17]['note'] : '',
-                  middle8_note: navList_new[18] ? navList_new[18]['note'] : '',
-    
-                  is_video_play: navList_new[19] ? navList_new[19]['value'] : 0,
-                })
-                wx.setStorageSync('navList2', navList_new)
-              }
-            } 
-          })
+		if (navList_new.length == 0 || gift_para_interval>0){
+			//项目列表
+			uni.request({
+				url: weburl + '/api/client/get_project_gift_para',
+				method: 'POST',
+				data: {
+					type: 2,  //暂定 1首页单图片 2首页轮播  
+					shop_type: shop_type,
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+				//console.log('get_project_gift_para:', res.data)
+					navList_new = res.data.result;
+					//console.log('get_project_gift_para:', navList_new)
+					if (!navList_new) {
+						return
+					}else{
+						that.gift_para_interval = 0
+						that.navList2 = navList_new
+						that.hall_banner = navList_new[3] ? navList_new[3]:hall_banner //首页banner图
+						that.middle1_img = navList_new[11] ? navList_new[11]['img'] : ''
+						that.middle2_img = navList_new[12] ? navList_new[12]['img'] : ''
+						that.middle3_img = navList_new[13] ? navList_new[13]['img'] : ''
+						that.middle4_img = navList_new[14] ? navList_new[14]['img'] : ''
+						that.middle5_img = navList_new[15] ? navList_new[15]['img'] : ''
+						that.middle6_img = navList_new[16] ? navList_new[16]['img'] : ''
+						that.middle7_img = navList_new[17] ? navList_new[17]['img'] : ''
+						that.middle8_img = navList_new[18] ? navList_new[18]['img'] : ''
+                    
+						that.middle1_title = navList_new[11] ? navList_new[11]['title'] : ''
+						that.middle2_title = navList_new[12] ? navList_new[12]['title'] : ''
+						that.middle3_title = navList_new[13] ? navList_new[13]['title'] : ''
+						that.middle4_title = navList_new[14] ? navList_new[14]['title'] : ''
+						that.middle5_title = navList_new[15] ? navList_new[15]['title'] : ''
+						that.middle6_title = navList_new[16] ? navList_new[16]['title'] : ''
+						that.middle7_title = navList_new[17] ? navList_new[17]['title'] : ''
+						that.middle8_title = navList_new[18] ? navList_new[18]['title'] : ''
+                    
+						that.middle1_note = navList_new[11] ? navList_new[11]['note'] : ''
+						that.middle2_note = navList_new[12] ? navList_new[12]['note'] : ''
+						that.middle3_note = navList_new[13] ? navList_new[13]['note'] : ''
+						that.middle4_note = navList_new[14] ? navList_new[14]['note'] : ''
+						that.middle5_note = navList_new[15] ? navList_new[15]['note'] : ''
+						that.middle6_note = navList_new[16] ? navList_new[16]['note'] : ''
+						that.middle7_note = navList_new[17] ? navList_new[17]['note'] : ''
+						that.middle8_note = navList_new[18] ? navList_new[18]['note'] : ''
+                    
+						that.is_video_play = navList_new[19] ? navList_new[19]['value'] : 0
+                
+						uni.setStorageSync('navList2', navList_new)
+					}
+				} 
+			})
         } else{
-          that.setData({
-            //navList2: navList_new,
-            hall_banner: navList_new[3] ? navList_new[3]:hall_banner, //首页banner图
-            middle1_img: navList_new[11]?navList_new[11]['img']:'',
-            middle2_img: navList_new[12]?navList_new[12]['img']:'',
-            middle3_img: navList_new[13]?navList_new[13]['img']:'',
-            middle4_img: navList_new[14]?navList_new[14]['img']:'',
-            middle5_img: navList_new[15] ? navList_new[15]['img'] : '',
-            middle6_img: navList_new[16] ? navList_new[16]['img'] : '',
-            middle7_img: navList_new[17] ? navList_new[17]['img'] : '',
-            middle8_img: navList_new[18] ? navList_new[18]['img'] : '',
-    
-            middle1_title: navList_new[11]?navList_new[11]['title']:'',
-            middle2_title: navList_new[12]?navList_new[12]['title']:'',
-            middle3_title: navList_new[13]?navList_new[13]['title']:'',
-            middle4_title: navList_new[14]?navList_new[14]['title']:'',
-            middle5_title: navList_new[15] ? navList_new[15]['title'] : '',
-            middle6_title: navList_new[16] ? navList_new[16]['title'] : '',
-            middle7_title: navList_new[17] ? navList_new[17]['title'] : '',
-            middle8_title: navList_new[18] ? navList_new[18]['title'] : '',
-    
-            middle1_note: navList_new[11]?navList_new[11]['note']:'',
-            middle2_note: navList_new[12]?navList_new[12]['note']:'',
-            middle3_note: navList_new[13]?navList_new[13]['note']:'',
-            middle4_note: navList_new[14]?navList_new[14]['note']:'',
-            middle5_note: navList_new[15] ? navList_new[15]['note'] : '',
-            middle6_note: navList_new[16] ? navList_new[16]['note'] : '',
-            middle7_note: navList_new[17] ? navList_new[17]['note'] : '',
-            middle8_note: navList_new[18] ? navList_new[18]['note'] : '',
-    
-            is_video_play: navList_new[19] ? navList_new[19]['value'] : 0,
-          })
+			that.hall_banner = navList_new[3] ? navList_new[3]:hall_banner //首页banner图
+			that.middle1_img = navList_new[11] ? navList_new[11]['img'] : ''
+			that.middle2_img = navList_new[12] ? navList_new[12]['img'] : ''
+			that.middle3_img = navList_new[13] ? navList_new[13]['img'] : ''
+			that.middle4_img = navList_new[14] ? navList_new[14]['img'] : ''
+			that.middle5_img = navList_new[15] ? navList_new[15]['img'] : ''
+			that.middle6_img = navList_new[16] ? navList_new[16]['img'] : ''
+			that.middle7_img = navList_new[17] ? navList_new[17]['img'] : ''
+			that.middle8_img = navList_new[18] ? navList_new[18]['img'] : ''
+			                    
+			that.middle1_title = navList_new[11] ? navList_new[11]['title'] : ''
+			that.middle2_title = navList_new[12] ? navList_new[12]['title'] : ''
+			that.middle3_title = navList_new[13] ? navList_new[13]['title'] : ''
+			that.middle4_title = navList_new[14] ? navList_new[14]['title'] : ''
+			that.middle5_title = navList_new[15] ? navList_new[15]['title'] : ''
+			that.middle6_title = navList_new[16] ? navList_new[16]['title'] : ''
+			that.middle7_title = navList_new[17] ? navList_new[17]['title'] : ''
+			that.middle8_title = navList_new[18] ? navList_new[18]['title'] : ''
+			                    
+			that.middle1_note = navList_new[11] ? navList_new[11]['note'] : ''
+			that.middle2_note = navList_new[12] ? navList_new[12]['note'] : ''
+			that.middle3_note = navList_new[13] ? navList_new[13]['note'] : ''
+			that.middle4_note = navList_new[14] ? navList_new[14]['note'] : ''
+			that.middle5_note = navList_new[15] ? navList_new[15]['note'] : ''
+			that.middle6_note = navList_new[16] ? navList_new[16]['note'] : ''
+			that.middle7_note = navList_new[17] ? navList_new[17]['note'] : ''
+			that.middle8_note = navList_new[18] ? navList_new[18]['note'] : ''
+			                    
+			that.is_video_play = navList_new[19] ? navList_new[19]['value'] : 0      
         }
         
         /*
@@ -987,32 +938,25 @@ export default {
           })
         }, 1500)
         */
-      },
+	},
 
     //页面滑动到底部
 	bindDownLoad: function () {
         var that = this;
-        that.setData({
-          page: page++
-        });
+       that.page = page++
         // this.loadgoods(reid,this.data.navLeftItems[this.data.curIndex]['id']);
         console.log("lower");
 	},
 	
 	scroll: function (event) {
         //该方法绑定了页面滚动时的事件，我这里记录了当前的position.y的值,为了请求数据之后把页面定位到这里来。
-        this.setData({
-          scrollTop: event.detail.scrollTop
-        });
+        this.scrollTop = event.detail.scrollTop
 	},
 		
 	topLoad: function (event) {
         //   该方法绑定了页面滑动到顶部的事件，然后做上拉刷新
         //page = 1;
-        this.setData({
-          //list: [],
-          scrollTop: 0
-        });
+        this.scrollTop = 0
         //loadMore(this);
         console.log("lower");
 	},

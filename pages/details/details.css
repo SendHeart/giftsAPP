@@ -91,6 +91,16 @@ page {
   width: 100% !important;
 }
 
+.view-scroll{
+	position:absolute;
+	z-index:1;
+	width:100%;
+	top:0;
+	bottom:0;
+	 -webkit-overflow-scrolling: touch;
+	 -webkit-backface-visibility: hidden;
+	  webkit-transform: translate3d(0,0,0);
+}
 .swiper-box {
   flex:1 ;
   width: 100%;

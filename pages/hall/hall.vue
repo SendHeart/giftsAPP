@@ -32,25 +32,21 @@
 			<view class="top-bar-list">
 				<!--
 				
-				<swiper class="top-bar" :vertical="false" :display-multiple-items="5">
-					<swiper-item v-for="(item, index) in navList" :key="index">
-						<view class="top-bar-scroll-item">
-							<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
-						</view>
-					</swiper-item>
-				</swiper>
+				<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
+				 	<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+				</scroll-view>
 				<view scroll-x="true" class="top-bar">
 					<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
 				</view>
 				-->
-				<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
-					<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
-				</scroll-view>
-		
+				<swiper class="top-bar" :vertical="false" :display-multiple-items="6" :current="scrollLeft">
+					<swiper-item v-for="(item, index) in navList" :key="index">
+						<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+					</swiper-item>
+				</swiper>
 				<view class="top-bar-image">
-					<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @tap="openAllTapTag"></image>
+					<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @click="openAllTapTag"></image>
 				</view>
-				
 			</view>
 		</view>
 		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
@@ -285,7 +281,7 @@
 				</view>
 			</view>
 		</view>
-		<pd-list :list="pdList"></pd-list>
+		<pd-list :activeIndex="activeIndex" :list="pdList"></pd-list>
 		</mescroll-body>
 		<view class="main_message" :hidden="messageHidden" :style="'height:' + dkheight + 'px;'">
 		  <view class="t_w">
@@ -345,7 +341,6 @@ import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 // 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
 import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
-
 import PdList from "./pd-list.vue";
 import push from "@/common/push.js"
 //获取应用实例
@@ -403,7 +398,7 @@ var navList2_init = [{
 var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [];
 
 export default {
-  data() {
+	data() {
     return {
 		user_group_id:user_group_id,
 		title_name: '送心',
@@ -561,15 +556,15 @@ export default {
 		},
 		pdList: [] ,// 数据列表
 		isInit: false, // 列表是否已经初始化
-		scrollY: 0
+		scrollY: 0,
 	}
-  },
-	
+	},
+	 
 	mixins: [MescrollMixin], // 使用mixin
 	components: {
- //   imageloader,
+	//   imageloader,
 		uniPopup,
-	//uniLoadMore,  
+		//uniLoadMore,  
 		uniIcons,
 		uniNavBar,
 		//MescrollUni,
@@ -624,7 +619,7 @@ export default {
     that.page_type = page_type
  
     if (art_id > 0 || art_cat_id > 0) {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/my/index?art_id=' + art_id + '&art_cat_id=' + art_cat_id
       });
     }
@@ -635,53 +630,50 @@ export default {
       that.initSocketMessage();
 	  that.gift_para_interval = 1 ; //获取业务参数
     }, 20000);
+	/*
     setInterval(function () {//that.reSend()
     }, 5000);
+	*/
 	that.get_project_gift_para();
 	that.reloadData();
     that.sum();
 	that.get_menubar();
 	//that.query_friends();
-  },
+	},
   //事件处理函数
-  onShow: function () {
-    var that = this;
-    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-    var username = uni.getStorageSync('username');
-    var refername = that.refername;
-	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
-    var msg_id = that.msg_id;
-    var page_type = that.page_type;
-    var pages = getCurrentPages();
-	that.userInfo = userInfo ;
-	//#ifdef APP-PLUS
-	if((plus.os.name=='iOS')) that.isOpenPush() ;
-	//#endif
-	uni.getSystemInfo({
-	  success: function (res) {
-	    let winHeight = res.windowHeight;
-		let winWidth = res.windowWidth;
-		that.platform = res.platform;
-		that.dkheight = winHeight;
-		that.winHeight = winHeight;
-		that.winWidth = winWidth;
+	onShow: function () {
+		var that = this;
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username');
+		var refername = that.refername;
+		var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+		var msg_id = that.msg_id;
+		var page_type = that.page_type;
+		var pages = getCurrentPages();
+		that.userInfo = userInfo ;
+		//#ifdef APP-PLUS
+		if((plus.os.name=='iOS')) that.isOpenPush() ;
+		//#endif
+		uni.getSystemInfo({
+			success: function (res) {
+				let winHeight = res.windowHeight;
+				let winWidth = res.windowWidth;
+				that.platform = res.platform;
+				that.dkheight = winHeight;
+				that.winHeight = winHeight;
+				that.winWidth = winWidth;
 		//console.log('getSystemInfo:', res);
-	  }
-	});
-    that.query_cart();
-	that.get_project_gift_para();
-	that.query_friends();
-	/*
-	setTimeout(() => {
-		that.isPush = push.isTurnedOnPush();
-		if(!that.isPush) push.turnOnPush() ;
-	}, 6000*10)
-	 */
-    if (pages.length > 1) {
-      that.title_logo = '../../images/back.png'
-    }
+			}
+		});
+		that.query_cart();
+		that.get_project_gift_para();
+		that.query_friends();
+	 
+		if (pages.length > 1) {
+			that.title_logo = '../../images/back.png'
+		}
 
-    if (!username) {
+		if (!username) {
       /*
        wx.navigateTo({
         url: '/pages/login/login'
@@ -690,84 +682,85 @@ export default {
         url: '/pages/my/index'
       })
       */
-    } else {
-      if (page_type == 2) {
+		} else {
+			if (page_type == 2) {
         //收到礼物
         //console.log('hall page_type:', page_type, ' order_no:', order_no, ' receive:', receive);
 
-        if (receive == 1) {
-          wx.navigateTo({
-            url: '../order/receive/receive?order_no=' + order_no + '&receive=1'
-          });
-        }
-      }
+				if (receive == 1) {
+					uni.navigateTo({
+						url: '../order/receive/receive?order_no=' + order_no + '&receive=1'
+					});
+				}
+			}
 
-      if (page_type == 3) {
-        //收到优惠券
-        //console.log('收到优惠券 Hall page_type:', page_type, ' coupons_flag:', coupons_flag, ' coupons_id:', coupons_id, ' receive:', receive);
+			if (page_type == 3) {
+				//收到优惠券
+				//console.log('收到优惠券 Hall page_type:', page_type, ' coupons_flag:', coupons_flag, ' coupons_id:', coupons_id, ' receive:', receive);
 
-        if (receive == 1) {
-          wx.navigateTo({
-            url: '../member/couponrcv/couponrcv?coupons_flag=' + coupons_flag + '&coupons_id' + coupons_id + '&receive=1'
-          });
-        }
-      }
+				if (receive == 1) {
+					uni.navigateTo({
+						url: '../member/couponrcv/couponrcv?coupons_flag=' + coupons_flag + '&coupons_id' + coupons_id + '&receive=1'
+					});
+				}
+		}
 
-      if (getApp().globalData.is_task > 0) {
+		if (getApp().globalData.is_task > 0) {
         //收到任务分享人信息
        // console.log('收到任务分享 Hall task:', getApp().globalData.is_task, ' refername:', refername, ' msg_id:', msg_id);
 
-        if (username != refername) {
+			if (username != refername) {
           //保留分享人信息
-          uni.setStorageSync('taskrefername', refername);
-        }
+				uni.setStorageSync('taskrefername', refername);
+				}
 
-        wx.request({
-          url: weburl + '/api/client/get_task_refer',
-          method: 'POST',
-          data: {
-            username: username,
-            access_token: token,
-            shop_type: shop_type,
-            refername: refername,
-            msg_id: msg_id,
-            task: getApp().globalData.is_task
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            getApp().globalData.is_task = 0;
+			wx.request({
+				url: weburl + '/api/client/get_task_refer',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					shop_type: shop_type,
+					refername: refername,
+					msg_id: msg_id,
+					task: getApp().globalData.is_task
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					getApp().globalData.is_task = 0;
             //console.log('hall get_task_refer:', res.data);
-          }
-        });
-        that.messageHidden = !that.messageHidden
-        that.main_prom_image = that.navList2[10]['img']
-        that.main_prom_title = that.navList2[10]['title'] ? that.navList2[10]['title'] : '黑贝会'
-        that.main_prom_note = that.navList2[10]['note'] ? that.navList2[10]['note'] : '黑贝会欢迎您！'
-        that.notehidden = !that.notehidden
-      }
-    }
+				}
+			});
+			that.messageHidden = !that.messageHidden
+			that.main_prom_image = that.navList2[10]['img']
+			that.main_prom_title = that.navList2[10]['title'] ? that.navList2[10]['title'] : '黑贝会'
+			that.main_prom_note = that.navList2[10]['note'] ? that.navList2[10]['note'] : '黑贝会欢迎您！'
+			that.notehidden = !that.notehidden
+		}
+	}
 
     if (getApp().globalData.hall_gotop == 1) {
       that.goTop();
     }
 
     //console.log('onShow get_project_gift_para:', wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}]); //app.globalData.messageflag = 0
-  },
-  onShareAppMessage: function () {
-    return {
-      title: '开启礼物电商时代,200万人都在用的礼物小程序',
-      desc: '送心礼物欢迎您',
-      path: '/pages/hall/hall?refername=' + username + '&mainpage=1'
-    };
-  },
-  mounted() {
-  	this.isInit = true; // 标记为true
-  	this.mescroll.triggerDownScroll();
-  },
-  methods: {
+	},
+  
+	onShareAppMessage: function () {
+		return {
+			title: '开启礼物电商时代,200万人都在用的礼物小程序',
+			desc: '送心礼物欢迎您',
+			path: '/pages/hall/hall?refername=' + username + '&mainpage=1'
+		};
+	},
+	mounted() {
+		this.isInit = true; // 标记为true
+		this.mescroll.triggerDownScroll();
+	},
+	methods: {
 	//#ifdef APP-PLUS
 	isOpenPush:function () {  
 		if(plus.os.name =='iOS'){
@@ -808,15 +801,8 @@ export default {
 		}
 	},
 	//#endif
-	load: function() {
-		uni.createSelectorQuery().selectAll('.lazy').boundingClientRect((images) => {
-			images.forEach((image, index) => {
-				if (image.top <= this.windowHeight) {
-					this.recommentslist[image.dataset.index].show = true;
-				}
-			})
-		}).exec()
-	},
+	
+	
 	imageLoad: function(e) {
 		this.recommentslist[e.target.dataset.index].loaded = true
 	},
@@ -835,7 +821,8 @@ export default {
 	  that.scrollLeft = scrollLeft + 10;
 	  
 	},
-    getMoreGoodsTapTag: function (e) {
+	
+	getMoreGoodsTapTag: function (e) {
       var that = this;
       var page = that.page  ;
       var rpage_num = that.rpage_num;
@@ -851,8 +838,9 @@ export default {
 		return; 
 	  }
 	  that.reloadData();
-    },
-	 bindPickFriends: function () {
+	},
+	
+	bindPickFriends: function () {
 		 /*
 	    wx.navigateTo({
 	      url: '/pages/member/friends/friends'
@@ -885,9 +873,9 @@ export default {
 		var index = e.currentTarget.dataset.index;
 		var search_goodsname = e.currentTarget.dataset.title;
 		var navList = that.navList;
-		var toView = index;
+		var toView = parseInt(index);
 		var hiddenallclassify = that.hiddenallclassify;
-	
+		 
 		if (index > 2 && index < navList.length) {
 			toView = index - 2;
 		} else {
@@ -907,7 +895,7 @@ export default {
 		that.pageoffset = 0
 	  	that.hiddenallclassify = !hiddenallclassify
 		//console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
-		 
+		that.scrollLeft = toView
 		that.downCallback(that.mescroll)
 		that.get_project_gift_para()
 		if (hiddenallclassify == false) {
@@ -1060,7 +1048,7 @@ export default {
         });
         wx.onSocketClose(function (res) {
           socketOpen = false;
-          console.log('WebSocket 已关闭！');
+          //console.log('WebSocket 已关闭！');
           wx.hideToast();
           that.socktBtnTitle = '连接socket'
         });
@@ -1077,11 +1065,11 @@ export default {
         socketMsgQueue.push(message);
         that.initSocketMessage();
       } else {
-        console.log('sendSocketMessage message:', message);
+        //console.log('sendSocketMessage message:', message);
         wx.sendSocketMessage({
           data: message,
           success: function (res) {
-            console.log("sendSocketMessage 完成", res);
+            //console.log("sendSocketMessage 完成", res);
           },
           fail: function (res) {
             console.log("sendSocketMessage 通讯失败");
@@ -2053,7 +2041,7 @@ export default {
         success: function (res) {
           //console.log('get_project_gift_para:', res.data)
           navList_new = res.data.result;
-          console.log('get_project_gift_para:', navList_new);
+          //console.log('get_project_gift_para:', navList_new);
       	
           if (!navList_new) {
             return;
@@ -2074,8 +2062,8 @@ export default {
 
       var errorImg = {};
       errorImg[imgObject] = default_img; //构建一个对象
-
-      that.setData(errorImg);
+		
+      that.errorImg = errorImg;
       //console.log('hall imageError():', errorImg);
     },
     
@@ -2090,7 +2078,7 @@ export default {
 	get_menubar: function (event) {
 	  //获取菜单项
 	  var that = this;
-	  var navlist_toView = that.navlist_toView;
+	  var navlist_toView = that.navlist_toView?that.navlist_toView:0;
 	  var navlist_title = that.navlist_title;
 	  uni.request({
 	    url: weburl + '/api/client/get_menubar',
@@ -2104,7 +2092,7 @@ export default {
 	      'Accept': 'application/json'
 	    },
 	    success: function (res) {
-			// console.log('get_menubar:', res.data.result);
+			//console.log('get_menubar:', res.data.result);
 			var navList_new = res.data.result;
 	
 			if (!navList_new) {
@@ -2125,11 +2113,13 @@ export default {
 			that.navList = navList_new ;
 			that.index = navlist_toView ;
 			that.activeIndex = navlist_toView ;
+			//console.log('get_menubar navlist_toView:'+navlist_toView+' navList_new:'+ JSON.stringify(navList_new));
 			that.tab = navList_new[navlist_toView]['id'] ;
 			that.tab_value = navList_new[navlist_toView]['value'] ;
 			that.venuesItems_show = [] ;
 			that.navList.forEach((tabBar) => {
-				that.venuesList.push({
+				that.venuesList = [
+					{
 					venuesItems: [],
 					refreshing: false,
 					refreshFlag: false,
@@ -2143,7 +2133,8 @@ export default {
 					all_rows: that.all_rows,
 					scrollTop:that.scrollTop,
 					angle: 0,
-				});
+					},
+				];
 			});
 		}
 		})

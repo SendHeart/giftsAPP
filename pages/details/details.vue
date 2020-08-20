@@ -220,9 +220,9 @@
 		<view class="prd-title">{{(goodsshape!=5&&goodsshape!=4)?'商品详情':'说明'}}</view>
 		<view class="prd-detail">
 			<view class="wxParse" :hidden="hideviewgoodsinfo">
-				<scroll-view scroll-y >
-					<uParse :content="dkcontent"  @navigate="navigate" />
-				</scroll-view>
+				<view scroll-y style="overflow: auto;">
+					<uParse :content="dkcontent" />
+				</view>
 			</view>
 		</view>
 	</view>
@@ -232,7 +232,7 @@
 			{{attrValueList.length>0?'':add_cart_title}}
 			</view>
 			<view class="uni-tip-content">
-				<scroll-view scroll-y :style="'max-height:' + dkheight + 'px'">
+				<view scroll-y :style="'overflow:auto; max-height:' + dkheight  + 'px'">
 				<view v-if="attrValueList.length>0" class="commodity_attr_list">
 				 		<view v-for="(attrValueObj, attrIndex) in attrValueList" :key="attrIndex">
 				 			<view class="sku_title">选择{{attrValueObj.name}}</view>
@@ -245,7 +245,7 @@
 				 			</view>
 				 		</view>
 				</view>
-				</scroll-view>
+				</view>
 				<view v-if="sku_id" class="sku-code">编号:{{sku_id}} 名称:{{goodsname}}</view>
 				<view v-if="!sku_id" class="sku-code">未选中商品</view>
 				<view class="buy-info">
@@ -280,7 +280,7 @@
 			{{is_buymyself==1?'请确认':card_name_modal_title}}
 			</view>
 			<view class="uni-tip-content">
-				<scroll-view scroll-y :style="'max-height:' + dkheight + 'px'">
+				<view  scroll-y :style="' overflow:auto; max-height:' + dkheight + 'px'">
 				<view class="card-name-info">
 				  <input :hidden="!is_card_name_name" style="font-size:30rpx;" placeholder-style="text-align:center;color:#e2e2e2;" :value="card_name_name" placeholder="姓名" @input="card_name_nameTapTag" :focus="inputShowed" maxlength="20"></input>
 				  <input :hidden="!is_card_name_title" style="font-size:30rpx;" @input="card_name_titleTapTag" :value="card_name_title" placeholder="职务/称谓" placeholder-style="text-align:center;color:#e2e2e2;" maxlength="30"></input>
@@ -313,7 +313,7 @@
 				    <switch @change="shlogoChange" :checked="has_shlogo" color="#E34C55" style="zoom:0.6"></switch>
 				  </label>
 				</view>
-				</scroll-view>
+				</view>
 			</view>
 			<view class="uni-tip-group-button">
 				<view class="uni-tip-button" @tap="shareCandelCardName">取消</view>
@@ -329,7 +329,7 @@
 			{{is_buymyself==1?'请确认':card_name_modal_title}}
 			</view>
 			<view class="uni-tip-content">
-				<scroll-view scroll-y :style="'max-height:' + dkheight + 'px'">
+				<view scroll-y :style="'overflow:auto; max-height:' + dkheight + 'px'">
 				<view class="card-blessing-info">
 				  <input :hidden="!is_card_cele_title" style="font-size:30rpx;" placeholder-style="text-align:center;color:#e2e2e2;" :value="card_cele_title" placeholder="标题" @input="card_cele_titleTapTag" :focus="inputShowed" maxlength="50"></input>
 				</view>
@@ -347,7 +347,7 @@
 				    <switch @change="shlogoChange" :checked="has_shlogo" color="#E34C55" style="zoom:0.6"></switch>
 				  </label>
 				</view>
-				</scroll-view>
+				</view>
 			</view>
 			<view class="uni-tip-group-button">
 				<view class="uni-tip-button" @tap="shareCandelCardCele">取消</view>
@@ -1695,7 +1695,7 @@ export default {
     },
     commTapTag: function () {
       var that = this;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../goods/commentlist/commentlist?goods_id=' + that.goodsid
       });
     },
@@ -2593,7 +2593,7 @@ export default {
       wx.getSetting({
         success: res => {
           if (!res.authSetting['scope.userInfo']) {
-            wx.navigateTo({
+            uni.navigateTo({
               url: '/pages/login/login?frompage=/pages/details/details'
             });
           }
@@ -3023,7 +3023,7 @@ export default {
 
       if (!username) {
         //登录
-        wx.navigateTo({
+        uni.navigateTo({
           url: '../login/login?goods_id=' + that.goodsid
         });
       } else {
@@ -3074,7 +3074,7 @@ export default {
           getApp().globalData.from_page = '/pages/details/details';
 
           if (wishflag == 1) {
-            wx.navigateTo({
+            uni.navigateTo({
               url: '/pages/wish/wish'
             })
             /*
@@ -3175,15 +3175,13 @@ export default {
             }
           }
 
-          that.setData({
-            carts: carts,
-            all_rows: carts.length,
-            is_buymyself: 0
-          });
+         that.carts = carts
+         that.all_rows = carts.length
+         that.is_buymyself = 0
           var amount = parseFloat(that.sku_sell_price) * buynum;
 
           if (goodsshape != 5 && goodsshape != 4) {
-            wx.navigateTo({
+            uni.navigateTo({
               url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_image=' + share_goods_image + '&username=' + username + '&token=' + token
             });
           } else {
@@ -3191,7 +3189,7 @@ export default {
               var card_cele_info = wx.getStorageSync('card_cele_info'); //从缓存中读取
 
               console.log('detail checkout 贺卡请柬互动卡  order_image:', share_goods_image, ' carts:', carts);
-              wx.navigateTo({
+              uni.navigateTo({
                 url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_voice=' + order_voice + '&order_voicetiime=' + order_voicetime + '&order_note=' + order_note + '&order_image=' + share_goods_image + '&card_cele_info=' + card_cele_info + '&card_template=' + JSON.stringify(share_goods_template) + '&username=' + username + '&token=' + token
               });
             } else if (goodsshape == 4) {
@@ -3199,14 +3197,14 @@ export default {
                 var card_register_info = wx.getStorageSync('card_register_info'); //从缓存中读取
 
                 console.log('detail checkout 互动卡 register card order_image:', share_goods_image, ' card_register_info:', card_register_info, ' share_goods_template:', share_goods_template);
-                wx.navigateTo({
+                uni.navigateTo({
                   url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_voice=' + order_voice + '&order_voicetiime=' + order_voicetime + '&order_note=' + order_note + '&order_color=' + share_goods_template[0]['color'] + '&order_image=' + share_goods_image + '&card_register_info=' + card_register_info + '&card_template=' + JSON.stringify(share_goods_template) + '&username=' + username + '&token=' + token
                 });
               } else if (card_type == 2) {
                 var card_name_info = wx.getStorageSync('card_name_info'); //从缓存中读取
 
                 console.log('detail checkout 互动卡 name card  order_image:', share_goods_image, ' card_name_info:', card_name_info, ' share_goods_template:', share_goods_template);
-                wx.navigateTo({
+                uni.navigateTo({
                   url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_voice=' + order_voice + '&order_voicetiime=' + order_voicetime + '&order_note=' + order_note + '&order_color=' + share_goods_template[0]['color'] + '&order_image=' + share_goods_image + '&card_name_info=' + card_name_info + '&card_template=' + JSON.stringify(share_goods_template) + '&username=' + username + '&token=' + token
                 });
               } else if (card_type == 4) {
@@ -3214,7 +3212,7 @@ export default {
                 var card_love_info = wx.getStorageSync('card_love_info'); //从缓存中读取
 
                 console.log('detail checkout 互动卡 love card  order_image:', share_goods_image, ' card_love_info:', card_love_info, ' share_goods_template:', share_goods_template);
-                wx.navigateTo({
+                uni.navigateTo({
                   url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_voice=' + order_voice + '&order_voicetiime=' + order_voicetime + '&order_note=' + order_note + '&order_color=' + share_goods_template[0]['color'] + '&order_image=' + share_goods_image + '&card_love_info=' + card_love_info + '&card_template=' + JSON.stringify(share_goods_template) + '&username=' + username + '&token=' + token
                 });
               }
