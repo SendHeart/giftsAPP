@@ -8,6 +8,7 @@
 			<text :hidden="!hiddenNickname" class="userinfo-nickname"  @click.stop="user_nicknameTapTag()">{{nickname?nickname:'匿名'}}</text>
 			<image v-if="user_level==1" class="userinfo-vip" src="/static/v.png" background-size="cover"  @click.stop="chooseImage(0)"></image>
 		</view>
+		<text class="userinfo-nickname">{{user_group_name?user_group_name:''}}</text>
 		<input :hidden="hiddenNickname" class="uni-input" style="margin-top:10rpx;" maxlength="20" v-model="nickname" placeholder="请输入昵称" @input="onKeyUserNickNameInput" />
 		<button :hidden="!hiddenNickname" class="userinfo-nickname" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="login">{{login_button}}</button>
 		<button :hidden="hiddenNickname" class="userinfo-nickname" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="update_userinfo">确定</button>
@@ -157,6 +158,8 @@ var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
 var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : {};
+var user_group_id = uni.getStorageSync('user_group_id') ? uni.getStorageSync('user_group_id') : 0;
+var user_group_name = uni.getStorageSync('user_group_name') ? uni.getStorageSync('user_group_name') : '';
 var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
 var uploadurl = getApp().globalData.uploadurl;
 
@@ -242,6 +245,8 @@ export default {
 	  userauth_celebration:0,
 	  userauth_location:0,
 	  userauth_article:0,
+	  user_group_id:user_group_id,
+	  user_group_name:user_group_name,
 	  new_img_arr:"",
 	  scan_result:"",
 	  windowHeight:'500',
@@ -257,40 +262,41 @@ export default {
 	 
   },
   onLoad: function (options) {
-    var that = this;
-    var gifts_rcv = that.gifts_rcv;
-    var gifts_send = that.gifts_send;
-    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-    var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
-    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-    var frompage = options.frompage ? options.frompage : '';
+    var that = this
+    var gifts_rcv = that.gifts_rcv
+    var gifts_send = that.gifts_send
+    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
+    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+    var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+    var frompage = options.frompage ? options.frompage : ''
 
 	var art_id = options.art_id ? options.art_id:0
 		art_id =  art_id>0?art_id:getApp().globalData.art_id
 		
-    var art_cat_id = options.art_cat_id ? options.art_cat_id : 0;
-    var art_title = options.art_title ? options.art_title : '';
-    var refer_id = options.mid ? options.mid : 0;
-    var userInfo = uni.getStorageSync('userInfo');
-	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+    var art_cat_id = options.art_cat_id ? options.art_cat_id : 0
+    var art_title = options.art_title ? options.art_title : ''
+    var refer_id = options.mid ? options.mid : 0
+    var userInfo = uni.getStorageSync('userInfo')
+	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : ''
 	that.m_id = m_id
-	that.login_button = username?'重新登录':'登录' ;
-    that.get_project_gift_para();
-	that.userauth = userauth ;
-	that.userauth_coupon = userauth.coupon ;
-	that.userauth_shoper = userauth.shoper ;
+	that.login_button = username?'重新登录':'登录' 
+    that.get_project_gift_para()
+	that.userauth = userauth 
+	that.userauth_coupon = userauth.coupon 
+	that.userauth_shoper = userauth.shoper 
 	that.userauth_host = userauth.host
-	that.userauth_celebration = userauth.celebration ;
-	that.userauth_article = userauth.article ;
-	that.userauth_location = userauth.location ;
-	that.nickname =  userInfo.nickname ? userInfo.nickname : '匿名' ;
-	that.avatarUrl = userInfo.avatarUrl ? userInfo.avatarUrl : '' ;
-	that.frompage = frompage ;
-	that.art_id = art_id ;
-	that.art_cat_id = art_cat_id ;
-	that.art_title = art_title ;
-	that.refer_id = refer_id ;
+	that.userauth_celebration = userauth.celebration 
+	that.userauth_article = userauth.article 
+	that.userauth_location = userauth.location 
+	that.nickname =  userInfo.nickname ? userInfo.nickname : '匿名' 
+	that.avatarUrl = userInfo.avatarUrl ? userInfo.avatarUrl : '' 
+	that.frompage = frompage 
+	that.art_id = art_id 
+	that.art_cat_id = art_cat_id 
+	that.art_title = art_title 
+	that.refer_id = refer_id 
+	
 	if (art_id>0){
 	      that.navigateToPlaysx()
 	    }
@@ -327,12 +333,12 @@ export default {
 	that.nickname = userInfo.nickname
 	that.avatarUrl = userInfo.avatarUrl
 	that.userauth = userauth ;
-	that.userauth_coupon = userauth.coupon ;
-	that.userauth_shoper = userauth.shoper ;
-	that.userauth_host = userauth.host ;
-	that.userauth_celebration = userauth.celebration ;
-	that.userauth_article = userauth.article ;
-	that.userauth_location = userauth.location ;
+	that.userauth_coupon = userauth.coupon?userauth.coupon:'' ;
+	that.userauth_shoper = userauth.shoper?userauth.shoper:'' ;
+	that.userauth_host = userauth.host?userauth.host:'' ;
+	that.userauth_celebration = userauth.celebration?userauth.celebration:'' ;
+	that.userauth_article = userauth.article?userauth.article:'' ;
+	that.userauth_location = userauth.location?userauth.location:'' ;
 	that.user_level = user_level ;
 	/*
     uni.showToast({
@@ -340,8 +346,10 @@ export default {
         title: ' user type:'+this.user_type+' windowWidth:'+this.windowWidth
     });
 	*/
+   that.query_user_info()
     console.log('my index userauth_coupon:', that.userauth_coupon);
   },
+  
   onShareAppMessage: function () {
     var that = this;
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
@@ -421,6 +429,55 @@ export default {
 		return status;
 	},
 	// #endif
+	
+	query_user_info:function () {
+	    var that = this
+	    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
+	    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+	    var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : ''
+	    var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : ''
+	    var shop_type = that.shop_type
+	    //that.username = username
+	   
+	    wx.request({
+	      url: weburl + '/api/web/user/login/user_xcx_login',
+	      method: 'POST',
+	      data: { 
+	        username: username ?username:openid, 
+	        wx_nickname:that.wx_nickname,
+	        wx_headimg:that.wx_headimg,
+	        user_phone: user_phone,
+	        user_name: user_name,
+	        login_type:1,
+	        type:8,
+	        shop_type:shop_type,
+	      },
+	      header: {
+	        'Content-Type': 'application/x-www-form-urlencoded',
+	        'Accept': 'application/json'
+	      },
+	      success: function (res) {
+	        
+	        this.token = res.data.result['token']
+	        this.user_group_id = res.data.result['member_group_id']
+	        this.user_group_name =res.data.result['member_group_name']
+			console.log('my index query_user_info 用户基本信息 user_group_id:'+this.user_group_id+' group name:'+this.user_group_name)
+	        var userauth = JSON.parse(res.data.result['userauth'])
+	        uni.setStorageSync('token', res.data.result['token'])
+	        uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
+	        uni.setStorageSync('username', res.data.result['username'])
+	        uni.setStorageSync('m_id', res.data.result['m_id'])
+	        uni.setStorageSync('user_phone', res.data.result['user_phone'])
+	        uni.setStorageSync('user_name', res.data.result['user_name'])
+	        uni.setStorageSync('user_gender', res.data.result['user_gender'])
+	        uni.setStorageSync('user_type', res.data.result['user_type'])
+	        uni.setStorageSync('userauth', userauth)
+	        uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+	        uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+	      },
+	    })
+	  },
+	  
 	modalBindconfirmScan: function (e) {
 	  var that = this;
 	  that.modalHiddenScan = false ;
@@ -1147,7 +1204,7 @@ export default {
     },
     */
    navigateToAccount: function (e) {
-     wx.navigateTo({
+     uni.navigateTo({
        url: '../member/account/account?'
      });
    },
@@ -1194,12 +1251,12 @@ export default {
 	 
     },
     navigateToWishlist: function (e) {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../wish/wish'
       });
     },
     navigateToShopowner: function (e) {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../member/shopowner/shopowner?'
       });
     },
@@ -1241,7 +1298,7 @@ export default {
     modalBindconfirmCele: function () {
       var that = this;
      that.modalHiddenCele = !that.modalHiddenCele
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../member/aboutus/aboutus?url=' + that.web_url
       });
     },
@@ -1309,14 +1366,14 @@ export default {
       var art_id = that.article[selected_index]['id'];
       var art_cat_id = that.article[selected_index]['cat_id'];
       var art_wx_headimg = that.article[selected_index]['wx_headimg'];
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/wish/wishshare/wishshare?share_art_id=' + art_id + '&share_art_cat_id=' + art_cat_id + '&share_art_image=' + art_image + '&share_art_wx_headimg=' + art_wx_headimg + '&share_art_title=' + art_title
       });
       that.art_id = 0
       that.art_cat_id = 0
     },
     navigateToMessage: function (e) {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../member/message/message?'
       });
     },
@@ -1548,24 +1605,24 @@ export default {
 	
     login: function () {
       var that = this;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/login/login?frompage=/pages/my/index'
       });
     },
     navigateToAboutus: function () {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/aboutus/aboutus'
       });
     },
     navigateToDonate: function () {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/donate/donate'
       });
     },
     image_save: function (image_url, image_cache_name) {
       var that = this;
       console.log('membershare imge save image url:', image_url, 'image_cache_name:', image_cache_name);
-      wx.downloadFile({
+      uni.downloadFile({
         url: image_url,
         success: function (res) {
           if (res.statusCode === 200) {
@@ -1653,23 +1710,23 @@ export default {
       }, 1300)
       */
 
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/share/share?qr_type=membershare' //+ '&share_member_qrcode_cache=' + share_member_qrcode_cache
 
       });
     },
     navigateToCoupon: function () {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/couponsnd/couponsnd'
       });
     },
     navigateToMyCoupon: function () {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/couponmy/couponmy'
       });
     },
     navigateToMyRedpackage: function () {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/couponmy/couponmy?red=1'
       });
     },

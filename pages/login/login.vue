@@ -328,9 +328,14 @@
 					uni.setStorageSync('user_level', res.data.result['user_level']);
 					uni.setStorageSync('userauth', userauth);
 					setTimeout(function () {
+						/*
 					  uni.reLaunch({
 					      url: '../hall/hall',
 					  });
+					  */
+					  uni.switchTab({
+					  	url: '/pages/my/index'
+					  })
 					}, 300);
 					
 				  }else{

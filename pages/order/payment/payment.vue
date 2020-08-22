@@ -174,7 +174,7 @@ export default {
         }
       }
     });
-    wx.getSystemInfo({
+    uni.getSystemInfo({
       success: function (res) {
         let winHeight = res.windowHeight;
         console.log(winHeight);
@@ -366,20 +366,25 @@ export default {
 				  })
 				  */
 
-                  if (received == 1  && order_shape!=8 && order_shape!=7) {
-                    wx.navigateTo({
-                      url: '/pages/lottery/lottery?lottery_type=0' + '&order_no=' + orderNo
-                    });
-                  } else {
-                    that.delete_cart();
-                    that.returnTapTag();
+					if (received == 1  && order_shape!=8 && order_shape!=7) {
+						uni.navigateTo({
+						url: '/pages/lottery/lottery?lottery_type=0' + '&order_no=' + orderNo
+						});
+					} else if(order_shape==8 || order_shape ==7) {
+						that.delete_cart()
+						uni.switchTab({
+							url: '/pages/my/index'
+						})
+					} else {
+						that.delete_cart();
+						that.returnTapTag();
                     /*
                     wx.navigateTo({
                       url: '../send/send?order_no=' + that.data.orderNo + '&orders=' + JSON.stringify(that.data.orders) + '&is_buymyself=' + is_buymyself
                     })
                     */
-                  }
-                },
+					}
+				},
 				fail:function(res){  
 					console.log(JSON.stringify(res));  
 					uni.showModal({  

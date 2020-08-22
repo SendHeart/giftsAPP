@@ -2,7 +2,7 @@
 <view>
 <scroll-view scroll-y  class="container carts-list" :style="(modalHiddenCoupon?'position:fixed;':'') +'height:'+dkheight+'px;'">
   <!-- 地址 -->
-  <navigator v-if="is_buymyself==1" url="/pages/address/list/list" class="address-section">
+	<navigator v-if="is_buymyself==1 && order_shape!=8 && order_shape!=7" url="/pages/address/list/list" class="address-section">
   	<view class="order-content">
   		<image style="width:50rpx;height:50rpx;" src="/static/images/icon_address.png"></image>
   		<view class="cen">
@@ -14,8 +14,8 @@
   		</view>
   		<image style="width:15rpx;height:30rpx;margin-right:20rpx;" src="/static/images/right-arrow.png"></image>
   	</view>
-  </navigator>
-  <view class="carts-container" v-for="(item, index) in carts" :key="index" :data-object-id="item.id" :data-goods-id="item.goods_id" :data-goods-name="item.name" :data-goods-info="item.act_info" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-image="(item.activity_image?item.activity_image:item.image)" @tap="showGoods">
+	</navigator>
+	<view class="carts-container" v-for="(item, index) in carts" :key="index" :data-object-id="item.id" :data-goods-id="item.goods_id" :data-goods-name="item.name" :data-goods-info="item.act_info" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-image="(item.activity_image?item.activity_image:item.image)" @tap="showGoods">
     <view class="carts-item" :data-index="index">
       <!-- 缩略图 -->
       <image class="carts-image" :src="(item.activity_image?item.activity_image:item.image)" mode="aspectFill"></image>
@@ -23,48 +23,42 @@
       <view class="carts-text">
         <text class="carts-title">{{item.name}}</text>
         <view class="carts-sku">
-          <view v-if="order_shape!=5 && order_shape!=4" v-for="(sku_value, index2) in item['value']" :key="index2">
-            <text>{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
+			<view v-if="order_shape!=5 && order_shape!=4" v-for="(sku_value, index2) in item['value']" :key="index2">
+				<text>{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
               </text>
-          </view>
-          <view v-if="order_shape==4 && card_name_info">
-            <text>{{card_name_info.card_name_name?'姓名:'+card_name_info.card_name_name:''}}{{card_name_info.card_name_title?'('+card_name_info.card_name_title+')':''}}{{card_name_info.card_name_phone?' 手机: '+card_name_info.card_name_phone:''}}
-            </text>
-           
-            <text>{{card_name_info.card_name_email?'电子邮箱: '+card_name_info.card_name_email:''}}
-            </text>
+			</view>
+			<view v-if="order_shape==7 || order_shape==8">
+		              <text>{{item.act_info}}</text>
+			</view>
+			<view v-if="order_shape==4 && card_name_info">
+				<text>{{card_name_info.card_name_name?'姓名:'+card_name_info.card_name_name:''}}{{card_name_info.card_name_title?'('+card_name_info.card_name_title+')':''}}{{card_name_info.card_name_phone?' 手机: '+card_name_info.card_name_phone:''}}</text>
+				<text>{{card_name_info.card_name_email?'电子邮箱: '+card_name_info.card_name_email:''}}</text>
             <!-- 
              <text hidden="{{!card_name_info.card_name_tel}}">{{card_name_info.card_name_tel?'公司电话: '+card_name_info.card_name_tel:''}}</text>
             <text>{{card_name_info.card_name_website?'网址: '+card_name_info.card_name_website:''}}
             </text>
             -->
-             <text>{{card_name_info.card_name_addr?'地址: '+card_name_info.card_name_addr:''}}
-            </text>
-          </view>
-          <view v-if="order_shape==4 && card_register_info">
-            <text>{{card_register_info.card_register_title?'名称:'+card_register_info.card_register_title:''}} 
-            </text>
-             <text>{{card_register_info.card_register_ownername?'发起人: '+card_register_info.card_register_ownername:''}}
-            </text>
-          </view>
-           <view v-if="order_shape==5 && card_cele_info">
-            <text>{{card_cele_info.card_cele_title?card_cele_info.card_cele_title:''}} 
-            </text>
-          </view>
-          <view v-if="order_shape==4 && card_love_info">
-            <text>{{card_love_info.card_love_title?card_love_info.card_love_title:''}}
-            </text>
-            <text>{{card_love_info.card_love_related?'联系人:'+card_love_info.card_love_related:''}}{{card_love_info.card_love_phone?' 手机:'+card_love_info.card_love_phone:''}}
-            </text>
-          </view>
-        </view>
-        <view v-if="order_shape!=4 && order_shape!=5" class="carts-subtitle">
-          <view class="carts-price">
-            <view>{{item.sell_price>0?'￥'+item.sell_price:''}} {{item.num>0?'x'+item.num+' ':''}}</view>
-          </view>
-        </view>
-      </view>
-    </view>
+				<text>{{card_name_info.card_name_addr?'地址: '+card_name_info.card_name_addr:''}}</text>
+			</view>
+			<view v-if="order_shape==4 && card_register_info">
+				<text>{{card_register_info.card_register_title?'名称:'+card_register_info.card_register_title:''}} </text>
+				<text>{{card_register_info.card_register_ownername?'发起人: '+card_register_info.card_register_ownername:''}}</text>
+			</view>
+			<view v-if="order_shape==5 && card_cele_info">
+				<text>{{card_cele_info.card_cele_title?card_cele_info.card_cele_title:''}} </text>
+			</view>
+			<view v-if="order_shape==4 && card_love_info">
+				<text>{{card_love_info.card_love_title?card_love_info.card_love_title:''}}</text>
+				<text>{{card_love_info.card_love_related?'联系人:'+card_love_info.card_love_related:''}}{{card_love_info.card_love_phone?' 手机:'+card_love_info.card_love_phone:''}}</text>
+			</view>
+		</view>
+		<view v-if="order_shape!=4 && order_shape!=5" class="carts-subtitle">
+			<view class="carts-price">
+				<view>{{item.sell_price>0?'￥'+item.sell_price:''}} {{item.num>0?'x'+item.num+' ':''}}</view>
+			</view>
+		</view>
+	</view>
+	</view>
   </view>
   <view class="order-item">
   <view v-if="order_shape!=5" class="order-num">
@@ -219,7 +213,7 @@ export default {
      icon: 'loading',
      duration: 1000
    });
-    that.readCarts(options);
+	that.readCarts(options)
     wx.getSystemInfo({
       success: function (res) {
         let winHeight = res.windowHeight;
@@ -440,7 +434,7 @@ export default {
       var card_template = JSON.stringify(that.card_template);
       if (!order_note) order_note = '送你一份礼物，愿你喜欢!'; //默认祝福
 
-      console.log('order_image:', order_image, 'order_shape:', order_shape, 'card_template:', card_template, ' card_cele_info:', card_cele_info);
+      console.log('order_image:'+order_image+ ' order_shape:'+ order_shape + ' card_template:'+ card_template + ' card_cele_info:' + card_cele_info);
       wx.request({
         url: weburl + '/api/client/add_order',
         method: 'POST',

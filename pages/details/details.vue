@@ -294,7 +294,7 @@
 				</view>
 				<view class="card-name-info">
 				  <input :hidden="!is_card_name_website" style="font-size:30rpx;" :value="card_name_website" placeholder-style="text-align:center;color:#e2e2e2;" type="text" placeholder="网址" @input="card_name_websiteTapTag" :focus="inputShowed4" maxlength="30"></input>
-				  <input :hidden="!is_card_name_publicwechat" style="font-size:30rpx;" :value="card_name_publicwechat" placeholder-style="text-align:center;color:#e2e2e2;" type="text" placeholder="微信公众号" @input="ccard_name_publicwechatTapTag" :focus="inputShowed4" maxlength="30"></input>
+				  <input :hidden="!is_card_name_publicwechat" style="font-size:30rpx;" :value="card_name_publicwechat" placeholder-style="text-align:center;color:#e2e2e2;" type="text" placeholder="微信公众号" @input="card_name_publicwechatTapTag" :focus="inputShowed4" maxlength="30"></input>
 				</view>
 				<view class="card-name-info">
 				  <input :hidden="!is_card_name_addr" style="font-size:25rpx;" :value="card_name_addr" placeholder-style="text-align:center;color:#e2e2e2;" type="text" placeholder="地址" @input="card_name_addrTapTag" :focus="inputShowed4" maxlength="80"></input>
