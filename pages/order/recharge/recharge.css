@@ -132,6 +132,7 @@ picker {
 
 .recharge-info {
 	width: 100%;
+	margin-top: 20rpx;
 	background: #F2F2F2;
 	z-index: 1;
 }

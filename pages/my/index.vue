@@ -1,6 +1,6 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
-	<mescroll-body top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 	<view scroll-y >
 		<view style="display:flex;flex-direction: row;justify-content: center;">
 			<view class="userinfo">
@@ -262,6 +262,7 @@ var wxparse = require("wxParse/wxParse.js");
 import uParse from '@/components/uParse/src/wxParse.vue' ;
 import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
 import permision from "@/common/permission.js"
+import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 //import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
 import PdList from "./pd-list.vue";
@@ -414,6 +415,7 @@ export default {
 	components: {
 		uParse,
 		uniPopup,
+		uniNavBar,
 		PdList,
 	},
 	
