@@ -1,7 +1,7 @@
 <template>
 <view>
 <scroll-view scroll-y  class="container carts-list" :style="(modalHiddenCoupon?'position:fixed;':'') +'height:'+dkheight+'px;'">
-	<view class="carts-container"v-for="(item, index) in carts" :key="index" >
+	<view class="carts-container" v-for="(item, index) in carts" :key="index" >
 		<view class="carts-info">
 			<view class="carts-item">
 				<image class="carts-image" :src="item.image?item.image:item.activity_image" mode="aspectFill" />
@@ -303,11 +303,11 @@ export default {
 	
 	bindRechargeNote: function () {
 		var that = this
-		app.globalData.my_index = 1 //1系统消息
-		app.globalData.art_id = 28 //28会员制说明
+		getApp().globalData.my_index = 1 //1系统消息
+		getApp().globalData.art_id = 28 //28会员制说明
 	    
 		setTimeout(function () {
-			wx.switchTab({
+			uni.switchTab({
 				url: '/pages/my/index'
 			})
 		}, 300)
