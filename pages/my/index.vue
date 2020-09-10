@@ -1323,16 +1323,16 @@ export default {
       that.user_gender = user_gender
       wx.setStorageSync('user_gender', user_gender);
     },
-    navigateToAgreement: function () {
-      var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var art_id = '21'; //送心用户协议
+	
+	navigateToAgreement: function () {
+		var that = this;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var art_id = '29'  //21送心用户协议 29会员规则和权益协议
+		var art_cat_id = '9'; //送心协议类
 
-      var art_cat_id = '9'; //送心协议类
-
-      var shop_type = that.shop_type;
-      var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
+		var shop_type = that.shop_type;
+		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
 
       if (agreementinfoshowflag == 0) {
 		  wx.showToast({
@@ -1357,6 +1357,8 @@ export default {
           success: function (res) {
 			var agreementInfo = res.data.result
             that.agreementInfo = res.data.result
+			that.art_id = 0
+			getApp().globalData.art_id = 0
             console.log('送心协议:', that.agreementInfo);
 			that.modalHiddenPlaysx = true ;
 			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
@@ -1432,72 +1434,52 @@ export default {
 	    wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5);
 	  }
 	},
-    navigateToPlaysx: function () {
-      var that = this;
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var art_id = that.art_id ? that.art_id : '22'; //玩转送心
-      var art_cat_id = that.art_cat_id ? that.art_cat_id : '9'; //送心协议类
-       var art_id = that.art_id ? that.art_id:'28'  //22玩转送心 28什么是会员制
+	
+	navigateToPlaysx: function () {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var art_id = that.art_id ? that.art_id : '22'; //玩转送心
+		var art_cat_id = that.art_cat_id ? that.art_cat_id : '9'; //送心协议类
+		var art_id = that.art_id ? that.art_id:'28'  //22玩转送心 28什么是会员制
 		var art_cat_id = that.art_cat_id ? that.art_cat_id:'9'  //送心协议类
 		var art_title = that.art_title ? art_title = that.art_title :'如何玩转送心'
 	 // var art_title = that.art_title ? art_title = that.art_title : '如何玩转送心';
-      var playsxinfoshowflag = that.playsxinfoshowflag;
+		var playsxinfoshowflag = that.playsxinfoshowflag;
 	 
-      if (playsxinfoshowflag == 0) {
-		  wx.showToast({
-		    title: '加载中',
-		    icon: 'loading',
-		    duration: 1000
-		  });
-        wx.request({
-          url: weburl + '/api/client/query_art',
-          method: 'POST',
-          data: {
-            username: username,
-            access_token: token,
-            art_id: art_id,
-            art_cat_id: art_cat_id
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-			var playsxInfo = res.data.result ;
-			that.playsxInfo = playsxInfo ;
-            console.log('什么是会员制:', that.playsxInfo);
-			that.modalHiddenPlaysx = true ;
-			that.article_title ="什么是会员制";
-			that.article = playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-			 
-			/*
-			uni.showModal({
-			    title: '玩转送心',
-			    content: playsxInfo[0]['desc'],
-			    success: function (res) {
-			        if (res.confirm) {
-			            console.log('用户点击确定');
-			        } else if (res.cancel) {
-			            console.log('用户点击取消');
-			        }
-			    }
+		if (playsxinfoshowflag == 0) {
+			wx.showToast({
+				title: '加载中',
+				icon: 'loading',
+				duration: 1000
+			});
+			wx.request({
+				url: weburl + '/api/client/query_art',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					art_id: art_id,
+					art_cat_id: art_cat_id
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					var playsxInfo = res.data.result 
+					that.playsxInfo = playsxInfo 
+					getApp().globalData.art_id = 0
+					console.log('什么是会员制:', that.playsxInfo)
+					that.modalHiddenPlaysx = true 
+					that.article_title ="什么是会员制"
+					that.article = playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+				}
 			})
-			*/
-		   
-			//var dkcontent2 = playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-			//wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5);
-            //this.$options.methods.showPlaysxinfo();
-          }
-        });
-      } else {
-		  that.article_title ="什么是会员制";
-		  that.modalHiddenPlaysx = !that.modalHiddenPlaysx ;
-		  that.article = that.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-		 // this.modalHiddenPlaysx = false ;
-        //this.$options.methods.showPlaysxinfo();
-		//var dkcontent2 = this.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-		//wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5);
+		} else {
+			that.article_title ="什么是会员制";
+			that.modalHiddenPlaysx = !that.modalHiddenPlaysx ;
+			that.article = that.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
       }
     },
     navigateToArticle: function () {
@@ -1831,7 +1813,7 @@ export default {
     modalBindconfirmAgreement: function () {
       var that = this;
       that.modalHiddenAgreement = !that.modalHiddenAgreement
-      wx.setStorageSync('isReadAgreement', 1); //协议阅读标志
+      uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
 
       that.goBack();
     },
