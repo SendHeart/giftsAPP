@@ -615,6 +615,9 @@ export default {
 		var that = this
 		var is_recharge = 1
 		var recharge_type = 1
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		
 		uni.request({
 			url: weburl + '/api/client/add_cart',
 			method: 'POST',

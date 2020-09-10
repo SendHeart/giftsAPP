@@ -256,8 +256,8 @@ export default {
       var that = this;
       var formId = formId;
       var shop_type = that.shop_type;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       wx.request({
         url: weburl + '/api/client/save_member_formid',
         method: 'POST',
