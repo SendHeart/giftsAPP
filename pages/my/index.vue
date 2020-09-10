@@ -1,5 +1,119 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
+	<mescroll-body top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<view scroll-y >
+		<view style="display:flex;flex-direction: row;justify-content: center;">
+			<view class="userinfo">
+				<view class="userinfo-title">
+					<image class="userinfo-title-scanqr" src="/static/images/scanqr_s.png" background-size="cover" @tap="scan"></image>
+					<text class="userinfo-title-mid">{{m_id>0?'ID:'+m_id:''}}</text>
+				</view>
+				<view class="userinfo-cards-info">
+					<image class="userinfo-cards-logo" :src="card_logo?card_logo:default_avatar" mode="aspectFill" />
+					<view class="userinfo-cards-name">
+						<text class="userinfo-cards-title">{{card_name}}</text>
+					</view>
+					<image class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover"></image>
+				</view>
+				<view class="userinfo-cards-item" v-if="card_no!=''">
+					<text class="userinfo-cards-no">Global No.{{card_no}}</text>
+				</view>
+				<view class="userinfo-cards-item" v-if="card_no!=''">
+					<text class="userinfo-cards-due">发于:{{card_due_start}}</text>
+					<text class="userinfo-cards-due">止于:{{card_due_end}}</text>
+				</view>
+				<view class="userinfo-cards-nickname" v-if="card_no!=''">
+					<text class="userinfo-nickname">{{nickname?nickname:'匿名'}}</text>
+					<text class="userinfo-cards-expend" @tap="navigateToRecharge">延长会员期限</text>
+				</view>
+				<view class="userinfo-cards-nickname" v-if="card_no==''">
+					<button class="userinfo-cards-join" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#444;background:#f2f2f2" hover-class='none' @tap="navigateToRecharge">立即入会</button>
+				</view>
+			</view>
+		</view>
+		
+		<view class="menu-area">
+			<view @tap="navigateToOrder" class="order" data-status="0">
+				<image src="/static/images/order.png" />
+				<text>全部订单</text>
+			</view>
+			<view @tap="navigateToOrder" class="order" data-status="1">
+				<image src="/static/images/daifukuan.png" />
+				<text>待付款</text>
+			</view>
+			<view @tap="navigateToOrder" class="order" data-status="2">
+				<image src="/static/images/daifahuo.png" />
+				<text>待发货</text>
+			</view>
+			<view @tap="navigateToOrder" class="order" data-status="3">
+				<image src="/static/images/daishouhuo.png" />
+				<text>待收货</text>
+			</view>
+		  	<view @tap="navigateToOrder" class="order" data-status="5">
+				<image src="/static/images/iconfont-help.png" />
+				<text>退换货</text>
+			</view>
+			<view @tap="navigateToMyCoupon" class="order">
+				<image src="/static/images/iconfont-card.png" />
+				<text>优惠券</text>
+			</view>
+			<view @tap="navigateToAccount" class="order">
+				<image src="/static/images/account.png" />
+				<text>我的钱包</text>
+			</view>
+			<view @tap="navigateToAgreement" class="order">
+				<image src="/static/images/u633.png" />
+				<text>会员协议</text>
+			</view>
+			<view @tap="navigateToCustomerService" class="order">
+				<image src="/static/images/u631.png" class="png" mode="aspectFit"></image>
+				<text>联系客服</text>
+			</view>
+			<view @tap="login" class="order">
+				<image src="/static/images/icon_login_name_red.png" />
+				<text>重新登录</text>
+			</view>
+			<view v-if="userauth.location == 1" @tap="navigateToMyLocation" class="order">
+			  <image src="/static/images/iconfont-shouhuodizhi.png" />
+			  <text>我的位置</text>
+			</view>
+						 
+			<view v-if="userauth.celebration == 1" @tap="navigateToCelebration" class="order">
+			  <image src="/static/images/wish.png" />
+			  <text>我的祝福</text>
+			</view>
+			<view v-if="userauth.article==1" @tap="navigateToArticle" class="order">
+			  <image src="/static/images/u621.png" />
+			  <text>送心文章</text>
+			</view>
+			<view v-if="userauth.shoper==1" @tap="navigateToShopowner" class="order">
+				<image src="/static/images/u633.png" />
+				<text>我是店长</text>
+			</view>
+			<view v-if="userauth.coupon==1" bindtap="navigateToCoupon" class="order">
+				<image src="/static/images/account.png" />
+				<text>发行</text>
+			</view>
+			<view  bindtap="" class="order">  
+			  <text style="color:#fff">.</text>
+			</view>
+			<view bindtap="" class="order"> 
+				<text style="color:#fff">.</text>
+			</view>
+			<view  bindtap="" class="order">
+				<text style="color:#fff">.</text>
+			</view>
+		</view>
+		<view class="wrap">
+			<view v-if="pdList.length>0" class="recomment-title">
+			  <text>最近浏览商品<text class="title_ex"></text></text>
+			</view>
+		</view>
+	</view>
+	<pd-list :list="pdList"></pd-list>
+	</mescroll-body>
+	
+	<!--
 	<view class="status_bar"></view>
 	<view class="userinfo-mid">{{m_id?'ID:'+m_id:''}}</view>
 	<view class="userinfo">  
@@ -13,6 +127,7 @@
 		<button :hidden="!hiddenNickname" class="userinfo-nickname" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="login">{{login_button}}</button>
 		<button :hidden="hiddenNickname" class="userinfo-nickname" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="update_userinfo">确定</button>
 	</view>
+	
 	<scroll-view :scroll-y="modalName==null" class="page" :class="modalName!=null?'show':''" >
 	<view class="menu-area">
 	 <view @click="navigateToOrder" class="tableviewcell linegray" :style="'width:'+windowWidth-35+'px;'" :data-status="0">
@@ -110,12 +225,13 @@
 		</view> 
 	</view>
 	</scroll-view>
+	-->
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">{{article_title}}</view>
 			<view class="uni-tip-content">
 				<scroll-view scroll-y >
-					<uParse :content="article"  /> <!-- @preview="preview" @navigate="navigate" -->
+					<uParse :content="article"  /> 
 				</scroll-view>
 			</view>
 			<view class="uni-tip-group-button">
@@ -138,7 +254,6 @@
 			</view>
 		</view>
 	</uni-popup>
-	
 </view>
 </template>
 
@@ -147,6 +262,9 @@ var wxparse = require("wxParse/wxParse.js");
 import uParse from '@/components/uParse/src/wxParse.vue' ;
 import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
 import permision from "@/common/permission.js"
+import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+import PdList from "./pd-list.vue";
 var weburl = getApp().globalData.weburl;
 var appid = getApp().globalData.appid;
 var appsecret = getApp().globalData.secret;
@@ -164,190 +282,251 @@ var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') :
 var uploadurl = getApp().globalData.uploadurl;
 
 export default {
-  data() {
-    return {
-      title_name: '我的',
-      title_logo: '/static/images/footer-icon-05.png',
-      share_art_image: weburl + '/uploads/share_art_image.jpg',
-      nickname: userInfo.nickname ? userInfo.nickname : '匿名',
-      avatarUrl: userInfo.avatarUrl,
-	  m_id:m_id,
-      default_avatar: weburl + '/uploads/avatar.png',
-      hideviewagreementinfo: true,
-      agreementinfoshowflag: 0,
-      playsxinfoshowflag: 0,
-      artinfoshowflag: 0,
-      scrollTop: 0,
-      scrollTop_init: 10,
-      modalHiddenCele: true,
-      modalHiddenAgreement: true,
-      modalHiddenBankcard: true,
-      modalHiddenPlaysx: false,
-	  modalHiddenMember:true,
-      modalHiddenArt: true,
-      modalHiddenArtInfo: true,
-      modalHiddenPhone: true,
-      modalHiddenUserName: true,
-	  modalHiddenScan:false,
-	  modalName:null,
-	  hiddenNickname:true,
-      shop_type: shop_type,
-      index: 0,
-      art_index: 0,
-      web_url: '',
-      web_id: '',
-      image_save_count: 0,
-      needPhoneNumber: '微信授权',
-      needUserName: '微信授权',
-	  login_button:'登录',
-      inputShowed: false,
-      bank_name: "",
-      bank_id: "",
-      bankcard_no: "",
-      bankcard_name: "",
-      bank_info: "",
-      user_name: "",
-      user_gender: "",
-      agreementInfo: "",
-      playsxInfo: "",
-      article: "",
-	  article_title:"",
-      dkheight: "800",
-      webviewurl: "",
-      art_title: "",
-      art_id: "",
-      art_cat_id: "",
-      art_image: "",
-      navList2: "",
-      hall_banner: "",
-      middle1_img: "",
-      middle2_img: "",
-      middle3_img: "",
-      middle4_img: "",
-      middle1_title: "",
-      middle2_title: "",
-      middle3_title: "",
-      middle4_title: "",
-      middle1_note: "",
-      middle2_note: "",
-      middle3_note: "",
-      middle4_note: "",
-      loadingHidden: false,
-      refer_id: "",
-      frompage: "",
-      user_type: "",
-	  user_level:"",
-	  userauth:userauth,
-      userInfo: userInfo,
-	  userauth_coupon:0,
-	  userauth_shoper:0,
-	  userauth_host:0,
-	  userauth_celebration:0,
-	  userauth_location:0,
-	  userauth_article:0,
-	  user_group_id:user_group_id,
-	  user_group_name:user_group_name,
-	  new_img_arr:"",
-	  scan_result:"",
-	  windowHeight:'500',
-    };
-  },
-
-  components: {
-	  uParse,
-	  uniPopup
+	data() {
+	return {
+		title_name: '我的',
+		title_logo: '/static/images/footer-icon-05.png',
+		share_art_image: weburl + '/uploads/share_art_image.jpg',
+		nickname: userInfo.nickname ? userInfo.nickname : '匿名',
+		avatarUrl: userInfo.avatarUrl,
+		m_id:m_id,
+		default_avatar: weburl + '/uploads/avatar.png',
+		hideviewagreementinfo: true,
+		agreementinfoshowflag: 0,
+		playsxinfoshowflag: 0,
+		artinfoshowflag: 0,
+		scrollTop: 0,
+		scrollTop_init: 10,
+		modalHiddenCele: true,
+		modalHiddenAgreement: true,
+		modalHiddenBankcard: true,
+		modalHiddenPlaysx: false,
+		modalHiddenMember:true,
+		modalHiddenArt: true,
+		modalHiddenArtInfo: true,
+		modalHiddenPhone: true,
+		modalHiddenUserName: true,
+		modalHiddenScan:false,
+		modalName:null,
+		hiddenNickname:true,
+		shop_type: shop_type,
+		index: 0,
+		art_index: 0,
+		web_url: '',
+		web_id: '',
+		image_save_count: 0,
+		needPhoneNumber: '微信授权',
+		needUserName: '微信授权',
+		login_button:'登录',
+		inputShowed: false,
+		bank_name: "",
+		bank_id: "",
+		bankcard_no: "",
+		bankcard_name: "",
+		bank_info: "",
+		user_name: "",
+		user_gender: "",
+		agreementInfo: "",
+		playsxInfo: "",
+		article: "",
+		article_title:"",
+		dkheight: "800",
+		webviewurl: "",
+		art_title: "",
+		art_id: "",
+		art_cat_id: "",
+		art_image: "",
+		navList2: "",
+		hall_banner: "",
+		middle1_img: "",
+		middle2_img: "",
+		middle3_img: "",
+		middle4_img: "",
+		middle1_title: "",
+		middle2_title: "",
+		middle3_title: "",
+		middle4_title: "",
+		middle1_note: "",
+		middle2_note: "",
+		middle3_note: "",
+		middle4_note: "",
+		loadingHidden: false,
+		page:1,
+		all_rows: 0,
+		rall_rows: 0,
+		refer_id: "",
+		frompage: "",
+		user_type: "",
+		user_level:"",
+		userauth:userauth,
+		userInfo: userInfo,
+		userauth_coupon:0,
+		userauth_shoper:0,
+		userauth_host:0,
+		userauth_celebration:0,
+		userauth_location:0,
+		userauth_article:0,
+		user_group_id:user_group_id,
+		user_group_name:user_group_name,
+		new_img_arr:"",
+		scan_result:"",
+		windowHeight:'500',
+		card_name:'黑贝会 Member',
+		card_logo:'',
+		card_logo_init:weburl + '/uploads/HB001.png',
+		card_no:'',
+		card_due_start:'0000-00-00',
+		card_due_end:'0000-00-00',
+		old: {
+			scrollTop: 0
+		},
+		current_scrollTop: 0,
+		contentText: {
+			contentdown: '上拉加载更多',
+			contentrefresh: '加载中',
+			contentnomore: '没有更多'
+		},
+		downOption:{
+			auto:false, // 不自动加载
+			use:false,
+			isLock:true,
+		},
+		upOption:{
+			auto:false, // 不自动加载
+			onScroll:true,
+			page: {
+				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+				size: 20, // 每页数据的数量
+			},
+			noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+			empty:{
+				tip: '~ 空空如也 ~', // 提示
+				btnText: '去看看'
+			}
+		},
+		pdList: [] ,// 数据列表
+		isInit: false, // 列表是否已经初始化
+		scrollY: 0,
+	};
+	},
+  
+	mixins: [MescrollMixin], // 使用mixin
+	components: {
+		uParse,
+		uniPopup,
+		PdList,
 	},
 	
-  props: {
+	props: {
 	 
-  },
-  onLoad: function (options) {
-    var that = this
-    var gifts_rcv = that.gifts_rcv
-    var gifts_send = that.gifts_send
-    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
-    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
-    var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0
-    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
-    var frompage = options.frompage ? options.frompage : ''
+	},
+  
+	mounted() {
+		this.isInit = true; // 标记为true
+		this.mescroll.triggerDownScroll();
+	},
+	
+	onLoad: function (options) {
+		var that = this
+		var gifts_rcv = that.gifts_rcv
+		var gifts_send = that.gifts_send
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+		var frompage = options.frompage ? options.frompage : ''
 
-	var art_id = options.art_id ? options.art_id:0
-		art_id =  art_id>0?art_id:getApp().globalData.art_id
+		//var art_id = options.art_id ? options.art_id:0
+		//art_id =  art_id>0?art_id:getApp().globalData.art_id
 		
-    var art_cat_id = options.art_cat_id ? options.art_cat_id : 0
-    var art_title = options.art_title ? options.art_title : ''
-    var refer_id = options.mid ? options.mid : 0
-    var userInfo = uni.getStorageSync('userInfo')
-	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : ''
-	that.m_id = m_id
-	that.login_button = username?'重新登录':'登录' 
-    that.get_project_gift_para()
-	that.userauth = userauth 
-	that.userauth_coupon = userauth.coupon 
-	that.userauth_shoper = userauth.shoper 
-	that.userauth_host = userauth.host
-	that.userauth_celebration = userauth.celebration 
-	that.userauth_article = userauth.article 
-	that.userauth_location = userauth.location 
-	that.nickname =  userInfo.nickname ? userInfo.nickname : '匿名' 
-	that.avatarUrl = userInfo.avatarUrl ? userInfo.avatarUrl : '' 
-	that.frompage = frompage 
-	that.art_id = art_id 
-	that.art_cat_id = art_cat_id 
-	that.art_title = art_title 
-	that.refer_id = refer_id 
+		var art_cat_id = options.art_cat_id ? options.art_cat_id : 0
+		var art_title = options.art_title ? options.art_title : ''
+		var refer_id = options.mid ? options.mid : 0
+		var userInfo = uni.getStorageSync('userInfo')
+		var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : ''
+		that.m_id = m_id
 	
-	if (art_id>0){
-	      that.navigateToPlaysx()
-	    }
-	console.log('my index onLoad() userauth:', userauth, 'user_name:', that.user_name);
-  },
-  onShow: function () {
-    var that = this;
-    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-    var user_type = uni.getStorageSync('user_type') ? uni.getStorageSync('user_type') : 0;
-    var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : '';
-    var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : '';
-	var user_level = uni.getStorageSync('user_level') ? uni.getStorageSync('user_level') : '';
-    var modalHiddenPhone = that.modalHiddenPhone;
-    var modalHiddenUserName = that.modalHiddenUserName;
+		that.get_project_gift_para()
+		that.userauth = userauth 
+		that.userauth_coupon = userauth.coupon 
+		that.userauth_shoper = userauth.shoper 
+		that.userauth_host = userauth.host
+		that.userauth_celebration = userauth.celebration 
+		that.userauth_article = userauth.article 
+		that.userauth_location = userauth.location 
+		that.nickname =  userInfo.nickname ? userInfo.nickname : '匿名' 
+		that.avatarUrl = userInfo.avatarUrl ? userInfo.avatarUrl : '' 
+		that.frompage = frompage 
+		//that.art_id = art_id 
+		that.art_cat_id = art_cat_id 
+		that.art_title = art_title 
+		that.refer_id = refer_id 
+		console.log('my index onLoad() userauth:', userauth, 'user_name:', that.user_name)
+	},
 	
-    var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
-	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
-    var isReadAgreement = uni.getStorageSync('isReadAgreement') ? uni.getStorageSync('isReadAgreement') : 0;
-    var { windowWidth, windowHeight } = uni.getSystemInfoSync();	
-	user_type = parseInt(user_type);
-    console.log('my index onShow() user_phone:', user_phone, 'userauth:', userauth);
-	
-    if (!user_name || user_name == '') {
-     that.modalHiddenUserName = !modalHiddenUserName;
-	   
-    } else if (isReadAgreement == 0 && username) {
-     //已登录未阅读用户购买协议
-     that.navigateToAgreement();
-    }
-    that.windowWidth = windowWidth
-    that.windowHeight = windowHeight
-	that.user_type = user_type
-	that.userInfo = userInfo ;
-	that.nickname = userInfo.nickname
-	that.avatarUrl = userInfo.avatarUrl
-	that.userauth = userauth ;
-	that.userauth_coupon = userauth.coupon?userauth.coupon:'' ;
-	that.userauth_shoper = userauth.shoper?userauth.shoper:'' ;
-	that.userauth_host = userauth.host?userauth.host:'' ;
-	that.userauth_celebration = userauth.celebration?userauth.celebration:'' ;
-	that.userauth_article = userauth.article?userauth.article:'' ;
-	that.userauth_location = userauth.location?userauth.location:'' ;
-	that.user_level = user_level ;
-	/*
-    uni.showToast({
-        icon: 'none',
-        title: ' user type:'+this.user_type+' windowWidth:'+this.windowWidth
-    });
-	*/
-   that.query_user_info()
-    console.log('my index userauth_coupon:', that.userauth_coupon);
+	onShow: function () {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var user_type = uni.getStorageSync('user_type') ? uni.getStorageSync('user_type') : 0
+		var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : ''
+		var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : ''
+		var user_level = uni.getStorageSync('user_level') ? uni.getStorageSync('user_level') : ''
+		var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0
+		var user_group_id = uni.getStorageSync('user_group_id') ? uni.getStorageSync('user_group_id') : 0
+		var user_group_name = uni.getStorageSync('user_group_name') ? uni.getStorageSync('user_group_name') : ''
+		var modalHiddenPhone = that.modalHiddenPhone
+		var modalHiddenUserName = that.modalHiddenUserName
+		var art_id =  getApp().globalData.art_id>0?getApp().globalData.art_id:that.art_id
+		var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+		var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+		var isReadAgreement = uni.getStorageSync('isReadAgreement') ? uni.getStorageSync('isReadAgreement') : 0;
+		var { windowWidth, windowHeight } = uni.getSystemInfoSync();	
+		user_type = parseInt(user_type);
+		console.log('my index onShow() user_phone:', user_phone, 'userauth:', userauth);
+		if (!username) {//登录
+			uni.navigateTo({
+				url: '../login/login?wechat=1'
+			})
+		}
+		if (!user_name || user_name == '') {
+			that.modalHiddenUserName = !modalHiddenUserName;  
+		} else if (isReadAgreement == 0 && username) {
+		//已登录未阅读用户购买协议
+			that.navigateToAgreement();
+		}
+		that.windowWidth = windowWidth
+		that.windowHeight = windowHeight
+		that.user_type = user_type
+		that.userInfo = userInfo ;
+		that.nickname = userInfo.nickname
+		that.avatarUrl = userInfo.avatarUrl
+		that.userauth = userauth ;
+		that.userauth_coupon = userauth.coupon?userauth.coupon:'' ;
+		that.userauth_shoper = userauth.shoper?userauth.shoper:'' ;
+		that.userauth_host = userauth.host?userauth.host:'' ;
+		that.userauth_celebration = userauth.celebration?userauth.celebration:'' ;
+		that.userauth_article = userauth.article?userauth.article:'' ;
+		that.userauth_location = userauth.location?userauth.location:'' ;
+		that.user_level = user_level 
+		that.m_id = m_id
+		that.user_group_id = user_group_id
+		that.user_group_name = user_group_name
+		that.user_type = user_type
+		that.art_id = art_id
+
+		that.login_button = (username)?'重新登录':'登录' 
+		that.query_user_info()
+		if (art_id>0){
+			if(art_id == 29){
+		        that.navigateToAgreement()
+			}else{
+				that.navigateToPlaysx()
+			}
+		}
+	    if(that.scrollTop == 0){
+			that.goTop()
+		}
+		console.log('my index userauth_coupon:', that.userauth_coupon);
   },
   
   onShareAppMessage: function () {
@@ -430,54 +609,292 @@ export default {
 	},
 	// #endif
 	
-	query_user_info:function () {
-	    var that = this
-	    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
-	    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
-	    var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : ''
-	    var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : ''
-	    var shop_type = that.shop_type
-	    //that.username = username
-	   
-	    wx.request({
-	      url: weburl + '/api/web/user/login/user_xcx_login',
-	      method: 'POST',
-	      data: { 
-	        username: username ?username:openid, 
-	        wx_nickname:that.wx_nickname,
-	        wx_headimg:that.wx_headimg,
-	        user_phone: user_phone,
-	        user_name: user_name,
-	        login_type:1,
-	        type:8,
-	        shop_type:shop_type,
-	      },
-	      header: {
-	        'Content-Type': 'application/x-www-form-urlencoded',
-	        'Accept': 'application/json'
-	      },
-	      success: function (res) {
-	        
-	        this.token = res.data.result['token']
-	        this.user_group_id = res.data.result['member_group_id']
-	        this.user_group_name =res.data.result['member_group_name']
-			console.log('my index query_user_info 用户基本信息 user_group_id:'+this.user_group_id+' group name:'+this.user_group_name)
-	        var userauth = JSON.parse(res.data.result['userauth'])
-	        uni.setStorageSync('token', res.data.result['token'])
-	        uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
-	        uni.setStorageSync('username', res.data.result['username'])
-	        uni.setStorageSync('m_id', res.data.result['m_id'])
-	        uni.setStorageSync('user_phone', res.data.result['user_phone'])
-	        uni.setStorageSync('user_name', res.data.result['user_name'])
-	        uni.setStorageSync('user_gender', res.data.result['user_gender'])
-	        uni.setStorageSync('user_type', res.data.result['user_type'])
-	        uni.setStorageSync('userauth', userauth)
-	        uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
-	        uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
-	      },
-	    })
-	  },
+	navigateToRecharge: function () {
+		var that = this
+		var is_recharge = 1
+		var recharge_type = 1
+		uni.request({
+			url: weburl + '/api/client/add_cart',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type:shop_type,
+				is_recharge: is_recharge,
+				recharge_type:recharge_type,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('My navigateToRecharge res data:', res.data);
+				var result =  res.data.result
+				var membercard_no = result.card_no? result.card_no:''
+				if(membercard_no!=''){
+					wx.showToast({
+					title: '会员充值',
+					icon:'loading',
+					duration: 2000
+					})
+				}else{
+					wx.showToast({
+						title: '会员卡生成失败',
+						icon:'loading',
+						duration: 2000
+					})
+					return
+				}
+				
+				that.recharge_skuid = result.recharge_skuid
+				that.recharge_price = result.recharge_price
+				that.recharge_image = result.recharge_image
+				that.recharge_title1 = result.recharge_title1?result.recharge_title1:'6个月期'
+				that.recharge_title2 = result.recharge_title2?result.recharge_title2:'1年期'
+				that.recharge_title4 = result.recharge_title4?result.recharge_title4:'终身' 
+				that.recharge_title3 = result.recharge_title3?result.recharge_title3:'3年期' 
+				that.recharge_amount1 = result.recharge_amount1?result.recharge_amount1:'88'
+				that.recharge_amount2 = result.recharge_amount2?result.recharge_amount2:'168' 
+				that.recharge_amount3 = result.recharge_amount3?result.recharge_amount3:'358' 
+				that.recharge_amount4 = result.recharge_amount4?result.recharge_amount4:'1888' 
+				that.recharge_note = result.recharge_note?result.recharge_note:''
+				that.recharge_note2 = result.recharge_note2?result.recharge_note2:''
+				getApp().globalData.from_page = '/pages/my/index'
+				that.queryCart(res.data.result)
+			}
+		})  
+	},
 	  
+	query_user_info:function () {
+		var that = this
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : ''
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : ''
+		var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : ''
+		var shop_type = that.shop_type
+		
+		uni.request({
+			url: weburl + '/api/web/user/login/user_xcx_login',
+			method: 'POST',
+			data: { 
+				username: username ?username:openid, 
+				wx_nickname:that.wx_nickname,
+				wx_headimg:that.wx_headimg,
+				user_phone: user_phone,
+				user_name: user_name,
+				login_type:1,
+				type:8,
+				shop_type:shop_type,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				that.token = res.data.result['token']?res.data.result['token']:''
+				that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
+				that.user_group_name = res.data.result['member_group_name']?res.data.result['member_group_name']:this.user_group_name
+				that.card_name = res.data.result['card_name']
+				that.card_logo = res.data.result['card_logo']?res.data.result['card_logo']:that.card_logo_init
+				that.card_no = res.data.result['card_no']
+				that.card_due_start = res.data.result['card_due_start']
+				that.card_due_end = res.data.result['card_due_end']
+				console.log('my index query_user_info 用户基本信息 user_group_id:'+this.user_group_id+' group name:'+this.user_group_name+' menber info:'+ JSON.stringify(res.data.result))
+				var userauth = JSON.parse(res.data.result['userauth'])
+				uni.setStorageSync('token', that.token)
+				uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
+				uni.setStorageSync('username', res.data.result['username'])
+				uni.setStorageSync('m_id', res.data.result['m_id'])
+				uni.setStorageSync('user_phone', res.data.result['user_phone'])
+				uni.setStorageSync('user_name', res.data.result['user_name'])
+				uni.setStorageSync('user_gender', res.data.result['user_gender'])
+				uni.setStorageSync('user_type', res.data.result['user_type'])
+				uni.setStorageSync('userauth', userauth)
+				uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+				uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+				uni.setStorageSync('card_name', res.data.result['card_name'])
+				uni.setStorageSync('card_logo', res.data.result['card_logo'])
+				uni.setStorageSync('card_no', res.data.result['card_no'])
+				uni.setStorageSync('card_due_start', res.data.result['card_due_start'])
+				uni.setStorageSync('card_due_end', res.data.result['card_due_end'])
+			},
+		})
+	},
+	
+	scroll: function(e) {
+	 	var that = this
+	 	var old_scrollTop = that.old.scrollTop
+	 	var current_scrollTop = that.mescroll.scrollTop
+	 	that.old.scrollTop = current_scrollTop
+		//console.log('scroll current_scrollTop:', current_scrollTop);  
+		/*
+	 	if(current_scrollTop > old_scrollTop +60) {
+	 		that.getMoreGoodsTapTag() ;
+	 		//that.load() ;
+			//console.log('list old_scrollTop:',old_scrollTop,' current_scrollTop:',current_scrollTop)
+	 	}
+		*/
+	 },
+	 
+	//回到顶部，内部调用系统API
+	goTop: function () {
+	  // 一键回到顶部
+	    var that = this;
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
+	    //that.scrollTop = 0 ;
+		
+		that.pdList = [] ;
+	    that.page = 1 ;
+	    that.pageoffset = 0 ;
+		that.mescroll.resetUpScroll()
+		//that.reloadData();
+		
+		getApp().globalData.hall_gotop = 0;
+	    // 解决view层不同步的问题
+		//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
+	    that.$nextTick(function() {
+	    	that.mescroll.scrollTo(0) ;
+	    });
+		that.mescroll.scrollTop = that.old.scrollTop
+	},
+	
+	// mescroll组件初始化的回调,可获取到mescroll对象
+	mescrollInit(mescroll) {
+		this.mescroll = mescroll;
+	},
+	/*下拉刷新的回调 */
+	downCallback(mescroll) {
+		// 这里加载你想下拉刷新的数据, 比如刷新轮播数据
+		// loadSwiper();
+		// 下拉刷新的回调,默认重置上拉加载列表为第一页 (自动执行 mescroll.num=1, 再触发upCallback方法 )
+		//mescroll.endSuccess() ;
+	
+		this.page =  1 
+		mescroll.resetUpScroll()
+		
+	},
+	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
+	upCallback(mescroll) {
+		//联网加载数据
+		console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
+		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
+			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+			//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
+			mescroll.endSuccess(curPageData.length);
+			//设置列表数据
+			if(mescroll.num == 1|| this.page == 1) {
+				this.pdList = []; //如果是第一页需手动制空列表
+			}
+			if(curPageData=='n'){
+				mescroll.endByPage(this.page, this.all_rows)
+			}else{
+				this.pdList=this.pdList.concat(curPageData); //追加新数据
+				
+			}
+			
+		}, () => {
+			//联网失败的回调,隐藏下拉刷新的状态
+			mescroll.endErr();
+		})
+	},
+	//点击空布局按钮的回调
+	emptyClick(){
+		uni.showToast({
+			title:'点击了按钮,具体逻辑自行实现'
+		})
+	},
+	
+	getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var minusStatuses = [];
+		var page = that.page;
+		var pagesize = that.pagesize;
+		var pageoffset = that.pageoffset;
+		var all_rows = that.all_rows
+		var goods_type = that.tab
+		var goods_type_value = that.tab_value
+	
+		if(page > all_rows && page>1) {
+			console.log('加载完成 page:', page, 'all_rows:',all_rows);
+			that.is_goodslist_loading = false ;
+			successCallback && successCallback('n');
+			return ;
+		}
+		that.is_goodslist_loading = true ;
+		that.status = 'loading';
+		
+		try{
+			wx.request({
+			  url: weburl + '/api/client/query_member_goods_prom',
+			  method: 'POST',
+			  data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				query_type: 'app',
+				page: page,
+				pagesize: pagesize,
+				pageoffset: pageoffset,
+				goods_type: goods_type, 
+				goods_type_value: goods_type_value, 
+			  },
+			  header: {
+			    'Content-Type': 'application/x-www-form-urlencoded',
+			    'Accept': 'application/json'
+			  },
+			  success: function (res) {
+			    var venuesItems_new = res.data.result;
+			    var all_rows = res.data.all_rows;
+			    var pageoffset = res.data.pageoffset;
+				//console.log('加载 page:', page, 'all_rows:',all_rows,' venuesItems_new:',venuesItems_new);
+			    if (!venuesItems_new) {
+					that.is_goodslist_loading = false ;
+					successCallback && successCallback(res.data.status);
+					return;
+			    } 
+				
+			    if (venuesItems_new) {
+			      for (var i = 0; i < venuesItems_new.length; i++) {
+			        venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
+						
+			        if (!venuesItems_new[i]['act_info']) {
+			          venuesItems_new[i]['act_info'] = '';
+			        }
+						
+			        if (!venuesItems_new[i]['goods_tag']) {
+			          venuesItems_new[i]['goods_tag'] = '';
+			        } else {
+			          venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
+			        }
+					if (venuesItems_new[i]['activity_image'].indexOf("http") < 0 && venuesItems_new[i]['activity_image']) {
+					  venuesItems_new[i]['activity_image'] = weburl + '/' + venuesItems_new[i]['activity_image'];
+					}
+					
+					if (venuesItems_new[i]['image'].indexOf("http") < 0 && venuesItems_new[i]['image']) {
+					  venuesItems_new[i]['image'] = weburl + '/' + venuesItems_new[i]['image'];
+					}
+								
+			        venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
+	
+				  }
+				  that.page = page + 1 ;
+				  that.pageoffset = pageoffset ;
+				  that.all_rows = all_rows ;
+				  console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
+				  // 回调
+				  successCallback && successCallback(venuesItems_new);
+			    }
+			  }
+			});
+			
+		} catch (e) {
+			//联网失败的回调
+			errorCallback && errorCallback();
+		}
+	},
+
 	modalBindconfirmScan: function (e) {
 	  var that = this;
 	  that.modalHiddenScan = false ;
@@ -539,43 +956,6 @@ export default {
 			url: '/pages/index/index?status=' + status
 		})
 	},
-	  
-	navigateToRecharge: function () {
-	    var that = this
-	    var is_recharge = 1
-	    var recharge_type = 1
-	    wx.request({
-	      url: weburl + '/api/client/add_cart',
-	      method: 'POST',
-	      data: {
-	        username: username,
-	        access_token: token,
-	        shop_type:shop_type,
-	        is_recharge: is_recharge,
-	        recharge_type:recharge_type,
-	      },
-	      header: {
-	        'Content-Type': 'application/x-www-form-urlencoded',
-	        'Accept': 'application/json'
-	      },
-	      success: function (res) {
-	        console.log('My navigateToRecharge res data:'+ JSON.stringify(res.data));
-	        //var result =  res.data.result
-	        wx.showToast({
-	          title: '会员充值',
-	          icon:'loading',
-	          duration: 2000
-	        })
-			
-			//that.recharge_skuid = res.data.result.recharge_skuid,
-			//that.recharge_price = res.data.result.recharge_price,
-			//that.recharge_image = res.data.result.recharge_image
-			
-	        getApp().globalData.from_page = '/pages/my/index'
-			that.queryCart(res.data.result)
-	      }
-	    })  
-	},
 
 	queryCart: function (options) {
 	    var that = this
@@ -591,57 +971,66 @@ export default {
 	    var sku_id = options.recharge_skuid
 	    var is_buymyself = 1
 	    var goods_shape = 7 
+		var recharge_title1 = that.recharge_title1 
+		var recharge_title2 = that.recharge_title2 
+		var recharge_title3 = that.recharge_title3 
+		var recharge_title4 = that.recharge_title4 
+		var recharge_amount1 = that.recharge_amount1
+		var recharge_amount2 = that.recharge_amount2
+		var recharge_amount3 = that.recharge_amount3
+		var recharge_amount4 = that.recharge_amount4
+		var recharge_note = that.recharge_note
+	    var recharge_note2 = that.recharge_note2
 	
-	    wx.request({
-	      url: weburl + '/api/client/query_cart',
-	      method: 'POST',
-	      data: {
-	        username: username,
-	        access_token: token,
-	        shop_type: shop_type,
-	        sku_id: sku_id,
-	        goods_shape:goods_shape
-	      },
-	      header: {
-	        'Content-Type': 'application/x-www-form-urlencoded',
-	        'Accept': 'application/json'
-	      },
-	      success: function (res) {
-	        
-	        var carts = [];
-	        if (!res.data.result) {
-	          wx.showToast({
-	            title: '会员充值:' + res.data.info,
-	            icon: 'none',
-	            duration: 1500
-	          })
-	          return
-	        }
-	        var cartlist = res.data.result.list;
-	        var index = 0;
-	        for (var key in cartlist) {
-	          cartlist[key]['sku_list'][0]['image'] = recharge_image
-	          for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
-	            if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
-	              cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image']
-	            } 
-	            cartlist[key]['sku_list'][i]['selected'] = true
-	            cartlist[key]['sku_list'][i]['shop_id'] = key
-	            cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id']
-	            carts[index] = cartlist[key]['sku_list'][i]
-	            index++;
-	          }
-	        }
+		uni.request({
+			url: weburl + '/api/client/query_cart',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				sku_id: sku_id,
+				goods_shape:goods_shape
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var carts = [];
+				if (!res.data.result) {
+					wx.showToast({
+						title: '会员充值:' + res.data.info,
+						icon: 'none',
+						duration: 1500
+					})
+					return
+				}
+				var cartlist = res.data.result.list;
+				var index = 0;
+				for (var key in cartlist) {
+					cartlist[key]['sku_list'][0]['image'] = recharge_image
+					for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
+						if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
+							cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image']
+						} 
+						cartlist[key]['sku_list'][i]['selected'] = true
+						cartlist[key]['sku_list'][i]['shop_id'] = key
+						cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id']
+						carts[index] = cartlist[key]['sku_list'][i]
+						index++;
+					}
+				}
 	
-	       that.carts = carts
-	       that.all_rows = carts.length
-	       that.is_buymyself = is_buymyself
-			console.log('my index queryCart sku_id:'+sku_id +' amount:'+amount+' carts:' + JSON.stringify(cartlist));
-	        uni.navigateTo({
-	          url: '/pages/order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + order_shape + '&order_image=' + recharge_image + '&recharge=1&username=' + username + '&token=' + token
-	        })
-	      }
-	    })
+				that.carts = carts
+				that.all_rows = carts.length
+				that.is_buymyself = is_buymyself
+				console.log('my index queryCart sku_id:'+sku_id +' amount:'+amount+' carts:' + JSON.stringify(cartlist))
+				 uni.navigateTo({
+					url: '/pages/order/recharge/recharge?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + order_shape + '&order_image=' + recharge_image + '&recharge=1'+'&recharge_title1='+recharge_title1+'&recharge_amount1='+recharge_amount1+'&recharge_title2='+recharge_title2+'&recharge_amount2='+recharge_amount2+'&recharge_title3='+recharge_title3+'&recharge_amount3='+recharge_amount3+'&recharge_title4='+recharge_title4+'&recharge_amount4='+recharge_amount4+'&recharge_note='+recharge_note+'&recharge_note2='+recharge_note2+'&username=' + username + '&token=' + token
+				})
+			}
+		})
 	},
 	  
     goBack: function () {

@@ -49,7 +49,7 @@
 				</view>
 			</view>
 		</view>
-		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit"> <!--  -->
+		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 		<view class="container" scroll-y >
 			<view class="banner">
 				<swiper class="swiper-box" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)"
@@ -340,7 +340,7 @@ import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
 // 引入mescroll-mixins.js
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 // 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
-import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
 import PdList from "./pd-list.vue";
 import push from "@/common/push.js"
 //获取应用实例

@@ -327,6 +327,9 @@
 					uni.setStorageSync('user_type', res.data.result['user_type']);
 					uni.setStorageSync('user_level', res.data.result['user_level']);
 					uni.setStorageSync('userauth', userauth);
+					uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+					uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+					
 					setTimeout(function () {
 						/*
 					  uni.reLaunch({
@@ -334,10 +337,9 @@
 					  });
 					  */
 					  uni.switchTab({
-					  	url: '/pages/my/index'
+					  	url: '/pages/hall/hall'
 					  })
 					}, 300);
-					
 				  }else{
 					   uni.showToast({
 					       icon: 'none',

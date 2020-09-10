@@ -216,6 +216,7 @@
 				}
 			}
 		},
+		
 		{
 			"path": "pages/uVideo/subnvue/live",
 			"style": {
@@ -277,35 +278,45 @@
 		
 		*/
 	   {
-	   	"path": "pages/member/task/task",
-	   	"style": {
-	   		"navigationBarTitleText": "新手任务",
-	   		"enablePullDownRefresh": true,
-	   		"backgroundColor": "#1d1d1d"
-	   	}
+			"path": "pages/member/task/task",
+			"style": {
+				"navigationBarTitleText": "新手任务",
+				"enablePullDownRefresh": true,
+				"backgroundColor": "#1d1d1d"
+			}
 	   },
+	   
 	   {
-	   	"path": "pages/member/mylocation/mylocation",
-	   	"style": {
-	   		"navigationBarTitleText": "我的位置"
-	   	}
-	   },
-	   {
-	   	"path": "pages/member/map/map",
-	   	"style": {
-	   		"navigationBarTitleText": "我的地图"
-	   	}
-	   },
-	   {
-	   	"path": "pages/address/list/list",
-	   	"style": {}
-	   },
-	   {
-	   	"path": "pages/address/add/add",
-	   	"style": {}
-	   },
+			"path": "pages/member/mylocation/mylocation",
+			"style": {
+				"navigationBarTitleText": "我的位置"
+			}
+		},
+		
+		{
+			"path": "pages/member/map/map",
+			"style": {
+				"navigationBarTitleText": "我的地图"
+			}
+		},
+		
+		{
+			"path": "pages/address/list/list",
+			"style": {}
+		},
+		
+		{
+			"path": "pages/address/add/add",
+			"style": {}
+		},
+	   
 		{
 			"path": "pages/order/checkout/checkout",
+			"style": {}
+		},
+	
+		{
+			"path": "pages/order/recharge/recharge",
 			"style": {}
 		},
 	
