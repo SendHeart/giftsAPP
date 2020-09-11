@@ -1255,6 +1255,7 @@ export default {
         }
       });
     },
+	
     getUserName: function (user_name, user_gender) {
       var that = this;
       var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
@@ -1292,16 +1293,19 @@ export default {
         }
       });
     },
+	
 	user_nicknameTapTag: function () {
 	  var that = this;
 	  var hiddenNickname = that.hiddenNickname
 	  that.hiddenNickname = !hiddenNickname
 	},
+	
     user_nameTapTag: function (e) {
 		var that = this;
 		var user_name = e.detail.value;
 		that.user_name = user_name
     },
+	
     //按钮点击事件  获取姓名
     modalBindconfirmUsername: function () {
       var that = this;
@@ -1316,18 +1320,19 @@ export default {
         that.needUserName = needUserName
       }
     },
+	
     radiochange: function (e) {
       var that = this;
       var user_gender = e.detail.value; //console.log('radio发生change事件，携带的value值为：', e.detail.value)
 
       that.user_gender = user_gender
-      wx.setStorageSync('user_gender', user_gender);
+      uni.setStorageSync('user_gender', user_gender);
     },
 	
 	navigateToAgreement: function () {
 		var that = this;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		var art_id = '29'  //21送心用户协议 29会员规则和权益协议
 		var art_cat_id = '9'; //送心协议类
 
@@ -1340,7 +1345,7 @@ export default {
 		    icon: 'loading',
 		    duration: 1500
 		  });
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/query_art',
           method: 'POST',
           data: {
@@ -1374,10 +1379,11 @@ export default {
         //that.showAgreementinfo();
       }
     },
+	
 	navigateToPrivacy: function () {
 	  var that = this;
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	  var art_id = '27'; //送心隐私政策
 	
 	  var art_cat_id = '9'; //送心协议类
@@ -1821,17 +1827,19 @@ export default {
     modalBindcancelAgreement: function () {
       this.modalHiddenAgreement = !this.modalHiddenAgreement
     },
+	
     //确定按钮点击事件  玩转送心
-    modalBindconfirmPlaysx: function () {
-      this.modalHiddenPlaysx = !this.modalHiddenPlaysx
-      this.art_id = 0
-      this.art_cat_id = 0
-      this.playsxinfoshowflag = 0
-	  if(this.article_title=='送心协议'){
-		  this.modalHiddenAgreement = !this.modalHiddenAgreement
-		  uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
-	  }
+	modalBindconfirmPlaysx: function () {
+		this.modalHiddenPlaysx = !this.modalHiddenPlaysx
+		this.art_id = 0
+		this.art_cat_id = 0
+		this.playsxinfoshowflag = 0
+		if(this.article_title=='送心协议'){
+			this.modalHiddenAgreement = !this.modalHiddenAgreement
+			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
+		}
     },
+	
     //取消按钮点击事件  玩转送心
     modalBindcancelPlaysx: function () {
       this.modalHiddenPlaysx = !this.modalHiddenPlaysx
@@ -1839,6 +1847,7 @@ export default {
       this.art_cat_id = 0
       this.playsxinfoshowflag = 0
     },
+	
     get_project_gift_para: function () {
       var that = this;
       var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
@@ -2128,9 +2137,50 @@ export default {
       });
     }
   }
-};
+}
 </script>
 <style>
 @import "./index.css";
 @import "../../components/uParse/src/wxParse.css";
+
+
+.wxParse {
+	line-height: 1.8;
+	font-size: 24rpx;
+	height: 600rpx;
+ }
+ 
+/* 提示窗口 */
+.uni-tip {
+	padding: 15px;
+	width: 300px;
+	background: #fff;
+	box-sizing: border-box;
+	border-radius: 10px;
+}
+
+.uni-tip-title {
+	text-align: center;
+	font-weight: bold;
+	font-size: 16px;
+	color: #333;
+}
+
+.uni-tip-content {
+	padding: 15px;
+	font-size: 14px;
+	color: #666;
+}
+
+.uni-tip-group-button {
+	margin-top: 10px;
+	display: flex;
+}
+
+.uni-tip-button {
+	width: 100%;
+	text-align: center;
+	font-size: 14px;
+	color: #3b4144;
+}
 </style>

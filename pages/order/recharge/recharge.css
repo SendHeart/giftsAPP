@@ -1,7 +1,8 @@
-page {
-	background: #F2F2F2;
+.page {
+	background: #1D1D1D;
 	overflow-x: hidden;
 	width: 100%;
+	height: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -10,124 +11,26 @@ page {
 	color: transparent;
 }
 
-.startBar {
-	height: 75rpx;
-	background: #333;
-	width: 100%;
-	position: fixed;
-	top: 0;
-	padding: 5rpx;
-	border-bottom: 0px solid #f2f2f2;
-	z-index: 99;
+.Hui-iconfont {
+ font-family: "Hui-iconfont";
+ font-size:30rpx;
 }
 
-.top-title {
-	height: 75rpx;
-	background: #333;
-	width: 100%;
-	position: fixed;
-	top: 0;
-	padding: 5rpx;
-	border-bottom: 0px solid #f2f2f2;
-	z-index: 99;
+.iconv-uparrow:after {
+  content:'\e6d6';
 }
 
-.top-title-item {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	color: #fff;
-	text-align: center;
-	line-height: 75rpx;
-	font-size: 48rpx;
-	padding: 10rpx;
+.iconv-downarrow:after {
+  content:'\e6d5';
 }
 
-.top-title-item .title-image {
-	width: 70rpx;
-	height: 70rpx;
-	margin-right: 1rpx;
-	margin-top: 0rpx;
-	margin-left: 20rpx;
-}
-
-.amount {
+.recharge-amount {
 	color:red;
 	font-size:24rpx;
 }
 
-.amount:before {
+.recharge-amount:before {
 	content: '￥';	
-}
-
-.submit {
-	margin: 8px;
-}
-
-/*单元格*/
-.cell {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	align-items:left;
-	border-top: 1rpx solid #eee;
-	border-bottom: 1rpx solid #eee;
-	line-height: 1.5;
-	width:100%;
-	background: #fff;
-	font-size: 26rpx;
-	padding: 15rpx 30rpx;
-}
-
-.cell:last-child {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	background: #fff;
-	font-size: 28rpx;
-	padding: 15rpx 30rpx;
-}
-
-/*label显示字符*/
-.cell text:first-child {
-	width: 80px;
-}
-
-.carts-more {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	align-items:center;
-	border-top: 1rpx solid #eee;
-	border-bottom: 1rpx solid #eee;
-	line-height: 1.5;
-	width:100%;
-	background: #fff;
-	font-size: 28rpx;
-	padding: 15rpx 30rpx;
-}
-
-/*请先填写地址*/
-.area_select {
-	width: 100%;
-}
-
-/*选择器*/
-picker {
-	width: 60%;
-}
-
-/*外部容器*/
-.container {
-	width: 100%;
-	height:500px;
-	margin: 0 auto;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-between;
-	box-sizing: border-box;
-	z-index: 1;
 }
 
 .recharge-info {
@@ -198,7 +101,6 @@ picker {
   width: 100%;
   height: 300rpx;
 }
-/*右下部分价格与数量*/
 
 .recharge-confirm {
 	display: flex;
@@ -211,12 +113,10 @@ picker {
 	z-index: 1;
 }
 
-
 .recharge-confirm button {
 	line-height: 100rpx;
 	width: 220rpx;
 	height: 100rpx;
-  /*background: linear-gradient(to bottom, #e34c55 0%,#e30715 100%);*/
 	background: #4c7ce3;
 	color: white;
 	font-size: 34rpx;
@@ -235,7 +135,6 @@ picker {
 	margin-left: 60rpx;
 }
 
-
 .carts-container {
 	position: relative;
 	width: 100%;
@@ -247,15 +146,13 @@ picker {
 	flex-direction: row;
 	justify-content: space-around;
 }
-/*每行单元格*/
 
 .carts-item {
 	width: 98%;
 	display: flex;
 	flex-direction: row;
 	height: 250rpx;
-	/*width属性解决标题文字太短而缩略图偏移*/
-	border-bottom: 1px solid #F2F2F2;
+	border-bottom: 1px solid #444;
 	border-radius: 20rpx 20rpx 20rpx 20rpx;
 	padding: 20rpx 0;
 	margin-top:10rpx;
@@ -263,14 +160,11 @@ picker {
 	z-index: 1;
 }
 
-/*左部图片*/
 .carts-image {
 	width: 120rpx;
 	height: 120rpx; 
 	margin: 40rpx 20rpx;
 }
-
-/*右部描述*/
 
 .carts-text {
 	width: 80%;
@@ -279,7 +173,7 @@ picker {
 	justify-content: space-around;
 }
 
-/*右上部分标题*/
+
 .carts-title {
 	font-size: 26rpx;
 	color: #F2F2F2;
@@ -333,15 +227,6 @@ picker {
 	z-index: 1;
 }
 
-.subtitle2 {
-	background: white;
-	width: 100%;
-	height: 6rpx;
-	border-radius: 0 0 10rpx 10rpx;
-}
-
-/*人民币符号*/
-
 .carts-price:before, .select-and-amount text:last-child:before {
 	content: '';
 }
@@ -359,70 +244,6 @@ picker {
 	top: 10rpx;
 	left: 20rpx;
 	font-size: 28rpx;
-}
-
-.coupons-list {
-  position: relative;
-  top: 0;
-  left: 0;
-  display:flex;
-  flex-direction:row;
-}
-
-.coupon-item-banner {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-	align-content: center;
-}
-
-.counpons-item {
-	background-size: 552rpx 246rpx;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 552rpx;
-	padding: 55rpx 0 20rpx 0;
-}
-
-.counpons {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-	align-content: center;
-	background: #fff;
-	margin: 10rpx auto;
-	width: 100%;
-}
-.coupon-name {
-  font-size: 32rpx;
-  color: #ebdddd;
-  line-height: 26rpx;
-  width: 100%;
-}
-
-.coupon-content {
-	font-size: 36rpx;
-	color: #ebdddd;
-	line-height: 2;
-	width: 100%;
-}
-
-.coupon-dueday {
-	font-size: 22rpx;
-	color: #ebdddd;
-	line-height: 1.5;
-	width: 100%;
-}
-
-.coupon-footer {
-	font-size: 22rpx;
-	color: #ebdddd;
-	line-height: 1.5;
-	width: 100%;
 }
 
 .order-num {

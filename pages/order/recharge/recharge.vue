@@ -1,6 +1,5 @@
 <template>
-<view>
-<scroll-view scroll-y  class="container carts-list" :style="(modalHiddenCoupon?'position:fixed;':'') +'height:'+dkheight+'px;'">
+<view class="page" :style="'height:'+windowHeight">
 	<view class="carts-container" v-for="(item, index) in carts" :key="index" >
 		<view class="carts-info">
 			<view class="carts-item">
@@ -10,8 +9,7 @@
 					<text class="carts-recharge-title">{{item.goods_tag}}</text>
 					<view class="carts-sku">
 						<view v-if="order_shape==7 || order_shape==8" v-for="(sku_value, index) in item['value']" :key="index" >
-							<text>{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
-							</text>
+							<text>{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}</text>
 						</view>
 						<view v-if="order_shape==7 || order_shape==8" >
 							<text>{{item.act_info}}</text>
@@ -54,15 +52,31 @@
 			</view>
 		</view>
 		<view class="recharge-confirm" >
-			<text class="amount">{{amount}}</text>
+			<text class="recharge-amount">{{amount}}</text>
 			<button @tap="confirmOrder" >去支付</button>
 		</view>
 	</view>
-</scroll-view>
+	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
+		<view class="uni-tip">
+			<view class="uni-tip-title">{{article_title}}</view>
+			<view class="uni-tip-content">
+				<scroll-view scroll-y >
+					<uParse :content="article"  /> 
+				</scroll-view>
+			</view>
+			<view class="uni-tip-group-button">
+				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">取消</view>
+				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">确定</view>
+			</view>
+		</view>
+	</uni-popup>
 </view>
 </template>
 
 <script>
+import uParse from '@/components/uParse/src/wxParse.vue' 
+import uniPopup from '@/components/uni-popup/uni-popup.vue' 
+
 var util = require("../../../utils/util.js");
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
@@ -81,6 +95,19 @@ export default {
 		addressIndex: 0,
 		username:null,
 		token:null,
+		playsxInfo: "",
+		article: "",
+		article_title:"",
+		webviewurl: "",
+		art_title: "",
+		art_id: "",
+		art_cat_id: "",
+		art_image: "",
+		dkheight: "800",
+		windowHeight:'500',
+		agreementinfoshowflag: 0,
+		playsxinfoshowflag: 0,
+		modalHiddenPlaysx: false,
 		page: 1,
 		pagesize: 5,
 		page_num: 0,
@@ -98,8 +125,13 @@ export default {
     };
   },
 
-  components: {},
+  components: {
+	  uParse,
+	  uniPopup
+  },
+  
   props: {},
+  
   onLoad: function (options) {
     var that = this;
 	uni.showToast({
@@ -113,6 +145,7 @@ export default {
       success: function (res) {
         let winHeight = res.windowHeight
         //console.log(winHeight)
+		that.windowHeight = winHeight
         that.dkheight = winHeight - winHeight * 0.05 - 20
       }
     });
@@ -128,6 +161,116 @@ export default {
 
   },
   methods: {
+	navigateToAgreement: function () {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var art_id = '29'  //21送心用户协议 29会员规则和权益协议
+		var art_cat_id = '9'; //送心协议类
+	
+		var shop_type = that.shop_type;
+		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
+	
+	  if (agreementinfoshowflag == 0) {
+		  wx.showToast({
+		    title: '加载中',
+		    icon: 'loading',
+		    duration: 1500
+		  });
+	    uni.request({
+	      url: weburl + '/api/client/query_art',
+	      method: 'POST',
+	      data: {
+	        username: username,
+	        access_token: token,
+	        art_id: art_id,
+	        art_cat_id: art_cat_id,
+	        shop_type: shop_type
+	      },
+	      header: {
+	        'Content-Type': 'application/x-www-form-urlencoded',
+	        'Accept': 'application/json'
+	      },
+	      success: function (res) {
+			var agreementInfo = res.data.result
+	        that.agreementInfo = res.data.result
+			that.art_id = 0
+			getApp().globalData.art_id = 0
+	        console.log('送心协议:', that.agreementInfo);
+			that.modalHiddenPlaysx = true ;
+			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+			that.article_title ="送心协议";
+	      }
+	    });
+	  } else {
+		  that.article_title ="送心协议";
+		  that.modalHiddenPlaysx = true ;
+		  that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+	  }
+	},
+	
+	navigateToPrivacy: function () {
+	  var that = this;
+	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+	  var art_id = '27'; //送心隐私政策
+	
+	  var art_cat_id = '9'; //送心协议类
+	  var shop_type = that.shop_type;
+	  //var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
+	
+	  uni.showToast({
+	      title: '加载中',
+	      icon: 'loading',
+	      duration: 1500
+	  });
+	  uni.request({
+	    url: weburl + '/api/client/query_art',
+	    method: 'POST',
+	    data: {
+	      username: username,
+	      access_token: token,
+	      art_id: art_id,
+	      art_cat_id: art_cat_id,
+	      shop_type: shop_type
+	    },
+	    header: {
+	      'Content-Type': 'application/x-www-form-urlencoded',
+	      'Accept': 'application/json'
+	    },
+	    success: function (res) {
+	  	var privacyInfo = res.data.result
+	  	that.privacyInfo = res.data.result
+	      console.log('送心隐私政策:', that.privacyInfo);
+	  	that.modalHiddenPlaysx = true ;
+	  	that.article = that.privacyInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+	  	that.article_title ="送心隐私政策";
+	    }
+	  });
+	},
+	
+	//确定按钮点击事件  玩转送心
+	modalBindconfirmPlaysx: function () {
+		var that = this
+		that.modalHiddenPlaysx = !that.modalHiddenPlaysx
+		that.art_id = 0
+		that.art_cat_id = 0
+		that.playsxinfoshowflag = 0
+		if(that.article_title=='送心协议'){
+			that.modalHiddenAgreement = !that.modalHiddenAgreement
+			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
+		}
+	},
+	
+	//取消按钮点击事件  玩转送心
+	modalBindcancelPlaysx: function () {
+		var that = this
+		that.modalHiddenPlaysx = !that.modalHiddenPlaysx
+		that.art_id = 0
+		that.art_cat_id = 0
+		that.playsxinfoshowflag = 0
+	},
+	
     formSubmit: function (e) {
       var that = this;
       var formId = e.detail.formId;
@@ -305,24 +448,29 @@ export default {
 		var that = this
 		getApp().globalData.my_index = 1 //1系统消息
 		getApp().globalData.art_id = 28 //28会员制说明
-	    
+		that.navigateToAgreement()
+	    /*
 		setTimeout(function () {
 			uni.switchTab({
 				url: '/pages/my/index'
 			})
 		}, 300)
+		*/
 	},
 	
 	bindRechargeRule: function () {
 		var that = this
 		getApp().globalData.my_index = 1 //1系统消息
 		getApp().globalData.art_id = 29 // 29 会员规则和权益协议
-		getApp().globalData.from_page = '/pages/my/index'
+		//getApp().globalData.from_page = '/pages/my/index'
+		that.navigateToAgreement()
+		/*
 		setTimeout(function () {
 			wx.switchTab({
 				url: '/pages/my/index'
 			})
 		}, 300)
+		*/
 	},
 	  
 	confirmOrder: function () {
@@ -725,12 +873,6 @@ export default {
 		var coupons_status = 'avaliable';
 		var coupons_type = that.couponType;
 		console.log('query_coupon coupons_type:', coupons_type);
-      /*
-      if (page > that.data.page_num) {
-        return
-      }
-      */
-
 		that.coupons_list = {}
 		wx.request({
 			url: weburl + '/api/client/query_coupon',
@@ -774,8 +916,7 @@ export default {
 						coupons_list[i]['selected'] = false;
 					}
 
-					if (page > 1 && coupons_type == 1 && coupons_list) {
-				//向后合拼
+					if (page > 1 && coupons_type == 1 && coupons_list) {//向后合拼
 						coupons_list = that.coupons_quan_list.concat(coupons_list);
 					} else if (page_red > 1 && coupons_type == 2 && coupons_list) {
 						coupons_list = that.coupons_red_list.concat(coupons_list);
@@ -830,8 +971,7 @@ export default {
 			}
 		}
 
-		if (coupon_type == 2) {
-        //红包
+		if (coupon_type == 2) {//红包
 			discountpay = discountpay + couponSelectedRedAmount ? couponSelectedRedAmount : 0;
 			discountpay = discountpay.toFixed(2);
 		}
@@ -895,17 +1035,14 @@ export default {
       });
 
       if (coupon_type == 1) {
-        that.setData({
-          selectedAllStatus: false
-        });
+         that.selectedAllStatus = false
       } else if (coupon_type == 2) {
-        that.setData({
-          selectedRedAllStatus: false
-        });
+        that.selectedRedAllStatus = false
       }
 
       that.coupon_pay(); //计算优惠券价格
     },
+	
     setData: function (obj) {
       let that = this;
       let keys = [];
@@ -922,69 +1059,53 @@ export default {
               that.$set(data, key2, {});
             }
           }
-
           data = data[key2];
-        });
-      });
+        })
+      })
     }
   }
 };
 </script>
-<style >
-@import "./recharge.css";
-	.address-section {
-		padding: 30upx 0;
-		background: #fff;
-		position: relative;
-	}
-	.order-content {
-		display: flex;
-		flex-direction: row;
-		justify-content:space-between;
-		align-items: center;
-	}
-	
-	.icon-shouhuodizhi {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 90upx;
-		color: #888;
-		font-size: 44upx;
-	}
-	
-	.cen {
-		display: flex;
-		flex-direction: column;
-		font-size: 28upx;
-		color: #666666;
-	}
-	
-	.name {
-		font-size: 34upx;
-		margin-right: 24upx;
-	}
-	
-	.address {
-		margin-top: 16upx;
-		margin-right: 20upx;
-		color: $font-color-light;
-	}
-	
-	.icon-you {
-		font-size: 32upx;
-		color: $font-color-light;
-		margin-right: 30upx;
-	}
-	
-	.a-bg {
-		position: absolute;
-		left: 0;
-		bottom: 0;
-		display: block;
-		width: 100%;
-		height: 5upx;
-	}
+<style>
+@import "./recharge.css" ;
+@import "@/components/uParse/src/wxParse.css";
 
+.wxParse {
+	line-height: 1.8;
+	font-size: 24rpx;
+	height: 600rpx;
+}
+/* 提示窗口 */
+.uni-tip {
+	padding: 15px;
+	width: 300px;
+	background: #fff;
+	box-sizing: border-box;
+	border-radius: 10px;
+}
+
+.uni-tip-title {
+	text-align: center;
+	font-weight: bold;
+	font-size: 16px;
+	color: #333;
+}
+
+.uni-tip-content {
+	padding: 15px;
+	font-size: 14px;
+	color: #666;
+}
+
+.uni-tip-group-button {
+	margin-top: 10px;
+	display: flex;
+}
+
+.uni-tip-button {
+	width: 100%;
+	text-align: center;
+	font-size: 14px;
+	color: #3b4144;
+}  
 </style>

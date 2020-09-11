@@ -62,7 +62,7 @@
 		<view class="opt-buttons">
 			<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_list.id" report-submit="true">
 				<view style="margin-top:10rpx;margin-bottom:10rpx;">
-					<button class="send-button" formType="submit">立即送出</button> <!-- bindtap="addCart" -->
+					<button class="send-button" formType="submit">立即购买</button> <!-- bindtap="addCart" -->
 				</view>
 			</form>
 		</view>
@@ -81,7 +81,7 @@
        <view class="opt-buttons">
         <form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_1.id" report-submit="true">
         <view style="margin-top:10rpx;margin-bottom:10rpx;">
-          <button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即送出</button>
+          <button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
         </view>
       </form>
       </view>
@@ -100,7 +100,7 @@
        <view class="opt-buttons">
         <form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_2.id" report-submit="true">
         <view style="margin-top:10rpx;margin-bottom:10rpx;">
-          <button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即送出</button>
+          <button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
         </view>
         </form>
       </view>
@@ -265,7 +265,7 @@ export default {
       task_num: 0,
       message_num: 0,
       navList_order: navList_order,
-      tab2: 'task',
+      tab2: 'AI', // 默认栏位:task认为  AI智能选品
       activeIndex2: 0,
 	  TabCur: 0,
 	  scrollLeft: 0,
@@ -290,48 +290,50 @@ export default {
 	  uniIcons,
 	  uniNavBar,
   },
-  props: {},
-  onLoad: function (options) {
-    var that = this;
-    wx.getSystemInfo({
-      success: function (res) {
-        let winHeight = res.windowHeight;
-        console.log('getSystemInfo:', winHeight);
-        that.setData({
-          dkheight: winHeight
-        });
-      }
-    });
-	that.getPermission();
-  },
-  onShow: function () {
-    var that = this;
-    var activeIndex2 = 0;
-	var TabCur = that.TabCur ;
+  
+	props: {},
+	onLoad: function (options) {
+		var that = this;
+		wx.getSystemInfo({
+			success: function (res) {
+				let winHeight = res.windowHeight;
+				//console.log('getSystemInfo:', winHeight);
+				that.dkheight = winHeight
+			}		
+		})
+		that.getPermission();
+	},
+  
+	onShow: function () {
+		var that = this;
+		var activeIndex2 = 0;
+		var TabCur = that.TabCur ;
 
-    if (getApp().globalData.messageflag == 0) {
-      TabCur = 1;
-    } else if (getApp().globalData.messageflag == 1) {
-      TabCur = 2;
-    } else {
-      TabCur = 0;
-    }
+		if (getApp().globalData.messageflag == 0) {
+			TabCur = 1
+		} else if (getApp().globalData.messageflag == 1) {
+			TabCur = 2
+		} else {
+			TabCur = 0
+		}
+		console.log('message onShow messageflag:', getApp().globalData.messageflag, 'activeIndex2:', activeIndex2)
+		
+		that.TabCur = TabCur
+		that.messageflag = getApp().globalData.messageflag
 
-    console.log('message onShow messageflag:', getApp().globalData.messageflag, 'activeIndex2:', activeIndex2);
-   that.TabCur = TabCur
-   that.messageflag = getApp().globalData.messageflag
-
-    if (TabCur == 0) {
-      that.get_ai_rules();
-    } else {
-      that.get_member_messages();
-    }
-  },
-  onPullDownRefresh: function () {//下拉刷新
+		if (TabCur == 0) {
+			that.get_ai_rules()
+		} else {
+			that.get_member_messages()
+		}
+	},
+	
+	onPullDownRefresh: function () {//下拉刷新
     //wx.startPullDownRefresh()
     //wx.stopPullDownRefresh()
-  },
-  methods: {
+	},
+	
+	methods: {
 	  // #ifdef APP-PLUS
 	  async getPermission() {
 	  	let status = await this.checkPermission(); 
@@ -1011,11 +1013,11 @@ export default {
         },
         success: function (res) {
           console.log('details insertCart res data:', res.data, ' wishflag：', wishflag);
-          var title = wishflag == 1 ? '已加入心愿单' : '已加入礼物袋';
+          var title = wishflag == 1 ? '已加入心愿单' : '已加入购物车';
           wx.showToast({
             title: title,
             duration: 2000
-          });
+          })
           getApp().globalData.from_page = '/pages/details/details';
 
           if (wishflag == 1) {
@@ -1024,19 +1026,25 @@ export default {
               url: '/pages/details/details'
             })
             */
-            wx.navigateTo({
+            uni.navigateTo({
               url: '/pages/wish/wish'
-            });
+            })
           } else {
-            console.log('details insertCart wishflag:', wishflag);
-            getApp().globalData.hall_gotop = 1;
-            wx.switchTab({
-              url: '/pages/hall/hall'
-            });
+            console.log('details insertCart wishflag:', wishflag)
+            getApp().globalData.hall_gotop = 1
+			/*
+			uni.navigateTo({
+			  url: '/pages/cart/cart'
+			})
+			*/
+            uni.switchTab({
+              url: '/pages/cart/cart'
+            })
           }
         }
-      });
+      })
     },
+	
     getMoreAccountTapTag: function (e) {
       var that = this;
       var page = that.page + 1;

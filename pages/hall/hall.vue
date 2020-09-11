@@ -629,7 +629,7 @@ export default {
     setInterval(function () {
       that.initSocketMessage();
 	  that.gift_para_interval = 1 ; //获取业务参数
-    }, 20000);
+    }, 60*1000);
 	/*
     setInterval(function () {//that.reSend()
     }, 5000);
@@ -875,7 +875,7 @@ export default {
 		var navList = that.navList;
 		var toView = parseInt(index);
 		var hiddenallclassify = that.hiddenallclassify;
-		 
+		
 		if (index > 2 && index < navList.length) {
 			toView = index - 2;
 		} else {
@@ -894,6 +894,7 @@ export default {
 		that.toView = toView ? toView : 0
 		that.pageoffset = 0
 	  	that.hiddenallclassify = !hiddenallclassify
+		that.gift_para_interval = 1 //更新广告轮播图
 		//console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
 		that.scrollLeft = toView
 		that.downCallback(that.mescroll)
@@ -2013,6 +2014,7 @@ export default {
 		that.middle8_note = navList_new[18] ? navList_new[18]['note'] : '' ; 
 		that.is_video_play = navList_new[19] ? navList_new[19]['value'] : 0 ;
 	},
+	
     get_project_gift_para: function () {
       var that = this;
 	  var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
@@ -2020,10 +2022,10 @@ export default {
 	  var gift_para_interval = that.gift_para_interval
 	  var cat_id = that.tab_value>0? that.tab_value:1
       //console.log('hall get_project_gift_para navList2:', navList_new);
-	  if(navList_new && gift_para_interval>0) {
+	  if(navList_new && gift_para_interval == 0) {
 		  that.set_project_gift_para()
 		  return ;
-	  } ;
+	  } 
       wx.request({
         url: weburl + '/api/client/get_project_gift_para',
         method: 'POST',
