@@ -23,6 +23,17 @@
   content:'\e6d5';
 }
 
+/*外部容器*/
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  margin: 0rpx auto 0rpx auto;
+  box-sizing: border-box;
+  z-index: 9;
+}
+
 .startBar {
   height: 75rpx;
   background: #333;
@@ -242,6 +253,39 @@
 	color: #333;
 	line-height: 50rpx;
 	height: 50rpx;
+}
+
+
+.price-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding:10rpx;
+}
+
+.price-market {
+  text-indent: 0;
+  color: #999;
+  font-size: 24rpx;
+  line-height: 1.8;
+  text-decoration:line-through;
+  margin-right: 4rpx;
+  display: none;
+}
+.price-market::first-letter {
+  font-size: 20rpx;
+}
+.price-now {
+  text-indent: 0;
+  color: #EC4844;
+  font-size: 26rpx;
+  margin-right: 24rpx;
+  line-height: 1.8;
+  font-weight: bold;
+}
+
+.price-now::first-letter {
+  font-size: 20rpx;
 }
 
 .recomment-title {
@@ -474,4 +518,4 @@
 .status_bar {
       height: var(--status-bar-height);
       width: 100%;
-  }
+}

@@ -44,7 +44,7 @@
 		</view>
 		<view class="recharge-note">
 			<view class="select-and-amount" >
-				<icon @tap="bindAgree" style="margin:20rpx;" :type="selectedAgreeStatus ? 'success' : 'circle'" size="18" color='#e34c55'  />
+				<uni-icons @tap="bindAgree()" style="margin:20rpx;" :type="selectedAgreeStatus ? 'checkbox-filled' : 'circle'" size="18" color='#e34c55'></uni-icons>
 				<text @tap="bindRechargeRule" style="margin-right:20rpx;">{{recharge_note}}</text>
 			</view>
 			<view class="select-and-amount">

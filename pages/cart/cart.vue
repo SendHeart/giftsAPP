@@ -4,7 +4,7 @@
     <view v-for="(cart_item, cart_idx) in carts"  class="carts-container" :key="cart_idx" :hidden="(cart_item.hidden==1?false:false)">
     	<view class="carts-item" :style="'left:' + itemLefts[cart_idx]+'px;'" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd">
 	    	<!-- 复选框图标 -->
-			<icon style="margin-left:20rpx;" :type="(cart_item.selected ? 'success_circle' : 'circle')" size="18" @tap="bindCheckbox" :data-index="cart_idx" />
+			<uni-icons style="margin-left:20rpx;" :type="(cart_item.selected ? 'checkbox' : 'circle')" size="18" @tap="bindCheckbox(cart_idx)" :data-index="cart_idx"></uni-icons>
 			<!-- 缩略图 -->
 				<image  class="carts-image" :src="cart_item.image" mode="aspectFit" @tap="showGoods(cart_item)"></image>
 				<!-- 商品标题 -->
@@ -18,16 +18,11 @@
 								</text>
 							</view>
 						</view>
-				<!-- 价格 -->
 						<view class="carts-en-price">￥{{cart_item.sell_price}}元</view>
 					</view>
-				  	<!-- 数量加减 -->
 				      <view class="stepper">
-						<!-- 减号 -->
 						<text :class="minusStatuses[cart_idx]" :data-index="cart_idx" @tap="bindMinus">-</text>
-						<!-- 数值 -->
 						<input type="number" :data-index="cart_idx" @change="bindManual" @tap="bindManualTapped" :value="cart_item.num" />
-						<!-- 加号 -->
 						<text class="normal" :data-index="cart_idx" @tap="bindPlus">+</text>
 				  	</view>
 				</view>
@@ -40,9 +35,9 @@
 </view>
 <view class="carts-footer">
 	<view class="select-and-amount" @tap="bindSelectAll">
-		<icon :type="(selectedAllStatus ? 'success_circle' : 'circle')" size="18"/>
+		<uni-icons :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color='#e34c55'></uni-icons>
 		<text>全选</text>
-		<text>{{total}}</text>
+		<text>{{total>0?'￥'+total:''}}</text>
 	</view>
 	<view class="button" @tap="bindCheckout">立即结算</view>
 </view>
@@ -266,7 +261,7 @@ export default {
         // 什么都不做，只为打断跳转
 	},
 	
-	bindCheckbox: function (e) {
+	bindCheckbox: function (cart_index) {
         wx.showLoading({
           title: '操作中',
           mask: true
@@ -274,7 +269,7 @@ export default {
         var that = this;
         /*绑定点击事件，将checkbox样式改变为选中与非选中*/
         //拿到下标值，以在carts作遍历指示用
-        var index = parseInt(e.currentTarget.dataset.index);
+        var index = cart_index;
         //原始的icon状态
         var selected = that.carts[index]['selected'];
         var carts = that.carts;

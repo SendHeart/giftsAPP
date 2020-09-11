@@ -14,7 +14,7 @@
 			<!-- is default switch -->
 			<view class="set-default" :data-index="index" @tap="setDefault">
 				<!-- circle or success type -->
-				<icon :type="(item.is_default == 1 ? 'success_circle' : 'circle')"></icon>
+				<uni-icons :type="(item.is_default == 1 ? 'checkbox-filled' : 'circle')"  size="18" color='#e34c55'></uni-icons>
 				<text>默认地址</text>
 			</view>
 			<!-- edit and delete button -->

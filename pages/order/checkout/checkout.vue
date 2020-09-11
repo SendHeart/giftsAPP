@@ -75,11 +75,11 @@
   </view>
   <view class="carts-more" :hidden="showmorehidden">
     <view class="select-and-amount" @tap="bindSelectRedAll">
-      <icon style="margin:10rpx;" :type="(selectedRedAllStatus ? 'success' : 'circle')" size="18" color="#e34c55"></icon>
+      <uni-icons style="margin:10rpx;" :type="(selectedRedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color="#e34c55"></uni-icons>
       <text style="margin-left:10rpx;">使用红包</text>
     </view>
     <view class="select-and-amount" @tap="bindSelectAll">
-      <icon style="margin:10rpx;" :type="(selectedAllStatus ? 'success' : 'circle')" size="18" color="#e34c55"></icon>
+      <uni-icons style="margin:10rpx;" :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color="#e34c55"></uni-icons>
       <text style="margin-left:10rpx;">使用优惠券</text>
     </view>
   </view>
@@ -97,7 +97,7 @@
       <view v-for="(mapping, index) in coupons_list" :key="index" class="gifts-item">
         <view @tap="bindSelectCoupon" class="coupons-list" :data-couponindex="index" :data-couponid="mapping.id" :data-starttime="mapping.start_time" :data-endtime="mapping.end_time" :data-couponname="mapping.name" :data-couponcontent="mapping.content" :data-couponamount="mapping.amount" :data-couponfooter="mapping.footer" :data-coupontype="mapping.type" :data-couponimage="mapping.image">
           <view class="select-and-amount-mark">
-            <icon :type="(mapping.selected ? 'success_circle' : 'circle')" size="18" color="rgb(255,255,255)"></icon>
+            <uni-icons :type="(mapping.selected ? 'checkbox-filled' : 'circle')" size="18" color="rgb(255,255,255)"></uni-icons>
             <!-- 
 		    <text style="margin-left:10rpx;">选中</text>
         -->
@@ -241,7 +241,7 @@ export default {
       var that = this;
       var formId = e.detail.formId;
       var form_name = e.currentTarget.dataset.name;
-      console.log('formSubmit() formID：', formId, ' form name:', form_name);
+      //console.log('formSubmit() formID：', formId, ' form name:', form_name);
 
       if (form_name == 'confirmOrder') {
         that.confirmOrder();
@@ -278,8 +278,8 @@ export default {
     },
     showGoods: function (e) {
       var skuId = e.currentTarget.dataset.skuId;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var goods_id = e.currentTarget.dataset.goodsId;
       var goods_name = e.currentTarget.dataset.goodsName;
       var goods_price = e.currentTarget.dataset.goodsPrice;
@@ -403,13 +403,13 @@ export default {
 	  var address_id = that.address_id? that.address_id:0;
       var carts = that.carts;
       var cartIds = that.cartIds;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var selectedAllStatus = that.selectedAllStatus;
       var selectedRedAllStatus = that.selectedRedAllStatus;
       var selected_coupon_quan_index = that.selected_coupon_quan_index ? that.selected_coupon_quan_index : 0;
       var selected_coupon_red_index = that.selected_coupon_red_index ? that.selected_coupon_red_index : 0;
-      console.log('confirmOrder selected_coupon_quan_index:', that.selected_coupon_quan_index, 'selected_coupon_red_index:', that.selected_coupon_red_index, ' coupons_red_list:', that.coupons_red_list);
+      //console.log('confirmOrder selected_coupon_quan_index:', that.selected_coupon_quan_index, 'selected_coupon_red_index:', that.selected_coupon_red_index, ' coupons_red_list:', that.coupons_red_list);
       var selected_coupon_amount = selectedAllStatus ? that.coupons_quan_list[selected_coupon_quan_index]['amount'] : 0;
       var selected_coupon_id = selectedAllStatus ? that.coupons_quan_list[selected_coupon_quan_index]['id'] : 0;
       var selected_coupon_type = selectedAllStatus ? that.coupons_quan_list[selected_coupon_quan_index]['type'] : 1;
@@ -432,9 +432,9 @@ export default {
       var card_cele_info = JSON.stringify(that.card_cele_info);
       var card_love_info = JSON.stringify(that.card_love_info);
       var card_template = JSON.stringify(that.card_template);
-      if (!order_note) order_note = '送你一份礼物，愿你喜欢!'; //默认祝福
+      if (!order_note) order_note = '好货分享，愿你喜欢!'; //默认祝福
 
-      console.log('order_image:'+order_image+ ' order_shape:'+ order_shape + ' card_template:'+ card_template + ' card_cele_info:' + card_cele_info);
+      //console.log('order_image:'+order_image+ ' order_shape:'+ order_shape + ' card_template:'+ card_template + ' card_cele_info:' + card_cele_info);
       wx.request({
         url: weburl + '/api/client/add_order',
         method: 'POST',
@@ -639,21 +639,17 @@ export default {
       var page_red_num = that.page_red_num; // 取反操作
 
       selectedRedAllStatus = !selectedRedAllStatus;
-      modalHiddenCoupon = !modalHiddenCoupon;
-      that.setData({
-        selectedRedAllStatus: selectedRedAllStatus,
-        modalHiddenCoupon: modalHiddenCoupon,
-        couponType: 2 //红包
-
-      });
+      modalHiddenCoupon = !modalHiddenCoupon
+	  that.selectedRedAllStatus = selectedRedAllStatus
+	  that.modalHiddenCoupon = modalHiddenCoupon
+	  that.couponType = 2
+      
       console.log('bindSelectRedAll :', selectedRedAllStatus, 'page_red_num:', page_red_num);
 
       if (selectedRedAllStatus && page_red_num == 0) {
         that.query_coupon();
       } else {
-        that.setData({
-          coupons_list: that.coupons_red_list
-        });
+        that.coupons_list = that.coupons_red_list
       }
     },
     bindSelectAll: function () {
@@ -789,10 +785,7 @@ export default {
         return
       }
       */
-
-      that.setData({
-        coupons_list: {}
-      });
+		that.coupons_list = {}
       wx.request({
         url: weburl + '/api/client/query_coupon',
         method: 'POST',
@@ -819,18 +812,16 @@ export default {
               title: res.data.info ? res.data.info : '暂无优惠券~',
               icon: 'none',
               duration: 2000
-            });
+            })
 
             if (page == 1 && coupons_type == 1) {
-              that.setData({
-                coupons_quan_list: {},
-                page_num: 0
-              });
+              that.coupons_quan_list = {}
+              that.page_num = 0
+			  that.selectedAllStatus = false
             } else if (page_red == 1 && coupons_type == 2) {
-              that.setData({
-                coupons_red_list: {},
-                page_red_num: 0
-              });
+              that.coupons_red_list = {}
+              that.page_red_num = 0
+			  that.selectedRedAllStatus = false
             }
           } else {
             for (var i = 0; i < coupons_list.length; i++) {
@@ -840,34 +831,28 @@ export default {
             }
 
             if (page > 1 && coupons_type == 1 && coupons_list) {
-              //向后合拼
-              coupons_list = that.coupons_quan_list.concat(coupons_list);
+				coupons_list = that.coupons_quan_list.concat(coupons_list);
             } else if (page_red > 1 && coupons_type == 2 && coupons_list) {
-              coupons_list = that.coupons_red_list.concat(coupons_list);
+				coupons_list = that.coupons_red_list.concat(coupons_list);
             }
 
             if (coupons_type == 1) {
-              page_num = all_rows / pagesize + 0.5;
-              that.setData({
-                coupons_list: coupons_list,
-                coupons_quan_list: coupons_list,
-                page_num: page_num.toFixed(0),
-                page_red_num: 0
-              });
+				page_num = all_rows / pagesize + 0.5;
+				that.coupons_list = coupons_list
+				that.coupons_quan_list = coupons_list
+				that.page_num = page_num.toFixed(0)
+				that.page_red_num = 0
             } else if (coupons_type == 2) {
-              page_red_num = all_rows / pagesize + 0.5;
-              that.setData({
-                coupons_list: coupons_list,
-                coupons_red_list: coupons_list,
-                page_red_num: page_red_num.toFixed(0),
-                page_num: 0
-              });
+				page_red_num = all_rows / pagesize + 0.5
+				that.coupons_list = coupons_list
+				that.coupons_red_list = coupons_list
+				that.page_red_num = page_red_num.toFixed(0)
+				that.page_num = 0
             }
           }
-
           console.log('query_coupon coupons_list:', coupons_list, 'red:', that.coupons_red_list, 'quan:', that.coupons_quan_list);
         }
-      });
+      })
     },
     //优惠券使用
     coupon_pay: function (e) {

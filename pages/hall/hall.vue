@@ -66,7 +66,7 @@
 			</view>
 			<!--
 			<view class="goTop" @tap.stop="goTop">
-				<uni-icon style="margin-top:-15rpx;" class="Hui-iconfont iconv-uparrow"></uni-icon>
+				<uni-icons style="margin-top:-15rpx;" class="Hui-iconfont iconv-uparrow"></uni-icons>
 				<view class style="margin-top:-5rpx;font-size:22rpx;">TOP</view>
 			</view>
 			-->
@@ -334,7 +334,7 @@ var util = require("utils/util.js"); //获取应用实例
 import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 //var dateUtils = require('../../common/util.js').dateUtils;
-import uniIcons from '@/components/uni-icons/uni-icons.vue'
+//import uniIcons from '@/components/uni-icons/uni-icons.vue'
 import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
 //import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
 // 引入mescroll-mixins.js
@@ -469,7 +469,6 @@ export default {
 		friend_full_name :'',
 		friend_address:'',
 		friend_tel :'',
-
 		amount: 0,
 		nickname: userInfo.nickName ,
 		avatarUrl: userInfo.avatarUrl ,
@@ -565,7 +564,7 @@ export default {
 	//   imageloader,
 		uniPopup,
 		//uniLoadMore,  
-		uniIcons,
+		//uniIcons,
 		uniNavBar,
 		//MescrollUni,
 		//MescrollBody,
@@ -757,8 +756,8 @@ export default {
 		};
 	},
 	mounted() {
-		this.isInit = true; // 标记为true
-		this.mescroll.triggerDownScroll();
+		this.isInit = true // 标记为true
+		this.mescroll.triggerDownScroll()
 	},
 	methods: {
 	//#ifdef APP-PLUS
@@ -930,9 +929,8 @@ export default {
     goTop: function () {
       // 一键回到顶部
         var that = this;
-		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
         //that.scrollTop = 0 ;
-		
 		that.pdList = [] ;
         that.page = 1 ;
         that.pageoffset = 0 ;

@@ -43,8 +43,8 @@
 			<block v-for="(item, index) in navList2" :key="index">
 				<view :id="'v_' + index" :data-index="index" :data-title="item.title" :data-tabid="item.id" :class="'top-bar-item2 ' + (index == activeIndex2 ? 'top-bar-active2' : '')" @click.stop="onTapTag2">
 					<view>{{item.title}}</view>
-					<uni-icon v-if="updown==0 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-uparrow" @click.stop :data-index="index"></uni-icon>
-					<uni-icon v-if="updown==1 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-downarrow" @click.stop :data-index="index"></uni-icon>
+					<uni-icons v-if="updown==0 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-uparrow" @click.stop :data-index="index"></uni-icons>
+					<uni-icons v-if="updown==1 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-downarrow" @click.stop :data-index="index"></uni-icons>
 				</view>
 			</block>
 		</view>

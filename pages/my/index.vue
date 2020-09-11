@@ -1,7 +1,7 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
-	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
-	<view scroll-y >
+	<mescroll-uni top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<view class="" scroll-y >
 		<view style="display:flex;flex-direction: row;justify-content: center;">
 			<view class="userinfo">
 				<view class="userinfo-title">
@@ -111,7 +111,7 @@
 		</view>
 	</view>
 	<pd-list :list="pdList"></pd-list>
-	</mescroll-body>
+	</mescroll-uni>
 	
 	<!--
 	<view class="status_bar"></view>
@@ -496,8 +496,14 @@ export default {
 		//已登录未阅读用户购买协议
 			that.navigateToAgreement();
 		}
-		that.windowWidth = windowWidth
-		that.windowHeight = windowHeight
+		uni.getSystemInfo({
+			success: function (res) {
+				that.windowHeight = res.windowHeight?res.windowHeight:that.windowHeight
+				that.windowWidth = res.windowWidth?res.windowWidth:that.windowWidth
+				that.dkheight = that.windowHeight
+			}
+		});
+		
 		that.user_type = user_type
 		that.userInfo = userInfo ;
 		that.nickname = userInfo.nickname
@@ -525,9 +531,11 @@ export default {
 				that.navigateToPlaysx()
 			}
 		}
+		 
 	    if(that.scrollTop == 0){
 			that.goTop()
 		}
+		 
 		console.log('my index userauth_coupon:', that.userauth_coupon);
   },
   
@@ -731,7 +739,7 @@ export default {
 	 	var old_scrollTop = that.old.scrollTop
 	 	var current_scrollTop = that.mescroll.scrollTop
 	 	that.old.scrollTop = current_scrollTop
-		//console.log('scroll current_scrollTop:', current_scrollTop);  
+		console.log('scroll current_scrollTop:', current_scrollTop);  
 		/*
 	 	if(current_scrollTop > old_scrollTop +60) {
 	 		that.getMoreGoodsTapTag() ;
@@ -768,18 +776,19 @@ export default {
 		this.mescroll = mescroll;
 	},
 	/*下拉刷新的回调 */
-	downCallback(mescroll) {
+	downCallback() {
 		// 这里加载你想下拉刷新的数据, 比如刷新轮播数据
 		// loadSwiper();
 		// 下拉刷新的回调,默认重置上拉加载列表为第一页 (自动执行 mescroll.num=1, 再触发upCallback方法 )
 		//mescroll.endSuccess() ;
 	
 		this.page =  1 
-		mescroll.resetUpScroll()
+		this.mescroll.resetUpScroll()
 		
 	},
 	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
-	upCallback(mescroll) {
+	upCallback() {
+		let mescroll = this.mescroll
 		//联网加载数据
 		console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
 		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
@@ -838,7 +847,7 @@ export default {
 				username: username,
 				access_token: token,
 				shop_type: shop_type,
-				query_type: 'app',
+				query_type: 'browser',
 				page: page,
 				pagesize: pagesize,
 				pageoffset: pageoffset,

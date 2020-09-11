@@ -33,7 +33,7 @@
 				  <input @input="bindChangeNum" :value="withdrawNum" type="digit" placeholder="请输入金额"></input> 
 				</view>
 				<view class="select-and-amount-mark">
-						    提现到: <icon :type="(withdraw_selected==1 ? 'success_circle' : 'circle')" size="18" color="#333" data-withdraw-type="1" @tap="withdrawSelect"></icon>
+						    提现到: <uni-icons :type="(withdraw_selected==1 ? 'checkbox-filled' : 'circle')" size="18" color="#333" data-withdraw-type="1" @tap="withdrawSelect(1)"></uni-icons>
 						    <text>微信钱包</text>
 				      <!--  
 				      <icon type="{{withdraw_selected==2 ? 'success_circle' : 'circle'}}" size="18" color='#333' style='margin-left:30rpx;' data-withdraw-type="2" bindtap="withdrawSelect" />
@@ -164,9 +164,9 @@ export default {
       });
       console.log('withdrawWx:' + that.withdrawWx);
     },
-    withdrawSelect: function (e) {
+    withdrawSelect: function (withdrawType) {
       var that = this;
-      var withdraw_selected = e.currentTarget.dataset.withdrawType;
+      var withdraw_selected = withdrawType;
       that.setData({
         withdraw_selected: withdraw_selected
       });
