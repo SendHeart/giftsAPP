@@ -944,8 +944,6 @@ export default {
         	that.mescroll.scrollTo(0) ;
         });
 		that.mescroll.scrollTop = that.old.scrollTop
-		 
-       
     },
     searchTapTag: function (e) {
       var that = this; //console.log('搜索关键字：' + that.data.search_goodsname)

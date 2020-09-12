@@ -1068,7 +1068,6 @@ export default {
 </script>
 <style>
 @import "./recharge.css" ;
-@import "@/components/uParse/src/wxParse.css";
 
 .wxParse {
 	line-height: 1.8;

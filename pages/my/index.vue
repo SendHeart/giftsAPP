@@ -739,7 +739,7 @@ export default {
 	 	var old_scrollTop = that.old.scrollTop
 	 	var current_scrollTop = that.mescroll.scrollTop
 	 	that.old.scrollTop = current_scrollTop
-		console.log('scroll current_scrollTop:', current_scrollTop);  
+		//console.log('scroll current_scrollTop:', current_scrollTop);  
 		/*
 	 	if(current_scrollTop > old_scrollTop +60) {
 	 		that.getMoreGoodsTapTag() ;
@@ -827,9 +827,7 @@ export default {
 		var pagesize = that.pagesize;
 		var pageoffset = that.pageoffset;
 		var all_rows = that.all_rows
-		var goods_type = that.tab
-		var goods_type_value = that.tab_value
-	
+		
 		if(page > all_rows && page>1) {
 			console.log('加载完成 page:', page, 'all_rows:',all_rows);
 			that.is_goodslist_loading = false ;
@@ -840,7 +838,7 @@ export default {
 		that.status = 'loading';
 		
 		try{
-			wx.request({
+			uni.request({
 			  url: weburl + '/api/client/query_member_goods_prom',
 			  method: 'POST',
 			  data: {
@@ -851,8 +849,6 @@ export default {
 				page: page,
 				pagesize: pagesize,
 				pageoffset: pageoffset,
-				goods_type: goods_type, 
-				goods_type_value: goods_type_value, 
 			  },
 			  header: {
 			    'Content-Type': 'application/x-www-form-urlencoded',
@@ -893,9 +889,9 @@ export default {
 			        venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
 	
 				  }
-				  that.page = page + 1 ;
-				  that.pageoffset = pageoffset ;
-				  that.all_rows = all_rows ;
+				  that.page = page + 1 
+				  that.pageoffset = pageoffset 
+				  that.all_rows = all_rows 
 				  console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
 				  // 回调
 				  successCallback && successCallback(venuesItems_new);
@@ -1429,6 +1425,7 @@ export default {
 	    }
 	  });
 	},
+	
 	showPlaysxinfo:function () {
 		var that = this
 		var modalHiddenPlaysx = this.modalHiddenPlaysx;
@@ -1497,6 +1494,7 @@ export default {
 			that.article = that.playsxInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
       }
     },
+	
     navigateToArticle: function () {
       var that = this;
       var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
@@ -1536,6 +1534,7 @@ export default {
         }
       });
     },
+	
     showAgreementinfo: function () {
       let winPage = this; //var hideviewagreementinfo = winPage.data.hideviewagreementinfo
       var modalHiddenAgreement = winPage.modalHiddenAgreement;
@@ -2140,7 +2139,6 @@ export default {
               that.$set(data, key2, {});
             }
           }
-
           data = data[key2];
         });
       });
@@ -2150,8 +2148,9 @@ export default {
 </script>
 <style>
 @import "./index.css";
+/*
 @import "../../components/uParse/src/wxParse.css";
-
+*/
 
 .wxParse {
 	line-height: 1.8;
