@@ -1,5 +1,5 @@
 <template>
-<view class="page" :style="'height:'+windowHeight">
+<view class="page">
 	<mescroll-uni top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 	<view class="" scroll-y >
 		<view style="display:flex;flex-direction: row;justify-content: center;">
@@ -536,7 +536,7 @@ export default {
 			that.goTop()
 		}
 		 
-		console.log('my index userauth_coupon:', that.userauth_coupon);
+		//console.log('my index userauth_coupon:', that.userauth_coupon);
   },
   
   onShareAppMessage: function () {
@@ -754,21 +754,21 @@ export default {
 	  // 一键回到顶部
 	    var that = this;
 		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
-	    //that.scrollTop = 0 ;
-		
+	    
 		that.pdList = [] ;
 	    that.page = 1 ;
 	    that.pageoffset = 0 ;
 		that.mescroll.resetUpScroll()
-		//that.reloadData();
 		
 		getApp().globalData.hall_gotop = 0;
 	    // 解决view层不同步的问题
 		//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
+		/*
 	    that.$nextTick(function() {
 	    	that.mescroll.scrollTo(0) ;
 	    });
 		that.mescroll.scrollTop = that.old.scrollTop
+		*/
 	},
 	
 	// mescroll组件初始化的回调,可获取到mescroll对象
@@ -790,7 +790,7 @@ export default {
 	upCallback() {
 		let mescroll = this.mescroll
 		//联网加载数据
-		console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
+		//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
 		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
 			//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
