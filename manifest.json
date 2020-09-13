@@ -185,7 +185,8 @@
                         "retina40l" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png",
                         "retina35" : "C:/Users/qzcsc/Pictures/sendheart_app_9.9.png"
                     }
-                }
+                },
+                "iosStyle" : "common"
             }
         },
         "nativePlugins" : {

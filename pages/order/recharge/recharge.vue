@@ -59,10 +59,8 @@
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">{{article_title}}</view>
-			<view class="uni-tip-content">
-				<scroll-view scroll-y >
-					<uParse :content="article"  /> 
-				</scroll-view>
+			<view class="uni-tip-content" style="overflow-y: scroll;">
+				<uParse :content="article"  /> 
 			</view>
 			<view class="uni-tip-group-button">
 				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">取消</view>
@@ -161,16 +159,16 @@ export default {
 
   },
   methods: {
-	navigateToAgreement: function () {
+	navigateToAgreement: function (art_id) {
 		var that = this;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-		var art_id = '29'  //21送心用户协议 29会员规则和权益协议
+		//var art_id = '29'  //21送心用户协议 29会员规则和权益协议
 		var art_cat_id = '9'; //送心协议类
 	
 		var shop_type = that.shop_type;
 		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
-	
+		that.article_title =art_id=='29'?"协议":'会籍说明';
 	  if (agreementinfoshowflag == 0) {
 		  wx.showToast({
 		    title: '加载中',
@@ -196,14 +194,14 @@ export default {
 	        that.agreementInfo = res.data.result
 			that.art_id = 0
 			getApp().globalData.art_id = 0
-	        console.log('送心协议:', that.agreementInfo);
+	        console.log('协议:', that.agreementInfo);
 			that.modalHiddenPlaysx = true ;
 			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-			that.article_title ="送心协议";
+			//that.article_title ="协议";
 	      }
 	    });
 	  } else {
-		  that.article_title ="送心协议";
+		  //that.article_title ="协议";
 		  that.modalHiddenPlaysx = true ;
 		  that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
 	  }
@@ -256,7 +254,7 @@ export default {
 		that.art_id = 0
 		that.art_cat_id = 0
 		that.playsxinfoshowflag = 0
-		if(that.article_title=='送心协议'){
+		if(that.article_title=='协议'){
 			that.modalHiddenAgreement = !that.modalHiddenAgreement
 			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
 		}
@@ -448,7 +446,7 @@ export default {
 		var that = this
 		getApp().globalData.my_index = 1 //1系统消息
 		getApp().globalData.art_id = 28 //28会员制说明
-		that.navigateToAgreement()
+		that.navigateToAgreement('28')
 	    /*
 		setTimeout(function () {
 			uni.switchTab({
@@ -463,7 +461,7 @@ export default {
 		getApp().globalData.my_index = 1 //1系统消息
 		getApp().globalData.art_id = 29 // 29 会员规则和权益协议
 		//getApp().globalData.from_page = '/pages/my/index'
-		that.navigateToAgreement()
+		that.navigateToAgreement('29')
 		/*
 		setTimeout(function () {
 			wx.switchTab({

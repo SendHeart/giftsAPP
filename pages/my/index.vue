@@ -1,6 +1,6 @@
 <template>
 <view class="page">
-	<mescroll-uni top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 	<view class="" scroll-y >
 		<view style="display:flex;flex-direction: row;justify-content: center;">
 			<view class="userinfo">
@@ -61,7 +61,7 @@
 				<image src="/static/images/account.png" />
 				<text>我的钱包</text>
 			</view>
-			<view @tap="navigateToAgreement" class="order">
+			<view @tap="navigateToAgreement('29')" class="order">
 				<image src="/static/images/u633.png" />
 				<text>会员协议</text>
 			</view>
@@ -111,7 +111,7 @@
 		</view>
 	</view>
 	<pd-list :list="pdList"></pd-list>
-	</mescroll-uni>
+	</mescroll-body>
 	
 	<!--
 	<view class="status_bar"></view>
@@ -229,10 +229,8 @@
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">{{article_title}}</view>
-			<view class="uni-tip-content">
-				<scroll-view scroll-y >
-					<uParse :content="article"  /> 
-				</scroll-view>
+			<view class="uni-tip-content" style="overflow-y: scroll;">
+				<uParse :content="article"  /> 
 			</view>
 			<view class="uni-tip-group-button">
 				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">取消</view>
@@ -494,7 +492,7 @@ export default {
 			that.modalHiddenUserName = !modalHiddenUserName;  
 		} else if (isReadAgreement == 0 && username) {
 		//已登录未阅读用户购买协议
-			that.navigateToAgreement();
+			that.navigateToAgreement(art_id);
 		}
 		uni.getSystemInfo({
 			success: function (res) {
@@ -526,7 +524,7 @@ export default {
 		that.query_user_info()
 		if (art_id>0){
 			if(art_id == 29){
-		        that.navigateToAgreement()
+		        that.navigateToAgreement(art_id)
 			}else{
 				that.navigateToPlaysx()
 			}
@@ -1334,16 +1332,16 @@ export default {
       uni.setStorageSync('user_gender', user_gender);
     },
 	
-	navigateToAgreement: function () {
+	navigateToAgreement: function (art_id) {
 		var that = this;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-		var art_id = '29'  //21送心用户协议 29会员规则和权益协议
+		//var art_id = '29'  //21送心用户协议 29会员规则和权益协议
 		var art_cat_id = '9'; //送心协议类
 
 		var shop_type = that.shop_type;
 		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
-
+		that.article_title =art_id=='29'?"协议":'会籍说明';
       if (agreementinfoshowflag == 0) {
 		  wx.showToast({
 		    title: '加载中',
@@ -1369,15 +1367,14 @@ export default {
             that.agreementInfo = res.data.result
 			that.art_id = 0
 			getApp().globalData.art_id = 0
-            console.log('送心协议:', that.agreementInfo);
+            console.log('协议:', that.agreementInfo);
 			that.modalHiddenPlaysx = true ;
 			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-			that.article_title ="送心协议";
+			
             //that.showAgreementinfo();
           }
         });
       } else {
-		  that.article_title ="送心协议";
 		  that.modalHiddenPlaysx = true ;
 		  that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
 		   
@@ -1842,7 +1839,7 @@ export default {
 		this.art_id = 0
 		this.art_cat_id = 0
 		this.playsxinfoshowflag = 0
-		if(this.article_title=='送心协议'){
+		if(this.article_title=='协议'){
 			this.modalHiddenAgreement = !this.modalHiddenAgreement
 			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
 		}
