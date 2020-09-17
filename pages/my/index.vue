@@ -504,7 +504,7 @@ export default {
 			that.modalHiddenUserName = !modalHiddenUserName;  
 		} else if (isReadAgreement == 0 && username) {
 		//已登录未阅读用户购买协议
-			that.navigateToAgreement(art_id);
+			//that.navigateToAgreement(art_id);
 		}
 		uni.getSystemInfo({
 			success: function (res) {
@@ -1847,13 +1847,13 @@ export default {
     //确定按钮点击事件  玩转送心
 	modalBindconfirmPlaysx: function () {
 		this.modalHiddenPlaysx = !this.modalHiddenPlaysx
-		this.art_id = 0
-		this.art_cat_id = 0
-		this.playsxinfoshowflag = 0
-		if(this.article_title=='协议'){
+		if(this.art_id=='29'){
 			this.modalHiddenAgreement = !this.modalHiddenAgreement
 			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
 		}
+		this.art_id = 0
+		this.art_cat_id = 0
+		this.playsxinfoshowflag = 0
     },
 	
     //取消按钮点击事件  玩转送心
