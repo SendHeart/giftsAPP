@@ -102,6 +102,10 @@
 			 	<image src="/static/images/barcode.png"></image>
 			 	<text class="text-grey">扫码分享</text>
 			</view>
+			<view  v-if="userauth_shoper==1 || userauth_host==1" @click="bindPlayer" class="order" >
+				 <image src="/static/images/live.png"></image>
+				 <text class="text-grey">我是主播</text>
+			</view>
 			<view  bindtap="" class="order">  
 			  <text style="color:#fff">.</text>
 			</view>
@@ -764,7 +768,7 @@ export default {
 		that.pdList = [] ;
 	    that.page = 1 ;
 	    that.pageoffset = 0 ;
-		that.mescroll.resetUpScroll()
+		if(that.mescroll) that.mescroll.resetUpScroll()
 		
 		getApp().globalData.hall_gotop = 0;
 	    // 解决view层不同步的问题
