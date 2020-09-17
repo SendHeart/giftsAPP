@@ -90,9 +90,17 @@
 				<image src="/static/images/u633.png" />
 				<text>我是店长</text>
 			</view>
-			<view v-if="userauth.coupon==1" bindtap="navigateToCoupon" class="order">
+			<view v-if="userauth.coupon==1" @tap="navigateToCoupon" class="order">
 				<image src="/static/images/account.png" />
 				<text>发行</text>
+			</view>
+			<view v-if="userauth_location==1" @tap="navigateToMyLocation" class="order" >
+			 	<image src="/static/images/iconfont-shouhuodizhi.png"></image>
+			 	<text class="text-grey">我的位置</text>
+			</view>
+			<view @tap="navigateToShare" class="order" >
+			 	<image src="/static/images/barcode.png"></image>
+			 	<text class="text-grey">扫码分享</text>
 			</view>
 			<view  bindtap="" class="order">  
 			  <text style="color:#fff">.</text>
@@ -1341,7 +1349,7 @@ export default {
 
 		var shop_type = that.shop_type;
 		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
-		that.article_title =art_id=='29'?"协议":'会籍说明';
+		that.article_title = art_id=='29'?"协议":'会籍说明';
       if (agreementinfoshowflag == 0) {
 		  wx.showToast({
 		    title: '加载中',
@@ -1363,7 +1371,6 @@ export default {
             'Accept': 'application/json'
           },
           success: function (res) {
-			var agreementInfo = res.data.result
             that.agreementInfo = res.data.result
 			that.art_id = 0
 			getApp().globalData.art_id = 0

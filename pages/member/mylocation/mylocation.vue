@@ -345,8 +345,8 @@ export default {
     },
     gotoMap: function (e) {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var address = e.currentTarget.dataset.address;
       var addrname = e.currentTarget.dataset.addrname;
       var selected_activity_index = e.currentTarget.dataset.activityindex ? e.currentTarget.dataset.activityindex : 0;
