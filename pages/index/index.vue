@@ -21,7 +21,7 @@
 	-->
 	
 	<mescroll-body ref="mescrollRef" top="150" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
-		<view sclass="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,order_idx) in orders" :key="order_idx"  >
+		<view sclass="uni-list-cell" v-for="(item,order_idx) in orders" :key="order_idx"  >
 			<view class="order-item">
 			<view class="shop-text">
 				<text>{{(item.shape!=5 && item.shape!=4)?'订单号:':'订单号:'}}{{item.order_no}}</text>
@@ -42,7 +42,7 @@
 				
 			</view>
 			<view v-for="(mapping, sku_idx) in item['order_sku']" :key="sku_idx" class="carts-item">
-				<view @click="detailTapTag(item.order_no,item.order_id)">
+				<view @click="detailTapTag(item.order_no,item.order_id,item.shape)">
 					<image class="carts-image" :src="mapping.sku_image" mode="aspectFit"></image>
 				</view>
 				<view class="carts-text">
@@ -941,68 +941,60 @@ export default {
         }
       });
     },
-    detailTapTag: function (order_no='',order_id=0) {
-      var that = this;
+	
+	detailTapTag: function (order_no='',order_id=0,order_shape=0) {
+		var that = this
      // var order_object = e.currentTarget.dataset.orderObject;
-      
-      var card_type = that.card_type ? that.card_type : 0;
-      var tab2 = that.tab2;
-      console.log('index detail 订单 order no:' + order_no+' oder id:'+order_id);
-      uni.navigateTo({
-        url: '/pages/order/orderdetail/orderdetail?order_id=' + order_id + '&order_no=' + order_no + '&giftflag=' + that.giftflag + '&card_type=' + card_type + '&send_rcv=' + tab2
-      });
-    },
-    get_project_gift_para: function () {
-      var that = this;
-      var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
-      //var shop_type = that.shop_type;
-	  var weburl = getApp().globalData.weburl;
-      console.log('index get_project_gift_para navList2:', navList_new);
+		var card_type = that.card_type ? that.card_type : 0;
+		var tab2 = that.tab2;
+		console.log('index detail 订单 order no:' + order_no+' oder id:'+order_id+' shape:'+order_shape);
+	 
+		if(order_shape == 0||order_shape == 1){
+			uni.navigateTo({
+				url: '/pages/order/orderdetail/orderdetail?order_id=' + order_id + '&order_no=' + order_no + '&giftflag=' + that.giftflag + '&card_type=' + card_type + '&send_rcv=' + tab2
+			})
+		}
+	},
+	
+	get_project_gift_para: function () {
+		var that = this;
+		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
+		//var shop_type = that.shop_type;
+		var weburl = getApp().globalData.weburl;
+		console.log('index get_project_gift_para navList2:', navList_new);
 
-      if (navList2.length == 0) {
-        //项目列表
-        wx.request({
-          url: weburl + '/api/client/get_project_gift_para',
-          method: 'POST',
-          data: {
-            type: 2,
-            //暂定 1首页单图片 2首页轮播  
-            shop_type: shop_type
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            console.log('get_project_gift_para:', res.data.result);
-            navList_new = res.data.result;
+		if (navList2.length == 0) {
+			//项目列表
+			uni.request({
+				url: weburl + '/api/client/get_project_gift_para',
+				method: 'POST',
+				data: {
+					type: 2,
+					//暂定 1首页单图片 2首页轮播  
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					//console.log('get_project_gift_para:', res.data.result);
+					navList_new = res.data.result;
+					if (!navList_new) {
+						return
+					} else {
+						uni.setStorageSync('navList2', navList_new)
+						that.navList2 = navList_new
+						that.buyin_rate = navList_new[7]['value'] ? navList_new[7]['value'] : buyin_rate
+					}
+				}
+			})
+		} 
 
-            if (!navList_new) {
-              /*
-               wx.showToast({
-                 title: '没有菜单项2',
-                 icon: 'loading',
-                 duration: 1500
-               });
-               */
-              return;
-            } else {
-              wx.setStorageSync('navList2', navList_new);
-              that.setData({
-                navList2: navList_new,
-                buyin_rate: navList_new[7]['value'] ? navList_new[7]['value'] : buyin_rate
-              });
-            }
-          }
-        });
-      } 
-
-      setTimeout(function () {
-        that.setData({
-          loadingHidden: true
-        });
-      }, 1500);
-    },
+		setTimeout(function () {
+			that.loadingHidden = true
+		}, 1500)
+	},
 	
 	/*
     reloadData: function () {

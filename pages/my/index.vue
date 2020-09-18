@@ -578,7 +578,7 @@ export default {
 				var scan_result = res.result
 				this.scan_result = scan_result ;
 				if(scan_result.indexOf('http')>-1){
-					wx.navigateTo({
+					uni.navigateTo({
 					   url: '/pages/customerservice/customerservice?url='+scan_result
 					});
 				}else{

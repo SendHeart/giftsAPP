@@ -171,63 +171,65 @@
 
 <script>
 var weburl = getApp().globalData.weburl;
-var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
-var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
+var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var shop_type = getApp().globalData.shop_type;
 
 export default {
-  data() {
+	data() {
     return {
-      title_name: '记录详情',
-      title_logo: '/static/images/footer-icon-05.png',
-      delivery_background: weburl + '/uploads/line.png',
-      share_title: '我的礼物详情单',
-      share_desc: '送礼就是送心',
-      orders: [],
-      order_no: '',
-      sendtime: '',
-      orderprice: 0,
-      orderaddress: '',
-      fullname: '',
-      deliverycode: '',
-      deliveryname: '',
-      deliverystepinfo: '',
-      deliveryinfo: [],
-      delivery_status: [],
-      deliveryflag: 0,
-      tel: '',
-      rcvtime: '',
-      page: 1,
-      pagesize: 10,
-      status: 0,
-      order_id: 0,
-      sku_num: 0,
-      giftflag: 0,
-      shop_type: shop_type,
-      scrollTop: 1000,
-      currentPages_length: 2,
-      activeIndex2: "",
-      tab2: "",
-      winHeight: "",
-      winWidth: "",
-      wx_notes: "",
-      gift_status: "",
-      send_rcv: "",
-      order_status: "",
-      order_shape: "",
-      buy_num: "",
-      from_nickname: "",
-      from_headimg: "",
-      card_name_info: "",
-      card_love_info: "",
-      card_cele_info: "",
-      card_register_info: "",
-      card_type: "",
-      userInfo: ""
-    };
-  },
+		nickname: userInfo.nickname ? userInfo.nickname : '匿名',
+		avatarUrl: userInfo.avatarUrl,
+		title_name: '记录详情',
+		title_logo: '/static/images/footer-icon-05.png',
+		delivery_background: weburl + '/uploads/line.png',
+		share_title: '我的礼物详情单',
+		share_desc: '送礼就是送心',
+		orders: [],
+		order_no: '',
+		sendtime: '',
+		orderprice: 0,
+		orderaddress: '',
+		fullname: '',
+		deliverycode: '',
+		deliveryname: '',
+		deliverystepinfo: '',
+		deliveryinfo: [],
+		delivery_status: [],
+		deliveryflag: 0,
+		tel: '',
+		rcvtime: '',
+		page: 1,
+		pagesize: 10,
+		status: 0,
+		order_id: 0,
+		sku_num: 0,
+		giftflag: 0,
+		shop_type: shop_type,
+		scrollTop: 1000,
+		currentPages_length: 2,
+		activeIndex2: "",
+		tab2: "",
+		winHeight: "",
+		winWidth: "",
+		wx_notes: "",
+		gift_status: "",
+		send_rcv: "",
+		order_status: "",
+		order_shape: "",
+		buy_num: "",
+		from_nickname: "",
+		from_headimg: "",
+		card_name_info: "",
+		card_love_info: "",
+		card_cele_info: "",
+		card_register_info: "",
+		card_type: "",
+		userInfo: ""
+	}
+	},
 
   components: {},
   props: {},
@@ -311,12 +313,12 @@ export default {
       that.card_register_info = card_register_info
       that.card_type = card_type
     } else if (order_no || order_id) {
-     that.order_no = order_no
-     that.order_id = order_id
-	 console.log('订单号:', order_no,' order id:',order_id);
-      that.reloadData();
+		that.order_no = order_no
+		that.order_id = order_id
+		console.log('订单号:', order_no,' order id:',order_id);
+		that.reloadData();
     } else {
-      wx.navigateBack();
+		uni.navigateBack();
     }
   },
   onShow: function () {
@@ -362,33 +364,34 @@ export default {
         });
       }).exec();
     },
-    formSubmit: function (e) {
-      var that = this;
-      var formId = e.detail.formId;
-      var form_name = e.currentTarget.dataset.name;
-      var order_shape = that.order_shape;
-      console.log('formSubmit() formID：', formId, ' form name:', form_name);
+	
+	formSubmit: function (e) {
+		var that = this;
+		var formId = e.detail.formId;
+		var form_name = e.currentTarget.dataset.name;
+		var order_shape = that.order_shape;
+		console.log('formSubmit() formID：', formId, ' form name:', form_name);
 
-      if (form_name == 'express') {  
-        that.expressTapTag();
-	  }else if (form_name == 'navigateToCustomerService'){
-		that.navigateToCustomerService() ;
-      } else if (form_name == 'goBack') {
-        if (order_shape == 5) {
-          wx.navigateTo({
-            url: '/pages/list/list?navlist_title=贺卡请柬'
-          });
-        } else if (order_shape == 4) {
-          wx.navigateTo({
-            url: '/pages/list/list?navlist_title=互动卡'
-          });
-        } else {
-          that.goBack();
-        }
-      }
-
-      if (formId) that.submintFromId(formId);
-    },
+		if (form_name == 'express') {  
+			that.expressTapTag();
+		} else if (form_name == 'navigateToCustomerService'){
+			that.navigateToCustomerService() ;
+		} else if (form_name == 'goBack') {
+			if (order_shape == 5) {
+				uni.navigateTo({
+					url: '/pages/list/list?navlist_title=贺卡请柬'
+				})
+			} else if (order_shape == 4) {
+				uni.navigateTo({
+					url: '/pages/list/list?navlist_title=互动卡'
+				})
+			} else {
+				that.goBack();
+			}
+		}
+		if (formId) that.submintFromId(formId);
+	},
+	
     //提交formId，让服务器保存到数据库里
     submintFromId: function (formId) {
       var that = this;
@@ -566,7 +569,7 @@ export default {
 						}
 					}
 
-					console.log('orderdetail reloadData() orderObjects:', orderObjects);
+					//console.log('orderdetail reloadData() orderObjects:', orderObjects);
 					var status = orderObjects[0]['status'];
 					var gift_status = orderObjects[0]['gift_status'];
 					var order_id = orderObjects[0]['id'];
@@ -624,144 +627,171 @@ export default {
 			}, 1500);
 		}
     },
-    pay: function (e) {
-      var objectId = e.currentTarget.dataset.objectId;
-      var totalFee = e.currentTarget.dataset.totalFee;
-      var received = e.currentTarget.dataset.received ? e.currentTarget.dataset.received : 0;
-      console.log('orderdetail pay() order_no:', objectId, 'received:', received); //console.log(objectId);
+	
+	pay: function (e) {
+		var objectId = e.currentTarget.dataset.objectId;
+		var totalFee = e.currentTarget.dataset.totalFee;
+		var received = e.currentTarget.dataset.received ? e.currentTarget.dataset.received : 0;
+		console.log('orderdetail pay() order_no:', objectId, 'received:', received); //console.log(objectId);
 
-      wx.navigateTo({
-        url: '../payment/payment?orderNo=' + objectId + '&totalFee=' + totalFee + '&received=' + received
-      });
-    },
+		uni.navigateTo({
+			url: '../payment/payment?orderNo=' + objectId + '&totalFee=' + totalFee + '&received=' + received
+		})
+	},
+	
     receive: function (e) {
-      var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      wx.showModal({
-        title: '请确认',
-        content: '确认要收货吗',
-        success: function (res) {
-          if (res.confirm) {
-            var objectId = e.currentTarget.dataset.objectId;
-            wx.request({
-              url: weburl + '/api/client/order_confirm',
-              method: 'POST',
-              data: {
-                username: username,
-                access_token: token,
-                id: objectId
-              },
-              header: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json'
-              },
-              success: function (res) {
-                console.log(res.data.result);
-                console.log(res.data.info);
-
-                if (!res.data.info) {
-                  wx.showToast({
-                    title: '确认收货完成',
-                    icon: 'success',
-                    duration: 1000
-                  });
-                } else {
-                  wx.showToast({
-                    title: res.data.info,
-                    icon: 'loading',
-                    duration: 1500
-                  });
-                }
-              }
-            });
-          }
-        }
-      });
+		var that = this;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		uni.showModal({
+			title: '请确认',
+			content: '确认要收货吗',
+			success: function (res) {
+				if (res.confirm) {
+					var objectId = e.currentTarget.dataset.objectId;
+					uni.request({
+						url: weburl + '/api/client/order_confirm',
+						method: 'POST',
+						data: {
+							username: username,
+							access_token: token,
+							id: objectId
+						},
+						header: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+							'Accept': 'application/json'
+						},
+						success: function (res) {
+						//console.log(res.data.result);
+						//console.log(res.data.info);
+							if (!res.data.info) {
+								wx.showToast({
+									title: '确认收货完成',
+									icon: 'success',
+									duration: 1000
+								})
+							} else {
+								wx.showToast({
+									title: res.data.info,
+									icon: 'loading',
+									duration: 1500
+								})
+							}
+						}
+					})
+				}
+			}
+		})
     },
-    showGoods: function (e) {
-      var that = this;
-      var skuId = e.currentTarget.dataset.skuId;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var goods_id = e.currentTarget.dataset.goodsId;
-      var goods_name = e.currentTarget.dataset.goodsName;
-      var goods_shape = e.currentTarget.dataset.goodsShape;
-      var order_no = that.order_no;
-      var order_id = that.order_id;
-      var order_shape = e.currentTarget.dataset.orderShape;
-      var card_type = that.card_type;
-      var receive = that.send_rcv;
-      console.log('orderdetail showGoods() 查看详情 order_no: ', order_no, ' order_id:', order_id, ' order_shape:', order_shape, ' receive:', receive);
+	
+	showGoods: function (e) {
+		var that = this;
+		var skuId = e.currentTarget.dataset.skuId;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var goods_id = e.currentTarget.dataset.goodsId;
+		var goods_name = e.currentTarget.dataset.goodsName;
+		var goods_shape = e.currentTarget.dataset.goodsShape;
+		var order_no = that.order_no;
+		var order_id = that.order_id;
+		var order_shape = e.currentTarget.dataset.orderShape;
+		var card_type = that.card_type;
+		var receive = that.send_rcv;
+		console.log('orderdetail showGoods() 查看详情 order_no: ', order_no, ' order_id:', order_id, ' order_shape:', order_shape, ' receive:', receive);
 
-      if (order_shape == 5 || order_shape == 4) {
-        wx.navigateTo({
-          url: '/pages/order/receive/receive?order_no=' + order_no + '&order_id=' + order_id + '&order_shape=' + order_shape + '&card_type=' + card_type + '&receive=' + receive
-        });
-      } else {
-        wx.navigateTo({
-          url: '../../details/details?sku_id=' + skuId + '&goods_name=' + goods_name + '&id=' + goods_id + '&token=' + token + '&username=' + username
-        });
-      }
-    },
+		if (order_shape == 5 || order_shape == 4) {
+			uni.navigateTo({
+				url: '/pages/order/receive/receive?order_no=' + order_no + '&order_id=' + order_id + '&order_shape=' + order_shape + '&card_type=' + card_type + '&receive=' + receive
+			})
+		} else {
+			uni.navigateTo({
+				url: '../../details/details?sku_id=' + skuId + '&goods_name=' + goods_name + '&id=' + goods_id + '&token=' + token + '&username=' + username
+			})
+		}
+	},
+	
     showinteracton: function (e) {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var order_id = e.currentTarget.dataset.orderId;
       var order_shape = e.currentTarget.dataset.orderShape;
       var receive = that.send_rcv;
 
       if (order_shape == 4 || order_shape == 5) {
-        wx.navigateTo({
+        uni.navigateTo({
           url: '/pages/order/list/list?order_id=' + order_id + '&order_shape=' + order_shape + '&receive=' + receive
         });
       }
     },
 	navigateToCustomerService: function () {
-	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-	  var webview_url ='http://wpa.qq.com/msgrd?v=3&uin=198895160&site=qq&menu=yes' ;
-	  var order_no = this.order_no;
-	  var order_id = this.order_id;
-	  uni.request({
-	    url: weburl + '/api/client/query_webview_url',
-	    method: 'POST',
-	    data: {
-	      username: username,
-	      access_token: token,
-	      shop_type: shop_type,
-		  order_no: order_no,
-		  order_id: order_id,
-	      webview_type: '1' , //1:customerservice
-	    },
-	    header: {
-	      'Content-Type': 'application/x-www-form-urlencoded',
-	      'Accept': 'application/json'
-	    },
-	    success: function (res) {
-	      console.log('web view url：', res.data.result);
-	      if (res.data.status=='y') {
-	        var webview_info = res.data.result ;
-	  		webview_url = webview_info.url ;
-			
-			plus.runtime.openURL(webview_url,function (res) {  
-				plus.nativeUI.alert("本机没有安装QQ，无法启动");  
-			});
-			  
-			/*
-			wx.navigateTo({
-			   url: '/pages/customerservice/customerservice?url='+webview_url
-			});
-			*/
-	      } else {
-	        wx.showToast({
-	          title: '暂时没有WEBVIEW URL',
-	          icon: 'none',
-	          duration: 1500
-	        });
-	      }
-	    }
-	  });
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var webview_url ='http://wpa.qq.com/msgrd?v=3&uin=198895160&site=qq&menu=yes' ;
+		var order_no = this.order_no;
+		var order_id = this.order_id;
+		var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+		
+		uni.request({
+			url: weburl + '/api/client/query_webview_url',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				order_no: order_no,
+				order_id: order_id,
+				webview_type: '1' , //1:customerservice
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('web view url：', res.data.result);
+				if (res.data.status=='y') {
+					var webview_info = res.data.result ;
+					webview_url = webview_info.url ;
+					plus.runtime.openURL(webview_url,function (res) {  
+						plus.nativeUI.alert("本机没有安装QQ，无法启动");  
+					});
+				} else {
+					wx.showToast({
+						title: '暂时没有WEBVIEW URL',
+						icon: 'none',
+						duration: 1500
+					})
+				}
+			}
+		})
+		
+		//发通知消息
+		var content = {
+			message_type: '20',  //MQTT 客服咨询消息
+			message: '订单ID:'+order_id+' 发起咨询【请及时回复】',
+			order_no:order_no,
+			order_id:order_id,
+		}
+		var title = '订单咨询' ;
+		uni.request({
+			url: weburl + '/api/mqttservice/publish',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				title: title,
+				from_headimg: userInfo.avatarUrl?userInfo.avatarUrl:'',
+				from_nickname: userInfo.nickname?userInfo.nickname:'',
+				content: JSON.stringify(content),
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				//console.log('web view url：', res.data.result)
+			}
+		})
 	},
     setData: function (obj) {
       let that = this;
