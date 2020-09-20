@@ -359,8 +359,7 @@
 				} else {
 					setTimeout(function () {
 						that.getInputMessage(message)
-					}, 500)
-					
+					}, 500)					
 				}
 			},
 			
