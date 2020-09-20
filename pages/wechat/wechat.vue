@@ -247,7 +247,7 @@
 					  title: '客户端未连接',
 					  icon: 'loading',
 					  duration: 1000
-					});
+					})
 					return false
 				}
 			
@@ -255,7 +255,7 @@
 				var mqtt_pub_content = {
 					d:{
 						username:that.goods_owner,
-						title:that.goods_name,
+						title:that.goods_id,
 						content:JSON.stringify(that.mqtt_pub_message),
 						from_headimg:userInfo.avatarUrl,
 						from_nickname:userInfo.nickname,
@@ -345,14 +345,25 @@
 					}
 				}
 			},
+			
 			getInputMessage: function (message) { //获取子组件的输入数据
+				var that = this
 				console.log(message);
-				this.addMessage('customer', message.content, false)
+				that.addMessage('customer', message.content, false)
 				message.content = util.filterEmoji(message.content);
-				this.mqtt_pub_message = message
-				this.mqtt_publish()
-				//this.toRobot(message.content);
+				let count = 0 ;
+				if(that.mqtt_client != null && that.mqtt_client.connented != false) {
+					 that.mqtt_pub_message = message
+					 that.mqtt_publish()					
+					 //that.toRobot(message.content);					 
+				} else {
+					setTimeout(function () {
+						that.getInputMessage(message)
+					}, 500)
+					
+				}
 			},
+			
 			addMessage: function (user, content, hasSub, subcontent) {
 				var that = this
 				var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
