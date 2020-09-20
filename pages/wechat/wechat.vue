@@ -15,6 +15,7 @@
 	import chatInput from '@/components/im-chat/chatinput.vue';
 	import messageShow from '@/components/im-chat/messageshow.vue';
 	import mqtt_service from '@/utils/mqtt.js';
+	import util from '@/utils/util.js';
 	var mqtt_client ;
 	var weburl = getApp().globalData.weburl;
 	var shop_type = getApp().globalData.shop_type;
@@ -45,7 +46,8 @@
 					user: 'home',
 					headimg:'',
 					type: 'head', //input,content 
-					content: '你好!'
+					content: '你好!',
+					goods_id:0,
 				}],
 				cid:'',
 				mqtt_server: {
@@ -120,8 +122,8 @@
 			uni.setNavigationBarTitle({
 				title: that.bar_title+'_服务群'
 			})
-			that.mqtt_pub_topic = 'SH_GOODS_' + that.goods_id + '_' + username
-			that.mqtt_sub_topic = 'SH_GOODS_' + that.goods_id + '_' + username
+			that.mqtt_pub_topic = 'SH_GDS01_' + that.goods_id 
+			that.mqtt_sub_topic = 'SH_GDS02_' + that.goods_id 
 			that.mqtt_connect()
 		},
 		methods: {
@@ -248,9 +250,12 @@
 					});
 					return false
 				}
+			
+				that.mqtt_pub_message['goods_id'] = that.goods_id
 				var mqtt_pub_content = {
 					d:{
-						title:'商品ID'+that.goods_id+' '+that.bar_title,
+						username:that.goods_owner,
+						title:that.goods_name,
 						content:JSON.stringify(that.mqtt_pub_message),
 						from_headimg:userInfo.avatarUrl,
 						from_nickname:userInfo.nickname,
@@ -342,7 +347,8 @@
 			},
 			getInputMessage: function (message) { //获取子组件的输入数据
 				console.log(message);
-				this.addMessage('customer', message.content, false);
+				this.addMessage('customer', message.content, false)
+				message.content = util.filterEmoji(message.content);
 				this.mqtt_pub_message = message
 				this.mqtt_publish()
 				//this.toRobot(message.content);
@@ -356,7 +362,7 @@
 					avatarUrl:avatarUrl,
 					content: content,
 					hasSub: hasSub,
-					subcontent: subcontent
+					subcontent: subcontent,
 				}
 				that.messages.push(messages)
 				setTimeout(function () {
