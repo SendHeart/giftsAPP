@@ -1173,8 +1173,8 @@ export default {
       that.carts = carts
       that.minusStatuses = minusStatuses
 
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var sku_id = carts[index]['id'];
       that.updateCart(username, sku_id, num, token);
       uni.hideLoading();
@@ -1209,8 +1209,8 @@ export default {
       that.carts = carts
       that.minusStatuses = minusStatuses
 
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var sku_id = carts[index]['id'];
       that.updateCart(username, sku_id, num, token);
       uni.hideLoading();
@@ -1280,18 +1280,22 @@ export default {
       wx.hideLoading();
       this.sum();
     },
+	
     bindPickGoods: function () {
-      wx.navigateTo({
-        url: '/pages/list/list?username=' + username + '&token=' + token
-      });
+		var that = this
+		uni.navigateTo({
+			url: '/pages/list/list?username=' + that.username + '&token=' + that.token
+		})
     },
+	
     bindAIPickGoods: function () {
-      var that = this;
-      getApp().globalData.messageflag = 2;
-      wx.switchTab({
-        url: '/pages/member/message/message'
-      });
+		var that = this;
+		getApp().globalData.messageflag = 2;
+		uni.switchTab({
+			url: '/pages/member/message/message'
+		})
     },
+	
     bindCheckout: function (buymyself=0,mycarts='',mynote='',mytotal=0) {
       var that = this;
       var is_buymyself = buymyself;
@@ -1502,24 +1506,25 @@ export default {
       this.carts = carts
       this.total = total
     },
-    showGoods: function (e) {
+    
+	showGoods: function (e) {
       // 点击购物车某件商品跳转到商品详情
-      var objectId = e.id ; //currentTarget.dataset.objectId;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
-      var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
-      var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
-      var goods_name = e.name ; //currentTarget.dataset.goodsName;
-      var goods_price = e.sell_price ; //.dataset.goodsPrice;
-      var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
-      var goods_sale = e.sale ; //currentTarget.dataset.sale;
-      var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
-      var activity_image = e.activity_image?e.activity_image:''
-	  var sku_id = objectId;
-	  image = image?image:activity_image?activity_image:'' ;
-	  getApp().globalData.hall_gotop = 0;
-	  var show_goods_options = {
+		var objectId = e.id ; //currentTarget.dataset.objectId;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
+		var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
+		var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
+		var goods_name = e.name ; //currentTarget.dataset.goodsName;
+		var goods_price = e.sell_price ; //.dataset.goodsPrice;
+		var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
+		var goods_sale = e.sale ; //currentTarget.dataset.sale;
+		var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
+		var activity_image = e.activity_image?e.activity_image:''
+		var sku_id = objectId;
+		image = image?image:activity_image?activity_image:'' ;
+		getApp().globalData.hall_gotop = 0;
+		var show_goods_options = {
 	  		  sku_id:objectId,
 	  		  id:goods_id,
 	  		  goods_shape:goods_shape,
@@ -1531,12 +1536,13 @@ export default {
 	  		  image:image,
 	  		  token:token,
 	  		  username:username
-	  } ;
-	  uni.setStorageSync('show_goods_options', show_goods_options);
-      wx.navigateTo({
-        url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
-      });
+		} ;
+		uni.setStorageSync('show_goods_options', show_goods_options);
+		uni.navigateTo({
+			url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
+		})
     },
+	
     updateCart: function (username, sku_id, buy_num, token) {
       var that = this;
       var shop_type = that.shop_type;
@@ -1742,7 +1748,7 @@ export default {
 		//mescroll.endSuccess() ;
 	
 		this.page =  1 
-		mescroll.resetUpScroll()
+		if(this.mescroll) mescroll.resetUpScroll()
 		
 	},
 	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
@@ -1855,7 +1861,7 @@ export default {
 				  that.page = page + 1 ;
 				  that.pageoffset = pageoffset ;
 				  that.all_rows = all_rows ;
-				  console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
+				  //console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
 				  // 回调
 				  successCallback && successCallback(venuesItems_new);
 			    }

@@ -8,7 +8,22 @@ const store = new Vuex.Store({
 		hasLogin: false,
 		loginProvider: "",
 		openid: null,
-		testvuex:false
+		testvuex:false,
+		user: {
+			home: {
+				id: 1,
+				name: 'tax',
+				img: 'static/img/homeHL.png'
+			},
+			customer: {
+				id: 2,
+				name: 'customer',
+				img: 'static/img/customerHL.png'
+			}
+		}
+	},
+	updated:function(){
+		console.log('message update:'+ this.scrollTop);
 	},
 	mutations: {
 		login(state, provider) {

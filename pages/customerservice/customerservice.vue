@@ -13,18 +13,17 @@
 		},
 		onLoad(options) {
 			//console.log('customer service onload:',options)
-			var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 			if (options && options.url) {
 				this.url = options.url+'&username='+username+'&from=APP' ;
-			}
-			
+			}			
 		},
 		methods: {
 			getMessage(event) {
 				uni.showModal({
 					content: JSON.stringify(event.detail),
 					showCancel: false
-				});
+				})
 			}
 		}
 	}

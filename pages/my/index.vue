@@ -69,22 +69,22 @@
 				<image src="/static/images/u631.png" class="png" mode="aspectFit"></image>
 				<text>联系客服</text>
 			</view>
-			<view @tap="login" class="order">
+			<view @tap="relogin" class="order">
 				<image src="/static/images/icon_login_name_red.png" />
 				<text>重新登录</text>
 			</view>
 			<view v-if="userauth.location == 1" @tap="navigateToMyLocation" class="order">
-			  <image src="/static/images/iconfont-shouhuodizhi.png" />
-			  <text>我的位置</text>
+				<image src="/static/images/iconfont-shouhuodizhi.png" />
+				<text>我的位置</text>
 			</view>
 						 
 			<view v-if="userauth.celebration == 1" @tap="navigateToCelebration" class="order">
-			  <image src="/static/images/wish.png" />
-			  <text>我的祝福</text>
+				<image src="/static/images/wish.png" />
+				<text>我的祝福</text>
 			</view>
 			<view v-if="userauth.article==1" @tap="navigateToArticle" class="order">
-			  <image src="/static/images/u621.png" />
-			  <text>送心文章</text>
+				<image src="/static/images/u621.png" />
+				<text>送心文章</text>
 			</view>
 			<view v-if="userauth.shoper==1" @tap="navigateToShopowner" class="order">
 				<image src="/static/images/u633.png" />
@@ -446,7 +446,7 @@ export default {
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
 		var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
-		var frompage = options.frompage ? options.frompage : ''
+		var frompage = options.frompage ? options.frompage : '/pages/hall/hall'
 
 		//var art_id = options.art_id ? options.art_id:0
 		//art_id =  art_id>0?art_id:getApp().globalData.art_id
@@ -496,9 +496,8 @@ export default {
 		user_type = parseInt(user_type);
 		console.log('my index onShow() user_phone:', user_phone, 'userauth:', userauth);
 		if (!username) {//登录
-			uni.navigateTo({
-				url: '../login/login?wechat=1'
-			})
+			that.frompage = that.frompage
+			that.login()
 		}
 		if (!user_name || user_name == '') {
 			that.modalHiddenUserName = !modalHiddenUserName;  
@@ -714,32 +713,35 @@ export default {
 				'Accept': 'application/json'
 			},
 			success: function (res) {
-				that.token = res.data.result['token']?res.data.result['token']:''
-				that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
-				that.user_group_name = res.data.result['member_group_name']?res.data.result['member_group_name']:this.user_group_name
-				that.card_name = res.data.result['card_name']
-				that.card_logo = res.data.result['card_logo']?res.data.result['card_logo']:that.card_logo_init
-				that.card_no = res.data.result['card_no']
-				that.card_due_start = res.data.result['card_due_start']
-				that.card_due_end = res.data.result['card_due_end']
-				console.log('my index query_user_info 用户基本信息 user_group_id:'+this.user_group_id+' group name:'+this.user_group_name+' menber info:'+ JSON.stringify(res.data.result))
-				var userauth = JSON.parse(res.data.result['userauth'])
-				uni.setStorageSync('token', that.token)
-				uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
-				uni.setStorageSync('username', res.data.result['username'])
-				uni.setStorageSync('m_id', res.data.result['m_id'])
-				uni.setStorageSync('user_phone', res.data.result['user_phone'])
-				uni.setStorageSync('user_name', res.data.result['user_name'])
-				uni.setStorageSync('user_gender', res.data.result['user_gender'])
-				uni.setStorageSync('user_type', res.data.result['user_type'])
-				uni.setStorageSync('userauth', userauth)
-				uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
-				uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
-				uni.setStorageSync('card_name', res.data.result['card_name'])
-				uni.setStorageSync('card_logo', res.data.result['card_logo'])
-				uni.setStorageSync('card_no', res.data.result['card_no'])
-				uni.setStorageSync('card_due_start', res.data.result['card_due_start'])
-				uni.setStorageSync('card_due_end', res.data.result['card_due_end'])
+				console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res))
+				if(res.data.result){
+					that.token = res.data.result['token']?res.data.result['token']:''
+						that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
+						that.user_group_name = res.data.result['member_group_name']?res.data.result['member_group_name']:this.user_group_name
+						that.card_name = res.data.result['card_name']
+						that.card_logo = res.data.result['card_logo']?res.data.result['card_logo']:that.card_logo_init
+						that.card_no = res.data.result['card_no']
+						that.card_due_start = res.data.result['card_due_start']
+						that.card_due_end = res.data.result['card_due_end']
+						var userauth = JSON.parse(res.data.result['userauth'])
+						uni.setStorageSync('token', that.token)
+						uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
+						uni.setStorageSync('username', res.data.result['username'])
+						uni.setStorageSync('m_id', res.data.result['m_id'])
+						uni.setStorageSync('user_phone', res.data.result['user_phone'])
+						uni.setStorageSync('user_name', res.data.result['user_name'])
+						uni.setStorageSync('user_gender', res.data.result['user_gender'])
+						uni.setStorageSync('user_type', res.data.result['user_type'])
+						uni.setStorageSync('userauth', userauth)
+						uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+						uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+						uni.setStorageSync('card_name', res.data.result['card_name'])
+						uni.setStorageSync('card_logo', res.data.result['card_logo'])
+						uni.setStorageSync('card_no', res.data.result['card_no'])
+						uni.setStorageSync('card_due_start', res.data.result['card_due_start'])
+						uni.setStorageSync('card_due_end', res.data.result['card_due_end'])
+					
+				}
 			},
 		})
 	},
@@ -877,7 +879,7 @@ export default {
 				
 			    if (venuesItems_new) {
 			      for (var i = 0; i < venuesItems_new.length; i++) {
-			        venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
+			        venuesItems_new[i]['short_name'] = venuesItems_new[i]['name']?venuesItems_new[i]['name'].substring(0, 10) + '...':'';
 						
 			        if (!venuesItems_new[i]['act_info']) {
 			          venuesItems_new[i]['act_info'] = '';
@@ -888,11 +890,11 @@ export default {
 			        } else {
 			          venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
 			        }
-					if (venuesItems_new[i]['activity_image'].indexOf("http") < 0 && venuesItems_new[i]['activity_image']) {
+					if (venuesItems_new[i]['activity_image'] && venuesItems_new[i]['activity_image'].indexOf("http") < 0 && venuesItems_new[i]['activity_image']) {
 					  venuesItems_new[i]['activity_image'] = weburl + '/' + venuesItems_new[i]['activity_image'];
 					}
 					
-					if (venuesItems_new[i]['image'].indexOf("http") < 0 && venuesItems_new[i]['image']) {
+					if (venuesItems_new[i]['image'] && venuesItems_new[i]['image'].indexOf("http") < 0 && venuesItems_new[i]['image']) {
 					  venuesItems_new[i]['image'] = weburl + '/' + venuesItems_new[i]['image'];
 					}
 								
@@ -902,7 +904,7 @@ export default {
 				  that.page = page + 1 
 				  that.pageoffset = pageoffset 
 				  that.all_rows = all_rows 
-				  console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
+				  //console.log('加载完成 page:', page, 'venuesItems_new:',venuesItems_new);
 				  // 回调
 				  successCallback && successCallback(venuesItems_new);
 			    }
@@ -1062,11 +1064,11 @@ export default {
       if (userInfo) {
         if (pages.length > 1) {
           if (frompage) {
-            wx.switchTab({
+            uni.switchTab({
               url: frompage
             });
           } else {
-            wx.navigateBack({
+            uni.navigateBack({
               changed: true
             }); //返回上一页
           }
@@ -1588,7 +1590,7 @@ export default {
       }
     },
     navigateToMyLocation: function (e) {
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../member/mylocation/mylocation?'
       });
     },
@@ -2004,91 +2006,95 @@ export default {
 	  }
 	},
 	
-    login: function () {
-      var that = this;
-      uni.navigateTo({
-        url: '/pages/login/login?frompage=/pages/my/index'
-      });
-    },
-    navigateToAboutus: function () {
-      uni.navigateTo({
-        url: '/pages/member/aboutus/aboutus'
-      });
-    },
-    navigateToDonate: function () {
-      uni.navigateTo({
-        url: '/pages/member/donate/donate'
-      });
-    },
-    image_save: function (image_url, image_cache_name) {
-      var that = this;
-      console.log('membershare imge save image url:', image_url, 'image_cache_name:', image_cache_name);
-      uni.downloadFile({
-        url: image_url,
-        success: function (res) {
-          if (res.statusCode === 200) {
-            var img_tempFilePath = res.tempFilePath; // console.log('图片下载成功' + res.tempFilePath)
+	login: function () {
+		var that = this
+		uni.navigateTo({
+			url: '/pages/login/login?frompage='+that.frompage
+		})
+	},
+	
+	relogin: function () {
+		var that = this
+		uni.navigateTo({
+			url: '/pages/login/login?frompage=/pages/my/index'
+		})
+	},
+	
+	navigateToAboutus: function () {
+		uni.navigateTo({
+			url: '/pages/member/aboutus/aboutus'
+		})
+	},
+	
+	navigateToDonate: function () {
+		uni.navigateTo({
+			url: '/pages/member/donate/donate'
+		})
+	},
+	
+	image_save: function (image_url, image_cache_name) {
+		var that = this;
+		console.log('membershare imge save image url:', image_url, 'image_cache_name:', image_cache_name);
+		uni.downloadFile({
+			url: image_url,
+			success: function (res) {
+				if (res.statusCode === 200) {
+					var img_tempFilePath = res.tempFilePath; // console.log('图片下载成功' + res.tempFilePath)
 
-            const fs = wx.getFileSystemManager();
-            fs.saveFile({
-              tempFilePath: res.tempFilePath,
+					const fs = wx.getFileSystemManager();
+					fs.saveFile({
+						tempFilePath: res.tempFilePath,
 
               // 传入一个临时文件路径
-              success(res) {
-                wx.setStorageSync(image_cache_name, res.savedFilePath);
-                console.log('membershare image_save 用户分享图片缓存成功', image_cache_name, res.savedFilePath);
-              },
+						success(res) {
+							uni.setStorageSync(image_cache_name, res.savedFilePath);
+							console.log('membershare image_save 用户分享图片缓存成功', image_cache_name, res.savedFilePath);
+						},
 
-              fail(res) {
-                console.log(' membershare image_save 用户图片缓存失败', image_cache_name, res);
-                var wx_headimg_cache = wx.getStorageSync('wx_headimg_cache');
-                var membershare_qrcode_cache = wx.getStorageSync('membershare_qrcode_cache_' + that.act_id);
-                fs.getSavedFileList({
-                  success(res) {
-                    console.log('membershare getSavedFileList 缓存文件列表', res);
+						fail(res) {
+							console.log(' membershare image_save 用户图片缓存失败', image_cache_name, res);
+							var wx_headimg_cache = wx.getStorageSync('wx_headimg_cache');
+							var membershare_qrcode_cache = wx.getStorageSync('membershare_qrcode_cache_' + that.act_id);
+							fs.getSavedFileList({
+								success(res) {
+									console.log('membershare getSavedFileList 缓存文件列表', res);
 
-                    for (var i = 0; i < res.fileList.length; i++) {
-                      if (res.fileList[i]['filePath'] != wx_headimg_cache && res.fileList[i]['filePath'] != membershare_qrcode_cache) {
-                        fs.removeSavedFile({
-                          filePath: res.fileList[i]['filePath'],
+									for (var i = 0; i < res.fileList.length; i++) {
+										if (res.fileList[i]['filePath'] != wx_headimg_cache && res.fileList[i]['filePath'] != membershare_qrcode_cache) {
+											fs.removeSavedFile({
+												filePath: res.fileList[i]['filePath'],
+												success(res) {
+													console.log('membershare image_save 缓存清除成功', res);
+												},
 
-                          success(res) {
-                            console.log('membershare image_save 缓存清除成功', res);
-                          },
+												fail(res) {
+													console.log('membershare image_save 缓存清除失败', res);
+												}
+											})
+										}
+									}
+									fs.saveFile({
+										tempFilePath: img_tempFilePath,
+										// 传入一个临时文件路径
+										success(res) {
+											uni.setStorageSync(image_cache_name, res.savedFilePath);
+										}
+									})
+								},
 
-                          fail(res) {
-                            console.log('membershare image_save 缓存清除失败', res);
-                          }
-
-                        });
-                      }
-                    }
-
-                    fs.saveFile({
-                      tempFilePath: img_tempFilePath,
-
-                      // 传入一个临时文件路径
-                      success(res) {
-                        wx.setStorageSync(image_cache_name, res.savedFilePath);
-                      }
-
-                    });
-                  },
-
-                  fail(res) {
-                    console.log('membershare getSavedFileList 缓存文件列表查询失败', res);
-                  }
-
-                });
-              }
-
-            });
-          } else {
-            console.log('membershare image_save 响应失败', res.statusCode);
-          }
-        }
-      });
-    },
+								fail(res) {
+									console.log('membershare getSavedFileList 缓存文件列表查询失败', res);
+								}
+							})
+						}
+					})
+				} else {
+					console.log('membershare image_save 响应失败', res.statusCode);
+				}
+			}
+		})
+	},
+	
     navigateToShare: function () {
       var that = this;
       var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0; //var share_member_qrcode = wx.getStorageSync('member_qrcode_cache_' + m_id)

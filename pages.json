@@ -227,6 +227,19 @@
 			}
 		},
 		
+		{
+			"path": "pages/wechat/wechat",
+			"style": {
+				"navigationBarTitleText": "服务群",
+				"app-plus": {
+					"titleNView": {
+						//"autoBackButton":"false",
+					},
+					"scrollIndicator":"none"
+				}
+			}
+		},
+		
 		
 	/*
 	{
@@ -253,11 +266,6 @@
 			"style": {
 				"navigationBarTitleText": "详细记录"
 			}
-		},
-	 
-		{
-			"path": "pages/wechat/wechat",
-			"style": {}
 		},
 		
 		

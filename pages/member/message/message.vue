@@ -913,71 +913,69 @@ export default {
       });
     },
     addCart: function () {
-      var that = this;
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var goods_id = that.goods_id;
-      var page = that.page;
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var goods_id = that.goods_id;
+		var page = that.page;
 
-      if (!username) {
-        //登录
-        wx.navigateTo({
-          url: '/pages/login/login?frompage=member/message/message'
-        });
-      } else {
-        // 获取商品SKU
-        wx.request({
-          url: weburl + '/api/client/get_goodssku_list',
-          method: 'POST',
-          data: {
-            username: username,
-            access_token: token,
-            goods_id: goods_id,
-            shop_type: shop_type,
-            page: page
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            console.log('goods_sku:', res.data.result);
-            var attrValueList = res.data.result.spec_select_list ? res.data.result.spec_select_list : '';
-            var commodityAttr = res.data.result.sku_list ? res.data.result.sku_list : '{}';
+		if (!username) {
+			//登录
+			uni.navigateTo({
+				url: '/pages/login/login?frompage=/pages/hall/hall'
+			})
+		} else {
+			// 获取商品SKU
+			uni.request({
+				url: weburl + '/api/client/get_goodssku_list',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					goods_id: goods_id,
+					shop_type: shop_type,
+					page: page
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					console.log('goods_sku:', res.data.result);
+					var attrValueList = res.data.result.spec_select_list ? res.data.result.spec_select_list : '';
+					var commodityAttr = res.data.result.sku_list ? res.data.result.sku_list : '{}';
 
-            if (!commodityAttr) {
-              wx.showToast({
-                title: '该产品已下架',
-                icon: 'loading',
-                duration: 1500
-              });
-              return;
-            }
+					if (!commodityAttr) {
+						wx.showToast({
+						title: '该产品已下架',
+						icon: 'loading',
+						duration: 1500
+						});
+						return;
+					}
 
-            for (var i = 0; i < commodityAttr.length; i++) {
-              if (commodityAttr[i].attrValueStatus) {
-                commodityAttr[i].attrValueStatus = true;
-              } else {
-                commodityAttr[i].attrValueStatus = false;
-              }
-            }
+					for (var i = 0; i < commodityAttr.length; i++) {
+						if (commodityAttr[i].attrValueStatus) {
+							commodityAttr[i].attrValueStatus = true;
+						} else {
+							commodityAttr[i].attrValueStatus = false;
+						}
+					}
 
-            that.commodityAttr = commodityAttr
-            that.sku_id = commodityAttr[0]['id']
-            console.log('goods sku id:', that.sku_id);
-            that.insertCart(that.sku_id, username, 0);
-            if (!attrValueList) return;
-
-            for (var i = 0; i < attrValueList.length; i++) {
-              if (!attrValueList[i].attrValueStatus) {
-                attrValueList[i].attrValueStatus = true;
-              }
-            }
-
-            that.attrValueList = attrValueList
-          }
-        });
-      }
+					that.commodityAttr = commodityAttr
+					that.sku_id = commodityAttr[0]['id']
+					console.log('goods sku id:', that.sku_id);
+					that.insertCart(that.sku_id, username, 0);
+					if (!attrValueList) return;
+					for (var i = 0; i < attrValueList.length; i++) {
+						if (!attrValueList[i].attrValueStatus) {
+							attrValueList[i].attrValueStatus = true;
+						}
+					}
+					that.attrValueList = attrValueList
+				}
+			})
+		}
     },
     insertCart: function (sku_id, username, wishflag) {
       var that = this;

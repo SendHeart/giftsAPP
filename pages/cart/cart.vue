@@ -113,6 +113,7 @@ export default {
 	    itemLefts: [],
 	    showmorehidden: true,
 	    rshowmorehidden: true,
+		frompage:'',
 	    page:page,
 	    pagesize:pagesize,
 	    all_rows: 0,
@@ -138,20 +139,23 @@ export default {
 	components: {},
 	props: {},
 	onLoad: function (options) {
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-		this.username = username
-		this.token = token
-		this.get_project_gift_para()
+		var that = this
+		that.username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		that.token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		that.username = username
+		that.token = token
+		that.frompage = options.frompage ? options.frompage : '/pages/hall/hall'
+		that.get_project_gift_para()
 	},
   
 	onShow: function () {
+		var that = this 
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-		var that = this 
+		
         if (!username) {//登录
 			uni.navigateTo({
-				url: '../login/login?wechat=1'
+				url: '/pages/login/login?frompage='+ that.frompage
 			})
 		}
 		uni.getSystemInfo({
@@ -213,7 +217,7 @@ export default {
 	bindPlus: function (e) {
 		var that  = this
         wx.showLoading({
-          title: '操作中',
+          title: '',
           mask: true
         });
         var index = parseInt(e.currentTarget.dataset.index);

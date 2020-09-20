@@ -8,11 +8,11 @@
         <view class="input-group">
             <view class="input-row border">
                 <text class="title">手机号：</text>
-                <m-input class="m-input" type="text" clearable focus v-model="account" :placeholder="username?username:'请输入手机号'"></m-input>
+                <m-input class="m-input" type="text" clearable v-model="account" :placeholder="username?username:'请输入手机号'"></m-input>
             </view>
             <view class="input-row" v-if="bypassword">
                 <text class="title">密码：</text>
-                <m-input type="password" displayable focus v-model="password" placeholder="请输入密码"></m-input>
+                <m-input type="password" displayable v-model="password" placeholder="请输入密码"></m-input>
             </view>
 			
 			<view class="input-row" v-if="!bypassword">
@@ -24,11 +24,12 @@
         <view class="btn-row">
             <button type="warn" class="primary" @tap="bindLogin">登录</button>
         </view>
+		
         <view class="action-row">
             <navigator url="../reg/reg">注册账号</navigator>
             <text>|</text>
             <navigator url="../pwd/pwd">忘记密码</navigator>
-			<view  @click="byscanface()">
+			<view @click="byscanface()">
 			<text>|</text>
 			<text>刷脸</text> 
 			</view>
@@ -53,18 +54,18 @@
 </template>
 
 <script>
+	var util = require("../../utils/util.js"); //获取应用实例
 	const lyBDFaceAuth = uni.requireNativePlugin('longyoung-BDFaceAuth');
 	const lyBDFaceAuthIOS = uni.requireNativePlugin('longyoung-BDFaceAuth-iOS'); //ios
-
-	var util = require("../../utils/util.js"); //获取应用实例
 	var weburl = getApp().globalData.weburl;
 	var shop_type = getApp().globalData.shop_type;
 	var username = uni.getStorageSync('username');
 	var md5_key = getApp().globalData.md5_key;
 	var uploadurl = getApp().globalData.uploadurl;
+	//import mInput from '@/components/m-input.vue'
 	import permision from "@/common/permission.js"
-	import uniIcons from '@/components/uni-icons/uni-icons.vue' ;
-	import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
+	//import uniIcons from '@/components/uni-icons/uni-icons.vue' ;
+	//import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue' ;
     import md5 from '../../utils/md5.js'
 	import permijs from '../../utils/permission.js'
 	import service from '../../service.js';
@@ -72,20 +73,18 @@
         mapState,
         mapMutations,
     } from 'vuex'
-    import mInput from '../../components/m-input.vue'
-	if(username){
-		uni.navigateBack();
-	}
-	
+    
     export default {
         components: {
-            mInput,
-			uniIcons,
-			uniNavBar
+            //mInput,
+			//uniIcons,
+			//uniNavBar
         },
         data() {
             return {
 				shop_type: shop_type,
+				frompage:'',
+				permission_status:0,
 				uploadurl: uploadurl,
 				username:username,
                 providerList: [],
@@ -146,64 +145,71 @@
 				imgBase64Str: "",
             }
         },
-        computed: mapState(['forcedLogin']),
-		onLoad() {
-			//权限
-			// #ifdef APP-PLUS
-			if (uni.getSystemInfoSync().platform == "ios") {
-				this.licenseIDStr = "sendheartAppFace-face-ios";
-			} else if (uni.getSystemInfoSync().platform == "android") {
-				this.licenseIDStr = "sendheartAppFace-face-android";
-			}
-			this.facescan();
-			// #endif
+        computed: {
+			
 		},
+		onReady() {
+		   
+		},
+		
+		onLoad(options) {
+			var that = this
+			that.frompage = options.frompage ? options.frompage : ''
+			console.log('login/login options:'+JSON.stringify(options))
+			that.initPosition();
+			that.initProvider(); 
+		},
+		onShow: function () {
+			
+		},
+		
         methods: {
-            ...mapMutations(['login']),
+			...mapState(['forcedLogin']),
+			...mapMutations(['login']),
             initProvider() {
                 const filters = ['weixin', 'qq', 'sinaweibo'];
                 uni.getProvider({
                     service: 'oauth',
                     success: (res) => {
-                        if (res.provider && res.provider.length) {
-                            for (let i = 0; i < res.provider.length; i++) {
-                                if (~filters.indexOf(res.provider[i])) {
-                                    this.providerList.push({
-                                        value: res.provider[i],
-                                        image: '/static/' + res.provider[i] + '.png'
-                                    });
+						if (res.provider && res.provider.length) {
+							for (let i = 0; i < res.provider.length; i++) {
+								if (~filters.indexOf(res.provider[i])) {
+									this.providerList.push({
+										value: res.provider[i],
+										image: '/static/' + res.provider[i] + '.png'
+									})
                                 }
                             }
                             this.hasProvider = true;
                         }
+						console.log('获取服务供应商完成：' + JSON.stringify(res))
                     },
                     fail: (err) => {
-                        console.error('获取服务供应商失败：' + JSON.stringify(err));
+                        console.error('获取服务供应商失败：' + JSON.stringify(err))
                     }
-                });
+                })
             },
-            initPosition() {
-                /**
-                 * 使用 absolute 定位，并且设置 bottom 值进行定位。软键盘弹出时，底部会因为窗口变化而被顶上来。
-                 * 反向使用 top 进行定位，可以避免此问题。
-                 */
-                this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
-            },
-            bindLogin() {
+			
+			initPosition() {
+				this.positionTop = uni.getSystemInfoSync().windowHeight - 100;
+			},
+			
+			bindLogin() {
 				var username = this.account?this.account:this.username
 				this.byface = false
                 if (!util.checkPhoneNumber(username)) {
-                    uni.showToast({
-                        icon: 'none',
-                        title: '手机号格式错误:'+username
-                    });
-                    return;
-                }
-                if (this.password.length < 6 && this.bypassword) {
-                    uni.showToast({
-                        icon: 'none',
-                        title: '密码最短为 6 个字符'
-                    });
+					uni.showToast({
+						icon: 'none',
+						title: '手机号格式错误:'+username
+					})
+					return
+				}
+				
+				if (this.password.length < 6 && this.bypassword) {
+					uni.showToast({
+						icon: 'none',
+						title: '密码最短为 6 个字符'
+					})
                     return;
                 }
 				if (!this.vcode && !this.bypassword) {
@@ -211,7 +217,7 @@
 				        icon: 'none',
 				        title: '验证码不能为空'
 				    });
-				    return;
+				    return
 				}
 				this.my_login()
                /*
@@ -238,12 +244,7 @@
                     success: (res) => {
                         uni.getUserInfo({
                             provider: value,
-                            success: (infoRes) => {
-                                /**
-                                 * 实际开发中，获取用户信息后，需要将信息上报至服务端。
-                                 * 服务端可以用 userInfo.openId 作为用户的唯一标识新增或绑定用户信息。
-                                 */
-                                //this.toMain(infoRes.userInfo.nickName);
+                            success: (infoRes) => {                                  
 								this.my_login()
                             }
                         });
@@ -253,6 +254,7 @@
                     }
                 });
             },
+			
 			my_login() {
 			  var that = this
 			  var openid = uni.getStorageSync('openid');
@@ -303,62 +305,59 @@
 			      'Content-Type': 'application/x-www-form-urlencoded',
 			      'Accept': 'application/json'
 			    },
-			    success: function (res) {
-				  if(res.data.status == 'y'){
-					  uni.showToast({
-					  	 icon: 'none',
-					  	 title:byface?'刷脸登录成功':'登录成功',
-					  });
+				success: function (res) {
+					if(res.data.status == 'y'){
+						uni.showToast({
+							icon: 'none',
+							title:byface?'刷脸登录成功':'登录成功',
+						})
 					  
-					var member_info = res.data.result ;
-					var userInfo = {
-						nickname:member_info.wx_nickname,
-						avatarUrl:member_info.wx_headimg,
-					}
-					var userauth = JSON.parse(res.data.result['userauth']) ;
-					console.log('app login 用户基本信息:', res.data.result);
-					uni.setStorageSync('clientinfo', clientinfo);
-					uni.setStorageSync('userInfo', userInfo);
-					uni.setStorageSync('username', res.data.result['username']);
-					uni.setStorageSync('m_id', res.data.result['m_id']);
-					uni.setStorageSync('user_phone', res.data.result['user_phone']);
-					uni.setStorageSync('user_name', res.data.result['user_name']);
-					uni.setStorageSync('user_gender', res.data.result['user_gender']);
-					uni.setStorageSync('user_type', res.data.result['user_type']);
-					uni.setStorageSync('user_level', res.data.result['user_level']);
-					uni.setStorageSync('userauth', userauth);
-					uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
-					uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+						var member_info = res.data.result ;
+						var userInfo = {
+							nickname:member_info.wx_nickname,
+							avatarUrl:member_info.wx_headimg,
+						}
+						var userauth = JSON.parse(res.data.result['userauth']) ;
+						
+						uni.setStorageSync('clientinfo', clientinfo);
+						uni.setStorageSync('userInfo', userInfo);
+						uni.setStorageSync('username', res.data.result['username']);
+						uni.setStorageSync('m_id', res.data.result['m_id']);
+						uni.setStorageSync('user_phone', res.data.result['user_phone']);
+						uni.setStorageSync('user_name', res.data.result['user_name']);
+						uni.setStorageSync('user_gender', res.data.result['user_gender']);
+						uni.setStorageSync('user_type', res.data.result['user_type']);
+						uni.setStorageSync('user_level', res.data.result['user_level']);
+						uni.setStorageSync('userauth', userauth);
+						uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+						uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
 					
-					setTimeout(function () {
-						/*
-					  uni.reLaunch({
-					      url: '../hall/hall',
-					  });
-					  */
-					  uni.switchTab({
-					  	url: '/pages/hall/hall'
-					  })
-					}, 300);
-				  }else{
-					   uni.showToast({
-					       icon: 'none',
-					       title: res.data.info?res.data.info:'用户账号或密码不正确',
-					   });
-				  }
+						uni.switchTab({
+							url: '/pages/hall/hall'
+						})
+						console.log('app login 用户基本信息:', res.data.result)
+						
+					}else{
+						uni.showToast({
+							icon: 'none',
+							title: res.data.info?res.data.info:'用户账号或密码不正确',
+						})
+					}
 			    }
-			  });
+			  })
 			},
+			/*
             toMain(userName) {
                 this.login(userName);
                 if (this.forcedLogin) {
-                    uni.reLaunch({
-                        url: '../main/main',
-                    });
+                    uni.switchTab({
+                    	url: '/pages/hall/hall'
+                    })
                 } else {
                     uni.navigateBack();
                 }
             },
+			*/
 			bypasswd() {
 				var that = this
 			    that.bypassword = !that.bypassword
@@ -367,13 +366,16 @@
 				var that = this
 			    that.byface = true
 				console.log("onScanFace starting...")
-				/*
-				wx.navigateTo({
-					url: '/pages/login/face_login?byface=true'
-				});
-				*/
-				that.onScanFace(true)
-				
+			   //权限
+			   // #ifdef APP-PLUS
+			   if (uni.getSystemInfoSync().platform == "ios") {
+					that.licenseIDStr = "sendheartAppFace-face-ios";
+			   } else if (uni.getSystemInfoSync().platform == "android") {
+					that.licenseIDStr = "sendheartAppFace-face-android";
+			   }
+			   that.facescan();
+			   that.onScanFace(true)
+			   // #endif
 			},
 			
 			getcode() {
@@ -388,7 +390,7 @@
 				    });
 				    return;
 				}
-			    wx.request({
+			    uni.request({
 			          url: weburl + '/api/web/user/login/login_sms_send',
 			          method: 'POST',
 			          data: { 
@@ -416,22 +418,28 @@
 							});
 						}
 			          }
-			        })
+				})
 			},
 			
-			onBackPress(e) {  
-				uni.reLaunch({
-					url: '../hall/hall',
-				});
+			onBackPress(e) { 
+				var that = this
+				if(that.frompage=='/pages/my/index' || that.frompage=='/pages/hall/hall'){
+					uni.switchTab({
+						url: that.frompage
+					})
+				} else {
+					uni.navigateBack({
+					  changed: true
+					})
+				}
 				return true
 			}, 
 			
 			onNavigationBarButtonTap(val) {
 				var that = this
+				console.log('/login/login onNavigationBarButtonTap()',val)
 				if (val.index == 0) {
-					  uni.reLaunch({
-					      url: '../hall/hall',
-					  });
+					  that.back()
 				}
 				if (val.index == 1) {
 					that.byface = false
@@ -440,22 +448,21 @@
 			},
 			
 			back() {
-				/*
-				uni.navigateBack({
-					delta: 2
-				})
-				*/
-				uni.reLaunch({
-				    url: '../hall/hall',
-				});
+				var that = this
+				if(that.frompage=='/pages/my/index' || that.frompage=='/pages/hall/hall'){
+					uni.switchTab({
+						url: that.frompage
+					})
+				} else {
+					uni.navigateBack({
+					  changed: true
+					})
+				}
 			},
 			
 			// #ifdef APP-PLUS
 			async facescan() {
-				let status = await this.checkPermission();
-				if (status !== 1) {
-				    return;
-				} 
+				await this.checkPermission()
 			},
 		
 			async checkPermission(code) {
@@ -503,9 +510,9 @@
 						}
 					})
 				}
-				let status = (status_camera && status_WRITE_EXTERNAL_STORAGE && status_READ_EXTERNAL_STORAGE)?1:0
-				console.log("checkPermission ended...status:",status);
-				return status;
+				this.permission_status = (status_camera && status_WRITE_EXTERNAL_STORAGE && status_READ_EXTERNAL_STORAGE)?1:0
+				console.log("checkPermission ended...status:",status)
+				//return status
 			},
 			
 			  
@@ -555,7 +562,7 @@
 								that.upload() ;
 						});
 					}
-				}else if (uni.getSystemInfoSync().platform == "ios") {//苹果
+				} else if (uni.getSystemInfoSync().platform == "ios") {//苹果
 					if(byface){	
 						console.log("onScanFace ios byface starting...",that.licenseIDStr);
 						lyBDFaceAuthIOS.scanFace({
@@ -570,7 +577,7 @@
 							that.faceimage64 = result.bestImgBase64.replace(/[\r\n]/g, "") ;
 							that.upload() ;
 						});
-					}else{
+					} else {
 						console.log("onScanFace.ios onScanFace VIP starting...license ID:",that.licenseIDStr);
 						lyBDFaceAuthIOS.scanFace({
 							licenseID:'sendheartAppFace-face-ios',
@@ -590,80 +597,77 @@
 			//#endif
 			
 			upload: function () {
-			  var that = this;
-			  var faceimage = that.faceimage;
-			  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-			  var face  = 'face_'+username ;
-			  var upload_type = that.byface?'face_login':'face_reg'
+				var that = this;
+				var faceimage = that.faceimage;
+				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+				var face  = 'face_'+username ;
+				var upload_type = that.byface?'face_login':'face_reg'
 			  
-			  if(upload_type=='face_login'){
-				  //#ifdef APP-PLUS
-				  if(uni.getSystemInfoSync().platform != "ios"){
-					  var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
+				if(upload_type=='face_login'){
+					//#ifdef APP-PLUS
+					if(uni.getSystemInfoSync().platform != "ios"){
+						var bitmapFaceLogin= new plus.nativeObj.Bitmap("sendheart_face_login"); //
 					    // 从本地加载Bitmap图片
-					 var count = 0 
-					 that.faceimage64 = ''
-					 while(that.faceimage64=='' && count<3){ //重复获取3次
-						 count++ ;
-						 bitmapFaceLogin.load(faceimage, function() {
-						 	console.log('加载图片成功 faceimage:',faceimage,' count:',count);
-							var base64 = bitmapFaceLogin.toBase64Data();
-							//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
-							that.faceimage64 = base64.replace(/[\r\n]/g, ""); //显示图片
-							console.log('base64图片转换完成 count:',count);
-							that.my_login() ;
-						 }, function(e) {
-						 	console.log('加载图片失败：' + JSON.stringify(e));
-						 	uni.showToast({
-						 		title: '加载图片失败！'+JSON.stringify(e),
-						 		duration: 2000
-						 	});
-							return
-						 })
-					 }
-				  }else{
-					  that.my_login() ;
-				  }
-				  
-				//#endif
-				
-			  }else{
-				  if(uni.getSystemInfoSync().platform != "ios"){
-					  uni.uploadFile({
-					    url: uploadurl,
-					    filePath: faceimage,
-					    name: 'wechat_upimg',
-					    //formData: adds,
-					    formData: {
-					      latitude: encodeURI(0.0),
-					      longitude: encodeURI(0.0),
-					      type: encodeURI(upload_type),
-					      city: encodeURI('杭州'),
-					      prov: encodeURI('浙江'),
-					      name: encodeURI(face) // 名称
-					  			
-					    },
-					    // HTTP 请求中其他额外的 form data
-					    success: function (res) {
-					      var retinfo = JSON.parse(res.data.trim());
-						  var byface = that.byface ;
-					      if (retinfo['status'] == "y") {
-					        //console.log('VIP刷脸图片上传完成');
-					  		that.faceurl = retinfo['result']['img_url']
-					  		that.update_userinfo();
-					      }else{
-					  		uni.showToast({
-					  			title: '系统错误！'+retinfo['info'],
-					  			duration: 2000
-					  		});
-							return 
-						  }
-					    }
-					  });
-				  }else{
-					  that.update_userinfo();
-				  }
-			  }
+						var count = 0 
+						that.faceimage64 = ''
+						while(that.faceimage64=='' && count<3){ //重复获取3次
+							count++ ;
+							bitmapFaceLogin.load(faceimage, function() {
+								console.log('加载图片成功 faceimage:',faceimage,' count:',count);
+								var base64 = bitmapFaceLogin.toBase64Data();
+								//that.resultStr = that.resultStr + "\n======base64字符串（太长，截取前100字符）：\n" + base4.substring(0, 100);
+								that.faceimage64 = base64.replace(/[\r\n]/g, ""); //显示图片
+								console.log('base64图片转换完成 count:',count);
+								that.my_login() ;
+							}, function(e) {
+								console.log('加载图片失败：' + JSON.stringify(e));
+								uni.showToast({
+									title: '加载图片失败！'+JSON.stringify(e),
+									duration: 2000
+								})
+								return
+							})
+						}
+					} else {
+						that.my_login() ;
+				  }				  
+				//#endif				
+				} else {
+					if(uni.getSystemInfoSync().platform != "ios"){
+						uni.uploadFile({
+							url: uploadurl,
+							filePath: faceimage,
+							name: 'wechat_upimg',
+							//formData: adds,
+							formData: {
+								latitude: encodeURI(0.0),
+								longitude: encodeURI(0.0),
+								type: encodeURI(upload_type),
+								city: encodeURI('杭州'),
+								prov: encodeURI('浙江'),
+								name: encodeURI(face) // 名称					  			
+							},
+							// HTTP 请求中其他额外的 form data
+							success: function (res) {
+								var retinfo = JSON.parse(res.data.trim());
+								var byface = that.byface ;
+								if (retinfo['status'] == "y") {
+									//console.log('VIP刷脸图片上传完成');
+									that.faceurl = retinfo['result']['img_url']
+									that.update_userinfo();
+								} else {
+									uni.showToast({
+										title: '系统错误！'+retinfo['info'],
+										duration: 2000
+									})
+									return 
+								}
+							}
+						})
+					} else {
+						that.update_userinfo();
+					}
+				}
 			},
 			
 			update_userinfo: function () {
@@ -707,14 +711,6 @@
 			  });
 			},
         },
-        onReady() {
-            this.initPosition();
-            this.initProvider();
-			this.username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '' ;
-			// #ifdef APP-PLUS
-			
-			//#endif
-        }
     }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
 <view> 
-	<view scroll-y class="pagewrap" :style="'heigth:'+winHeight+'px;'+((!modalHidden||!cardcelehidden||!cardnamehidden||!cardregisterhidden||!cardlovehidden)?'position:fixed;':'')">
+<view scroll-y class="pagewrap" :style="'heigth:'+winHeight+'px;'+((!modalHidden||!cardcelehidden||!cardnamehidden||!cardregisterhidden||!cardlovehidden)?'position:fixed;':'')">
 	<view class="share-goods">
 		<view class="share-buttons" style="justify-content: flex-end">
 			<view v-if="goodsshape==4||goodsshape==5" class="btnshare" @tap="cardEditTapTag">		    
@@ -202,7 +202,7 @@
 				</view>
 			</view>
 			<view v-if="(goodsshape!=5&&goodsshape!=4)"  class="comm-text2">
-				<text class="comm-name">礼物评论</text>
+				<text class="comm-name">商品评论</text>
 				<text @tap="commTapTag" class="comm-status">查看全部{{all_rows>0?'('+all_rows+')':''}}</text>
 			</view>
 			<view v-for="(comm, index) in comm_list" :key="index" class="comm-item">
@@ -532,39 +532,45 @@
 				<jsfun-record voicePath="" maxTime="60" minTime="3" @okClick="save_recorder">
 					<button type="primary" class="sec-btn">
 						<image class="icon-detail" src="/static/images/record.png"></image>
-						<text>长按说话</text>
+						<text style="font-size: 20rpx;">长按说话</text>
 					</button>	
 				</jsfun-record>
 			</view>
-			<form v-if="goodsshape!=5 && goodsshape!=4" @submit="formSubmit" data-name="mycommTapTag" report-submit="true" style="width:20%;">
+			<form v-if="goodsshape!=5 && goodsshape!=4" @submit="formSubmit" data-name="mycommTapTag" report-submit="true" style="width:15%;">
 				<button class="sec-btn" formType="submit">
 					<image class="icon-detail" src="../../static/images/bottom-comment.png"></image>
-					<text>写评论</text>
+					<text style="font-size: 20rpx;">评论</text>
 				</button>
 			</form>
-			<form v-if="goodsshape!=5&&goodsshape!=4" @submit="formSubmit" data-name="wishcart" report-submit="true" style="width:24%;">
+			<form v-if="goodsowner!='' " @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:18%;">
+				<button class="sec-btn" formType="submit">
+					<image class="icon-detail" src="../../static/images/chat.png"></image>
+					<text style="font-size: 20rpx;">服务群</text>
+				</button>
+			</form>
+			<form v-if="goodsshape!=5&&goodsshape!=4" @submit="formSubmit" data-name="wishcart" report-submit="true" style="width:18%;">
 				<button class="sec-btn" formType="submit">
 					<image class="icon-detail" src="../../static/images/bottom-unpraise.png"></image>
-					<text>+心愿单</text>
+					<text style="font-size: 20rpx;">+心愿单</text>
 				</button>  
 			</form>
-			<form v-if="goodsorg!=5" @submit="formSubmit" data-name="buyGift" report-submit="true" style="width:28%;">
+			<form v-if="goodsorg!=5" @submit="formSubmit" data-name="buyGift" report-submit="true" style="width:25%;">
 				<button class="add-cart2" formType="submit">
 					<text>+购物车</text>
 				</button>  
 			</form>
-			<form v-if="has_cardpayed==0" @submit="formSubmit" data-name="buyMyself" report-submit="true" style="width:28%;">
+			<form v-if="has_cardpayed==0" @submit="formSubmit" data-name="buyMyself" report-submit="true" style="width:25%;">
 				<button class="add-cart" formType="submit">{{(goodsshape==5||goodsshape==4)?'立即购买':'立即购买'}}</button>  
 			</form>
 			
-			<form v-if="goodsorg==5 && has_cardpayed!=0" @submit="formSubmit" data-name="sharecard" report-submit="true" style="width:28%;">
+			<form v-if="goodsorg==5 && has_cardpayed!=0" @submit="formSubmit" data-name="sharecard" report-submit="true" style="width:15%;">
 				<button class="add-cart" formType="submit">
 					<text>预览</text>
 				</button>  
 			</form>
 		</view>
-	</view>
-	</view>
+	</view>	
+</view>
 </view>
 </template>
 <script>
@@ -659,6 +665,7 @@ export default {
       interval: 3000,
       duration: 300,
       circular: true,
+	  goodsowner:'',
       goodsname: '',
       goodsinfo: [],
       goodsprice: 0,
@@ -854,605 +861,588 @@ export default {
 	  video_muted:true,
 	  video_autoplay:true,
     };
-  },
-  components: {
-	 uParse,
-	 uniPopup,
-	 jsfunRecord,
+	},
+	components: {
+		uParse,
+		uniPopup,
+		jsfunRecord,
 	 //chunleiVideo,
-  },
+	},
 
-  onLoad: function (options) { //
-    var that = this;
-    var is_back = options.is_back ? options.is_back : 0;
-    if (is_back == 1) options = wx.getStorageSync('details_options');
-    var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
-    var phonemodel = wx.getStorageSync('phonemodel') ? wx.getStorageSync('phonemodel') : 'Andriod';
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    username = options.username ? options.username : username;
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-    var keyword = options.keyword ? options.keyword : '';
-    var is_satisfy = options.is_satisfy ? options.is_satisfy : 0;
-    var has_cardpayed = options.has_cardpayed ? options.has_cardpayed : 0;
-    var rule_selected_info = options.rule_selected_info ? options.rule_selected_info : '';
-    var goodsorg = options.goods_org ? options.goods_org : 1;
-    var goodsshape = options.goods_shape ? options.goods_shape : 0;
-    var goodstag = options.goods_tag ? options.goods_tag : '';
-    //var goodsorg = options.goods_org ? options.goods_org : '';
-    var card_type = options.card_type ? options.card_type : 0;
-    var card_register_title = '';
-    var card_register_content = '';
-    var card_register_addr = '';
-    var card_register_lim = 0;
-    var card_register_fee = 0;
-    var card_register_right_index = 0;
-    var card_register_reqid_index = 0;
-    var card_register_ownername = '';
-    var card_register_ownerwechat = '';
-    var card_register_adv = '';
-    var card_content = '';
-    var card_name_name = '';
-    var card_name_title = '';
-    var card_name_phone = '';
-    var card_name_tel = '';
-    var card_name_email = '';
-    var card_name_website = '';
-    var card_name_publicwechat = '';
-    var card_name_addr = '';
-    var card_name_company = '';
-    var card_name_note = '';
-    var card_name_logo_image = '';
-    var card_cele_title = '';
-    var card_cele_content = '';
-    var card_cele_logo = '';
-    var card_love_title = '';
-    var card_love_content = '';
-    var card_love_logo = '';
-    var card_love_related = '';
-    var card_love_phone = '';
-    var card_love_addr = '';
-    var has_shlogo = that.has_shlogo;
-    var has_registerdue = that.has_registerdue;
-    var has_actiondue = that.has_actiondue;
-    var page = that.page;
-    var scene = decodeURIComponent(options.scene);
-    var goodsname = options.name;
-    var goodsid = options.id;
-    var share_goods_id = options.goodsid?options.goodsid:0;
-    goodsid = goodsid ? goodsid : share_goods_id;
-    var refer_mid = options.mid ? options.mid : 0; //分享人id
-    var goodsinfo = options.goods_info ? options.goods_info : '';
-    var goodsprice = options.goods_price;
-    var marketprice = options.goods_marketprice;
-    var goodssale = options.sale;
-    var image = options.image;
-    var activity_image = options.activity_image;
-    var share_goods_image = activity_image ? activity_image : image;
-    var shop_type = that.shop_type;
-    var qr_type = 'wishshare';
-    var image_video = [];
-    var image_pic = [];
-    var card_image_height = that.card_image_height ? that.card_image_height : '750';
-    var card_image_w_rate = that.card_image_w_rate ? that.card_image_w_rate : 1;
-    var card_register_prev = wx.getStorageSync('card_register_info');
-    var card_name_prev = wx.getStorageSync('card_name_info');
-    var card_cele_prev = wx.getStorageSync('card_cele_info');
-    var card_love_prev = wx.getStorageSync('card_love_info');
-    wx.setStorageSync('details_options', options);
+	onLoad: function (options) { //
+		var that = this;
+		var is_back = options.is_back ? options.is_back : 0;
+		if (is_back == 1) options = wx.getStorageSync('details_options');
+		var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
+		var phonemodel = wx.getStorageSync('phonemodel') ? wx.getStorageSync('phonemodel') : 'Andriod';
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		username = options.username ? options.username : username;
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var keyword = options.keyword ? options.keyword : '';
+		var is_satisfy = options.is_satisfy ? options.is_satisfy : 0;
+		var has_cardpayed = options.has_cardpayed ? options.has_cardpayed : 0;
+		var rule_selected_info = options.rule_selected_info ? options.rule_selected_info : '';
+		var goodsorg = options.goods_org ? options.goods_org : 1;
+		var goodsshape = options.goods_shape ? options.goods_shape : 0;
+		var goodstag = options.goods_tag ? options.goods_tag : '';
+		//var goodsorg = options.goods_org ? options.goods_org : '';
+		var card_type = options.card_type ? options.card_type : 0;
+		var card_register_title = '';
+		var card_register_content = '';
+		var card_register_addr = '';
+		var card_register_lim = 0;
+		var card_register_fee = 0;
+		var card_register_right_index = 0;
+		var card_register_reqid_index = 0;
+		var card_register_ownername = '';
+		var card_register_ownerwechat = '';
+		var card_register_adv = '';
+		var card_content = '';
+		var card_name_name = '';
+		var card_name_title = '';
+		var card_name_phone = '';
+		var card_name_tel = '';
+		var card_name_email = '';
+		var card_name_website = '';
+		var card_name_publicwechat = '';
+		var card_name_addr = '';
+		var card_name_company = '';
+		var card_name_note = '';
+		var card_name_logo_image = '';
+		var card_cele_title = '';
+		var card_cele_content = '';
+		var card_cele_logo = '';
+		var card_love_title = '';
+		var card_love_content = '';
+		var card_love_logo = '';
+		var card_love_related = '';
+		var card_love_phone = '';
+		var card_love_addr = '';
+		var has_shlogo = that.has_shlogo;
+		var has_registerdue = that.has_registerdue;
+		var has_actiondue = that.has_actiondue;
+		var page = that.page;
+		var scene = decodeURIComponent(options.scene);
+		var goodsname = options.name;
+		var goodsowner = ''
+		var goodsid = options.id;
+		var share_goods_id = options.goodsid?options.goodsid:0;
+		goodsid = goodsid ? goodsid : share_goods_id;
+		var refer_mid = options.mid ? options.mid : 0; //分享人id
+		var goodsinfo = options.goods_info ? options.goods_info : '';
+		var goodsprice = options.goods_price;
+		var marketprice = options.goods_marketprice;
+		var goodssale = options.sale;
+		var image = options.image;
+		var activity_image = options.activity_image;
+		var share_goods_image = activity_image ? activity_image : image;
+		var shop_type = that.shop_type;
+		var qr_type = 'wishshare';
+		var image_video = [];
+		var image_pic = [];
+		var card_image_height = that.card_image_height ? that.card_image_height : '750';
+		var card_image_w_rate = that.card_image_w_rate ? that.card_image_w_rate : 1;
+		var card_register_prev = wx.getStorageSync('card_register_info');
+		var card_name_prev = wx.getStorageSync('card_name_info');
+		var card_cele_prev = wx.getStorageSync('card_cele_info');
+		var card_love_prev = wx.getStorageSync('card_love_info');
+		uni.setStorageSync('details_options', options);
 	 
-    if (card_register_prev) {
-      var card_register_info = JSON.parse(card_register_prev);
-      card_register_content = card_register_info['card_register_content'];
-      card_register_title = card_register_info['card_register_title'];
-      card_register_addr = card_register_info['card_register_addr'];
-      card_register_lim = card_register_info['card_register_lim'];
-      card_register_fee = card_register_info['card_register_fee'];
-      card_register_right_index = card_register_info['card_register_right_index'];
-      card_register_reqid_index = card_register_info['card_register_reqid_index'];
-      card_register_ownername = card_register_info['card_register_ownername'];
-      card_register_ownerwechat = card_register_info['card_register_ownerwechat'];
-      card_register_adv = card_register_info['card_register_adv'] ? card_register_info['card_register_adv'] : that.card_register_topic_image;
-      has_shlogo = card_register_info['has_shlogo'] ? card_register_info['has_shlogo'] : has_shlogo;
-      has_registerdue = card_register_info['has_registerdue'] ? card_register_info['has_registerdue'] : has_registerdue;
-      has_actiondue = card_register_info['has_actiondue'] ? card_register_info['has_actiondue'] : has_actiondue;
-    }
+		if (card_register_prev) {
+			var card_register_info = JSON.parse(card_register_prev);
+			card_register_content = card_register_info['card_register_content'];
+			card_register_title = card_register_info['card_register_title'];
+			card_register_addr = card_register_info['card_register_addr'];
+			card_register_lim = card_register_info['card_register_lim'];
+			card_register_fee = card_register_info['card_register_fee'];
+			card_register_right_index = card_register_info['card_register_right_index'];
+			card_register_reqid_index = card_register_info['card_register_reqid_index'];
+			card_register_ownername = card_register_info['card_register_ownername'];
+			card_register_ownerwechat = card_register_info['card_register_ownerwechat'];
+			card_register_adv = card_register_info['card_register_adv'] ? card_register_info['card_register_adv'] : that.card_register_topic_image;
+			has_shlogo = card_register_info['has_shlogo'] ? card_register_info['has_shlogo'] : has_shlogo;
+			has_registerdue = card_register_info['has_registerdue'] ? card_register_info['has_registerdue'] : has_registerdue;
+			has_actiondue = card_register_info['has_actiondue'] ? card_register_info['has_actiondue'] : has_actiondue;
+		}
 
-    if (card_name_prev) {
-      var card_name_info = JSON.parse(card_name_prev);
-      card_name_name = card_name_info['card_name_name'];
-      card_name_title = card_name_info['card_name_title'];
-      card_name_phone = card_name_info['card_name_phone'];
-      card_name_tel = card_name_info['card_name_tel'];
-      card_name_email = card_name_info['card_name_email'];
-      card_name_website = card_name_info['card_name_website'];
-      card_name_publicwechat = card_name_info['card_name_publicwechat'];
-      card_name_addr = card_name_info['card_name_addr'];
-      card_name_company = card_name_info['card_name_company'];
-      card_name_note = card_name_info['card_name_note'];
-      card_name_logo_image = card_name_info['card_name_logo_image'];
-      has_shlogo = card_name_info['has_shlogo'] ? card_name_info['has_shlogo'] : has_shlogo;
-    }
+		if (card_name_prev) {
+			var card_name_info = JSON.parse(card_name_prev);
+			card_name_name = card_name_info['card_name_name'];
+			card_name_title = card_name_info['card_name_title'];
+			card_name_phone = card_name_info['card_name_phone'];
+			card_name_tel = card_name_info['card_name_tel'];
+			card_name_email = card_name_info['card_name_email'];
+			card_name_website = card_name_info['card_name_website'];
+			card_name_publicwechat = card_name_info['card_name_publicwechat'];
+			card_name_addr = card_name_info['card_name_addr'];
+			card_name_company = card_name_info['card_name_company'];
+			card_name_note = card_name_info['card_name_note'];
+			card_name_logo_image = card_name_info['card_name_logo_image'];
+			has_shlogo = card_name_info['has_shlogo'] ? card_name_info['has_shlogo'] : has_shlogo;
+		}
 
-    if (card_cele_prev) {
-      var card_cele_info = JSON.parse(card_cele_prev);
-      card_cele_title = card_cele_info['card_cele_title'];
-      card_cele_content = card_cele_info['card_cele_content'];
-      card_cele_logo = card_cele_info['card_cele_logo'];
-      has_shlogo = card_cele_info['has_shlogo'] ? card_cele_info['has_shlogo'] : has_shlogo;
-    }
+		if (card_cele_prev) {
+			var card_cele_info = JSON.parse(card_cele_prev);
+			card_cele_title = card_cele_info['card_cele_title'];
+			card_cele_content = card_cele_info['card_cele_content'];
+			card_cele_logo = card_cele_info['card_cele_logo'];
+			has_shlogo = card_cele_info['has_shlogo'] ? card_cele_info['has_shlogo'] : has_shlogo;
+		}
 
-    if (card_love_prev) {
-      var card_love_info = JSON.parse(card_love_prev);
-      card_love_title = card_love_info['card_love_title'];
-      card_love_phone = card_love_info['card_love_phone'];
-      card_love_addr = card_love_info['card_love_addr'];
-      card_love_related = card_love_info['card_love_related'];
-      card_love_content = card_love_info['card_love_content'];
-      card_love_logo = card_love_info['card_love_logo'];
-      has_shlogo = card_love_info['has_shlogo'] ? card_love_info['has_shlogo'] : has_shlogo;
-    }
+		if (card_love_prev) {
+			var card_love_info = JSON.parse(card_love_prev);
+			card_love_title = card_love_info['card_love_title'];
+			card_love_phone = card_love_info['card_love_phone'];
+			card_love_addr = card_love_info['card_love_addr'];
+			card_love_related = card_love_info['card_love_related'];
+			card_love_content = card_love_info['card_love_content'];
+			card_love_logo = card_love_info['card_love_logo'];
+			has_shlogo = card_love_info['has_shlogo'] ? card_love_info['has_shlogo'] : has_shlogo;
+		}
 
-    console.log('detail options:', options, 'share_goods_id:', share_goods_id, 'card_type:', card_type, ' goodsshape:', goodsshape);
-    that.setData({
-      is_apple: phonemodel.indexOf("iPhone") >= 0 ? 1 : 0,
-      image_save_count: 0,
-      keyword: keyword,
-      is_satisfy: is_satisfy,
-      rule_selected_info: rule_selected_info,
-      card_register_content: card_register_content ? card_register_content : '',
-      card_register_title: card_register_title ? card_register_title : '',
-      card_register_addr: card_register_addr ? card_register_addr : '',
-      card_register_lim: card_register_lim ? card_register_lim : 0,
-      card_register_fee: card_register_fee ? card_register_fee : 0,
-      card_register_right_index: card_register_right_index ? card_register_right_index : 0,
-      card_register_reqid_index: card_register_reqid_index ? card_register_reqid_index : 0,
-      card_register_ownername: card_register_ownername ? card_register_ownername : '',
-      card_register_ownerwechat: card_register_ownerwechat ? card_register_ownerwechat : '',
-      card_register_adv: card_register_adv ? card_register_adv : '',
-      has_registerdue: has_registerdue,
-      has_actiondue: has_actiondue ? has_actiondue : false,
-      card_content: card_content,
-      card_image_height: card_image_height,
-      card_name_name: card_name_name ? card_name_name : '',
-      card_name_title: card_name_title ? card_name_title : '',
-      card_name_phone: card_name_phone ? card_name_phone : '',
-      card_name_tel: card_name_tel ? card_name_tel : '',
-      card_name_email: card_name_email ? card_name_email : '',
-      card_name_website: card_name_website ? card_name_website : '',
-      card_name_publicwechat: card_name_publicwechat ? card_name_publicwechat : '',
-      card_name_addr: card_name_addr ? card_name_addr : '',
-      card_name_company: card_name_company ? card_name_company : '',
-      card_name_note: card_name_note ? card_name_note : '',
-      card_name_logo_image: card_name_logo_image ? card_name_logo_image : '',
-      card_cele_title: card_cele_title ? card_cele_title : '',
-      card_cele_content: card_cele_content ? card_cele_content : '',
-      card_cele_logo: card_cele_logo ? card_cele_logo : '',
-      card_love_title: card_love_title ? card_love_title : '',
-      card_love_phone: card_love_phone ? card_love_phone : '',
-      card_love_related: card_love_related ? card_love_related : '',
-      card_love_addr: card_love_addr ? card_love_addr : '',
-      card_love_content: card_love_content ? card_love_content : '',
-      card_love_logo: card_love_logo ? card_love_logo : '',
-      has_shlogo: has_shlogo ? has_shlogo : false
-    });
+		console.log('detail options:', options, 'share_goods_id:', share_goods_id, 'card_type:', card_type, ' goodsshape:', goodsshape);
+		that.is_apple = phonemodel.indexOf("iPhone") >= 0 ? 1 : 0
+		that.image_save_count = 0
+		that.keyword = keyword
+		that.is_satisfy = is_satisfy
+		that.rule_selected_info = rule_selected_info
+		that.card_register_content = card_register_content ? card_register_content : ''
+		that.card_register_title = card_register_title ? card_register_title : ''
+		that.card_register_addr = card_register_addr ? card_register_addr : ''
+		that.card_register_lim = card_register_lim ? card_register_lim : 0
+		that.card_register_fee = card_register_fee ? card_register_fee : 0
+		that.card_register_right_index = card_register_right_index ? card_register_right_index : 0
+		that.card_register_reqid_index = card_register_reqid_index ? card_register_reqid_index : 0
+		that.card_register_ownername = card_register_ownername ? card_register_ownername : ''
+		that.card_register_ownerwechat = card_register_ownerwechat ? card_register_ownerwechat : ''
+		that.card_register_adv = card_register_adv ? card_register_adv : ''
+		that.has_registerdue = has_registerdue
+		that.has_actiondue = has_actiondue ? has_actiondue : false
+		that.card_content = card_content
+		that.card_image_height = card_image_height
+		that.card_name_name = card_name_name ? card_name_name : ''
+		that.card_name_title = card_name_title ? card_name_title : ''
+		that.card_name_phone = card_name_phone ? card_name_phone : ''
+		that.card_name_tel = card_name_tel ? card_name_tel : ''
+		that.card_name_email = card_name_email ? card_name_email : ''
+		that.card_name_website = card_name_website ? card_name_website : ''
+		that.card_name_publicwechat = card_name_publicwechat ? card_name_publicwechat : ''
+		that.card_name_addr = card_name_addr ? card_name_addr : ''
+		that.card_name_company = card_name_company ? card_name_company : ''
+		that.card_name_note = card_name_note ? card_name_note : ''
+		that.card_name_logo_image = card_name_logo_image ? card_name_logo_image : ''
+		that.card_cele_title = card_cele_title ? card_cele_title : ''
+		that.card_cele_content = card_cele_content ? card_cele_content : ''
+		that.card_cele_logo = card_cele_logo ? card_cele_logo : ''
+		that.card_love_title = card_love_title ? card_love_title : ''
+		that.card_love_phone = card_love_phone ? card_love_phone : ''
+		that.card_love_related = card_love_related ? card_love_related : ''
+		that.card_love_addr = card_love_addr ? card_love_addr : ''
+		that.card_love_content = card_love_content ? card_love_content : ''
+		that.card_love_logo = card_love_logo ? card_love_logo : ''
+		that.has_shlogo = has_shlogo ? has_shlogo : false
 
-    if (scene) {
-      if (scene.indexOf("goodsid=") >= 0) {
-        var goodsidReg = new RegExp(/(?=goodsid=).*?(?=\&)/);
-        var midReg = new RegExp(/\&mid=(.*)/);
-        var scene_goodsid = scene.match(goodsidReg)[0];
-        goodsid = scene_goodsid ? scene_goodsid.substring(8, scene_goodsid.length) : goodsid; //m_id = scene.match(/mid=(.*)/)[1] //取 mid=后面所有字符串
+		if (scene) {
+			if (scene.indexOf("goodsid=") >= 0) {
+				var goodsidReg = new RegExp(/(?=goodsid=).*?(?=\&)/);
+				var midReg = new RegExp(/\&mid=(.*)/);
+				var scene_goodsid = scene.match(goodsidReg)[0];
+				goodsid = scene_goodsid ? scene_goodsid.substring(8, scene_goodsid.length) : goodsid; //m_id = scene.match(/mid=(.*)/)[1] //取 mid=后面所有字符串
 
-        var scene_mid = scene.match(midReg) ? scene.match(midReg)[0] : 0;
-        refer_mid = scene_mid ? scene_mid.substring(5, scene_mid.length) : refer_mid;
-      }
-    }
+				var scene_mid = scene.match(midReg) ? scene.match(midReg)[0] : 0;
+				refer_mid = scene_mid ? scene_mid.substring(5, scene_mid.length) : refer_mid;
+			}
+		}
 
-    if (image) {
-      if (image.indexOf("%3A%2F%2F") >= 0) {
-        image = decodeURIComponent(image);
-        share_goods_image = activity_image ? activity_image : image;
-        goodsname = decodeURIComponent(goodsname);
-        goodsinfo = decodeURIComponent(goodsinfo);
-      }
+		if (image) {
+			if (image.indexOf("%3A%2F%2F") >= 0) {
+				image = decodeURIComponent(image);
+				share_goods_image = activity_image ? activity_image : image;
+				goodsname = decodeURIComponent(goodsname);
+				goodsinfo = decodeURIComponent(goodsinfo);
+			}
 	 
-	  var video_init ={}
-      if (image.indexOf(".mp4") >= 0) {
-        video_init = {
-          id: 0,
-          video_url: image,
-          url: activity_image,
-		  ext:'mp4',
-		  content:'',
-		  flag:true,
-		  check:false,
-		  like:'10w',
-		  comment:'1045',
-		  avater:'',
-		  initialTime:0,
-		  at:'',
-		  duration:841,
-		  short:true,//是否矮视频
-		  objectFit:'fill'
-        };
-        image_video.push(video_init);
-		that.image_video = image_video ;
-      }
+			var video_init ={}
+			if (image.indexOf(".mp4") >= 0) {
+			video_init = {
+				id: 0,
+				video_url: image,
+				url: activity_image,
+				ext:'mp4',
+				content:'',
+				flag:true,
+				check:false,
+				like:'10w',
+				comment:'1045',
+				avater:'',
+				initialTime:0,
+				at:'',
+				duration:841,
+				short:true,//是否矮视频
+				objectFit:'fill'
+			};
+			image_video.push(video_init);
+			that.image_video = image_video ;
+		}
 	
-      var image_init = {
-        id: 0,
-        goods_id: goodsid,
-        url: activity_image ? activity_image : image,
-		video_url:'',
-		ext:'png',
-		content:'',
-		flag:false,
-		check:false,
-		like:'10w',
-		comment:'1045',
-		avater:'',
-		initialTime:0,
-		at:'',
-		duration:841,
-		short:true,//是否矮视频
-		objectFit:'fill'
-      };
-      image_init['url'] = image_init['url'].replace('/n11/', '/n12/'); // n12京东高清图片
+		var image_init = {
+			id: 0,
+			goods_id: goodsid,
+			url: activity_image ? activity_image : image,
+			video_url:'',
+			ext:'png',
+			content:'',
+			flag:false,
+			check:false,
+			like:'10w',
+			comment:'1045',
+			avater:'',
+			initialTime:0,
+			at:'',
+			duration:841,
+			short:true,//是否矮视频
+			objectFit:'fill'
+		};
+		image_init['url'] = image_init['url'].replace('/n11/', '/n12/'); // n12京东高清图片
 
-      image_init['url'] = image_init['url'].replace('/n1/', '/n12/'); // n12京东高清图片
-	  image_pic.push(image_init) ;
-	  if(image_video.length > 0) image_pic = image_video.concat(image_pic);
-	  that.image_pic = image_pic ;
-	   
-    }
+		image_init['url'] = image_init['url'].replace('/n1/', '/n12/'); // n12京东高清图片
+		image_pic.push(image_init) ;
+		if(image_video.length > 0) image_pic = image_video.concat(image_pic);
+			that.image_pic = image_pic ;  
+		}
 	
-    //that.showGoodspara();
-    goodsinfo = goodsinfo == 'undefined' ? '' : goodsinfo;
-    var share_goods_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + goodsid + '&m_id=' + m_id;
-    that.setData({
-      goodsname: goodsname ? goodsname : '',
-      goodsinfo: goodsinfo ? goodsinfo : '',
-      goodsorg: goodsorg,
-      goodsshape: goodsshape,
-      goodstag: goodstag,
-      card_type: card_type,
-      goodsid: goodsid ? goodsid : 0,
-      refer_mid: refer_mid,
-      goodsprice: goodsprice ? goodsprice : 0,
-      marketprice: marketprice ? marketprice : '',
-      goodssale: goodssale ? goodssale : 0,
-      m_id: m_id,
-      share_goods_qrcode: share_goods_qrcode
-    });
-    that.image_save(share_goods_qrcode, 'goods_qrcode_cache_' + goodsid); // console.log('商品分享二维码下载缓存 goods_qrcode_cache_'+goodsid, 'share_goods_image:', share_goods_image)
+		//that.showGoodspara();
+		goodsinfo = goodsinfo == 'undefined' ? '' : goodsinfo;
+		var share_goods_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + goodsid + '&m_id=' + m_id;
+		that.goodsname = goodsname ? goodsname : ''
+		//that.goodsowner = goodsowner ? goodsowner : ''
+		that.goodsinfo = goodsinfo ? goodsinfo : ''
+		that.goodsorg = goodsorg
+		that.goodsshape = goodsshape
+		that.goodstag = goodstag
+		that.card_type = card_type
+		that.goodsid = goodsid ? goodsid : 0
+		that.refer_mid = refer_mid
+		that.goodsprice = goodsprice ? goodsprice : 0
+		that.marketprice = marketprice ? marketprice : ''
+		that.goodssale = goodssale ? goodssale : 0
+		that.m_id = m_id
+		that.share_goods_qrcode = share_goods_qrcode
+		that.image_save(share_goods_qrcode, 'goods_qrcode_cache_' + goodsid); // console.log('商品分享二维码下载缓存 goods_qrcode_cache_'+goodsid, 'share_goods_image:', share_goods_image)
    
-    if (goodsid > 0) {
-      if (share_goods_image) {
-        that.image_save(share_goods_image, 'goods_image_cache_' + goodsid); // console.log('商品详情图片下载缓存 goods_image_cache_' + goodsid, share_goods_image)
-      }
+		if (goodsid > 0) {
+			if (share_goods_image) {
+				that.image_save(share_goods_image, 'goods_image_cache_' + goodsid); // console.log('商品详情图片下载缓存 goods_image_cache_' + goodsid, share_goods_image)
+			}
 
-      wx.request({
-        url: weburl + '/api/client/get_goods_list',
-        method: 'POST',
-        data: {
-          username: options.username ? options.username : username,
-          access_token: token,
-          goods_id: goodsid,
-          shop_type: shop_type
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          var goods_info = res.data.result;
-          var ret_info = res.data.info;
-          console.log('获取单个产品信息 res.data:', res.data, ' goods info:', goods_info);
+			wx.request({
+				url: weburl + '/api/client/get_goods_list',
+				method: 'POST',
+				data: {
+					username: options.username ? options.username : username,
+					access_token: token,
+					goods_id: goodsid,
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					var goods_info = res.data.result;
+					var ret_info = res.data.info;
+					console.log('获取单个产品信息 res.data:', res.data, ' goods info:', goods_info);
 
-          if (goods_info) {
-            if (goods_info[0]['shape'] == 5) {
-              card_content = that.card_blessing;
-            } else if (goods_info[0]['shape'] == 4) {
-              card_register_content = that.card_register_content;
-              card_register_title = that.card_register_title;
-            }
+					if (goods_info) {
+						if (goods_info[0]['shape'] == 5) {
+							card_content = that.card_blessing;
+						} else if (goods_info[0]['shape'] == 4) {
+							card_register_content = that.card_register_content;
+							card_register_title = that.card_register_title;
+						}
 
-            var goodstag = goods_info[0]['goods_tag'];
-            var card_type = goods_info[0]['card_type'] ? goods_info[0]['card_type'] : 0;
+						var goodstag = goods_info[0]['goods_tag'];
+						var card_type = goods_info[0]['card_type'] ? goods_info[0]['card_type'] : 0;
 
-            if (card_type == 1 || card_type == 4 || goods_info[0]['shape'] == 5) {
-              card_image_w_rate = '5/7';
-              card_image_height = parseFloat(that.winWidth * 7 * 2 / 5);
-            } else if (card_type == 2) {
-              //card_image_height = '470'
-              card_image_w_rate = '9/5';
-              card_image_height = parseFloat(that.winWidth * 5 * 2 / 9);
-            } else {
-              card_image_height = '750'; //card_image_w_rate = '5/7'
-              //card_image_height = parseFloat(that.winWidth*7*2/5)       
-            }
+						if (card_type == 1 || card_type == 4 || goods_info[0]['shape'] == 5) {
+							card_image_w_rate = '5/7';
+							card_image_height = parseFloat(that.winWidth * 7 * 2 / 5);
+						} else if (card_type == 2) {
+							//card_image_height = '470'
+							card_image_w_rate = '9/5';
+							card_image_height = parseFloat(that.winWidth * 5 * 2 / 9);
+						} else {
+							card_image_height = '750'; //card_image_w_rate = '5/7'
+						//card_image_height = parseFloat(that.winWidth*7*2/5)       
+						}
 
-			that.goodsshape = goods_info[0]['shape'],
-            that.setData({
-              goodsname: goods_info[0]['name'],
-              goodsinfo: goods_info[0]['act_info'],
-              goodstag: goods_info[0]['goods_tag'],
-              goodsprice: goods_info[0]['sell_price'],
-              marketprice: goods_info[0]['market_price'],
-              goodssale: goods_info[0]['sale'],
-              goodsorg: goods_info[0]['goods_org'],
-             // goodsshape: goods_info[0]['shape'],
-              goodstag: goods_info[0]['goods_tag'],
-              card_type: card_type,
-              goodscoverimg: goods_info[0]['activity_image'],
-              share_title: goods_info[0]['3D_image'] ? goods_info[0]['3D_image'] : that.share_title,
-              share_goods_wx_headimg: goods_info[0]['share_goods_wx_headimg']?goods_info[0]['share_goods_wx_headimg']:that.share_avatarUrl,
-              goodsdiscount: goods_info[0]['discount'],
-              discountinfo: goods_info[0]['discount_info'],
-              evalrate: parseInt(goods_info[0]['evalrate']),
-              card_content: card_content,
-              card_register_content: card_register_content,
-              card_register_title: card_register_title,
-              card_image_height: card_image_height,
-              card_image_w_rate: card_image_w_rate
-            }); //var wx_headimg_cache = wx.getStorageSync('wx_headimg_cache')
+						that.goodsshape = goods_info[0]['shape'],
+						that.goodsowner = goods_info[0]['goods_owner']
+						that.goodsname = goods_info[0]['name']
+						that.goodsinfo = goods_info[0]['act_info']
+						that.goodstag = goods_info[0]['goods_tag']
+						that.goodsprice = goods_info[0]['sell_price']
+						that.marketprice = goods_info[0]['market_price']
+						that.goodssale = goods_info[0]['sale']
+						that.goodsorg = goods_info[0]['goods_org']
+						// goodsshape: goods_info[0]['shape'],
+						that.goodstag = goods_info[0]['goods_tag']
+						that.card_type = card_type
+						that.goodscoverimg = goods_info[0]['activity_image']
+						that.share_title = goods_info[0]['3D_image'] ? goods_info[0]['3D_image'] : that.share_title
+						that.share_goods_wx_headimg = goods_info[0]['share_goods_wx_headimg']?goods_info[0]['share_goods_wx_headimg']:that.share_avatarUrl
+						that.goodsdiscount = goods_info[0]['discount']
+						that.discountinfo = goods_info[0]['discount_info']
+						that.evalrate = parseInt(goods_info[0]['evalrate'])
+						that.card_content = card_content
+						that.card_register_content = card_register_content
+						that.card_register_title= card_register_title
+						that.card_image_height = card_image_height
+						that.card_image_w_rate = card_image_w_rate
+						that.image_save(that.share_goods_wx_headimg, 'wx_headimg_cache'); //console.log('头像图片下载缓存 card_type:', card_type)
 
-            that.image_save(that.share_goods_wx_headimg, 'wx_headimg_cache'); //console.log('头像图片下载缓存 card_type:', card_type)
+						setTimeout(function () {
+							that.cardnamehidden = card_type == 2 ? false : true
+							that.cardregisterhidden = card_type == 1 ? false : true
+							that.cardlovehidden = card_type == 4 ? false : true
+							that.cardcelehidden = card_type == 10 ? false : true
+						}, 800);
+					} else {
+						uni.showToast({
+							title: '商品已下架',
+							icon: 'loading',
+							duration: 3000
+						})
+						setTimeout(function () {
+							uni.navigateBack();
+						}, 1500);
+					}
+				}
+			})
+		} else {
+			console.log('单个产品名称为空', goodsid);
+			return;
+		} // 商品详情图片
+		// console.log('商品详情图片', image_pic)
 
-            setTimeout(function () {
-              that.setData({
-                cardnamehidden: card_type == 2 ? false : true,
-                cardregisterhidden: card_type == 1 ? false : true,
-                cardlovehidden: card_type == 4 ? false : true,
-                cardcelehidden: card_type == 10 ? false : true
-              });
-            }, 800);
-          } else {
-            wx.showToast({
-              title: '商品已下架',
-              icon: 'loading',
-              duration: 3000
-            });
-            setTimeout(function () {
-              wx.navigateBack();
-            }, 1500);
-          }
-        }
-      });
-    } else {
-      console.log('单个产品名称为空', goodsid);
-      return;
-    } // 商品详情图片
-    // console.log('商品详情图片', image_pic)
-
-    wx.request({
-      url: weburl + '/api/client/get_goodsdesc_list',
-      method: 'POST',
-      data: {
-        username: username,
-        access_token: token,
-        goods_id: goodsid,
-        refer_mid: refer_mid,
-        //分享人id
-        page: page,
-        shop_type: shop_type,
-        keyword: keyword,
-        is_satisfy: is_satisfy,
-        rule_selected_info: rule_selected_info
-      },
-      header: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-      },
-      success: function (res) {
-        var goodsPicsInfo = res.data.result;
-        //console.log('get_goodsdesc_list goodsPicsInfo:', goodsPicsInfo, ' template id:', goodsPicsInfo.image[0]['template_id']);
-        var k = image ? 1 : 0;
-        for (var i = k; i < goodsPicsInfo.image.length; i++) {
-			goodsPicsInfo.image[i]['content']  = '' ;
-			goodsPicsInfo.image[i]['flag']  = i==0?true:false ;
-			goodsPicsInfo.image[i]['check']  = false ;
-			goodsPicsInfo.image[i]['like']  = '10w' ;
-			goodsPicsInfo.image[i]['comment']  = '1045' ;
-			goodsPicsInfo.image[i]['avater']  = '' ;
-			goodsPicsInfo.image[i]['initialTime']  = 0 ;
-			goodsPicsInfo.image[i]['at']  = '' ;
-			goodsPicsInfo.image[i]['duration']  = 841 ;
-			goodsPicsInfo.image[i]['objectFit']  = 'fill' ;
-			goodsPicsInfo.image[i]['short'] = true ;//是否矮视频
-          if (goodsPicsInfo.image[i]['ext'] == 'mp4') {
-				goodsPicsInfo.image[i]['video_url'] =  goodsPicsInfo.image[i]['url'] ;
-				goodsPicsInfo.image[i]['url'] = share_goods_image ;
-				image_video.push(goodsPicsInfo.image[i]);
-          } else {
-            if (goodsPicsInfo.image[i]['url'].indexOf("http") < 0) {
-				goodsPicsInfo.image[i]['url'] = weburl + '/' + goodsPicsInfo.image[i]['url'];
-            }
-            goodsPicsInfo.image[i]['url'] = goodsPicsInfo.image[i]['url'].replace("http:", "https:");
-            goodsPicsInfo.image[i]['video_url'] = '' ;
-			image_pic.push(goodsPicsInfo.image[i]);
-          }
-        }
-		if(image_video.length > 0){
-			image_pic = image_video.concat(image_pic);
-		}
+		wx.request({
+			url: weburl + '/api/client/get_goodsdesc_list',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				goods_id: goodsid,
+				refer_mid: refer_mid,
+				//分享人id
+				page: page,
+				shop_type: shop_type,
+				keyword: keyword,
+				is_satisfy: is_satisfy,
+				rule_selected_info: rule_selected_info
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var goodsPicsInfo = res.data.result;
+				//console.log('get_goodsdesc_list goodsPicsInfo:', goodsPicsInfo, ' template id:', goodsPicsInfo.image[0]['template_id']);
+				var k = image ? 1 : 0;
+				for (var i = k; i < goodsPicsInfo.image.length; i++) {
+					goodsPicsInfo.image[i]['content']  = '' ;
+					goodsPicsInfo.image[i]['flag']  = i==0?true:false ;
+					goodsPicsInfo.image[i]['check']  = false ;
+					goodsPicsInfo.image[i]['like']  = '10w' ;
+					goodsPicsInfo.image[i]['comment']  = '1045' ;
+					goodsPicsInfo.image[i]['avater']  = '' ;
+					goodsPicsInfo.image[i]['initialTime']  = 0 ;
+					goodsPicsInfo.image[i]['at']  = '' ;
+					goodsPicsInfo.image[i]['duration']  = 841 ;
+					goodsPicsInfo.image[i]['objectFit']  = 'fill' ;
+					goodsPicsInfo.image[i]['short'] = true ;//是否矮视频
+					if (goodsPicsInfo.image[i]['ext'] == 'mp4') {
+						goodsPicsInfo.image[i]['video_url'] =  goodsPicsInfo.image[i]['url'] ;
+						goodsPicsInfo.image[i]['url'] = share_goods_image ;
+						image_video.push(goodsPicsInfo.image[i]);
+					} else {
+						if (goodsPicsInfo.image[i]['url'].indexOf("http") < 0) {
+							goodsPicsInfo.image[i]['url'] = weburl + '/' + goodsPicsInfo.image[i]['url'];
+						}
+						goodsPicsInfo.image[i]['url'] = goodsPicsInfo.image[i]['url'].replace("http:", "https:");
+						goodsPicsInfo.image[i]['video_url'] = '' ;
+						image_pic.push(goodsPicsInfo.image[i]);
+					}
+				}
+				if(image_video.length > 0){
+					image_pic = image_video.concat(image_pic);
+				}
 		
-        image_pic[0]['template_config'] = goodsPicsInfo.image[0]['template_config'];
-		that.goodsPicsInfo = res.data.result ;
-		that.image_pic = image_pic ;
-		that.image_video = image_video ;
-		that.image_share = goodsPicsInfo.share_image ;
-		//that.showVideo = image_video.length > 0?true:false ;
-		/*
-		if( image_video.length > 0) {
-			that.videoPlay(that.video_index) ;
-			setTimeout(function () {
-				this.videoContext = uni.createVideoContext('myVideo',this); // 
-			}, 350);
+				image_pic[0]['template_config'] = goodsPicsInfo.image[0]['template_config'];
+				that.goodsPicsInfo = res.data.result ;
+				that.image_pic = image_pic ;
+				that.image_video = image_video ;
+				that.image_share = goodsPicsInfo.share_image ;
+				//that.showVideo = image_video.length > 0?true:false ;
+				/*
+				if( image_video.length > 0) {
+					that.videoPlay(that.video_index) ;
+					setTimeout(function () {
+						this.videoContext = uni.createVideoContext('myVideo',this); // 
+					}, 350);
+				}
+				*/
+				//that.showVideo = false ;
+	
+				if (goodsPicsInfo.image[0]['template_id'] != 0) {
+				//互动卡需要获取 图片模板信息
+					that.swiperchange_cardname(0);
+				}
+
+				if (!share_goods_image) {
+					that.image_save(image_pic[0]['url'], 'goods_image_cache_' + goodsid); // console.log('商品详情图片下载缓存 goods_image_cache_' + goodsid, image_pic[0]['url'])
+				} 
+				console.log('get_goodsdesc_list image_video:', that.image_video, ' image_pic:', image_pic)
+				that.showGoodsinfo();
+			}
+		}); // 商品SKU
+
+		uni.request({
+			url: weburl + '/api/client/get_goodssku_list',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				goods_id: goodsid,
+				shop_type: shop_type,
+				page: page
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('商品goods_sku:', res.data.result);
+				var attrValueList = res.data.result.spec_select_list ? res.data.result.spec_select_list : '';
+				var commodityAttr = res.data.result.sku_list ? res.data.result.sku_list : '{}';
+				if (!commodityAttr) return;
+
+				for (var i = 0; i < commodityAttr.length; i++) {
+					if (commodityAttr[i].attrValueStatus) {
+						commodityAttr[i].attrValueStatus = true;
+					} else {
+						commodityAttr[i].attrValueStatus = false;
+					}
+				}
+
+				that.commodityAttr = commodityAttr
+				if (!attrValueList) return;
+
+				for (var i = 0; i < attrValueList.length; i++) {
+					if (!attrValueList[i].attrValueStatus) {
+						attrValueList[i].attrValueStatus = true;
+					}
+
+					if (attrValueList[i].type == 2) {
+						for (var k = 0; k < attrValueList[i].value.length; k++) {
+							if (attrValueList[i].value[k].indexOf("http") < 0) {
+								attrValueList[i].value[k] = weburl + '/' + attrValueList[i].value[k];
+							}
+						}
+					}
+				}
+				that.attrValueList = attrValueList
+			}
+		}); // 商品评价
+
+		wx.request({
+			url: weburl + '/api/client/get_order_comment',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				goods_id: goodsid,
+				query_type: 1,
+				//1查商品所有评价 0查本人对商品的评价
+				shop_type: shop_type
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var comm_list = res.data.result;
+				var ret_info = res.data.info;
+				var all_rows = res.data.all_rows ? res.data.all_rows : 1;
+
+				if (comm_list) {
+					that.comm_list = that.comm_list.concat(comm_list)
+					that.all_rows = all_rows
+					console.log('获取订单评论信息:', comm_list, ' all rows:', all_rows);
+				}
+			}
+		});
+		if(that.goodsshape==5 || that.goodsshape==4){ //互动卡录音功能
+			/*
+			recorderManager.onStart(() => {
+				console.log('recorder start');
+				that.recording = true;
+				recordTimeInterval = setInterval(() => {
+					that.recordTime += 1;
+					that.formatedRecordTime = util.formatTime(that.recordTime);
+				}, 1000)
+			});
+			
+			recorderManager.onStop((res) => {
+				console.log('on stop');
+				music.src = res.tempFilePath;
+				that.hasRecord = true;
+				that.recording = false;
+			});
+			
+			recorderManager.onError(() => {
+				console.log('recorder onError');
+			});
+			*/
 		}
-		*/
-		//that.showVideo = false ;
+	},
+  
+	onShow: function () {
+		var that = this;
+		uni.getSystemInfo({
+			success: function (res) {
+				if (res.platform == "ios") {
+					var version = res.SDKVersion;
+					/*
+					uni.setInnerAudioOption({
+						obeyMuteSwitch: false
+					});
+					*/
+				}
 	
-        if (goodsPicsInfo.image[0]['template_id'] != 0) {
-          //互动卡需要获取 图片模板信息
-          that.swiperchange_cardname(0);
-        }
-
-        if (!share_goods_image) {
-          that.image_save(image_pic[0]['url'], 'goods_image_cache_' + goodsid); // console.log('商品详情图片下载缓存 goods_image_cache_' + goodsid, image_pic[0]['url'])
-        } 
-		console.log('get_goodsdesc_list image_video:', that.image_video, ' image_pic:', image_pic)
-        that.showGoodsinfo();
-      }
-    }); // 商品SKU
-
-    wx.request({
-      url: weburl + '/api/client/get_goodssku_list',
-      method: 'POST',
-      data: {
-        username: username,
-        access_token: token,
-        goods_id: goodsid,
-        shop_type: shop_type,
-        page: page
-      },
-      header: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-      },
-      success: function (res) {
-        console.log('商品goods_sku:', res.data.result,' info:'+res.data.info);
-        var attrValueList = res.data.result.spec_select_list ? res.data.result.spec_select_list : '';
-        var commodityAttr = res.data.result.sku_list ? res.data.result.sku_list : '{}';
-        if (!commodityAttr) return;
-
-        for (var i = 0; i < commodityAttr.length; i++) {
-          if (commodityAttr[i].attrValueStatus) {
-            commodityAttr[i].attrValueStatus = true;
-          } else {
-            commodityAttr[i].attrValueStatus = false;
-          }
-        }
-
-        that.setData({
-          commodityAttr: commodityAttr
-        });
-        if (!attrValueList) return;
-
-        for (var i = 0; i < attrValueList.length; i++) {
-          if (!attrValueList[i].attrValueStatus) {
-            attrValueList[i].attrValueStatus = true;
-          }
-
-          if (attrValueList[i].type == 2) {
-            for (var k = 0; k < attrValueList[i].value.length; k++) {
-              if (attrValueList[i].value[k].indexOf("http") < 0) {
-                attrValueList[i].value[k] = weburl + '/' + attrValueList[i].value[k];
-              }
-            }
-          }
-        }
-
-        that.setData({
-          attrValueList: attrValueList
-        });
-      }
-    }); // 商品评价
-
-    wx.request({
-      url: weburl + '/api/client/get_order_comment',
-      method: 'POST',
-      data: {
-        username: username,
-        access_token: token,
-        goods_id: goodsid,
-        query_type: 1,
-        //1查商品所有评价 0查本人对商品的评价
-        shop_type: shop_type
-      },
-      header: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-      },
-      success: function (res) {
-        var comm_list = res.data.result;
-        var ret_info = res.data.info;
-        var all_rows = res.data.all_rows ? res.data.all_rows : 1;
-
-        if (comm_list) {
-          that.setData({
-            comm_list: that.comm_list.concat(comm_list),
-            all_rows: all_rows
-          });
-          console.log('获取订单评论信息:', comm_list, ' all rows:', all_rows);
-        }
-      }
-    });
-	if(that.goodsshape==5 || that.goodsshape==4){ //互动卡录音功能
-	/*
-		recorderManager.onStart(() => {
-			console.log('recorder start');
-			that.recording = true;
-			recordTimeInterval = setInterval(() => {
-				that.recordTime += 1;
-				that.formatedRecordTime = util.formatTime(that.recordTime);
-			}, 1000)
-		});
-			
-		recorderManager.onStop((res) => {
-			console.log('on stop');
-			music.src = res.tempFilePath;
-			that.hasRecord = true;
-			that.recording = false;
-		});
-			
-		recorderManager.onError(() => {
-			console.log('recorder onError');
-		});
-		*/
-	}
-  },
-  onShow: function () {
-    var that = this;
-	wx.getSystemInfo({
-	  success: function (res) {
-	    if (res.platform == "ios") {
-	      var version = res.SDKVersion;
-		  /*
-	     uni.setInnerAudioOption({
-	       obeyMuteSwitch: false
-	     });
-		 */
-	    }
-	
-	    let winHeight = res.windowHeight;
-	    let winWidth = res.windowWidth;
-	    console.log('detail getSystemInfo:', res);
-	    that.setData({
-	      dkheight: winHeight - winHeight * 0.05 - 100,
-	      winHeight: winHeight,
-	      winWidth: winWidth,
-	    });
-		that.video_height = '630rpx'  ;
-		that.video_width = `${winWidth}px`  ;
-		
-	    wx.setStorageSync('systeminfo', res.system);
-	    wx.setStorageSync('phonemodel', res.model);
-	  }
-	});
-	
-  },
-  onReady: function () {
+				let winHeight = res.windowHeight;
+				let winWidth = res.windowWidth;
+				console.log('detail getSystemInfo:', res);
+				that.dkheight = winHeight - winHeight * 0.05 - 100
+				that.winHeight = winHeight
+				that.winWidth = winWidth
+				that.video_height = '630rpx'  ;
+				that.video_width = `${winWidth}px`  ;
+				uni.setStorageSync('systeminfo', res.system);
+				uni.setStorageSync('phonemodel', res.model);
+			}
+		})
+	},
+	onReady: function () {
 	//#ifdef APP-PLUS
-	plus.screen.lockOrientation("portrait-primary")
+		plus.screen.lockOrientation("portrait-primary")
 	//#endif
-  },
-  onHide:function() {
-  	for (let item of this.image_pic) {
-  		item.flag = false
-  	}
-  },
-  onShareAppMessage: function () {
+	},
+	onHide:function() {
+		for (let item of this.image_pic) {
+			item.flag = false
+		}
+	},
+	onShareAppMessage: function () {
     var that = this;
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
     var share_goods_id = that.goodsid;
@@ -1467,11 +1457,11 @@ export default {
       imageUrl: share_goods_image,
       path: '/pages/details/details?id=' + share_goods_id + '&image=' + share_goods_image + '&refername=' + username // path: '/pages/details/details?scene=' + encodeURIComponent(scene)
     };
-  },
-  mounted() {
+	},
+	mounted() {
   	
-  },
-  methods: {
+	},
+	methods: {
 	  
 	 /*
 	switchTtype: function (type) {
@@ -1499,34 +1489,34 @@ export default {
       });
     },
    
-    formSubmit: function (e) {
-      var that = this;
-      //var formId = e.detail.formId;
-      var form_name = e.currentTarget.dataset.name;
-      console.log('formSubmit() form name:', form_name);
+	formSubmit: function (e) {
+		var that = this;
+		//var formId = e.detail.formId;
+		var form_name = e.currentTarget.dataset.name;
+		console.log('formSubmit() form name:', form_name);
 
-      if (form_name == 'buyGift') {
-        that.buyGift();
-      } else if (form_name == 'buyMyself') {
-        that.buyMyself();
-      } else if (form_name == 'mycardregister') {
-        that.upimg();
-      } else if (form_name == 'wishcart') {
-        that.setData({
-          is_buymyself: 0
-        });
-        that.wishCart();
-      } else if (form_name == 'mycommTapTag') {
-        that.is_buymyself = 0
-        that.mycommTapTag();
-      } else if (form_name == 'myblessing') {
-        that.myblessing();
-      } else if (form_name == 'card_register') {
-        that.card_register();
-      }
+		if (form_name == 'buyGift') {
+			that.buyGift();
+		} else if (form_name == 'buyMyself') {
+			that.buyMyself();
+		} else if (form_name == 'mycardregister') {
+			that.upimg();
+		} else if (form_name == 'wishcart') {
+			that.is_buymyself = 0			 
+			that.wishCart();
+		} else if (form_name == 'mycommTapTag') {
+			that.is_buymyself = 0
+			that.mycommTapTag();
+		} else if (form_name == 'myqunTapTag') {
+			that.myqunTapTag();	
+		} else if (form_name == 'myblessing') {
+			that.myblessing();
+		} else if (form_name == 'card_register') {
+			that.card_register();
+		}
 
       //if (formId) that.submintFromId(formId);
-    },
+	},
     //提交formId，让服务器保存到数据库里
     submintFromId: function (formId) {
       var that = this;
@@ -1707,6 +1697,27 @@ export default {
         url: '../goods/comment/comment?goods_id=' + goods_id + '&goods_skuid=' + goods_skuid + '&comm_type=' + 1
       });
     },
+	myqunTapTag: function () {
+		var that = this
+		var shop_type = that.shop_type;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var goods_skuid = that.commodityAttr[0]['id'];
+		var goods_id = that.goodsid;
+		var goods_name = that.goodsname;
+		var goods_owner = that.goodsowner
+		
+		if (!username) {
+		  //登录
+			uni.navigateTo({
+				url: '/pages/login/login?frompage=/pages/hall/hall'
+			});
+		}else{
+			uni.navigateTo({
+				url: '/pages/wechat/wechat?goods_id=' + goods_id + '&goods_owner=' + goods_owner + '&goods_name=' + goods_name + '&qun_type=1'
+			})
+		}
+		
+	},
     returnTapTag: function () {
       var that = this;
       wx.switchTab({
@@ -2590,7 +2601,7 @@ export default {
     },
     has_auth: function () {
       var that = this;
-      wx.getSetting({
+      uni.getSetting({
         success: res => {
           if (!res.authSetting['scope.userInfo']) {
             uni.navigateTo({
@@ -3023,9 +3034,9 @@ export default {
 
       if (!username) {
         //登录
-        uni.navigateTo({
-          url: '../login/login?goods_id=' + that.goodsid
-        });
+		uni.navigateTo({
+			url: '/pages/login/login?frompage=/pages/hall/hall'
+		});
       } else {
         if (that.sku_id) {
           that.insertCart(that.sku_id, that.buynum, username, token, that.shop_type, that.wishflag, is_buymyself, keyword, is_satisfy, rule_selected_info);

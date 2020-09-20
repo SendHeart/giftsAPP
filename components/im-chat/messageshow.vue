@@ -1,7 +1,7 @@
 <template>
 	<view class="m-item" :id="'message'+cid">
 		<view class="m-left">
-			<image class="head_icon" src="https://img-cdn-qiniu.dcloud.net.cn/uniapp/app/homeHL.png" v-if="message.user=='home'"></image>
+			<image class="head_icon" src="/static/images/homeHL.png" v-if="message.user=='home'"></image>
 		</view>
 		<view class="m-content">
 			<view class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}">
@@ -9,7 +9,7 @@
 			</view>
 		</view>
 		<view class="m-right">
-			<image class="head_icon" src="https://img-cdn-qiniu.dcloud.net.cn/uniapp/app/customerHL.png" v-if="message.user=='customer'"></image>
+			<image class="head_icon" :src="message.avatarUrl" v-if="message.user=='customer'"></image>
 		</view>
 	</view>
 </template>
@@ -35,7 +35,7 @@
 	.m-item {
 		display: flex;
 		flex-direction: row;
-		padding-top: 40upx;
+		padding-top: 20upx;
 	}
 
 	.m-left {
@@ -63,6 +63,7 @@
 	.head_icon {
 		width: 80upx;
 		height: 80upx;
+		border-radius: 50%;
 	}
 
 	.m-content-head {

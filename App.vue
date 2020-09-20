@@ -3,6 +3,7 @@
 	const weburl = 'https://sendheart.dreamer-inc.com';
 	const wssurl = 'wss://sendheart.dreamer-inc.com';
 	const playerurl = 'http://play.dreamer-inc.com/live'
+	const mqtturl = 'wss://sendheart.dreamer-inc.com';
 	const face_licenseIDAndroid = 'sendheartAppFace-face-android' //百度人脸识别 licenseID
 	const face_licenseIDIOS = 'sendheartAppFace-face-ios' //百度人脸识别 licenseID
 	import Vue from 'vue'
@@ -11,6 +12,7 @@
             console.log('App Launch');
 			var that = this//调用API从本地缓存中获取数据
 			var weburl = that.$options.globalData.weburl
+			var mqtturl = that.$options.globalData.mqtturl
 			var appid = that.$options.globalData.appid;
 			var appsecret = that.$options.globalData.secret;
 			var shop_type = that.$options.globalData.shop_type;

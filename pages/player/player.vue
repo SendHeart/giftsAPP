@@ -627,53 +627,52 @@ export default {
     return shareObj; // 返回shareObj
   },
   methods: {
-    danmu_scroll_auto: function () {
+	danmu_scroll_auto: function () {
       // 获取scroll-view的节点信息
       //创建节点选择器
-      var that = this;
-      var is_live = that.is_live;
-      var danmuList = that.danmuList;
-      var cur_danmu_num = that.cur_danmu_num;
-      var danmu_scrollTop = that.danmu_scrollTop + cur_danmu_num * 25;
-      if (!is_live) return;
-      /*
-      var danmuList = that.data.danmuList
-      for (let i=0; i < danmuList.length;i++){
-        var doomm = {
-          text: danmuList[i]['content'],
-          top: Math.ceil(Math.random() * 100),
-          time: 5 ,
-          color:  getRandomColor(),
-          display:  true,
-          id: i,
-        }
-        if (doommList.length > 5) {
-          doommList.splice(0, 1)
+		var that = this;
+		var is_live = that.is_live;
+		var danmuList = that.danmuList;
+		var cur_danmu_num = that.cur_danmu_num;
+		var danmu_scrollTop = that.danmu_scrollTop + cur_danmu_num * 25;
+		if (!is_live) return;
+		/*
+		var danmuList = that.data.danmuList
+		for (let i=0; i < danmuList.length;i++){
+			var doomm = {
+			text: danmuList[i]['content'],
+			top: Math.ceil(Math.random() * 100),
+			time: 5 ,
+			color:  getRandomColor(),
+			display:  true,
+			id: i,
+		}
+		if (doommList.length > 5) {
+			doommList.splice(0, 1)
         }
         doommList.push(doomm);
-      }
+		}
           
-      that.setData({
-        doommData: doommList
-      })
-      */
+		that.setData({
+			doommData: doommList
+		})
+		*/
 
-      var query = wx.createSelectorQuery();
-      query.select('.danmu-scroll').boundingClientRect();
-      query.select('.danmu-scroll-list').boundingClientRect();
-      query.exec(res => {
-        var containerHeight = res[0].height;
-        var listHeight = res[1].height; // 滚动条的高度增加
+		var query = wx.createSelectorQuery();
+		query.select('.danmu-scroll').boundingClientRect();
+		query.select('.danmu-scroll-list').boundingClientRect();
+		query.exec(res => {
+			var containerHeight = res[0].height;
+			var listHeight = res[1].height; // 滚动条的高度增加
 
-        if (danmu_scrollTop > listHeight - containerHeight) {
-          that.setData({
-            danmu_scrollTop: danmu_scrollTop
-          });
-        }
+			if (danmu_scrollTop > listHeight - containerHeight) {
+				that.danmu_scrollTop = danmu_scrollTop
+			}
 
-        console.log('containerHeight:', containerHeight, ' listHeight:', listHeight, ' danmu_scrollTop:', danmu_scrollTop, ' cur_danmu_num:', cur_danmu_num, ' danmuList:', that.danmuList);
-      });
-    },
+			console.log('containerHeight:', containerHeight, ' listHeight:', listHeight, ' danmu_scrollTop:', danmu_scrollTop, ' cur_danmu_num:', cur_danmu_num, ' danmuList:', that.danmuList);
+		})
+	},
+	
 	getwebview(){
 		var pages = getCurrentPages();
 		var page = pages[pages.length - 1];

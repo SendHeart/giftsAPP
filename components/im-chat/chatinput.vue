@@ -36,10 +36,8 @@
 			sendMessge: function () {
 				var that = this;
 				if (that.inputValue.trim() == '') {
-
 					that.inputValue = '';
 				} else {
-
 					//点击发送按钮时，通知父组件用户输入的内容
 					this.$emit('send-message', {
 						type: 'text',
@@ -65,10 +63,8 @@
 		background-color: #fafafa;
 	}
 	.footer-left {
-
 		width: 80upx;
 		height: 80upx;
-
 		display: flex;
 		justify-content: center;
 		align-items: center;

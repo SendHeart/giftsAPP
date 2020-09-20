@@ -227,120 +227,122 @@ export default {
 		card_cele_info: "",
 		card_register_info: "",
 		card_type: "",
-		userInfo: ""
+		userInfo: "",
 	}
 	},
 
   components: {},
   props: {},
   onLoad: function (options) {
-    // 订单状态，已下单为1，已付为2，已发货为3，已收货为4 5已经评价 6退款 7部分退款 8用户取消订单 9作废订单 10退款中
-    var that = this;
-    var orders = that.orders;
-    var order_id = options.order_id ? options.order_id : 0;
-    var order_no = options.order_no ? options.order_no : 0;
-    var card_type = options.card_type ? options.card_type : 0;
-    var giftflag = options.giftflag ? options.giftflag : 0;
-    var send_rcv = options.send_rcv ? options.send_rcv : 0;
-    var wx_notes = options.wx_notes ? options.wx_notes : 0; //微信通知直接进入
+		// 订单状态，已下单为1，已付为2，已发货为3，已收货为4 5已经评价 6退款 7部分退款 8用户取消订单 9作废订单 10退款中
+		var that = this;
+		var orders = that.orders;
+		var order_id = options.order_id ? options.order_id : 0;
+		var order_no = options.order_no ? options.order_no : 0;
+		var card_type = options.card_type ? options.card_type : 0;
+		var giftflag = options.giftflag ? options.giftflag : 0;
+		var send_rcv = options.send_rcv ? options.send_rcv : 0;
+		var wx_notes = options.wx_notes ? options.wx_notes : 0; //微信通知直接进入
 
-    var order_object = options.order_object ? JSON.parse(options.order_object) : '';
-    wx.getSystemInfo({
-      success: function (res) {
-        let winHeight = res.windowHeight;
-        let winWidth = res.windowWidth;
-        that.winHeight = winHeight
-        that.winWidth = winWidth
-      }
-    });
-    var currentPages = getCurrentPages();
-	that.currentPages_length = currentPages.length
-	that.wx_notes = wx_notes
+		var order_object = options.order_object ? JSON.parse(options.order_object) : '';
+		wx.getSystemInfo({
+			success: function (res) {
+				let winHeight = res.windowHeight;
+				let winWidth = res.windowWidth;
+				that.winHeight = winHeight
+				that.winWidth = winWidth
+			}
+		});
+		var currentPages = getCurrentPages();
+		that.currentPages_length = currentPages.length
+		that.wx_notes = wx_notes
 
-    console.log('orderdetail onload options:', options, 'order_object:', order_object, 'length:', order_object.length);
+		console.log('orderdetail onload options:', options, 'order_object:', order_object, 'length:', order_object.length);
 
-    if (order_object) {
-      console.log('订单详情', order_object);
-      var sku_num = 0;
-      var status = order_object['status'];
-      var gift_status = order_object['gift_status'];
-      var order_no = order_object['order_no'];
-      var order_shape = order_object['shape'];
-      var sendtime = order_object['paytime'];
-      var rcvtime = order_object['rcvtime'];
-      var orderprice = order_object['order_price'];
-      var orderaddress = order_object['address'];
-      var fullname = order_object['full_name'];
-      var from_nickname = order_object['from_nickname'];
-      var from_headimg = order_object['from_headimg'];
-      var tel = order_object['tel'];
-      var deliverycode = order_object['deliverycode'];
-      var deliveryname = order_object['deliveryname'];
-      var deliverystepinfo = order_object['deliverystepinfo'];
-      var order_status = order_object['status'];
-      var buy_num = order_object['buy_num'];
-      var card_name_info = order_object['card_name_info'] ? order_object['card_name_info'] : '';
-      var card_cele_info = order_object['card_cele_info'] ? order_object['card_cele_info'] : '';
-      var card_love_info = order_object['card_love_info'] ? order_object['card_love_info'] : '';
-      var card_register_info = order_object['card_register_info'] ? order_object['card_register_info'] : '';
-      sku_num = order_object['order_sku'] ? order_object['order_sku'].length : 1;
-      orders.push(order_object);
-      that.order_id = order_id ? order_id : 0,
-      that.orders = orders
-      that.status = status
-      that.giftflag = giftflag ? giftflag : 0
-      that.gift_status = gift_status
-      that.send_rcv = send_rcv ? send_rcv : 0
-      that.order_status = order_status
-      that.order_shape = order_shape
-      that.sku_num = sku_num
-      that.buy_num = buy_num
-      that.order_no = order_no
-      that.sendtime = sendtime
-      that.rcvtime = rcvtime
-      that.orderprice = orderprice
-      that.orderaddress = orderaddress ? orderaddress : ''
-      that.tel = tel ? tel : ''
-      that.fullname = fullname ? fullname : ''
-      that.from_nickname = from_nickname
-      that.from_headimg = from_headimg
-      that.deliverycode = deliverycode ? deliverycode : ''
-      that.deliveryname = deliveryname ? deliveryname : ''
-      that.deliverystepinfo = deliverystepinfo ? deliverystepinfo : ''
-      that.card_name_info = card_name_info
-      that.card_love_info = card_love_info
-      that.card_cele_info = card_cele_info
-      that.card_register_info = card_register_info
-      that.card_type = card_type
-    } else if (order_no || order_id) {
-		that.order_no = order_no
-		that.order_id = order_id
-		console.log('订单号:', order_no,' order id:',order_id);
-		that.reloadData();
-    } else {
-		uni.navigateBack();
-    }
-  },
-  onShow: function () {
-    //this.reloadData();
-    var that = this;
-    var CurrentPages = getCurrentPages();
+		if (order_object) {
+			console.log('订单详情', order_object);
+			var sku_num = 0;
+			var status = order_object['status'];
+			var gift_status = order_object['gift_status'];
+			var order_no = order_object['order_no'];
+			var order_shape = order_object['shape'];
+			var sendtime = order_object['paytime'];
+			var rcvtime = order_object['rcvtime'];
+			var orderprice = order_object['order_price'];
+			var orderaddress = order_object['address'];
+			var fullname = order_object['full_name'];
+			var from_nickname = order_object['from_nickname'];
+			var from_headimg = order_object['from_headimg'];
+			var tel = order_object['tel'];
+			var deliverycode = order_object['deliverycode'];
+			var deliveryname = order_object['deliveryname'];
+			var deliverystepinfo = order_object['deliverystepinfo'];
+			var order_status = order_object['status'];
+			var buy_num = order_object['buy_num'];
+			var card_name_info = order_object['card_name_info'] ? order_object['card_name_info'] : '';
+			var card_cele_info = order_object['card_cele_info'] ? order_object['card_cele_info'] : '';
+			var card_love_info = order_object['card_love_info'] ? order_object['card_love_info'] : '';
+			var card_register_info = order_object['card_register_info'] ? order_object['card_register_info'] : '';
+			sku_num = order_object['order_sku'] ? order_object['order_sku'].length : 1;
+			orders.push(order_object);
+			that.order_id = order_id ? order_id : 0,
+			that.orders = orders
+			that.status = status
+			that.giftflag = giftflag ? giftflag : 0
+			that.gift_status = gift_status
+			that.send_rcv = send_rcv ? send_rcv : 0
+			that.order_status = order_status
+			that.order_shape = order_shape
+			that.sku_num = sku_num
+			that.buy_num = buy_num
+			that.order_no = order_no
+			that.sendtime = sendtime
+			that.rcvtime = rcvtime
+			that.orderprice = orderprice
+			that.orderaddress = orderaddress ? orderaddress : ''
+			that.tel = tel ? tel : ''
+			that.fullname = fullname ? fullname : ''
+			that.from_nickname = from_nickname
+			that.from_headimg = from_headimg
+			that.deliverycode = deliverycode ? deliverycode : ''
+			that.deliveryname = deliveryname ? deliveryname : ''
+			that.deliverystepinfo = deliverystepinfo ? deliverystepinfo : ''
+			that.card_name_info = card_name_info
+			that.card_love_info = card_love_info
+			that.card_cele_info = card_cele_info
+			that.card_register_info = card_register_info
+			that.card_type = card_type
+		} else if (order_no || order_id) {
+			that.order_no = order_no
+			that.order_id = order_id
+			console.log('订单号:', order_no,' order id:',order_id);
+			that.reloadData()
+		} else {
+			uni.navigateBack();
+		}
+	},
+	onShow: function () {
+		//this.reloadData();
+		var that = this;
+		var CurrentPages = getCurrentPages();
 
-    if (CurrentPages.length > 1) {
-      that.title_logo = '../../../images/back.png'
-    }
-  },
-  onShareAppMessage: function () {
-    var that = this;
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var order_no = that.order_no;
-    return {
-      title: that.share_title,
-      desc: that.share_desc,
-      path: '/pages/order/orderdetail/orderdetail?order_no=' + order_no + '&refername=' + username
-    };
-  },
-  methods: {
+		if (CurrentPages.length > 1) {
+			that.title_logo = '../../../images/back.png'
+		}
+	},
+	
+	onShareAppMessage: function () {
+		var that = this;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var order_no = that.order_no;
+		return {
+			title: that.share_title,
+		desc: that.share_desc,
+		path: '/pages/order/orderdetail/orderdetail?order_no=' + order_no + '&refername=' + username
+		};
+	},
+	
+	methods: {
 	copyorderinfo: function (e) {
 	    var that = this;
 	    var order_info_no = e.order_no?'订单:'+e.order_no:'';
@@ -417,96 +419,93 @@ export default {
         }
       });
     },
-    goBack: function () {
-      var CurrentPages = getCurrentPages();
+	
+	goBack: function () {
+		var CurrentPages = getCurrentPages();
 
-      if (CurrentPages.length > 1) {
-        wx.navigateBack({
-          changed: true
-        }); //返回上一页
-      } else {
-        wx.switchTab({
-          url: '../../hall/hall'
-        });
-      }
-    },
+		if (CurrentPages.length > 1) {
+			wx.navigateBack({
+			changed: true
+			}); //返回上一页
+		} else {
+			wx.switchTab({
+			url: '../../hall/hall'
+			});
+		}
+	},
+	
     onTapTag2: function (e) {
-      var that = this;
-      var tab = e.currentTarget.id;
-      var index = e.currentTarget.dataset.index;
-      that.setData({
-        activeIndex2: index,
-        tab2: tab,
-        page: 1
-      }); //that.reloadData()
+		var that = this;
+		var tab = e.currentTarget.id;
+		var index = e.currentTarget.dataset.index;
+		that.activeIndex2 = index
+		that.tab2 = tab
+		that.page = 1
+	},
+	
+	expressTapTag: function () {
+		var that = this;
+		var shop_type = that.shop_type;
+		var order_no = that.order_no;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var deliveryflag = that.deliveryflag;
+		console.log('物流详情:' + order_no + ' ' + username + ' ' + token);
+		if (deliveryflag == 1) return; //从服务器获取订单物流信息
+			wx.request({
+				url: weburl + '/api/client/query_delivery_info',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					order_no: order_no,
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					console.log(res.data);					
+					if (!res.data.result) {
+						wx.showToast({
+						title: '暂无物流信息',
+						icon: 'loading',
+						duration: 1500
+					});
+					setTimeout(function () {//wx.navigateBack();
+					}, 500);
+				} else {
+					if (res.data.result['status_list'].length < 2) {
+						wx.showToast({
+							title: '暂无轨迹信息',
+							icon: 'loading',
+							duration: 1500
+						});
+						setTimeout(function () {//wx.navigateBack();
+						}, 500);
+					}
+
+					var deliveryinfo = res.data.result;
+					var status_list = deliveryinfo['status_list'];
+					var delivery_status = that.delivery_status;
+
+					if (status_list) {
+						var index = status_list.length - 1;
+						for (var i = 0; i < status_list.length; i++) {
+							delivery_status[index - i] = status_list[i];
+						}
+					}
+
+					that.deliveryinfo = deliveryinfo
+					that.delivery_status = delivery_status
+					that.deliveryflag = 1
+					that.pageScrollToBottom();
+				}
+			}
+		})
     },
-    expressTapTag: function () {
-      var that = this;
-      var shop_type = that.shop_type;
-      var order_no = that.order_no;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var deliveryflag = that.deliveryflag;
-      console.log('物流详情:' + order_no + ' ' + username + ' ' + token);
-      if (deliveryflag == 1) return; //从服务器获取订单物流信息
-
-      wx.request({
-        url: weburl + '/api/client/query_delivery_info',
-        method: 'POST',
-        data: {
-          username: username,
-          access_token: token,
-          order_no: order_no,
-          shop_type: shop_type
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          console.log(res.data);
-
-          if (!res.data.result) {
-            wx.showToast({
-              title: '暂无物流信息',
-              icon: 'loading',
-              duration: 1500
-            });
-            setTimeout(function () {//wx.navigateBack();
-            }, 500);
-          } else {
-            if (res.data.result['status_list'].length < 2) {
-              wx.showToast({
-                title: '暂无轨迹信息',
-                icon: 'loading',
-                duration: 1500
-              });
-              setTimeout(function () {//wx.navigateBack();
-              }, 500);
-            }
-
-            var deliveryinfo = res.data.result;
-            var status_list = deliveryinfo['status_list'];
-            var delivery_status = that.delivery_status;
-
-            if (status_list) {
-              var index = status_list.length - 1;
-
-              for (var i = 0; i < status_list.length; i++) {
-                delivery_status[index - i] = status_list[i];
-              }
-            }
-
-            that.setData({
-              deliveryinfo: deliveryinfo,
-              delivery_status: delivery_status,
-              deliveryflag: 1
-            });
-            that.pageScrollToBottom();
-          }
-        }
-      });
-    },
+	
     reloadData: function () {
 		var that = this;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
@@ -714,7 +713,8 @@ export default {
       var that = this;
       var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
       var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var order_id = e.currentTarget.dataset.orderId;
+      var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+	  var order_id = e.currentTarget.dataset.orderId;
       var order_shape = e.currentTarget.dataset.orderShape;
       var receive = that.send_rcv;
 
@@ -725,6 +725,7 @@ export default {
       }
     },
 	navigateToCustomerService: function () {
+		var that = this
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var webview_url ='http://wpa.qq.com/msgrd?v=3&uin=198895160&site=qq&menu=yes' ;
 		var order_no = this.order_no;
@@ -751,9 +752,11 @@ export default {
 				if (res.data.status=='y') {
 					var webview_info = res.data.result ;
 					webview_url = webview_info.url ;
+					
 					plus.runtime.openURL(webview_url,function (res) {  
 						plus.nativeUI.alert("本机没有安装QQ，无法启动");  
 					});
+					
 				} else {
 					wx.showToast({
 						title: '暂时没有WEBVIEW URL',
@@ -765,13 +768,22 @@ export default {
 		})
 		
 		//发通知消息
+		var title = '订单咨询' ;
 		var content = {
 			message_type: '20',  //MQTT 客服咨询消息
 			message: '订单ID:'+order_id+' 发起咨询【请及时回复】',
 			order_no:order_no,
 			order_id:order_id,
 		}
-		var title = '订单咨询' ;
+		var mqtt_pub_content = {
+			d:{
+				title:'订单咨询',
+				content:JSON.stringify(content),
+				from_headimg:userInfo.avatarUrl,
+				from_nickname:userInfo.nickname,
+				from_username:username
+			}
+		}
 		uni.request({
 			url: weburl + '/api/mqttservice/publish',
 			method: 'POST',
@@ -782,7 +794,7 @@ export default {
 				title: title,
 				from_headimg: userInfo.avatarUrl?userInfo.avatarUrl:'',
 				from_nickname: userInfo.nickname?userInfo.nickname:'',
-				content: JSON.stringify(content),
+				content: JSON.stringify(mqtt_pub_content),
 			},
 			header: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -792,29 +804,30 @@ export default {
 				//console.log('web view url：', res.data.result)
 			}
 		})
+		 
 	},
-    setData: function (obj) {
-      let that = this;
-      let keys = [];
-      let val, data;
-      Object.keys(obj).forEach(function (key) {
-        keys = key.split('.');
-        val = obj[key];
-        data = that.$data;
-        keys.forEach(function (key2, index) {
-          if (index + 1 == keys.length) {
-            that.$set(data, key2, val);
-          } else {
-            if (!data[key2]) {
-              that.$set(data, key2, {});
-            }
-          }
-
-          data = data[key2];
-        });
-      });
-    }
-  }
+	
+	setData: function (obj) {
+		let that = this;
+		let keys = [];
+		let val, data;
+		Object.keys(obj).forEach(function (key) {
+			keys = key.split('.');
+			val = obj[key];
+			data = that.$data;
+			keys.forEach(function (key2, index) {
+				if (index + 1 == keys.length) {
+					that.$set(data, key2, val);
+				} else {
+					if (!data[key2]) {
+						that.$set(data, key2, {});
+					}
+				}
+				data = data[key2];
+			})
+		});
+	}
+}
 };
 </script>
 <style>

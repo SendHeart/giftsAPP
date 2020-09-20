@@ -163,91 +163,91 @@ var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') :
 
 export default {
 	data() {
-    return {
-      title_name: '礼物袋',
-      title_logo: '/static/images/history_s.png',
-      nickname: userInfo.nickName,
-      avatarUrl: userInfo.avatarUrl,
-      orders: [],
-      orders_show: [],
-      orders_prev: [],
-      orders_next: [],
-      colors: [],
-      keyword: '',
-      user_name: '',
-      shop_type: shop_type,
-      page: 1,
-      pagesize: 10,
-      show_max: 1,
+	return {
+		title_name: '礼物袋',
+		title_logo: '/static/images/history_s.png',
+		nickname: userInfo.nickName,
+		avatarUrl: userInfo.avatarUrl,
+		orders: [],
+		orders_show: [],
+		orders_prev: [],
+		orders_next: [],
+		colors: [],
+		keyword: '',
+		user_name: '',
+		shop_type: shop_type,
+		page: 1,
+		pagesize: 10,
+		show_max: 1,
       //最多显示页数
-      order_status: 0,
-      navList_order: navList_order,
-      tab2: 'send',
-      activeIndex2: 0,
-	  TabCur: 0,
-	  scrollLeft: 0,
-      all_rows: 0,
-      giftflag: 0,
-      gift_send: 0,
-      gift_rcv: 0,
-      page_num: 0,
-      hiddenmodalput: true,
-      hidddensearch: true,
-      hiddenmore: true,
-      modalHiddenUserName: true,
-      modalHiddenPhone: true,
-      currenttime: now ? parseInt(now / 1000) : 0,
-      navList2: navList2,
-      buyin_rate: 90,
+		order_status: 0,
+		navList_order: navList_order,
+		tab2: 'send',
+		activeIndex2: 0,
+		TabCur: 0,
+		scrollLeft: 0,
+		all_rows: 0,
+		giftflag: 0,
+		gift_send: 0,
+		gift_rcv: 0,
+		page_num: 0,
+		hiddenmodalput: true,
+		hidddensearch: true,
+		hiddenmore: true,
+		modalHiddenUserName: true,
+		modalHiddenPhone: true,
+		currenttime: now ? parseInt(now / 1000) : 0,
+		navList2: navList2,
+		buyin_rate: 90,
       //礼物折现率
-      loadingHidden: true,
+		loadingHidden: true,
       // loading
-      scrollTop: 0,
-	  old: {
-    	scrollTop: 0
-	  },
-      current_scrollTop: 0,
-      needPhoneNumber: '微信授权',
-      needUserName: '微信授权',
-      inputShowed: false,
-      user_gender: "",
-      goods_id: "",
-      goods_skuid: "",
-      order_skuid: "",
-      buyin_price: "",
-      order_index: "",
-      sku_index: "",
-      floorstatus: false,
-      windowWidth: "380",
-      windowHeight: "1800",
-      dkheight: "1800",
-	  is_loading: false,
-	  status: 'more',
-	  contentText: {
-	  	contentdown: '上拉加载更多',
-	  	contentrefresh: '加载中',
-	  	contentnomore: '没有更多'
-	  },
-	  downOption:{
-	  	auto:false, // 不自动加载
-	  	use:false,
-	  	isLock:true,
-	  },
-	  upOption:{
-	  	auto:false, // 不自动加载
-	  	onScroll:false,
-	  	page: {
-	  	 	num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
-	  	 	size: 10, // 每页数据的数量
-	  	},
-	  	noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
-	  	empty:{
-	  		tip: '~ 空空如也 ~', // 提示
-	  		btnText: '去看看'
-	  	}
-	  },
-	  isInit: false, // 列表是否已经初始化
-	  scrollY: 0
+		scrollTop: 0,
+		old: {
+			scrollTop: 0
+		},
+		current_scrollTop: 0,
+		needPhoneNumber: '微信授权',
+		needUserName: '微信授权',
+		inputShowed: false,
+		user_gender: "",
+		goods_id: "",
+		goods_skuid: "",
+		order_skuid: "",
+		buyin_price: "",
+		order_index: "",
+		sku_index: "",
+		floorstatus: false,
+		windowWidth: "380",
+		windowHeight: "1800",
+		dkheight: "1800",
+		is_loading: false,
+		status: 'more',
+		contentText: {
+			contentdown: '上拉加载更多',
+			contentrefresh: '加载中',
+			contentnomore: '没有更多'
+		},
+		downOption:{
+			auto:false, // 不自动加载
+			use:false,
+			isLock:true,
+		},
+		upOption:{
+			auto:false, // 不自动加载
+			onScroll:false,
+			page: {
+				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+				size: 10, // 每页数据的数量
+			},
+			noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+			empty:{
+				tip: '~ 空空如也 ~', // 提示
+				btnText: '去看看'
+			}
+		},
+		isInit: false, // 列表是否已经初始化
+		scrollY: 0
     };
 	},
 	mixins: [MescrollMixin], // 使用mixin
@@ -283,51 +283,52 @@ export default {
 	    } else{
 	      bar_title = '全部订单'
 	    }
-	wx.setNavigationBarTitle({
+		wx.setNavigationBarTitle({
 	      title: bar_title
-	})
+		})
 	
-    if (order_status) {
-		that.order_status = order_status
-    }
-	
-  },
-  onShow: function () {
-    var that = this;
-    var orders = that.orders;
-    var username = uni.getStorageSync('username');
-    var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : '';
-    var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : '';
-    var modalHiddenPhone = that.modalHiddenPhone;
-    var modalHiddenUserName = that.modalHiddenUserName;
-    var userInfo = uni.getStorageSync('userInfo');
-    //console.log('index onShow() orders:', orders);
-	
-    if (!username) {
-      uni.navigateTo({
-       url: '/pages/login/login?frompage=/pages/index/index'
-      });
-	  
-    }else{
-		//that.reloadData();
-		uni.getSystemInfo({
-			  success: function (res) {
-			    that.windowWidth = res.windowWidth
-			    that.windowHeight = res.windowHeight
-			    that.dkheight = res.windowHeight - 60 
-			  }
-			});
-		if (!user_name || user_name == '') {
-		  that.modalHiddenUserName = !modalHiddenUserName;
+		if (order_status) {
+			that.order_status = order_status
 		}
-	}
-  },
-  onReady: function () {},
-  mounted() {
-  	this.isInit = true; // 标记为true
-  	this.mescroll.triggerDownScroll();
-  },
-  methods: {
+	},
+	
+	onShow: function () {
+		var that = this;
+		var orders = that.orders;
+		var username = uni.getStorageSync('username');
+		var user_phone = uni.getStorageSync('user_phone') ? uni.getStorageSync('user_phone') : '';
+		var user_name = uni.getStorageSync('user_name') ? uni.getStorageSync('user_name') : '';
+		var modalHiddenPhone = that.modalHiddenPhone;
+		var modalHiddenUserName = that.modalHiddenUserName;
+		var userInfo = uni.getStorageSync('userInfo');
+		//console.log('index onShow() orders:', orders);
+	
+		if (!username) {
+			uni.navigateTo({
+				url: '/pages/login/login?frompage=/pages/index/index'
+			})
+		} else {
+			//that.reloadData();
+			uni.getSystemInfo({
+				success: function (res) {
+					that.windowWidth = res.windowWidth
+					that.windowHeight = res.windowHeight
+					that.dkheight = res.windowHeight - 60 
+				}
+			})
+			if (!user_name || user_name == '') {
+				that.modalHiddenUserName = !modalHiddenUserName;
+			}
+		}
+	},
+	onReady: function () {},
+
+	mounted() {
+		this.isInit = true; // 标记为true
+		this.mescroll.triggerDownScroll();
+	},
+	
+methods: {
 	tabSelect(e) {
 		this.TabCur = e.currentTarget.dataset.id;
 		this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
