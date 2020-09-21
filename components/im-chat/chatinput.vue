@@ -9,6 +9,9 @@
 		<view class="footer-right" @tap="sendMessge">
 			<view id='msg-type' >发送</view>
 		</view>
+		<view class="footer-right-2"  @tap="addImage">
+			<view class="uni-icon uni-icon-plus"></view>
+		</view>
 	</view>
 </template>
 
@@ -17,7 +20,7 @@
 		name: "chat-input",
 		data() {
 			return {
-				inputValue: ''
+				inputValue: '',
 			}
 		},
 		methods: {
@@ -33,6 +36,12 @@
 					console.log("语音识别失败：" + e.message);
 				});
 			},
+			addImage: function () {
+				var that = this;
+				this.$emit('add-image', {
+					
+				});
+			},
 			sendMessge: function () {
 				var that = this;
 				if (that.inputValue.trim() == '') {
@@ -45,7 +54,7 @@
 					});
 					that.inputValue = '';
 				}
-			}
+			},
 		}
 	}
 </script>
@@ -70,12 +79,20 @@
 		align-items: center;
 	}
 	.footer-right {
-		width: 120upx;
+		width: 80upx;
 		height: 80upx;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		color: #1482D1;
+	}
+	.footer-right-2 {
+		width: 80upx;
+		height: 80upx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: #BBBBBB;
 	}
 	.footer-center {
 		flex: 1;

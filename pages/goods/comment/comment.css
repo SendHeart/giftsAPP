@@ -1,5 +1,7 @@
 page {
-  background: #fff;
+	width: 100%;
+	height: 100%;
+	background: #fff;
 }
 
 /*总菜单容器*/
@@ -117,9 +119,9 @@ page {
 /*右部描述*/
 .carts-text {
 	margin-left: 20rpx;
-  margin-top:10rpx;
-  height:200rpx;
-  width:60%;
+	margin-top:10rpx;
+	height:200rpx;
+	width:60%;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -154,25 +156,25 @@ page {
 	flex-direction: row;
 	width:100%;
 	padding: 30rpx;
-  text-align: center;
-  align-items: center;
-  background: #fff;
+	text-align: center;
+	align-items: center;
+	background: #fff;
 }
 .star-title {
-  font-size: 28rpx;
-  height: 48rpx;
-  line-height: 52rpx;
+	font-size: 28rpx;
+	height: 48rpx;
+	line-height: 52rpx;
 }
 .star-image {
-  padding: 0;
-  height: 48rpx;
-  }
-.star-image image {
-width: 32rpx;
-height: 32rpx;
-margin-left: 20rpx;
+	padding: 0;
+	height: 48rpx;
 }
-
+  
+.star-image image {
+	width: 32rpx;
+	height: 32rpx;
+	margin-left: 20rpx;
+}
 
 .sendmessage {
   width:100%;
@@ -205,6 +207,7 @@ margin-left: 20rpx;
   display: flex;
   flex-direction: column;
 }
+
 .sendmessage .upimage {
   display:flex;
   flex-direction:row;
@@ -216,11 +219,13 @@ margin-left: 20rpx;
   width: 80rpx; 
   height: 80rpx; 
 }
+
 .sendmessage .btnjia {
   margin: 20rpx;
   width: 96rpx;
   height: 97rpx;
 }
+
 .sendmessage .text {
   font-size: 24rpx;
   color: #E34C55;
@@ -246,10 +251,14 @@ margin-left: 20rpx;
   padding-left:11px;
   padding-top: 8rpx;
 }
+
 .footer {
   background: #fff;
   width: 100%;
+  height: 100rpx;
+  margin-bottom: 50rpx;
 }
+
 .opt-buttons {
   width: 96%;
   margin: 0 auto;
@@ -257,8 +266,10 @@ margin-left: 20rpx;
 
 .container {
   width: 100%;
+  height: 100%;
   background: #fff;
 }
+
 .comm-title {
   display: flex;
   flex-direction: row;

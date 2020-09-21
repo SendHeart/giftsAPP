@@ -1,56 +1,56 @@
 <template>
 <view>
-<view class="container">
-  <view class="carts-item" @tap="showGoods">
-      <view>
-        <!-- 缩略图 -->
-        <image class="carts-image" :src="goods_img" mode="aspectFill"></image>
-      </view>
-      <view class="carts-text">
-        <!-- 商品标题 --> 
-        <text class="carts-title">{{goodsname}}</text>
-        <text class="carts-subtitle">{{goodsinfo?goodsinfo:'高端大气'}}</text>
-        <text class="carts-price">{{goodsprice?'￥'+goodsprice:''}}</text>
-    </view>
-  </view>
-</view>
-<view class="comm-title">发表评论</view>
-<view class="star-level">
-    <view class="star-title">推荐度</view>
-    <view class="star-image">
-      <image data-star-id="1" @tap="comment_star" :src="(comment_level>0?'/static/images/star_on.png':'/static/images/star.png')"></image>
-      <image data-star-id="2" @tap="comment_star" :src="(comment_level>1?'/static/images/star_on.png':'/static/images/star.png')"></image>
-      <image data-star-id="3" @tap="comment_star" :src="(comment_level>2?'/static/images/star_on.png':'/static/images/star.png')"></image>
-      <image data-star-id="4" @tap="comment_star" :src="(comment_level>3?'/static/images/star_on.png':'/static/images/star.png')"></image>
-      <image data-star-id="5" @tap="comment_star" :src="(comment_level>4?'/static/images/star_on.png':'/static/images/star.png')"></image>
-      </view>
-    </view>
+	<view class="container">
+		<view class="carts-item" @tap="showGoods">
+			<view>
+				<!-- 缩略图 -->
+				<image class="carts-image" :src="goods_img" mode="aspectFill"></image>
+			</view>
+			<view class="carts-text">
+				<!-- 商品标题 --> 
+				<text class="carts-title">{{goodsname}}</text>
+				<text class="carts-subtitle">{{goodsinfo?goodsinfo:'高端大气'}}</text>
+				<text class="carts-price">{{goodsprice?'￥'+goodsprice:''}}</text>
+			</view>
+		</view>
+	</view>
+	<view class="comm-title">发表评论</view>
+	<view class="star-level">
+		<view class="star-title">推荐度</view>
+		<view class="star-image">
+			<image data-star-id="1" @tap="comment_star" :src="(comment_level>0?'/static/images/star_on.png':'/static/images/star.png')"></image>
+			<image data-star-id="2" @tap="comment_star" :src="(comment_level>1?'/static/images/star_on.png':'/static/images/star.png')"></image>
+			<image data-star-id="3" @tap="comment_star" :src="(comment_level>2?'/static/images/star_on.png':'/static/images/star.png')"></image>
+			<image data-star-id="4" @tap="comment_star" :src="(comment_level>3?'/static/images/star_on.png':'/static/images/star.png')"></image>
+			<image data-star-id="5" @tap="comment_star" :src="(comment_level>4?'/static/images/star_on.png':'/static/images/star.png')"></image>
+		</view>
+	</view>
  
-<form @submit="formSubmit" id="2">  
-   <view class="sendmessage">
-    <view class="note">
-      <textarea @blur="bindTextAreaBlur" :value="content" placeholder="评论内容" maxlength="140"></textarea>
-    </view>
-    <view class="upimage">
-      <block v-for="(upimg, index) in img_arr" :key="index">      
-         <image :data-id="index" @tap="cancel_upimg" :src="upimg" mode="aspectFit"></image>       
-      </block>
-      <block v-for="(upimg_new, index) in new_img_arr" :key="index">      
-         <image :data-id="index" @tap="cancel_new_upimg" :src="upimg_new" mode="aspectFit"></image>       
-      </block>
-    </view>
-    <view @tap="upimg" class="upimg">
-    <image class="btnjia" src="../../../static/images/jia.png"></image>
-    </view>
-  </view>
-</form>
-<view class="footer">
-    <view class="opt-buttons">
-        <view class="button-group">
-         <button type="warn" size="default" hover-class="button-hover" class="button" @tap="sendCommentBtnTap">发表</button>
-        </view>
-    </view>
-</view>
+	<form @submit="formSubmit" id="2">  
+		<view class="sendmessage">
+			<view class="note">
+				<textarea @blur="bindTextAreaBlur" :value="content" placeholder="评论内容" maxlength="140"></textarea>
+			</view>
+			<view class="upimage">
+				<block v-for="(upimg, index) in img_arr" :key="index">      
+					<image :data-id="index" @tap="cancel_upimg" :src="upimg" mode="aspectFit"></image>       
+				</block>
+				<block v-for="(upimg_new, index) in new_img_arr" :key="index">      
+					<image :data-id="index" @tap="cancel_new_upimg" :src="upimg_new" mode="aspectFit"></image>       
+				</block>
+			</view>
+			<view @tap="upimg" class="upimg">
+				<image class="btnjia" src="../../../static/images/jia.png"></image>
+			</view>
+		</view>
+	</form>
+	<view class="footer">
+		<view class="opt-buttons">
+			<view class="button-group">
+				<button type="warn" size="default" hover-class="button-hover" class="button" @tap="sendCommentBtnTap">发表</button>
+			</view>
+		</view>
+	</view>
 </view>
 </template>
 

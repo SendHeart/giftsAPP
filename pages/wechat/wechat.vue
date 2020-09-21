@@ -6,7 +6,7 @@
 			</scroll-view>
 		</view>
 		<view class="foot">
-			<chat-input @send-message="getInputMessage"></chat-input>
+			<chat-input @send-message="getInputMessage" @add-image="upimg"></chat-input>
 		</view>
 	</view>
 </template>
@@ -17,19 +17,25 @@
 	import mqtt_service from '@/utils/mqtt.js';
 	import util from '@/utils/util.js';
 	var mqtt_client ;
+	var uploadurl = getApp().globalData.uploadurl;
 	var weburl = getApp().globalData.weburl;
-	var shop_type = getApp().globalData.shop_type;
 	var wssurl = getApp().globalData.wssurl;
 	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 	var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 	var user_group_id = uni.getStorageSync('useruser_group_idInfo') ? uni.getStorageSync('user_group_id') : '0'
-	
+	var shop_type = getApp().globalData.shop_type;
 	export default {
 		data() {
 			return {
 				frompage:'',
+				shop_type: shop_type,
+				uploadurl: uploadurl,
+				img_arr: [],
+				new_img_arr: [],
+				upimg_url: [],
+				formdata: '',
 				nickname: userInfo.nickname ? userInfo.nickname : '匿名',
 				avatarUrl: userInfo.avatarUrl,
 				windowWidth: 0,
@@ -47,6 +53,7 @@
 					headimg:'',
 					type: 'head', //input,content 
 					content: '你好!',
+					imageurl:'',
 					goods_id:0,
 				}],
 				cid:'',
@@ -349,32 +356,39 @@
 			getInputMessage: function (message) { //获取子组件的输入数据
 				var that = this
 				console.log(message);
-				that.addMessage('customer', message.content, false)
-				message.content = util.filterEmoji(message.content);
-				let count = 0 ;
-				if(that.mqtt_client != null && that.mqtt_client.connented != false) {
-					 that.mqtt_pub_message = message
-					 that.mqtt_publish()					
-					 //that.toRobot(message.content);					 
-				} else {
-					setTimeout(function () {
-						that.getInputMessage(message)
-					}, 500)					
-				}
+				that.addMessage('customer', message.content, false)				
 			},
 			
-			addMessage: function (user, content, hasSub, subcontent) {
+			addMessage: function (user='', content='', hasSub='false', subcontent='',type='text',imageurl='') {
 				var that = this
 				var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 				var avatarUrl = userInfo.avatarUrl
+				content = util.filterEmoji(content); //去除表情符
 				var messages = {
 					user: user,
 					avatarUrl:avatarUrl,
+					type:type,
 					content: content,
 					hasSub: hasSub,
 					subcontent: subcontent,
+					imageurl:imageurl,
+				}
+				that.mqtt_pub_message = {
+					goods_id:that.goods_id,
+					content: content,
+					imageurl:imageurl,
 				}
 				that.messages.push(messages)
+				 
+				if(that.mqtt_client != null && that.mqtt_client.connented != false) {
+					 that.mqtt_publish()					
+					 //that.toRobot(message.content);					 
+				} else {
+					that.mqtt_connect()
+					setTimeout(function () {
+						that.mqtt_publish()
+					}, 500)					
+				}
 				setTimeout(function () {
 					that.scrollToBottom()
 				}, 300)
@@ -398,6 +412,7 @@
 					}
 				})
 			},
+			
 			toRobot: function (info) {
 				// this.addMessage('home', info, false);
 				var apiUrl = 'http://www.tuling123.com/openapi/api';
@@ -421,7 +436,92 @@
 						})
 					}
 				});
-			}
+			},
+			
+			upimg: function () {
+				var that = this;
+				var new_img_arr = that.new_img_arr;
+				var img_arr = that.img_arr;
+			
+				uni.chooseImage({
+					sizeType: ['original', 'compressed'],
+					success: function (res) {
+						that.new_img_arr = new_img_arr.concat(res.tempFilePaths)
+						console.log('本次上传图片:', that.new_img_arr)
+						uni.getImageInfo({
+							src: res.tempFilePaths[0],
+							success: function (image) {
+								console.log('image width:'+image.width+' heigth:'+image.height);
+								if(image.width<4096 && image.height<4096){
+									that.upload()
+								}else{
+									uni.showToast({
+									  title: '图片大小超过4096*4096',
+									  icon: 'loading',
+									  duration: 2000
+									})
+									that.new_img_arr=[]
+								}
+							}
+						})						
+					}
+				});
+			},
+			
+			cancel_upimg: function (e) {
+				var that = this;
+				var id = e.currentTarget.dataset.id;
+				var img_tmp = [];
+				var old_img_arr = that.img_arr;
+				var j = 0;
+				console.log('cancel_upimg:', old_img_arr.length, 'id:', id);
+			
+				for (var i = 0; i < old_img_arr.length; i++) {
+					if (i != id) {
+						img_tmp[j++] = old_img_arr[i];
+					}
+				}			
+				that.img_arr = img_tmp
+			},
+			
+			upload: function () {
+				var that = this;
+				var goods_id = that.goods_id;
+				var new_img_addr = that.new_img_arr; //本次上传图片的手机端文件地址
+				var new_img_url = []; //本次上传图片的服务端url
+			
+				for (var i = 0; i < new_img_addr.length; i++) {
+					var count = new_img_addr.length;
+					wx.uploadFile({
+						url: uploadurl,
+						filePath: new_img_addr[i],
+						name: 'wechat_upimg',
+						//formData: adds,
+						formData: {
+							latitude: encodeURI(0.0),
+							longitude: encodeURI(0.0),
+							restaurant_id: encodeURI(0),
+							city: encodeURI('杭州'),
+							prov: encodeURI('浙江'),
+							name: encodeURI(goods_id) // 名称
+						},
+						// HTTP 请求中其他额外的 form data
+						success: function (res) {
+							var retinfo = JSON.parse(res.data.trim());			
+							if (retinfo['status'] == "y") {
+								new_img_url.push(retinfo['result']['img_url']);
+								that.new_img_url = new_img_url
+								setTimeout(function () {
+									that.addMessage('customer', '', false,'','image',retinfo['result']['img_url'])
+								}, 300)
+								count--;
+								console.log('图片上传完成:', that.new_img_url, ' count:', count);
+							}
+						}
+					})
+				}
+				that.new_img_arr=[]
+			},
 		}
 	}
 </script>

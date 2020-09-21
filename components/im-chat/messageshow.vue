@@ -4,18 +4,30 @@
 			<image class="head_icon" src="/static/images/homeHL.png" v-if="message.user=='home'"></image>
 		</view>
 		<view class="m-content">
-			<view class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}">
-				<view :class="'m-content-head-'+message.user">{{message.content}} </view>
+			<view v-if="message.content!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}">
+				<view  :class="'m-content-head-'+message.user">{{message.content}} </view>
+			</view>
+			<view v-if="message.imageurl!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}" @tap="imgYu(message.imageurl)">
+				<easy-loadimage class="m-image" mode="widthFix"
+				    :scroll-top="scrollTop"
+				    :image-src="message.imageurl" >
+				</easy-loadimage>
 			</view>
 		</view>
-		<view class="m-right">
+		<view v-if="message.content!='' || message.imageurl!=''" class="m-right">
 			<image class="head_icon" :src="message.avatarUrl" v-if="message.user=='customer'"></image>
 		</view>
 	</view>
 </template>
 
 <script>
+	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 	export default {
+		data(){
+		    return {
+		        scrollTop:0
+		    }
+		},
 		props: {
 			message: {
 				type: Object,
@@ -27,6 +39,17 @@
 				type: [Number, String],
 				default: ''
 			}
+		},
+		
+		methods:{
+			imgYu: function (imageurl) {
+				var imgList = [];
+				imgList.push(imageurl);
+				uni.previewImage({
+					current: imageurl,
+					urls: imgList // 需要预览的图片http链接列表
+				})
+			},
 		}
 	}
 </script>
@@ -52,6 +75,7 @@
 		justify-content: center;
 		word-break: break-all;
 	}
+	
 
 	.m-right {
 		display: flex;
@@ -110,5 +134,10 @@
 		height: 0;
 		position: absolute;
 		content: ' '
+	}
+	
+	.m-image {
+		width: 200rpx;
+		height: 200rpx;
 	}
 </style>

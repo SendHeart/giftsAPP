@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
 var weburl = getApp().globalData.weburl;
 var appid = getApp().globalData.appid;
 var appsecret = getApp().globalData.secret;

@@ -174,7 +174,7 @@
 
 <script>
 import uniPopup from '@/components/uni-popup/uni-popup.vue'
-import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
+import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue";
 import md5 from '../../../utils/md5.js';
 var md5_key = getApp().globalData.md5_key;
 var weburl = getApp().globalData.weburl;
