@@ -45,7 +45,7 @@
     <text>精品推荐</text>
 </view>
 <view v-for="(item,index) in recommentList" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
-   <image class="recomm-img" :src="item.image"></image>
+	<image class="recomm-img" :src="item.image"></image>
     <text style="font-size:12px;">{{item.name}}</text>
     <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
     <view class="recomm-goods-tags">
@@ -142,8 +142,6 @@ export default {
 		var that = this
 		that.username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		that.token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-		that.username = username
-		that.token = token
 		that.frompage = options.frompage ? options.frompage : '/pages/hall/hall'
 		that.get_project_gift_para()
 	},

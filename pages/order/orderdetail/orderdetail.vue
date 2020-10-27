@@ -803,8 +803,7 @@ export default {
 			success: function (res) {
 				//console.log('web view url：', res.data.result)
 			}
-		})
-		 
+		})		 
 	},
 	
 	setData: function (obj) {

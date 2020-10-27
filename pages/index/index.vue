@@ -18,10 +18,9 @@
 	    </view>
 	  </block>
 	</view>
-	-->
-	
+	-->	
 	<mescroll-body ref="mescrollRef" top="150" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">	
-		<view sclass="uni-list-cell" v-for="(item,order_idx) in orders" :key="order_idx"  >
+		<view class="uni-list-cell" v-for="(item,order_idx) in orders" :key="order_idx"  >
 			<view class="order-item">
 			<view class="shop-text">
 				<text>{{(item.shape!=5 && item.shape!=4)?'订单号:':'订单号:'}}{{item.order_no}}</text>
@@ -223,11 +222,13 @@ export default {
 		dkheight: "1800",
 		is_loading: false,
 		status: 'more',
+		/*
 		contentText: {
 			contentdown: '上拉加载更多',
 			contentrefresh: '加载中',
 			contentnomore: '没有更多'
 		},
+		*/
 		downOption:{
 			auto:false, // 不自动加载
 			use:false,
@@ -487,69 +488,61 @@ methods: {
       }
     },
     radiochange: function (e) {
-      var that = this;
-      var user_gender = e.detail.value; //console.log('radio发生change事件，携带的value值为：', e.detail.value)
-
-      that.setData({
-        user_gender: user_gender
-      });
-      wx.setStorageSync('user_gender', user_gender);
+		var that = this;
+		var user_gender = e.detail.value; //console.log('radio发生change事件，携带的value值为：', e.detail.value)
+		that.user_gender = user_gender
+		uni.setStorageSync('user_gender', user_gender);
     },
     //点击按钮指定的hiddenmodalput弹出框  
-    modalinput_buyin: function (e) {
-      var that = this;
-      var sku_index = e.currentTarget.dataset.sku_index;
-      var order_index = e.currentTarget.dataset.order_index;
-      var goods_id = e.currentTarget.dataset.goods_id;
-      var goods_skuid = e.currentTarget.dataset.goods_skuid;
-      var order_skuid = e.currentTarget.dataset.id;
-      var sku_price = e.currentTarget.dataset.order_sku_price;
-      var sku_num = e.currentTarget.dataset.order_sku_num;
-      var buyin_rate = that.buyin_rate;
-      var buyin_price = (sku_price * sku_num * buyin_rate / 100).toFixed(2);
-      console.log('order_index:' + order_index, ' sku_index:', sku_index);
-      that.setData({
-        hiddenmodalput: !that.hiddenmodalput,
-        goods_id: goods_id,
-        goods_skuid: goods_skuid,
-        order_skuid: order_skuid,
-        buyin_price: buyin_price,
-        order_index: order_index,
-        sku_index: sku_index
-      });
-    },
+	modalinput_buyin: function (e) {
+		var that = this;
+		var sku_index = e.currentTarget.dataset.sku_index;
+		var order_index = e.currentTarget.dataset.order_index;
+		var goods_id = e.currentTarget.dataset.goods_id;
+		var goods_skuid = e.currentTarget.dataset.goods_skuid;
+		var order_skuid = e.currentTarget.dataset.id;
+		var sku_price = e.currentTarget.dataset.order_sku_price;
+		var sku_num = e.currentTarget.dataset.order_sku_num;
+		var buyin_rate = that.buyin_rate;
+		var buyin_price = (sku_price * sku_num * buyin_rate / 100).toFixed(2);
+		console.log('order_index:' + order_index, ' sku_index:', sku_index);
+		that.hiddenmodalput = !that.hiddenmodalput
+		that.goods_id = goods_id
+		that.goods_skuid = goods_skuid
+		that.order_skuid = order_skuid
+		that.buyin_price = buyin_price
+		that.order_index = order_index
+		that.sku_index = sku_index
+	},
     //取消按钮  
-    cancel_buyin: function () {
-      var that = this;
-      that.setData({
-        hiddenmodalput: !that.hiddenmodalput
-      });
-      setTimeout(function () {
-        wx.navigateBack();
-      }, 500);
-    },
+	cancel_buyin: function () {
+		var that = this;
+		that.hiddenmodalput = !that.hiddenmodalput
+		setTimeout(function () {
+			uni.navigateBack()
+		}, 500);
+	},
     //确认  
     confirm_buyin: function () {
-      var that = this;
-      that.setData({
-        hiddenmodalput: !that.hiddenmodalput
-      });
-      that.buyin();
-    },
-    onOrderTapTag: function (e) {
-      var that = this;
-	  var TabCur = e.currentTarget.dataset.id;
-	  var scrollLeft = (e.currentTarget.dataset.id - 1) * 60
-      var tab = e.currentTarget.dataset.tab;
-      var page = that.page;
-     // var index = e.currentTarget.dataset.index;
-      var giftflag = that.giftflag;
+		var that = this;
+		that.hiddenmodalput = !that.hiddenmodalput
+		that.buyin();
+	},
+	
+	onOrderTapTag: function (e) {
+		var that = this;
+		var TabCur = e.currentTarget.dataset.id;
+		var scrollLeft = (e.currentTarget.dataset.id - 1) * 60
+		var tab = e.currentTarget.dataset.tab;
+		var page = that.page;
+		// var index = e.currentTarget.dataset.index;
+		var giftflag = that.giftflag;
 
-      if (tab == 'send') {
-        giftflag = 0;
-      } else {
-        giftflag = 1; //receive
-      }
+		if (tab == 'send') {
+			giftflag = 0;
+		} else {
+			giftflag = 1; //receive
+		}
 
 		that.TabCur = TabCur 
 		that.tab = tab 
@@ -564,15 +557,14 @@ methods: {
 		that.page = 0
 		that.page_num = 1
       
-	  console.log('tab:' , tab, ' TabCur:',TabCur, 'giftflag:', giftflag);
+		console.log('tab:' , tab, ' TabCur:',TabCur, 'giftflag:', giftflag);
 
       if (that.orders.length == 0) {
-	   that.isInit = true; // 标记为true
-	   that.mescroll.triggerUpScroll();
-	   
+		that.isInit = true; // 标记为true
+		that.mescroll.triggerUpScroll();	   
         //that.reloadData();
-      }
-    },
+		}
+	},
 	
    // 获取滚动条当前位置
    /*
@@ -587,14 +579,19 @@ methods: {
    	that.current_scrollTop = e.detail.scrollTop
    },
    */
-  
-   scroll: function(e) {
-   	var that = this
-   	var old_scrollTop = that.old.scrollTop
-   	var current_scrollTop = that.mescroll.scrollTop
-   	that.old.scrollTop = current_scrollTop
-	//console.log('scroll old_scrollTop:', old_scrollTop, 'current_scrollTop:',current_scrollTop);
-   },
+	onPageScroll:function({scrollTop}){
+		var that = this
+		var old_scrollTop = that.old.scrollTop
+		that.current_scrollTop = scrollTop
+	},		 
+	
+	scroll: function(e) {
+		var that = this
+		var old_scrollTop = that.old.scrollTop
+		var current_scrollTop = that.mescroll.scrollTop
+		that.old.scrollTop = current_scrollTop
+		//console.log('scroll old_scrollTop:', old_scrollTop, 'current_scrollTop:',current_scrollTop);
+	},
 	// mescroll组件初始化的回调,可获取到mescroll对象
 	mescrollInit(mescroll) {
 		this.mescroll = mescroll;
@@ -795,62 +792,48 @@ methods: {
 	},
 
    //回到顶部
-   goTop: function (e) {
-   // 一键回到顶部
-   	var that = this;
-   	var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
-    	//that.pdList = [] ;
-   	that.page = 1 ;
-   	that.pageoffset = 0 ;
-   	that.mescroll.resetUpScroll()
-   	//getApp().globalData.hall_gotop = 0;
-      // 解决view层不同步的问题
-   	//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
-   	that.$nextTick(function() {
-   		that.mescroll.scrollTo(0) ;
-   	});
-   	that.mescroll.scrollTop = that.old.scrollTop
-   },
-    getMoreOrdersTapTag: function () {
-      var that = this;
-      if (that.is_loading) return;
-      var page = that.page;
-      var pagesize = that.pagesize;
-      var all_rows = that.all_rows;
+	goTop: function (e) {
+		// 一键回到顶部
+		var that = this;
+		that.page = 1 ;
+		that.pageoffset = 0 ;
+		that.mescroll.resetUpScroll()
+		//getApp().globalData.hall_gotop = 0;
+		// 解决view层不同步的问题
+		//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
+		that.$nextTick(function() {
+			that.mescroll.scrollTo(0) ;
+		})
+		that.mescroll.scrollTop = that.old.scrollTop
+	},
+	
+	getMoreOrdersTapTag: function () {
+		var that = this;
+		if (that.is_loading) return;
+		var page = that.page;
+		var pagesize = that.pagesize;
+		var all_rows = that.all_rows;
 
-      if (page + 1 > that.page_num) {
-		  /*
-        wx.showToast({
-          title: '没有更多了',
-          icon: 'none',
-          duration: 1500
-        });
-		*/
-     
-		that.status = 'nomore';
-		that.hiddenmore = true ;
-        return;
-      } else {
-		  /*
-        wx.showToast({
-          title: '加载中',
-          icon: 'loading',
-          duration: 2000
-        });
-		*/
-	    that.page = page +  1 ;
-        console.log('get More Orders page:', page, 'current scrollTop:', that.current_scrollTop);
-        //that.reloadData();
-      }
-    },
-    sendAginTapTag: function () {
-      var that = this;
-      var username = wx.getStorageSync('username');
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      wx.navigateTo({
-        url: '../list/list?username=' + username + '&token=' + token
-      });
-    },
+		if (page + 1 > that.page_num) {
+			that.status = 'nomore';
+			that.hiddenmore = true ;
+			return
+		} else {
+			that.page = page +  1 
+			console.log('get More Orders page:', page, 'current scrollTop:', that.current_scrollTop);
+			//that.reloadData();
+		}
+	},
+	
+	sendAginTapTag: function () {
+		var that = this;
+		var username = wx.getStorageSync('username');
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		uni.navigateTo({
+			url: '../list/list?username=' + username + '&token=' + token
+		});
+	},
+	
     send: function (e) {
       var that = this;
       var page = that.page;

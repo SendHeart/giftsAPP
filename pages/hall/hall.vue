@@ -49,7 +49,7 @@
 				</view>
 			</view>
 		</view>
-		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
 		<view class="container" scroll-y >
 			<view class="banner">
 				<swiper class="swiper-box" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)"
@@ -281,7 +281,7 @@
 				</view>
 			</view>
 		</view>
-		<pd-list :activeIndex="activeIndex" :list="pdList"></pd-list>
+		<pd-list v-if="page>0" :activeIndex="activeIndex" :list="pdList" :scrollTop="image_refresh"></pd-list>
 		</mescroll-body>
 		<view class="main_message" :hidden="messageHidden" :style="'height:' + dkheight + 'px;'">
 		  <view class="t_w">
@@ -347,7 +347,7 @@ import push from "@/common/push.js"
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var wssurl = getApp().globalData.wssurl;
-var socketOpen = false;
+var socketOpen = getApp().globalData.websocketOpen?getApp().globalData.websocketOpen:false;
 var socketMsgQueue = [];
 var sendMsgQueue = [];
 var message = "";
@@ -429,6 +429,7 @@ export default {
 		old: {
 			scrollTop: 0
 		},
+		image_refresh:0,
 		current_scrollTop: 0,
 		scrollHeight: 500,
 		indicatorDots: true,
@@ -530,11 +531,13 @@ export default {
 		deletegooodsname:'',
 		is_reloading: false,
 		status: 'more',
+		/*
 		contentText: {
 			contentdown: '上拉加载更多',
 			contentrefresh: '加载中',
 			contentnomore: '没有更多'
 		},
+		*/
 		downOption:{
 			auto:false, // 不自动加载
 			use:false,
@@ -555,7 +558,7 @@ export default {
 		},
 		pdList: [] ,// 数据列表
 		isInit: false, // 列表是否已经初始化
-		scrollY: 0,
+		//scrollY: 0,
 	}
 	},
 	 
@@ -569,9 +572,9 @@ export default {
 		//MescrollUni,
 		//MescrollBody,
 		PdList,
-  },
-  props: {
-  },
+	},
+	props: {
+	},
    
   /*
   onReachBottom() {
@@ -579,66 +582,67 @@ export default {
   	this.getMoreGoodsTapTag();
   },
   */
-  onLoad: function (options) {
-    var that = this;
-    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-    var shop_type = that.shop_type;
-    var page_type = options.page_type ? options.page_type : 0;
-    var order_no = options.order_no ? options.order_no : 0;
-    var coupons = options.coupons ? options.coupons : '';
-    var receive = options.receive ? options.receive : 0;
-    var refername = options.refername ? options.refername : '';
-    var task = options.task ? options.task : 0;
-    var msg_id = options.msg_id ? options.msg_id : 0;
-    var art_id = options.art_id ? options.art_id : 0;
-    var art_cat_id = options.art_cat_id ? options.art_cat_id : 0;
-    var art_title = options.art_title ? options.art_title : '';
-    var message = '获取个人消息';
-    var messages_num = that.messages_num;
-    var myDate = util.formatTime(new Date());
-	var deletecarthidden = false ;
+	onLoad: function (options) {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var shop_type = that.shop_type;
+		var page_type = options.page_type ? options.page_type : 0;
+		var order_no = options.order_no ? options.order_no : 0;
+		var coupons = options.coupons ? options.coupons : '';
+		var receive = options.receive ? options.receive : 0;
+		var refername = options.refername ? options.refername : '';
+		var task = options.task ? options.task : 0;
+		var msg_id = options.msg_id ? options.msg_id : 0;
+		var art_id = options.art_id ? options.art_id : 0;
+		var art_cat_id = options.art_cat_id ? options.art_cat_id : 0;
+		var art_title = options.art_title ? options.art_title : '';
+		var message = '获取个人消息';
+		var messages_num = that.messages_num;
+		var myDate = util.formatTime(new Date());
+		var deletecarthidden = false ;
     
-    getApp().globalData.is_task = task;
+		getApp().globalData.is_task = task;
     //console.log('hall onload task:', getApp().globalData.is_task, ' username:', username);
-    var message_info = {
-      addtime: myDate,
-      username: username,
-      shop_type: shop_type,
-      message: message,
-      message_type: 1
-    };
-    that.message = JSON.stringify(message_info)
-    that.refername = refername
-    that.msg_id = msg_id
-    that.art_id = art_id
-    that.art_cat_id = art_cat_id
-    that.art_title = art_title
-    that.page_type = page_type
+		var message_info = {
+			addtime: myDate,
+			username: username,
+			shop_type: shop_type,
+			message: message,
+			message_type: 1
+		};
+		that.message = JSON.stringify(message_info)
+		that.refername = refername
+		that.msg_id = msg_id
+		that.art_id = art_id
+		that.art_cat_id = art_cat_id
+		that.art_title = art_title
+		that.page_type = page_type
  
-    if (art_id > 0 || art_cat_id > 0) {
-      uni.navigateTo({
-        url: '/pages/my/index?art_id=' + art_id + '&art_cat_id=' + art_cat_id
-      });
-    }
+		if (art_id > 0 || art_cat_id > 0) {
+			uni.navigateTo({
+				url: '/pages/my/index?art_id=' + art_id + '&art_cat_id=' + art_cat_id
+			});
+		}
 	
-    socketMsgQueue.push(that.message); //that.setNavigation()
-    that.initSocketMessage();
-    setInterval(function () {
-      that.initSocketMessage();
-	  that.gift_para_interval = 1 ; //获取业务参数
-    }, 60*1000);
-	/*
-    setInterval(function () {//that.reSend()
-    }, 5000);
-	*/
-	that.get_project_gift_para();
-	that.reloadData();
-    that.sum();
-	that.get_menubar();
-	//that.query_friends();
+		socketMsgQueue.push(that.message)
+		that.initSocketMessage()
+		setInterval(function () {
+			that.initSocketMessage()
+			that.gift_para_interval = 1  //获取业务参数 
+			}, 60*1000);
+		/*
+		setInterval(function () {//that.reSend()
+		}, 5000);
+		*/
+		that.get_project_gift_para();
+		that.reloadData();
+		//that.sum();
+		that.get_menubar();
+		//that.query_friends();
 	},
+	
   //事件处理函数
 	onShow: function () {
 		var that = this;
@@ -663,8 +667,8 @@ export default {
 				that.winWidth = winWidth;
 		//console.log('getSystemInfo:', res);
 			}
-		});
-		that.query_cart();
+		})
+		//that.query_cart();
 		that.get_project_gift_para();
 		that.query_friends();
 	 
@@ -673,19 +677,18 @@ export default {
 		}
 
 		if (!username) {
-      /*
-       wx.navigateTo({
-        url: '/pages/login/login'
-      })
-      wx.switchTab({
-        url: '/pages/my/index'
-      })
-      */
+		/*
+			wx.navigateTo({
+				url: '/pages/login/login'
+			})
+			wx.switchTab({
+				url: '/pages/my/index'
+			})
+		*/
 		} else {
 			if (page_type == 2) {
-        //收到礼物
-        //console.log('hall page_type:', page_type, ' order_no:', order_no, ' receive:', receive);
-
+			//收到礼物
+			//console.log('hall page_type:', page_type, ' order_no:', order_no, ' receive:', receive);
 				if (receive == 1) {
 					uni.navigateTo({
 						url: '../order/receive/receive?order_no=' + order_no + '&receive=1'
@@ -702,49 +705,53 @@ export default {
 						url: '../member/couponrcv/couponrcv?coupons_flag=' + coupons_flag + '&coupons_id' + coupons_id + '&receive=1'
 					});
 				}
-		}
+			}
 
-		if (getApp().globalData.is_task > 0) {
-        //收到任务分享人信息
-       // console.log('收到任务分享 Hall task:', getApp().globalData.is_task, ' refername:', refername, ' msg_id:', msg_id);
+			if (getApp().globalData.is_task > 0) {
+			//收到任务分享人信息
+			// console.log('收到任务分享 Hall task:', getApp().globalData.is_task, ' refername:', refername, ' msg_id:', msg_id);
 
-			if (username != refername) {
-          //保留分享人信息
-				uni.setStorageSync('taskrefername', refername);
+				if (username != refername) {
+				//保留分享人信息
+					uni.setStorageSync('taskrefername', refername);
 				}
 
-			wx.request({
-				url: weburl + '/api/client/get_task_refer',
-				method: 'POST',
-				data: {
-					username: username,
-					access_token: token,
-					shop_type: shop_type,
-					refername: refername,
-					msg_id: msg_id,
-					task: getApp().globalData.is_task
-				},
-				header: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Accept': 'application/json'
-				},
-				success: function (res) {
-					getApp().globalData.is_task = 0;
+				wx.request({
+					url: weburl + '/api/client/get_task_refer',
+					method: 'POST',
+					data: {
+						username: username,
+						access_token: token,
+						shop_type: shop_type,
+						refername: refername,
+						msg_id: msg_id,
+						task: getApp().globalData.is_task
+					},
+					header: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'Accept': 'application/json'
+					},
+					success: function (res) {
+						getApp().globalData.is_task = 0;
             //console.log('hall get_task_refer:', res.data);
-				}
-			});
-			that.messageHidden = !that.messageHidden
-			that.main_prom_image = that.navList2[10]['img']
-			that.main_prom_title = that.navList2[10]['title'] ? that.navList2[10]['title'] : '黑贝会'
-			that.main_prom_note = that.navList2[10]['note'] ? that.navList2[10]['note'] : '黑贝会欢迎您！'
-			that.notehidden = !that.notehidden
+					}
+				})
+				that.messageHidden = !that.messageHidden
+				that.main_prom_image = that.navList2[10]['img']
+				that.main_prom_title = that.navList2[10]['title'] ? that.navList2[10]['title'] : '黑贝会'
+				that.main_prom_note = that.navList2[10]['note'] ? that.navList2[10]['note'] : '黑贝会欢迎您！'
+				that.notehidden = !that.notehidden
+			}
 		}
-	}
 
-    if (getApp().globalData.hall_gotop == 1) {
-      that.goTop();
-    }
-
+		if (getApp().globalData.hall_gotop == 1) {
+			that.goTop();
+		}
+		setTimeout(function () {
+			if(that.image_refresh == 0){
+				that.image_refresh  = that.image_refresh  +1
+			}			 
+		}, 1000)
     //console.log('onShow get_project_gift_para:', wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}]); //app.globalData.messageflag = 0
 	},
   
@@ -909,48 +916,43 @@ export default {
 	  var hiddenallclassify = that.hiddenallclassify;
 	  that.hiddenallclassify = !hiddenallclassify ;
 	},
-	
-	scroll: function(e) {
-	 	var that = this
-	 	var old_scrollTop = that.old.scrollTop
-	 	var current_scrollTop = that.mescroll.scrollTop
-	 	that.old.scrollTop = current_scrollTop
-		//console.log('scroll current_scrollTop:', current_scrollTop);  
-		/*
-	 	if(current_scrollTop > old_scrollTop +60) {
-	 		that.getMoreGoodsTapTag() ;
-	 		//that.load() ;
-			//console.log('list old_scrollTop:',old_scrollTop,' current_scrollTop:',current_scrollTop)
-	 	}
-		*/
-	 },
+	 
+	onPageScroll:function(e){
+		var that = this
+		that.current_scrollTop = e.scrollTop
+		that.image_refresh = that.image_refresh + e.scrollTop
+		//console.log('hall onPageScroll:'+that.current_scrollTop)
+	},
 	
     //回到顶部，内部调用系统API
     goTop: function () {
       // 一键回到顶部
         var that = this;
 		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
-        //that.scrollTop = 0 ;
+        that.scrollTop = 0 ;
+		that.image_refresh = that.image_refresh +that.scrollTop
 		that.pdList = [] ;
-        that.page = 1 ;
+		that.page = 0
         that.pageoffset = 0 ;
 		that.mescroll.resetUpScroll()
+		
 		//that.reloadData();
 		
 		getApp().globalData.hall_gotop = 0;
-        // 解决view层不同步的问题
 		//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
         that.$nextTick(function() {
         	that.mescroll.scrollTo(0) ;
-        });
-		that.mescroll.scrollTop = that.old.scrollTop
+        });	
+		that.mescroll.scrollTop = that.old.scrollTops
     },
+	
     searchTapTag: function (e) {
       var that = this; //console.log('搜索关键字：' + that.data.search_goodsname)
       wx.navigateTo({
         url: '/pages/goods/list/list?search=1'
       });
     },
+	
     reSend: function () {
       //失败后重新发送
       var that = this; //失败重发
@@ -958,7 +960,7 @@ export default {
       var reSendMsgQueue = sendMsgQueue;
 
       for (var i = 0; i < reSendMsgQueue.length; i++) {
-        wx.sendSocketMessage({
+        uni.sendSocketMessage({
           data: reSendMsgQueue[i],
           success: function (res) {
             //console.log("sendSocketMessage 重发完成");
@@ -976,6 +978,7 @@ export default {
         });
       }
     },
+	
     initSocketMessage: function () {
       var that = this;
       var remindTitle = socketOpen ? '正在关闭' : '正在连接';
@@ -984,45 +987,47 @@ export default {
         uni.connectSocket({
           url: wssurl + '/wss'
         });
-        wx.onSocketError(function (res) {
+        uni.onSocketError(function (res) {
           socketOpen = false;
+		  getApp().globalData.websocketOpen = socketOpen
           //console.log('WebSocket连接打开失败，请检查！');
           that.socktBtnTitle = '连接socket'
-          wx.hideToast();
+          uni.hideToast();
         });
-        wx.onSocketOpen(function (res) {
+        uni.onSocketOpen(function (res) {
           //console.log('WebSocket连接已打开', wssurl + '/wss');
-          wx.hideToast();
+          uni.hideToast();
           that.socktBtnTitle = '断开socket'
           socketOpen = true;
-          var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-          var uid = username + '_' + shop_type;
-          wx.sendSocketMessage({
+		  getApp().globalData.websocketOpen = socketOpen
+          let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+          let uid = username + '_' + shop_type;
+          uni.sendSocketMessage({
             data: uid
           });
 
-          for (var i = 0; i < socketMsgQueue.length; i++) {
+          for (let i = 0; i < socketMsgQueue.length; i++) {
             that.message = socketMsgQueue[i]
             that.sendSocketMessage();
           } //socketMsgQueue = []
 
         });
-        wx.onSocketMessage(function (res) {
-          var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-          var response = res.data?JSON.parse(res.data.trim(), true):'';
-          var messageHidden = that.messageHidden;
+        uni.onSocketMessage(function (res) {
+          let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+          let response = res.data?JSON.parse(res.data.trim(), true):'';
+          let messageHidden = that.messageHidden;
           //console.log('收到服务器内容：' + res.data.trim());
 
           if (response.status == 'y') {
-            var resp_message = response.result;
-            var messages_num = that.messages_num;
+            let resp_message = response.result;
+            let messages_num = that.messages_num;
             resp_message['title'] = resp_message['title'] ? resp_message['title'] : '我的消息';
             resp_message['start_time'] = util.getDateStr(resp_message['start_time'] * 1000, 0);
             resp_message['end_time'] = util.getDateStr(resp_message['end_time'] * 1000, 0);
             that.resp_message = resp_message ;
 			that.messages_num =  messages_num + 1 ;
 			if(resp_message['type']=='7' && resp_message['webview_url']){
-				var message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
+				let message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
 				that.main_prom_image = message_content['image']?message_content['image']:'' ;
 				that.main_prom_title = resp_message['title'] ? resp_message['title'] : '送心礼物' ;
 				that.messageHidden = !messageHidden ;
@@ -1043,18 +1048,20 @@ export default {
             */
           }
         });
-        wx.onSocketClose(function (res) {
+        uni.onSocketClose(function (res) {
           socketOpen = false;
+		  getApp().globalData.websocketOpen = socketOpen
           //console.log('WebSocket 已关闭！');
-          wx.hideToast();
+          uni.hideToast();
           that.socktBtnTitle = '连接socket'
         });
       } else {//wx.closeSocket()
       }
     },
+	
     sendSocketMessage: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
       var myDate = util.formatTime(new Date());
       var message = that.message;
 
@@ -1063,14 +1070,14 @@ export default {
         that.initSocketMessage();
       } else {
         //console.log('sendSocketMessage message:', message);
-        wx.sendSocketMessage({
+        uni.sendSocketMessage({
           data: message,
           success: function (res) {
             //console.log("sendSocketMessage 完成", res);
           },
           fail: function (res) {
             console.log("sendSocketMessage 通讯失败");
-            wx.showToast({
+            uni.showToast({
               title: '网络故障',
               icon: 'loading',
               duration: 1500
@@ -1079,27 +1086,30 @@ export default {
         });
       }
     },
+	
     bindMiddleGoods: function (e) {
       var that = this;
       var goods_type = e.currentTarget.dataset.goodsType;
       var middle_title = e.currentTarget.dataset.middleTitle;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/goods/list/list?goods_type_value=' + goods_type + '&middle_title=' + middle_title
       });
     },
+	
     goBack: function () {
       var pages = getCurrentPages();
 
       if (pages.length > 1) {
-        wx.navigateBack({
+        uni.navigateBack({
           changed: true
         }); //返回上一页
       } else {
-        wx.switchTab({
+        uni.switchTab({
           url: '../../hall/hall'
         });
       }
     },
+	
     bannerTapTag: function (e) {
       var that = this;
       var banner_link = e.currentTarget.dataset.bannerlink;
@@ -1107,6 +1117,7 @@ export default {
         url: banner_link + '&username=' + username + '&token=' + token
       });
     },
+	
 	/*
     messagesTapTag: function () {
       var that = this;
@@ -1277,7 +1288,7 @@ export default {
 
       this.selectedAllStatus = selectedAllStatus
       this.carts = carts
-      wx.hideLoading();
+      uni.hideLoading();
       this.sum();
     },
 	
@@ -1344,7 +1355,7 @@ export default {
 	 */
       //console.log('hall bindCheckout cartIds:', cartIds, 'cartselected:', JSON.stringify(cartselected));
       /*
-	  wx.showToast({
+	  uni.showToast({
         title: '礼物包~'+JSON.stringify(cartselected) ,
         
         icon: 'none',
@@ -1384,7 +1395,7 @@ export default {
       var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
       //console.log('submintFromId() formID：', formId, ' form name:', form_name);
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/save_member_formid',
         method: 'POST',
         data: {
@@ -1432,7 +1443,7 @@ export default {
 	  if(isConfirm==0){
 		  return;
 	  }
-	  wx.request({
+	  uni.request({
 	    url: weburl + '/api/client/delete_cart',
 	    method: 'POST',
 	    data: {
@@ -1548,7 +1559,7 @@ export default {
       var shop_type = that.shop_type;
       var token = that.token; // 加入购物车
 	  var weburl = getApp().globalData.weburl;
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/update_cart',
         method: 'POST',
         data: {
@@ -1583,13 +1594,13 @@ export default {
       that.messageHidden = !messageHidden
       that.notehidden = !that.notehidden
 	  if(resp_message['type']=='6' ){
-		wx.navigateTo({
+		uni.navigateTo({
 			url: '/pages/member/task/task'
 		});
 	  }
 	  if(resp_message['type']=='7' && resp_message['webview_url']){
 		 var webview_url = resp_message['webview_url']
-		 wx.navigateTo({
+		 uni.navigateTo({
 		    url: '/pages/customerservice/customerservice?url='+webview_url
 		 }); 
 	  }
@@ -1698,8 +1709,9 @@ export default {
 		var friends_page  = that.friends_page
 		var friends_pagesize = that.friends_pagesize 
 		if (!username) {
-			return;
+			return
 		} 
+		 
 		uni.request({
 			url: weburl + '/api/client/get_member_friends',
 			method: 'POST',
@@ -1731,8 +1743,8 @@ export default {
 						}
 					}
 				}
-				that.friends = friends_list;
-				console.log('hall query_friends friends:', that.friends);
+				that.friends = friends_list
+				console.log('hall query_friends friends:', that.friends)
 			}
 		})
 	},
@@ -1989,7 +2001,7 @@ export default {
 		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
 		that.gift_para_interval = 0
 		that.navList2 = navList_new ;
-		that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner ;
+		that.hall_banner = navList_new[3] ? navList_new[3] : that.hall_banner ;
 		that.middle1_img = navList_new[11] ? navList_new[11]['img'] : '' ;
 		that.middle2_img = navList_new[12] ? navList_new[12]['img'] : '' ;
 		that.middle3_img = navList_new[13] ? navList_new[13]['img'] : '' ;
@@ -2017,44 +2029,44 @@ export default {
 		that.is_video_play = navList_new[19] ? navList_new[19]['value'] : 0 ;
 	},
 	
-    get_project_gift_para: function () {
-      var that = this;
-	  var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
-      var hall_banner = that.hall_banner;
-	  var gift_para_interval = that.gift_para_interval
-	  var cat_id = that.tab_value>0? that.tab_value:1
-      //console.log('hall get_project_gift_para navList2:', navList_new);
-	  if(navList_new && gift_para_interval == 0) {
-		  that.set_project_gift_para()
-		  return ;
-	  } 
-      wx.request({
-        url: weburl + '/api/client/get_project_gift_para',
-        method: 'POST',
-        data: {
-          type: 2,
-		  query_type:'APP',  
-          //暂定 1首页单图片 2首页轮播  
-          shop_type: shop_type,
-		   cat_id:cat_id,
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          //console.log('get_project_gift_para:', res.data)
-          navList_new = res.data.result;
-          //console.log('get_project_gift_para:', navList_new);
-      	
-          if (!navList_new) {
-            return;
-          } else {
-            uni.setStorageSync('navList2', navList_new);
+	get_project_gift_para: function () {
+		var that = this;
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
+		var hall_banner = that.hall_banner;
+		var gift_para_interval = that.gift_para_interval
+		var cat_id = that.tab_value>0? that.tab_value:1
+		//console.log('hall get_project_gift_para navList2:', navList_new);
+		if(navList_new && gift_para_interval == 0) {
 			that.set_project_gift_para()
-          }
-        }
-      });
+			return 
+		} 
+		uni.request({
+			url: weburl + '/api/client/get_project_gift_para',
+			method: 'POST',
+			data: {
+				type: 2,
+				query_type:'APP',  
+				//暂定 1首页单图片 2首页轮播  
+				shop_type: shop_type,
+				cat_id:cat_id,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				//console.log('get_project_gift_para:', res.data)
+				navList_new = res.data.result;
+				//console.log('get_project_gift_para:', navList_new);
+      	
+				if (!navList_new) {
+					return;
+				} else {
+					uni.setStorageSync('navList2', navList_new);
+					that.set_project_gift_para()
+				}
+			}
+		})
     },
 	
     //图片加载出错，替换为默认图片
@@ -2081,66 +2093,66 @@ export default {
 	
 	get_menubar: function (event) {
 	  //获取菜单项
-	  var that = this;
-	  var navlist_toView = that.navlist_toView?that.navlist_toView:0;
-	  var navlist_title = that.navlist_title;
-	  uni.request({
-	    url: weburl + '/api/client/get_menubar',
-	    method: 'POST',
-	    data: {
-	      menu_type: 1,
-		  query_type:'APP',  
-	    },
-	    header: {
-	      'Content-Type': 'application/x-www-form-urlencoded',
-	      'Accept': 'application/json'
-	    },
-	    success: function (res) {
-			//console.log('get_menubar:', res.data.result);
-			var navList_new = res.data.result;
+		var that = this;
+		var navlist_toView = that.navlist_toView?that.navlist_toView:0;
+		var navlist_title = that.navlist_title;
+		uni.request({
+			url: weburl + '/api/client/get_menubar',
+			method: 'POST',
+			data: {
+				menu_type: 1,
+				query_type:'APP',  
+			},
+			header: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Accept': 'application/json'
+			},
+			success: function (res) {
+				//console.log('get_menubar:', res.data.result);
+				var navList_new = res.data.result;
 	
-			if (!navList_new) {
-				wx.showToast({
-				title: '没有菜单项',
-				icon: 'loading',
-				duration: 1500
-				});
-				return;
-			}
-	
-			for (var i = 0; i < navList_new.length; i++) {
-				if (navList_new[i]['title'].indexOf(navlist_title) >= 0) {
-					navlist_toView = i;
-					break;
+				if (!navList_new) {
+					wx.showToast({
+						title: '没有菜单项',
+						icon: 'loading',
+						duration: 1500
+					})
+					return
 				}
-			}
-			that.navList = navList_new ;
-			that.index = navlist_toView ;
-			that.activeIndex = navlist_toView ;
-			//console.log('get_menubar navlist_toView:'+navlist_toView+' navList_new:'+ JSON.stringify(navList_new));
-			that.tab = navList_new[navlist_toView]['id'] ;
-			that.tab_value = navList_new[navlist_toView]['value'] ;
-			that.venuesItems_show = [] ;
-			that.navList.forEach((tabBar) => {
-				that.venuesList = [
+	
+				for (var i = 0; i < navList_new.length; i++) {
+					if (navList_new[i]['title'].indexOf(navlist_title) >= 0) {
+						navlist_toView = i;
+						break;
+					}
+				}
+				that.navList = navList_new ;
+				that.index = navlist_toView ;
+				that.activeIndex = navlist_toView ;
+				//console.log('get_menubar navlist_toView:'+navlist_toView+' navList_new:'+ JSON.stringify(navList_new));
+				that.tab = navList_new[navlist_toView]['id'] ;
+				that.tab_value = navList_new[navlist_toView]['value'] ;
+				that.venuesItems_show = [] ;
+				that.navList.forEach((tabBar) => {
+					that.venuesList = [
 					{
-					venuesItems: [],
-					refreshing: false,
-					refreshFlag: false,
-					refreshText: "",
-					isLoading: false,
-					loadingText: '加载中...',
-					isNoData: false,
-					pulling: false,
-					page: 0,
-					pagesize: that.pagesize,
-					all_rows: that.all_rows,
-					scrollTop:that.scrollTop,
-					angle: 0,
-					},
-				];
-			});
-		}
+						venuesItems: [],
+						refreshing: false,
+						refreshFlag: false,
+						refreshText: "",
+						isLoading: false,
+						loadingText: '加载中...',
+						isNoData: false,
+						pulling: false,
+						page: 0,
+						pagesize: that.pagesize,
+						all_rows: that.all_rows,
+						scrollTop:that.current_scrollTop,
+						angle: 0,
+						},
+					]
+				})
+			}
 		})
 	},
     setData: function (obj) {

@@ -417,7 +417,7 @@ export default {
           },
           // HTTP 请求中其他额外的 form data
           success: function (res) {
-            var retinfo = JSON.parse(res.data.trim());
+            var retinfo = JSON.parse(res.data);
 
             if (retinfo['status'] == "y") {
               new_img_url.push(retinfo['result']['img_url']);

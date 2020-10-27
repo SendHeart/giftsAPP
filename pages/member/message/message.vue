@@ -195,11 +195,12 @@
       </view>
     </view>
      <!--弹出框结束-->
-  </view>
-<view :hidden="hiddenmodalput" title="提现" confirm-text="确定" cancel-text="返回" @cancel="cancel_withdraw" @confirm="confirm_withdraw">
-  <view class="select-and-amount-mark">
 	</view>
-</view>
+	<!--
+	<view :hidden="hiddenmodalput" title="提现" confirm-text="确定" cancel-text="返回" @cancel="cancel_withdraw()" @confirm="confirm_withdraw()">
+		<view class="select-and-amount-mark"></view>
+	</view>
+	-->
 </view>
 </template>
 
@@ -282,7 +283,8 @@ export default {
       select_goods_2: "",
       commodityAttr: "",
       sku_id: "",
-      attrValueList: ""
+      attrValueList: "",
+	  windowHeight:0,
     };
   },
 
@@ -301,7 +303,9 @@ export default {
 				that.dkheight = winHeight
 			}		
 		})
+		 // #ifdef APP-PLUS
 		that.getPermission();
+		//#endif
 	},
   
 	onShow: function () {
@@ -396,7 +400,7 @@ export default {
       var that = this;
       var formId = e.detail.formId;
       var form_name = e.currentTarget.dataset.name;
-      console.log('formSubmit() formID：', formId, ' form name:', form_name);
+      //console.log('formSubmit() formID：', formId, ' form name:', form_name);
 		
       if (form_name == 'selectBtn') {
         that.selectBtnTap();
@@ -447,7 +451,7 @@ export default {
         rule_selected_info = '{' + rule_selected_info + '}';
       }
 
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&rule_selected_info=' + rule_selected_info + '&token=' + token + '&username=' + username
       });
     },
@@ -481,7 +485,7 @@ export default {
      that.message_type = message_type
      that.message_list = []
 	 
-      console.log('tab:' + tab, ' messageflag:', messageflag, 'activeIndex2:', that.activeIndex2); //that.reloadData()
+      //console.log('tab:' + tab, ' messageflag:', messageflag, 'activeIndex2:', that.activeIndex2); //that.reloadData()
 
       if (that.TabCur == 0) {
         that.get_ai_rules();

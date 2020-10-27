@@ -23,7 +23,14 @@
 				<swiper-item class="swiper-item">
 					<view style="flex: 1;">
 						<view  v-if="pic.video_url==''"  >
+							<!--
+							<easy-loadimage class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'"  mode="aspectFill"
+							    :scroll-top="image_refresh+cur_img_id"
+							    :image-src="pic.url" >
+							</easy-loadimage>
+							-->
 							<image :src="pic.url" class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'" :data-list="image_pic" :data-src="pic.url" @tap="imgYu" mode="aspecFit"></image>
+							
 						</view>
 						<view  v-if="pic.video_url!=''" style="flex: 1;">
 							<view v-if="!showVideo" >
@@ -163,7 +170,7 @@
 				<text class="goods_prom">{{goodsinfo?goodsinfo:''}}</text>
 			</view>
 			<view v-if="goodsshape!=5 && goodsshape!=4" class="goods-info">
-				<text class="left-tag">{{goodssale>0?goodssale:'0'}}人已送</text>
+				<text class="left-tag">{{goodssale>0?goodssale:'0'}}人已购</text>
 				<view class="right-tag">
 					{{marketprice>0?'':''}} 
 					<text class="price-market">{{marketprice>0?'￥'+marketprice:''}}</text>
@@ -542,7 +549,7 @@
 					<text style="font-size: 20rpx;">评论</text>
 				</button>
 			</form>
-			<form v-if="goodsowner!='' " @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:18%;">
+			<form v-if="goods_is_flag=='1' || goods_is_qianggou=='1' || goods_is_recommend=='1'" @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:18%;">
 				<button class="sec-btn" formType="submit">
 					<image class="icon-detail" src="../../static/images/chat.png"></image>
 					<text style="font-size: 20rpx;">服务群</text>
@@ -579,7 +586,8 @@ var wxparse = require("wxParse/wxParse.js");
 import uParse from '@/components/uParse/src/wxParse.vue'
 import uniPopup from '@/components/uni-popup/uni-popup.vue'
 import jsfunRecord from '@/components/jsfun-record/jsfun-record.vue'
-//import chunleiVideo  from '@/components/chunlei-video/chunlei-video.vue'
+import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
+	
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var from_page = getApp().globalData.from_page;
@@ -647,7 +655,7 @@ export default {
     return {
       title_name: '详情',
       title_logo: '/static/images/footer-icon-05.png',
-      share_title: '这个礼物真不错，来看看吧，要是你能送我就更好了~',
+      share_title: '这个宝贝真不错，来看看吧，要是你能送我就更好了~',
       card_blessing: '',
       card_content: '',
       share_desc: '送心礼物，开启礼物社交时代！',
@@ -665,6 +673,10 @@ export default {
       interval: 3000,
       duration: 300,
       circular: true,
+	  goods_is_flag:0,
+	  goods_is_recommend:0,
+	  goods_is_qianggou:0,
+	  goods_shop_id:0,
 	  goodsowner:'',
       goodsname: '',
       goodsinfo: [],
@@ -688,6 +700,7 @@ export default {
       hideviewgoodspara: true,
       dkheight: 300,
       scrollTop: 0,
+	  image_refresh:0,
       scrollTop_init: 10,
       toView: 'red',
       hideviewgoodsinfoflag: true,
@@ -866,7 +879,7 @@ export default {
 		uParse,
 		uniPopup,
 		jsfunRecord,
-	 //chunleiVideo,
+		easyLoadimage,
 	},
 
 	onLoad: function (options) { //
@@ -885,6 +898,10 @@ export default {
 		var goodsorg = options.goods_org ? options.goods_org : 1;
 		var goodsshape = options.goods_shape ? options.goods_shape : 0;
 		var goodstag = options.goods_tag ? options.goods_tag : '';
+		that.goods_is_flag = options.is_flag?options.is_flag:0
+		that.goods_is_recommend = options.is_recommend?options.is_recommend:0
+		that.goods_is_qianggou = options.is_qianggou?options.is_qianggou:0
+		that.goods_shop_id = options.shop_id?options.shop_id:0
 		//var goodsorg = options.goods_org ? options.goods_org : '';
 		var card_type = options.card_type ? options.card_type : 0;
 		var card_register_title = '';
@@ -1080,7 +1097,7 @@ export default {
 				duration:841,
 				short:true,//是否矮视频
 				objectFit:'fill'
-			};
+			}
 			image_video.push(video_init);
 			that.image_video = image_video ;
 		}
@@ -1151,7 +1168,7 @@ export default {
 				success: function (res) {
 					var goods_info = res.data.result;
 					var ret_info = res.data.info;
-					console.log('获取单个产品信息 res.data:', res.data, ' goods info:', goods_info);
+					//console.log('获取单个产品信息 res.data:', res.data, ' goods info:', goods_info);
 
 					if (goods_info) {
 						if (goods_info[0]['shape'] == 5) {
@@ -1187,6 +1204,10 @@ export default {
 						that.goodsorg = goods_info[0]['goods_org']
 						// goodsshape: goods_info[0]['shape'],
 						that.goodstag = goods_info[0]['goods_tag']
+						that.goods_is_flag = goods_info[0]['is_flag']?goods_info[0]['is_flag']:that.goods_is_flag
+						that.goods_is_recommend = goods_info[0]['is_recommend']? goods_info[0]['is_recommend']:that.goods_is_recommend
+						that.goods_is_qianggou = goods_info[0]['is_qianggou']?goods_info[0]['is_qianggou']:that.goods_is_qianggou
+						that.goods_shop_id =  goods_info[0]['shop_id']?goods_info[0]['shop_id']:that.goods_shop_id
 						that.card_type = card_type
 						that.goodscoverimg = goods_info[0]['activity_image']
 						that.share_title = goods_info[0]['3D_image'] ? goods_info[0]['3D_image'] : that.share_title
@@ -1321,7 +1342,7 @@ export default {
 				'Accept': 'application/json'
 			},
 			success: function (res) {
-				console.log('商品goods_sku:', res.data.result);
+				//console.log('商品goods_sku:', res.data.result);
 				var attrValueList = res.data.result.spec_select_list ? res.data.result.spec_select_list : '';
 				var commodityAttr = res.data.result.sku_list ? res.data.result.sku_list : '{}';
 				if (!commodityAttr) return;
@@ -1412,16 +1433,11 @@ export default {
 			success: function (res) {
 				if (res.platform == "ios") {
 					var version = res.SDKVersion;
-					/*
-					uni.setInnerAudioOption({
-						obeyMuteSwitch: false
-					});
-					*/
 				}
 	
 				let winHeight = res.windowHeight;
 				let winWidth = res.windowWidth;
-				console.log('detail getSystemInfo:', res);
+				//console.log('detail getSystemInfo:', res);
 				that.dkheight = winHeight - winHeight * 0.05 - 100
 				that.winHeight = winHeight
 				that.winWidth = winWidth
@@ -1431,6 +1447,12 @@ export default {
 				uni.setStorageSync('phonemodel', res.model);
 			}
 		})
+		
+		setTimeout(function () {
+			if(that.image_refresh == 0){
+				that.image_refresh  = that.image_refresh  +1
+			}			 
+		}, 500)
 	},
 	onReady: function () {
 	//#ifdef APP-PLUS
@@ -1460,6 +1482,11 @@ export default {
 	},
 	mounted() {
   	
+	},
+	onPageScroll:function(e){
+		var that = this
+		that.scrollTop = e.scrollTop
+		that.image_refresh = that.image_refresh + e.scrollTop		 
 	},
 	methods: {
 	  
@@ -1582,7 +1609,8 @@ export default {
         });
       }
     },
-    upload: function () {
+	
+	upload: function () {
       var that = this;
       var goods_id = that.goodsid;
       var new_img_arr = that.new_img_arr[0]; //本次上传图片的手机端文件地址
@@ -1590,84 +1618,73 @@ export default {
       var image_pic = that.image_pic;
       var is_logo = that.is_logo;
 
-      if (new_img_arr) {
-        wx.uploadFile({
-          url: uploadurl,
-          filePath: new_img_arr,
-          name: 'wechat_upimg',
-          formData: {
-            latitude: encodeURI(0.0),
-            longitude: encodeURI(0.0),
-            type: encodeURI(uploader_type),
-            city: encodeURI('杭州'),
-            prov: encodeURI('浙江'),
-            name: encodeURI(goods_id) // 名称
+		if (new_img_arr) {
+			wx.uploadFile({
+				url: uploadurl,
+				filePath: new_img_arr,
+				name: 'wechat_upimg',
+				formData: {
+					latitude: encodeURI(0.0),
+					longitude: encodeURI(0.0),
+					type: encodeURI(uploader_type),
+					city: encodeURI('杭州'),
+					prov: encodeURI('浙江'),
+					name: encodeURI(goods_id) // 名称
+				},
+				// HTTP 请求中其他额外的 form data
+				success: function (res) {
+					var retinfo = JSON.parse(res.data.trim()); 
+					console.log('upimg upload url:', retinfo['result']['img_url'])
 
-          },
-          // HTTP 请求中其他额外的 form data
-          success: function (res) {
-            var retinfo = JSON.parse(res.data.trim()); 
-			console.log('upimg upload url:', retinfo['result']['img_url'])
+					if (retinfo['status'] == "y") {
+						if (is_logo == 1) {
+						//logo 处理
+							that.image_save(retinfo['result']['img_url'], 'card_name_logo_image');
+							that.card_name_logo_image = retinfo['result']['img_url']
+							
+						} else if (is_logo == 2) {
+							that.card_register_adv = retinfo['result']['img_url']
+                
+						} else if (is_logo == 4) {
+							that.card_love_logo = retinfo['result']['img_url']
+						} else if (is_logo == 10) {
+							that.card_cele_logo = retinfo['result']['img_url']
+						} else {
+							var new_image_pic = [];
+							that.image_save(retinfo['result']['img_url'], 'myregistercard_image');
+							var myregistercard_image = wx.getStorageSync('myregistercard_image');
+							var new_image_pic = {
+								id: goods_id,
+								goods_id: goods_id,
+								url: retinfo['result']['img_url']
+							}
+							image_pic.push(new_image_pic);
+							setTimeout(function () {
+								that.image_pic = image_pic
+							}, 3000);
+							console.log('图片上传完成:', new_image_pic, image_pic);
+						}
+					} else {
+						wx.showToast({
+							title: '图片加载失败，请再试一次',
+							icon: none,
+							duration: 2000
+						})
+					}
+				}
+			})
+		}
 
-            if (retinfo['status'] == "y") {
-              if (is_logo == 1) {
-                //logo 处理
-                that.image_save(retinfo['result']['img_url'], 'card_name_logo_image');
-                that.setData({
-                  card_name_logo_image: retinfo['result']['img_url']
-                });
-              } else if (is_logo == 2) {
-                that.setData({
-                  card_register_adv: retinfo['result']['img_url']
-                });
-              } else if (is_logo == 4) {
-                that.setData({
-                  card_love_logo: retinfo['result']['img_url']
-                });
-              } else if (is_logo == 10) {
-                that.setData({
-                  card_cele_logo: retinfo['result']['img_url']
-                });
-              } else {
-                var new_image_pic = [];
-                that.image_save(retinfo['result']['img_url'], 'myregistercard_image');
-                var myregistercard_image = wx.getStorageSync('myregistercard_image');
-                var new_image_pic = {
-                  id: goods_id,
-                  goods_id: goods_id,
-                  url: retinfo['result']['img_url']
-                };
-                image_pic.push(new_image_pic);
-                setTimeout(function () {
-                  that.setData({
-                    image_pic: image_pic
-                  });
-                }, 3000);
-                console.log('图片上传完成:', new_image_pic, image_pic);
-              }
-            } else {
-              wx.showToast({
-                title: '图片加载失败，请再试一次',
-                icon: none,
-                duration: 2000
-              });
-            }
-          }
-        });
-      }
-
-      wx.showToast({
-        title: '已提交！',
-        duration: 2000
-      });
-      var content = that.content;
-
-      if (!content) {
-        that.setData({
-          content: '图片:'
-        });
-      }
-    },
+		wx.showToast({
+			title: '已提交！',
+			duration: 2000
+		})
+		var content = that.content;
+		if (!content) {
+			that.content = '图片:'
+		}
+	},
+	
     goBack: function () {
       var pages = getCurrentPages(); // console.log('details goBack pages:', pages)
 
@@ -1699,21 +1716,22 @@ export default {
     },
 	myqunTapTag: function () {
 		var that = this
-		var shop_type = that.shop_type;
-		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-		var goods_skuid = that.commodityAttr[0]['id'];
-		var goods_id = that.goodsid;
-		var goods_name = that.goodsname;
-		var goods_owner = that.goodsowner
+		var shop_type = that.shop_type
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var goods_skuid = that.commodityAttr[0]['id']
+		var goods_id = that.goodsid
+		var goods_shop_id = that.goods_shop_id
+		var goods_name = that.goodsname
+		var goods_owner = that.goodsowner?that.goodsowner:that.goods_id
 		
 		if (!username) {
 		  //登录
 			uni.navigateTo({
 				url: '/pages/login/login?frompage=/pages/hall/hall'
-			});
-		}else{
+			})
+		} else {
 			uni.navigateTo({
-				url: '/pages/wechat/wechat?goods_id=' + goods_id + '&goods_owner=' + goods_owner + '&goods_name=' + goods_name + '&qun_type=1'
+				url: '/pages/wechat/wechat?goods_id=' + goods_id + '&goods_owner=' + goods_owner + '&goods_name=' + goods_name + '&goods_shop_id=' + goods_shop_id+ '&qun_type=1'
 			})
 		}
 		

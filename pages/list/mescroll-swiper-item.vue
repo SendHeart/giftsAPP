@@ -1,6 +1,6 @@
 <template>
 	<mescroll-uni ref="mescrollRef" top="160" :fixed="false" height="100%" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
-		<pd-list :list="pdList"></pd-list>
+		<pd-list :list="pdList" :scrollTop="current_scrollTop"></pd-list>
 	</mescroll-uni>
 </template>
 
@@ -87,7 +87,13 @@
 				default(){
 					return 0
 				}
-			}
+			},
+			scrollTop: { // 当前tab2的排序方向
+				type: Number,
+				default(){
+					return 0
+				}
+			},
 		},
 		watch:{
 			// 监听下标的变化
@@ -121,7 +127,7 @@
 			 	var that = this
 			 	var old_scrollTop = that.old.scrollTop
 			 	var current_scrollTop = that.mescroll.scrollTop
-			 	that.old.scrollTop = current_scrollTop
+			 	that.current_scrollTop = current_scrollTop
 				//console.log('scroll current_scrollTop:', current_scrollTop);  
 			 },
 			
@@ -161,7 +167,7 @@
 				//联网加载数据
 				this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 					//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
-					console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
+					//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.scrollTop=" + mescroll.scrollTop + ", curPageData.length=" + curPageData.length);
 					mescroll.endSuccess(curPageData.length);
 					//设置列表数据
 					if(mescroll.num == 1|| this.page == 1) this.pdList = []; //如果是第一页需手动制空列表
@@ -203,7 +209,7 @@
 				var updown = that.updown;
 				var search_goodsname = that.search_goodsname?that.search_goodsname:'';
 				var keyword = that.keyword?that.keyword:'';
-				console.log('activeIndex:', activeIndex, 'goods_type:', that.tab,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown);
+				console.log('activeIndex:', activeIndex, 'goods_type:', that.tab,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown,' scrollTop:',that.current_scrollTop);
 				if(page > all_rows && page>1) {
 					//console.log('加载完成 page:', page, 'all_rows:',all_rows,' goods_type_value:',that.tab_value,' goods_sales:',that.tab2,' updown:',that.updown);
 					that.is_goodslist_loading = false ;

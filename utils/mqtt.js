@@ -1826,9 +1826,11 @@ function bindEventHandler () {
 
   socketTask.onMessage(function (res) {
     var data = res.data
-
+	console.log('socketTask.onMessage:'+ data );
+	//if(!data) return 
     if (data instanceof ArrayBuffer) data = Buffer.from(data)
     else data = Buffer.from(data, 'utf8')
+	
     proxy.push(data)
   })
 

@@ -6,7 +6,14 @@
 		  <view class="box-left">
 			  <view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index"  @click="showGoods(item)" >
 		        <view class="venues-item" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-info="item.act_info" :data-goods-org="item.goods_org" :data-image="(item.activity_image?item.activity_image:item.image)" :data-goods-name="item.name" :data-sale="item.sale" :data-goods-price="item.sell_price" :hidden="(item.hidden==1?true:false)" v-if="index%2==0">
-					<image class="image" lazy-load :src="item.image" style="width:355rpx;height:355rpx;" />
+					<!-- 
+					<easy-loadimage class="image" style="width:355rpx;height:355rpx;" mode="aspectFill"
+					    :scroll-top="scrollTop"
+					    :image-src="item.image" >
+					</easy-loadimage>
+					-->
+					<image class="image" :lazy-load="true"  :src="item.image" style="width:355rpx;height:355rpx;" />
+					
 					<!--
 					<image :hidden="!item.show" class="image" :class="{lazy:!item.show}" :data-index="index" @load="imageLoad" :src="item.show?item.image:''"  style="width:355rpx;height:355rpx;" />
 					<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
@@ -18,7 +25,7 @@
 		          <text class="goods-name">{{item.name}}</text>
 		          <view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
 		          <view class="goods-tags">
-		            <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+		            <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
@@ -32,7 +39,14 @@
 			  <view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index"  @click="showGoods(item)">
 		        <view class="venues-item" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-info="item.act_info" :data-goods-org="item.goods_org" :data-image="(item.activity_image?item.activity_image:item.image)" :data-goods-name="item.name" :data-sale="item.sale" :data-goods-price="item.sell_price" :hidden="(item.hidden==1?true:false)" v-if="index%2==1">
 		          <!-- image class="mainpic" src="{{item.image}}" binderror="imageError" data-imageindex="{{index}}" -->
-				  <image class="image" lazy-load :src="item.image" style="width:355rpx;height:355rpx;" />
+					<!--
+					<easy-loadimage class="image" style="width:355rpx;height:355rpx;"
+					    :scroll-top="scrollTop"
+					    :image-src="item.image" >
+					</easy-loadimage>
+					-->
+					<image class="image" :lazy-load="true" :src="item.image" style="width:355rpx;height:355rpx;" />
+					
 					<!--
 						<image :hidden="!item.show" class="image" :class="{lazy:!item.show}" :data-index="index" @load="imageLoad" :src="item.show?item.image:''"  style="width:355rpx;height:355rpx;" />
 						<image :hidden="item.show"  class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />  
@@ -44,7 +58,7 @@
 		          <text class="goods-name">{{item.name}}</text>
 		          <view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
 		          <view class="goods-tags">
-		            <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+		            <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
@@ -56,11 +70,18 @@
 		</view>
 		<view v-if="activeIndex == 0">
 			<view v-for="(item,index) in list" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
-			   <image class="recomm-img" :src="item.image"></image>
-			    <text style="font-size:12px;">{{item.name}}</text>
+				<!--
+				<easy-loadimage class="recomm-img" mode="aspectFill"
+				    :scroll-top="scrollTop"
+				    :image-src="item.image" >
+				</easy-loadimage>
+				-->	    
+				<image class="recomm-img" :src="item.image"></image>
+					
+				<text style="font-size:12px;">{{item.name}}</text>
 			    <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
 			    <view class="goods-tags">
-			      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+			      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 			    </view>    
 				<view class="price-list">
 				  <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
@@ -72,6 +93,7 @@
 </template>
 
 <script>
+	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 	export default {
 		data() {
 		  return {
@@ -79,6 +101,15 @@
 			  windowWidth: "",
 			  dkheight: "",
 		  };
+		},
+		/*
+		onPageScroll({scrollTop=0}) {
+		    // 传入scrollTop值并触发所有easy-loadimage组件下的滚动监听事件
+		    this.scrollTop = scrollTop;
+		},
+		*/
+		components:{
+			easyLoadimage
 		},
 		props:{
 			list: { // 数据列表
@@ -93,6 +124,12 @@
 					return 0
 				}
 			},
+			scrollTop:{
+				type: Number,
+				default(){
+					return 0
+				}
+			}
 		},
 		onLoad: function (options) {
 		  console.log('onLoad list:', this.list);
@@ -145,8 +182,7 @@
 			   uni.navigateTo({
 			     url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
 			   });
-			 },
-			 
+			 },			 
 		}
 	}
 </script>

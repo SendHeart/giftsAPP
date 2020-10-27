@@ -29,12 +29,6 @@ page {
 .pagewrap {
   width: 100%;
   background: #f2f2f2;
-  height:2300px;
-  
-  /*
-  height:1100rpx;
-  height: 100%;
-  */
 }
 .wxParse {
   background: #fff;
@@ -310,77 +304,77 @@ font-size: 32rpx;
 } 
 /*购物车按钮、收藏等*/
 .footer {
-  background: #fff;
-  width: 100%;
-  padding-bottom: 5rpx;
-  position: fixed;
-  bottom: 0;
-  border-top: 1rpx solid #eee;
+	background: #fff;
+	width: 100%;
+	padding-bottom: 5rpx;
+	position: fixed;
+	bottom: 0;
+	border-top: 1rpx solid #eee;
 }
 .opt-buttons {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content:space-between;
-  align-items: center;
-  border-bottom: 1rpx solid #eee;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content:space-between;
+	align-items: center;
+	border-bottom: 1rpx solid #eee;
 }
 .opt-buttons button::after {
-border: none;
+	border: none;
 }
 .opt-buttons form {
-  width: auto;
+	width: auto;
 }
 .add-cart2 {
-  text-align: center;
-  width: 90%;
-  height: 80rpx;
-  background-color: #444;
-  color: #fff;
-  font-size: 28rpx;
-  border-radius: 20rpx;
-  line-height: 80rpx;
-  margin: 0 auto;
+	text-align: center;
+	width: 90%;
+	height: 80rpx;
+	background-color: #444;
+	color: #fff;
+	font-size: 28rpx;
+	border-radius: 20rpx;
+	line-height: 80rpx;
+	margin: 0 auto;
 }
 .add-cart {
-  text-align: center;
-  width: 90%;
-  height: 80rpx;
-  background-color: #EC4844;
-  color: #fff;
-  border-radius: 20rpx;
-  font-size: 28rpx;
-  line-height: 80rpx;
+	text-align: center;
+	width: 90%;
+	height: 80rpx;
+	background-color: #EC4844;
+	color: #fff;
+	border-radius: 20rpx;
+	font-size: 28rpx;
+	line-height: 80rpx;
 }
 .sec-btn {
-  outline: none;  
-  background: #fff;
-  line-height: 38rpx;
-  text-align: center;
-  align-items: center;
-  width:100%;
-  height: 100rpx;
-  color: #444444;
-  font-size: 24rpx;
-  border-radius: 0;
-  border-right: 1rpx solid #eee;
-  display: flex;
-  flex-direction: column;
+	outline: none;  
+	background: #fff;
+	line-height: 38rpx;
+	text-align: center;
+	align-items: center;
+	width:100%;
+	height: 100rpx;
+	color: #444444;
+	font-size: 24rpx;
+	border-radius: 0;
+	border-right: 1rpx solid #eee;
+	display: flex;
+	flex-direction: column;
 }
 .icon-detail {
-  width: 40rpx;
-  height: 40rpx;
-  margin-top: 10rpx;
+	width: 40rpx;
+	height: 40rpx;
+	margin-top: 10rpx;
 }
 
 .button-group {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 .button-image {
-  width: 60rpx;
-  height: 60rpx;
+	width: 60rpx;
+	height: 60rpx;
 }
 
 .button-text {

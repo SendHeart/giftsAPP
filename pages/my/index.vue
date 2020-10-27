@@ -1,6 +1,6 @@
 <template>
 <view class="page">
-	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
 	<view class="" scroll-y >
 		<view style="display:flex;flex-direction: row;justify-content: center;">
 			<view class="userinfo">
@@ -13,7 +13,7 @@
 					<view class="userinfo-cards-name">
 						<text class="userinfo-cards-title">{{card_name}}</text>
 					</view>
-					<image class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover"></image>
+					<image class="userinfo-avatar" @click.stop="chooseImage(0)" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover"></image>
 				</view>
 				<view class="userinfo-cards-item" v-if="card_no!=''">
 					<text class="userinfo-cards-no">Global No.{{card_no}}</text>
@@ -23,8 +23,12 @@
 					<text class="userinfo-cards-due">止于:{{card_due_end}}</text>
 				</view>
 				<view class="userinfo-cards-nickname" v-if="card_no!=''">
-					<text class="userinfo-nickname">{{nickname?nickname:'匿名'}}</text>
-					<text class="userinfo-cards-expend" @tap="navigateToRecharge">延长会员期限</text>
+					<view v-if="!hiddenNickname" style="display: flex;flex-direction:column;justify-content: center;">
+						<input class="userinfo-nickname" style="margin-top:0rpx;color:#FFFFFF;border:1px solid #efefef;" maxlength="50" v-model="nickname" placeholder="请输入昵称" @input="onKeyUserNickNameInput" />
+						<button class="userinfo-nickname" style="margin-top:0rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="update_userinfo">确定</button>						
+					</view>					
+					<text v-if="hiddenNickname" class="userinfo-nickname" @click.stop="user_nicknameTapTag()">{{nickname?nickname:'匿名'}}</text>
+					<text v-if="hiddenNickname" class="userinfo-cards-expend" @tap="navigateToRecharge">延长会员期限</text>
 				</view>
 				<view class="userinfo-cards-nickname" v-if="card_no==''">
 					<button class="userinfo-cards-join" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#444;background:#f2f2f2" hover-class='none' @tap="navigateToRecharge">立即入会</button>
@@ -102,6 +106,11 @@
 			 	<image src="/static/images/barcode.png"></image>
 			 	<text class="text-grey">扫码分享</text>
 			</view>
+			
+			<view  v-if="userauth_customerservice=='1'" @click="navigateToCustomerservice" class="order" >
+				 <image src="/static/images/iconfont-kefu.png"></image>
+				 <text class="text-grey">我是客服</text>
+			</view>
 			<view  v-if="userauth_shoper==1 || userauth_host==1" @click="bindPlayer" class="order" >
 				 <image src="/static/images/live.png"></image>
 				 <text class="text-grey">我是主播</text>
@@ -118,11 +127,13 @@
 		</view>
 		<view class="wrap">
 			<view v-if="pdList.length>0" class="recomment-title">
-			  <text>最近浏览商品<text class="title_ex"></text></text>
+			  <text @click="goTop()" >最近浏览商品
+				<text class="title_ex"></text>
+			  </text>
 			</view>
 		</view>
 	</view>
-	<pd-list :list="pdList"></pd-list>
+	<pd-list :list="pdList" :scrollTop="image_refresh"></pd-list>
 	</mescroll-body>
 	
 	<!--
@@ -307,6 +318,7 @@ export default {
 		playsxinfoshowflag: 0,
 		artinfoshowflag: 0,
 		scrollTop: 0,
+		image_refresh:0,
 		scrollTop_init: 10,
 		modalHiddenCele: true,
 		modalHiddenAgreement: true,
@@ -373,6 +385,7 @@ export default {
 		userInfo: userInfo,
 		userauth_coupon:0,
 		userauth_shoper:0,
+		userauth_customerservice:0,
 		userauth_host:0,
 		userauth_celebration:0,
 		userauth_location:0,
@@ -462,6 +475,7 @@ export default {
 		that.userauth = userauth 
 		that.userauth_coupon = userauth.coupon 
 		that.userauth_shoper = userauth.shoper 
+		that.userauth_customerservice = userauth.customerservice
 		that.userauth_host = userauth.host
 		that.userauth_celebration = userauth.celebration 
 		that.userauth_article = userauth.article 
@@ -473,7 +487,7 @@ export default {
 		that.art_cat_id = art_cat_id 
 		that.art_title = art_title 
 		that.refer_id = refer_id 
-		console.log('my index onLoad() userauth:', userauth, 'user_name:', that.user_name)
+		console.log('my index onLoad() userauth:' + userauth + ' userauth_customerservice:', that.userauth_customerservice)
 	},
 	
 	onShow: function () {
@@ -494,7 +508,7 @@ export default {
 		var isReadAgreement = uni.getStorageSync('isReadAgreement') ? uni.getStorageSync('isReadAgreement') : 0;
 		var { windowWidth, windowHeight } = uni.getSystemInfoSync();	
 		user_type = parseInt(user_type);
-		console.log('my index onShow() user_phone:', user_phone, 'userauth:', userauth);
+		
 		if (!username) {//登录
 			that.frompage = that.frompage
 			that.login()
@@ -520,6 +534,7 @@ export default {
 		that.userauth = userauth ;
 		that.userauth_coupon = userauth.coupon?userauth.coupon:'' ;
 		that.userauth_shoper = userauth.shoper?userauth.shoper:'' ;
+		that.userauth_customerservice = userauth.customerservice?userauth.customerservice:'' ;
 		that.userauth_host = userauth.host?userauth.host:'' ;
 		that.userauth_celebration = userauth.celebration?userauth.celebration:'' ;
 		that.userauth_article = userauth.article?userauth.article:'' ;
@@ -530,7 +545,8 @@ export default {
 		that.user_group_name = user_group_name
 		that.user_type = user_type
 		that.art_id = art_id
-
+		console.log('my index onShow() userauth:' + JSON.stringify(userauth) + ' userauth_customerservice:', that.userauth_customerservice);
+		
 		that.login_button = (username)?'重新登录':'登录' 
 		that.query_user_info()
 		if (art_id>0){
@@ -544,7 +560,11 @@ export default {
 	    if(that.scrollTop == 0){
 			that.goTop()
 		}
-		 
+		setTimeout(function () {
+			if(that.image_refresh == 0){
+				that.image_refresh  = that.image_refresh  +1
+			}			 
+		}, 1000)
 		//console.log('my index userauth_coupon:', that.userauth_coupon);
   },
   
@@ -716,51 +736,50 @@ export default {
 				console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res))
 				if(res.data.result){
 					that.token = res.data.result['token']?res.data.result['token']:''
-						that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
-						that.user_group_name = res.data.result['member_group_name']?res.data.result['member_group_name']:this.user_group_name
-						that.card_name = res.data.result['card_name']
-						that.card_logo = res.data.result['card_logo']?res.data.result['card_logo']:that.card_logo_init
-						that.card_no = res.data.result['card_no']
-						that.card_due_start = res.data.result['card_due_start']
-						that.card_due_end = res.data.result['card_due_end']
-						var userauth = JSON.parse(res.data.result['userauth'])
-						uni.setStorageSync('token', that.token)
-						uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
-						uni.setStorageSync('username', res.data.result['username'])
-						uni.setStorageSync('m_id', res.data.result['m_id'])
-						uni.setStorageSync('user_phone', res.data.result['user_phone'])
-						uni.setStorageSync('user_name', res.data.result['user_name'])
-						uni.setStorageSync('user_gender', res.data.result['user_gender'])
-						uni.setStorageSync('user_type', res.data.result['user_type'])
-						uni.setStorageSync('userauth', userauth)
-						uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
-						uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
-						uni.setStorageSync('card_name', res.data.result['card_name'])
-						uni.setStorageSync('card_logo', res.data.result['card_logo'])
-						uni.setStorageSync('card_no', res.data.result['card_no'])
-						uni.setStorageSync('card_due_start', res.data.result['card_due_start'])
-						uni.setStorageSync('card_due_end', res.data.result['card_due_end'])
-					
+					that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
+					that.user_group_name = res.data.result['member_group_name']?res.data.result['member_group_name']:this.user_group_name
+					that.card_name = res.data.result['card_name']
+					that.card_logo = res.data.result['card_logo']?res.data.result['card_logo']:that.card_logo_init
+					that.card_no = res.data.result['card_no']
+					that.card_due_start = res.data.result['card_due_start']
+					that.card_due_end = res.data.result['card_due_end']
+					var userauth = JSON.parse(res.data.result['userauth'])
+					uni.setStorageSync('token', that.token)
+					uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
+					uni.setStorageSync('username', res.data.result['username'])
+					uni.setStorageSync('m_id', res.data.result['m_id'])
+					uni.setStorageSync('user_phone', res.data.result['user_phone'])
+					uni.setStorageSync('user_name', res.data.result['user_name'])
+					uni.setStorageSync('user_gender', res.data.result['user_gender'])
+					uni.setStorageSync('user_type', res.data.result['user_type'])
+					uni.setStorageSync('userauth', userauth[0])
+					uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
+					uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
+					uni.setStorageSync('card_name', res.data.result['card_name'])
+					uni.setStorageSync('card_logo', res.data.result['card_logo'])
+					uni.setStorageSync('card_no', res.data.result['card_no'])
+					uni.setStorageSync('card_due_start', res.data.result['card_due_start'])
+					uni.setStorageSync('card_due_end', res.data.result['card_due_end'])
 				}
 			},
 		})
 	},
-	
+
+	onPageScroll:function({scrollTop}) {
+	    var that = this
+		that.scrollTop = scrollTop
+		that.image_refresh = that.image_refresh + scrollTop
+		
+	},
+	/*
 	scroll: function(e) {
 	 	var that = this
 	 	var old_scrollTop = that.old.scrollTop
 	 	var current_scrollTop = that.mescroll.scrollTop
 	 	that.old.scrollTop = current_scrollTop
 		//console.log('scroll current_scrollTop:', current_scrollTop);  
-		/*
-	 	if(current_scrollTop > old_scrollTop +60) {
-	 		that.getMoreGoodsTapTag() ;
-	 		//that.load() ;
-			//console.log('list old_scrollTop:',old_scrollTop,' current_scrollTop:',current_scrollTop)
-	 	}
-		*/
 	 },
-	 
+	 */
 	//回到顶部，内部调用系统API
 	goTop: function () {
 	  // 一键回到顶部
@@ -979,6 +998,13 @@ export default {
 		})
 	},
 
+	navigateToCustomerservice: function (e) {
+		var status = e.currentTarget.dataset.status
+		uni.navigateTo({
+			url: '/pages/customerservice/customerservice?status=' + status
+		})
+	},
+	
 	queryCart: function (options) {
 	    var that = this
 	    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
@@ -1565,35 +1591,36 @@ export default {
     },
     
     showArt: function () {
-      let winPage = this;
-      var modalHiddenArt = winPage.modalHiddenArt;
-      var modalHiddenArtInfo = winPage.modalHiddenArtInfo;
-      var artinfoshowflag = winPage.artinfoshowflag;
-      var art_index = winPage.art_index ? winPage.art_index : 0;
-      winPage.modalHiddenArt = !modalHiddenArt,
-      winPage.modalHiddenArtInfo = !modalHiddenArtInfo
-      console.log('my index showArt() modalHiddenArtInfo:', modalHiddenArtInfo, 'artinfoshowflag:', artinfoshowflag, 'art_index:', art_index);
+		let winPage = this;
+		var modalHiddenArt = winPage.modalHiddenArt;
+		var modalHiddenArtInfo = winPage.modalHiddenArtInfo;
+		var artinfoshowflag = winPage.artinfoshowflag;
+		var art_index = winPage.art_index ? winPage.art_index : 0;
+		winPage.modalHiddenArt = !modalHiddenArt,
+		winPage.modalHiddenArtInfo = !modalHiddenArtInfo
+		console.log('my index showArt() modalHiddenArtInfo:', modalHiddenArtInfo, 'artinfoshowflag:', artinfoshowflag, 'art_index:', art_index);
 
-      if (!winPage.modalHiddenArtInfo && artinfoshowflag == 0) {
-        wx.getSystemInfo({
-          success: function (res) {
-            let winHeight = res.windowHeight;
-            console.log('my index showArt():', winHeight, 'art_index:', art_index);
-            winPagedkheight = winHeight - winHeight * 0.05 - 120
-          }
-        });
-        winPage.artinfoshowflag = 1
-        winPage.art_index = art_index
-        var dkcontent2 = winPage.article[art_index]['desc'].replace('<img ', '<img style="max-width:100%;height:auto;margin:0 auto;" '); //console.log('my index showArt() dkcontent2:', dkcontent2);
+		if (!winPage.modalHiddenArtInfo && artinfoshowflag == 0) {
+			wx.getSystemInfo({
+				success: function (res) {
+					let winHeight = res.windowHeight;
+					console.log('my index showArt():', winHeight, 'art_index:', art_index);
+					winPagedkheight = winHeight - winHeight * 0.05 - 120
+				}
+			});
+			winPage.artinfoshowflag = 1
+			winPage.art_index = art_index
+			var dkcontent2 = winPage.article[art_index]['desc'].replace('<img ', '<img style="max-width:100%;height:auto;margin:0 auto;" '); //console.log('my index showArt() dkcontent2:', dkcontent2);
 
-        wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5); // wxparse.wxParse('dkcontent2', 'html', winPage.data.article[art_index]['desc'], winPage, 5)
-      }
+			wxparse.wxParse('dkcontent2', 'html', dkcontent2, winPage, 5); // wxparse.wxParse('dkcontent2', 'html', winPage.data.article[art_index]['desc'], winPage, 5)
+		}
     },
-    navigateToMyLocation: function (e) {
-      uni.navigateTo({
-        url: '../member/mylocation/mylocation?'
-      });
-    },
+    
+	navigateToMyLocation: function (e) {
+		uni.navigateTo({
+			url: '../member/mylocation/mylocation?'
+		})
+	},
 
     /*
     navigateToOrder: function (e) {
@@ -1944,23 +1971,24 @@ export default {
       }, 1500);
     },
 
-   chooseImage: async function(is_logo = 0) {
-   	wx.chooseImage({
-		sizeType: ['original', 'compressed'],
-   		success: (res) => {
-   			that.new_img_arr = res.tempFilePaths
-			console.log('本次上传图片本地:', this.new_img_arr);
-			this.upload(is_logo);
-   		},
-   		fail: (err) => {
+	chooseImage: async function(is_logo = 0) {
+		var that = this
+		uni.chooseImage({
+			sizeType: ['original', 'compressed'],
+			success: (res) => {
+				that.new_img_arr = res.tempFilePaths
+				console.log('本次上传图片本地:', this.new_img_arr);
+				that.upload(is_logo);
+			},
+			fail: (err) => {
    			// #ifdef APP-PLUS
-   			if (err['code'] && err.code !== 0 ) {
-   				this.checkPermission(err.code);
-   			}
+				if (err['code'] && err.code !== 0 ) {
+					that.checkPermission(err.code);
+				}
    			// #endif
-   		}
-   	})
-   },
+			}
+		})
+	},
 
 	upload: function (is_logo = 0 ) {
 	  var that = this;

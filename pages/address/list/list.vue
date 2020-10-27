@@ -2,14 +2,14 @@
 <view>
 <view class="address-list">
 	<view class="item" v-for="(item, index) in addressObjects" :key="index">
-		<!-- first row -->
+		 
 		<view class="header">
 			<text class="realname">{{item.full_name}}</text>
 			<text class="mobile">{{item.tel}}</text>
 		</view>
-		<!-- second row -->
+		 
 		<view class="summary">{{item.prov_str}}{{item.city_str}}{{item.area_str}}{{item.town_str}}{{item.address}}</view>
-		<!-- third row -->
+		 
 		<view class="footer">
 			<!-- is default switch -->
 			<view class="set-default" :data-index="index" @tap="setDefault">
@@ -17,12 +17,15 @@
 				<uni-icons :type="(item.is_default == 1 ? 'checkbox-filled' : 'circle')"  size="18" color='#e34c55'></uni-icons>
 				<text>默认地址</text>
 			</view>
-			<!-- edit and delete button -->
+			
 			<view class="operation">
 				<view class="container" :data-index="index" @tap="edit"><image src="../../../static/images/icon_edit.png"></image><text>编辑</text></view>
 				<view class="container" :data-index="index" @tap="deleteFun"><image src="../../../static/images/icon_delete.png"></image><text>删除</text></view>
 			</view>
 		</view>
+	</view>
+	<view style="height: 30px;">
+		
 	</view>
 </view>
 <button @tap="add" type="warn" class="address-add">添加地址</button>

@@ -213,11 +213,11 @@ export default {
   //#endif
   
   methods: {
-	  showGoods: function (e) {
-	    var objectId = e.id ; //currentTarget.dataset.objectId;
-	    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-	    var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
+	showGoods: function (e) {
+		var objectId = e.id ; //currentTarget.dataset.objectId;
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
 	    var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
 	    var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
 	    var goods_name = e.name ; //currentTarget.dataset.goodsName;
@@ -364,18 +364,20 @@ export default {
       } 
 	   
     },
+	/*
 	scroll: function(e) {
 		var that = this
 		var activeIndex = that.activeIndex ;
 		var old_scrollTop = that.venuesList[activeIndex].scrollTop  ;//that.old.scrollTop
 		var current_scrollTop = e.detail.scrollTop
 		that.venuesList[activeIndex].scrollTop = current_scrollTop ; //that.old.scrollTop
-		
+		that.old.scrollTop = current_scrollTop 
 		if(current_scrollTop > old_scrollTop +60) {
 			that.getMoreGoodsTapTag() ;
 		}
 		//that.load() ;
 	},
+	*/
 	//回到顶部
 	goTop: function (e) {
 	  // 一键回到顶部
@@ -434,125 +436,92 @@ export default {
         keyword: keyword
       });
     },
-    get_goods_list: function (event) {
-      var that = this;
-      var page = that.page;
-      var pagesize = that.pagesize;
-      var pageoffset = that.pageoffset;
-      var username = that.username;
-      var token = that.token;
-	  var activeIndex = that.activeIndex;
-      var goods_type = that.tab;
-      var goods_type_value = that.tab_value;
-      var goods_sales = that.tab2;
-      var updown = that.updown;
-      var search_goodsname = that.search_goodsname;
-      var keyword = that.keyword;
-      var shop_type = that.shop_type; //var shape = 1
-
-      //var show_max = that.show_max;
+	
+	get_goods_list: function (event) {
+		var that = this;
+		var page = that.page;
+		var pagesize = that.pagesize;
+		var pageoffset = that.pageoffset;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var activeIndex = that.activeIndex;
+		var goods_type = that.tab;
+		var goods_type_value = that.tab_value;
+		var goods_sales = that.tab2;
+		var updown = that.updown;
+		var search_goodsname = that.search_goodsname;
+		var keyword = that.keyword;
+		var shop_type = that.shop_type; //var shape = 1
+		that.is_goodslist_loading = true
+		that.loadingHidden = false
 	  
-      that.setData({
-        is_goodslist_loading: true,
-        loadingHidden: false
-      });
+		that.status = 'loading';
 	  
-	  that.status = 'loading';
-	  
-      wx.request({
-        url: weburl + '/api/client/get_goods_list',
-        method: 'POST',
-        data: {
-          goods_type: goods_type,
-          goods_type_value: goods_type_value,
-          username: username,
-          access_token: token,
-          page: page,
-          pagesize: pagesize,
-          pageoffset: pageoffset,
-          search_goodsname: search_goodsname,
-          goods_sales: goods_sales,
-          updown: updown,
-          keyword: keyword,
-          shop_type: shop_type ,// shape:shape
-		  query_type:'APP' ,
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          //var venuesItems_show = that.venuesItems_show;
-         // console.log('get_goods_list:', res.data, 'page:', page);
-          var venuesItems_new = res.data.result;
-          var all_rows = res.data.all_rows;
-          var pageoffset = res.data.pageoffset;
+		uni.request({
+			url: weburl + '/api/client/get_goods_list',
+			method: 'POST',
+			data: {
+				goods_type: goods_type,
+				goods_type_value: goods_type_value,
+				username: username,
+				access_token: token,
+				page: page,
+				pagesize: pagesize,
+				pageoffset: pageoffset,
+				search_goodsname: search_goodsname,
+				goods_sales: goods_sales,
+				updown: updown,
+				keyword: keyword,
+				shop_type: shop_type ,// shape:shape
+				query_type:'APP' ,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var venuesItems_new = res.data.result;
+				var all_rows = res.data.all_rows;
+				var pageoffset = res.data.pageoffset;
 
-          if (!venuesItems_new) {
-			  /*
-            wx.showToast({
-              title: '没有搜到记录',
-              icon: 'loading',
-              duration: 1000
-            });
-			*/
-            that.setData({
-			  is_goodslist_loading: false,
-              keyword: ''
-            });
-			that.status = 'nomore';
-            return;
-          } 
-		  var venuesItems = that.venuesList[activeIndex].venuesItems
-          if (venuesItems_new) {
-            for (var i = 0; i < venuesItems_new.length; i++) {
-              venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
+				if (!venuesItems_new) {
+					that.is_goodslist_loading = false
+					that.keyword = ''
+					that.status = 'nomore';
+					return;
+				} 
+				var venuesItems = that.venuesList[activeIndex].venuesItems
+				if (venuesItems_new) {
+					for (var i = 0; i < venuesItems_new.length; i++) {
+						venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
 
-              if (!venuesItems_new[i]['act_info']) {
-                venuesItems_new[i]['act_info'] = '';
-              }
+						if (!venuesItems_new[i]['act_info']) {
+							venuesItems_new[i]['act_info'] = '';
+						}
 
-              if (!venuesItems_new[i]['goods_tag']) {
-                venuesItems_new[i]['goods_tag'] = '';
-              } else {
-                venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
-              }
-              venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
-              venuesItems_new[i]['show'] = page==1?true:false; //暂时都显示
-              venuesItems_new[i]['loaded'] = page==1?true:false;
+						if (!venuesItems_new[i]['goods_tag']) {
+							venuesItems_new[i]['goods_tag'] = '';
+						} else {
+							venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
+						}
+						venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
+						venuesItems_new[i]['show'] = page==1?true:false; //暂时都显示
+						venuesItems_new[i]['loaded'] = page==1?true:false;
+					}			 
+					venuesItems = that.venuesItems.concat(venuesItems_new);
+					that.venuesList[activeIndex].venuesItems = that.venuesList[activeIndex].venuesItems.concat(venuesItems);
+					that.venuesList[activeIndex].page = page ;
+					that.venuesList[activeIndex].pagesize = pagesize ;
+					that.venuesList[activeIndex].all_rows = all_rows ;
+					that.venuesList[activeIndex].pageoffset = pageoffset ;
+					setTimeout(function(){
+						that.is_goodslist_loading = false ;
+					}, 500)
+				}
 			}
-
-            //if (page > 1 && venuesItems_new) {
-				 
-			//} //向后合拼
-           venuesItems = that.venuesItems.concat(venuesItems_new);
-		   that.venuesList[activeIndex].venuesItems = that.venuesList[activeIndex].venuesItems.concat(venuesItems);
-		   that.venuesList[activeIndex].page = page ;
-		   that.venuesList[activeIndex].pagesize = pagesize ;
-		   that.venuesList[activeIndex].all_rows = all_rows ;
-		   that.venuesList[activeIndex].pageoffset = pageoffset ;
-		   /*
-			if (page == 1) {
-				that.load()
-			}
-			 */
-            //更新当前显示页信息
-            //if (venuesItems_show.length >= show_max) {
-            //  venuesItems_show.shift();
-            //}
-			//that.venuesItems = venuesItems ;
-			//that.all_rows = all_rows ;
-			//that.page = page ;
-			//that.pageoffset = pageoffset ;
-			//that.keyword = '' ;
-			
-			setTimeout(function(){
-				that.is_goodslist_loading = false ;
-			}, 500)
-          }
-        }
-      });
+		})
     },
+	
     get_menubar: function (event) {
       //获取菜单项
       var that = this;

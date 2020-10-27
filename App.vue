@@ -23,6 +23,7 @@
 			var playerurl = that.$options.globalData.playerurl;
 			var art_id =0
 			var clientinfo = ''
+			var websocketOpen = false
             // #ifdef APP-PLUS
 			clientinfo = plus.push.getClientInfo() ; //用户推送信息
             // 锁定屏幕方向
@@ -296,13 +297,13 @@
 			]
         },
         onShow: function() {
-            console.log('App Show')
+            //console.log('App Show')
 			//#ifdef APP-PLUS
 			var pinf=plus.push.getClientInfo();  
 			//#endif
         },
         onHide: function() {
-            console.log('App Hide')
+            //console.log('App Hide')
         },
 		globalData: {
 			test: '',

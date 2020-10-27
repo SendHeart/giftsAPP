@@ -328,14 +328,14 @@
 						uni.setStorageSync('user_gender', res.data.result['user_gender']);
 						uni.setStorageSync('user_type', res.data.result['user_type']);
 						uni.setStorageSync('user_level', res.data.result['user_level']);
-						uni.setStorageSync('userauth', userauth);
+						uni.setStorageSync('userauth', userauth[0]);
 						uni.setStorageSync('user_group_id', res.data.result['member_group_id'])
 						uni.setStorageSync('user_group_name', res.data.result['member_group_name'])
 					
 						uni.switchTab({
 							url: '/pages/hall/hall'
 						})
-						console.log('app login 用户基本信息:', res.data.result)
+						console.log('app login 用户基本信息 userauth:' + JSON.stringify(userauth))
 						
 					}else{
 						uni.showToast({
