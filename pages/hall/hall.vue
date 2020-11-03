@@ -605,6 +605,7 @@ export default {
     
 		getApp().globalData.is_task = task;
     //console.log('hall onload task:', getApp().globalData.is_task, ' username:', username);
+		/*
 		var message_info = {
 			addtime: myDate,
 			username: username,
@@ -613,6 +614,7 @@ export default {
 			message_type: 1
 		};
 		that.message = JSON.stringify(message_info)
+		*/
 		that.refername = refername
 		that.msg_id = msg_id
 		that.art_id = art_id
@@ -625,17 +627,15 @@ export default {
 				url: '/pages/my/index?art_id=' + art_id + '&art_cat_id=' + art_cat_id
 			});
 		}
-	
-		socketMsgQueue.push(that.message)
-		that.initSocketMessage()
+		that.query_message()
+		//socketMsgQueue.push(that.message)
+		//that.initSocketMessage()
 		setInterval(function () {
-			that.initSocketMessage()
+			//that.initSocketMessage()
+			that.query_message()
 			that.gift_para_interval = 1  //获取业务参数 
-			}, 60*1000);
-		/*
-		setInterval(function () {//that.reSend()
-		}, 5000);
-		*/
+		}, 60*1000)
+		
 		that.get_project_gift_para();
 		that.reloadData();
 		//that.sum();
@@ -733,7 +733,7 @@ export default {
 					},
 					success: function (res) {
 						getApp().globalData.is_task = 0;
-            //console.log('hall get_task_refer:', res.data);
+						//console.log('hall get_task_refer:', res.data);
 					}
 				})
 				that.messageHidden = !that.messageHidden
@@ -955,16 +955,14 @@ export default {
 	
     reSend: function () {
       //失败后重新发送
-      var that = this; //失败重发
-
-      var reSendMsgQueue = sendMsgQueue;
+      var that = this
+      var reSendMsgQueue = sendMsgQueue
 
       for (var i = 0; i < reSendMsgQueue.length; i++) {
         uni.sendSocketMessage({
           data: reSendMsgQueue[i],
           success: function (res) {
             //console.log("sendSocketMessage 重发完成");
-            //console.log(rcvnew);
             sendMsgQueue.splice(i, 1);
           },
           fail: function (res) {
@@ -980,94 +978,78 @@ export default {
     },
 	
     initSocketMessage: function () {
-      var that = this;
-      var remindTitle = socketOpen ? '正在关闭' : '正在连接';
+		var that = this;
+		var remindTitle = socketOpen ? '正在关闭' : '正在连接';
 
-      if (!socketOpen) {
-        uni.connectSocket({
-          url: wssurl + '/wss'
-        });
-        uni.onSocketError(function (res) {
-          socketOpen = false;
-		  getApp().globalData.websocketOpen = socketOpen
-          //console.log('WebSocket连接打开失败，请检查！');
-          that.socktBtnTitle = '连接socket'
-          uni.hideToast();
-        });
-        uni.onSocketOpen(function (res) {
-          //console.log('WebSocket连接已打开', wssurl + '/wss');
-          uni.hideToast();
-          that.socktBtnTitle = '断开socket'
-          socketOpen = true;
-		  getApp().globalData.websocketOpen = socketOpen
-          let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-          let uid = username + '_' + shop_type;
-          uni.sendSocketMessage({
-            data: uid
-          });
+		if (!socketOpen) {
+			uni.connectSocket({
+				url: wssurl + '/wss'
+			})
+			uni.onSocketError(function (res) {
+				socketOpen = false;
+				getApp().globalData.websocketOpen = socketOpen
+				//console.log('WebSocket连接打开失败，请检查！');
+				that.socktBtnTitle = '连接socket'
+				uni.hideToast();
+			})
+			uni.onSocketOpen(function (res) {
+				//console.log('WebSocket连接已打开', wssurl + '/wss');
+				uni.hideToast();
+				that.socktBtnTitle = '断开socket'
+				socketOpen = true;
+				getApp().globalData.websocketOpen = socketOpen
+				let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+				let uid = username + '_' + shop_type;
+				uni.sendSocketMessage({
+					data: uid
+				});
 
-          for (let i = 0; i < socketMsgQueue.length; i++) {
-            that.message = socketMsgQueue[i]
-            that.sendSocketMessage();
-          } //socketMsgQueue = []
+				for (let i = 0; i < socketMsgQueue.length; i++) {
+					that.message = socketMsgQueue[i]
+					that.sendSocketMessage();
+				} 
+			})
+			uni.onSocketMessage(function (res) {
+				let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+				let response = res.data?JSON.parse(res.data.trim(), true):'';
+				let messageHidden = that.messageHidden;
+				console.log('hall 收到服务器内容：' + res.data.trim());
 
-        });
-        uni.onSocketMessage(function (res) {
-          let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-          let response = res.data?JSON.parse(res.data.trim(), true):'';
-          let messageHidden = that.messageHidden;
-          //console.log('收到服务器内容：' + res.data.trim());
-
-          if (response.status == 'y') {
-            let resp_message = response.result;
-            let messages_num = that.messages_num;
-            resp_message['title'] = resp_message['title'] ? resp_message['title'] : '我的消息';
-            resp_message['start_time'] = util.getDateStr(resp_message['start_time'] * 1000, 0);
-            resp_message['end_time'] = util.getDateStr(resp_message['end_time'] * 1000, 0);
-            that.resp_message = resp_message ;
-			that.messages_num =  messages_num + 1 ;
-			if(resp_message['type']=='7' && resp_message['webview_url']){
-				let message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
-				that.main_prom_image = message_content['image']?message_content['image']:'' ;
-				that.main_prom_title = resp_message['title'] ? resp_message['title'] : '送心礼物' ;
-				that.messageHidden = !messageHidden ;
-			}
-			/*
-			that.setData({
-              resp_message: resp_message,
-              messages_num: messages_num + 1 //messageHidden: false
-
-            });
-			*/
-            /*
-            setTimeout(function () {
-              that.setData({
-                messageHidden: true,
-              })
-            }, 9000)
-            */
-          }
-        });
-        uni.onSocketClose(function (res) {
-          socketOpen = false;
-		  getApp().globalData.websocketOpen = socketOpen
-          //console.log('WebSocket 已关闭！');
-          uni.hideToast();
-          that.socktBtnTitle = '连接socket'
-        });
-      } else {//wx.closeSocket()
-      }
+				if (response.status == 'y') {
+					let resp_message = response.result;
+					let messages_num = that.messages_num;
+					resp_message['title'] = resp_message['title'] ? resp_message['title'] : '我的消息';
+					resp_message['start_time'] = util.getDateStr(resp_message['start_time'] * 1000, 0);
+					resp_message['end_time'] = util.getDateStr(resp_message['end_time'] * 1000, 0);
+					that.resp_message = resp_message ;
+					that.messages_num =  messages_num + 1 ;
+					if(resp_message['type']=='7' && resp_message['webview_url']){
+						let message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
+						that.main_prom_image = message_content['image']?message_content['image']:'' ;
+						that.main_prom_title = resp_message['title'] ? resp_message['title'] : '送心礼物' ;
+						that.messageHidden = !messageHidden ;
+					}
+				}
+			})
+			uni.onSocketClose(function (res) {
+				socketOpen = false;
+				getApp().globalData.websocketOpen = socketOpen
+				console.log('hall WebSocket 已关闭！');
+				uni.hideToast();
+				that.socktBtnTitle = '连接socket'
+			})
+		}
     },
 	
     sendSocketMessage: function () {
-      var that = this;
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var myDate = util.formatTime(new Date());
-      var message = that.message;
+      var that = this
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+      var myDate = util.formatTime(new Date())
+      var message = that.message
 
       if (!socketOpen) {
-        socketMsgQueue.push(message);
-        that.initSocketMessage();
+        socketMsgQueue.push(message)
+        that.initSocketMessage()
       } else {
         //console.log('sendSocketMessage message:', message);
         uni.sendSocketMessage({
@@ -1076,7 +1058,7 @@ export default {
             //console.log("sendSocketMessage 完成", res);
           },
           fail: function (res) {
-            console.log("sendSocketMessage 通讯失败");
+            console.log("hall sendSocketMessage 通讯失败")
             uni.showToast({
               title: '网络故障',
               icon: 'loading',
@@ -1111,8 +1093,8 @@ export default {
     },
 	
     bannerTapTag: function (e) {
-      var that = this;
-      var banner_link = e.currentTarget.dataset.bannerlink;
+      var that = this
+      var banner_link = e.currentTarget.dataset.bannerlink
       uni.navigateTo({
         url: banner_link + '&username=' + username + '&token=' + token
       });
@@ -1345,28 +1327,58 @@ export default {
         return;
       }
 		
-		/*
-      that.setData({
-        amount: amount,
-        carts: carts,
-        cartIds: cartIds,
-        is_buymyself: is_buymyself 
-      });
-	 */
-      //console.log('hall bindCheckout cartIds:', cartIds, 'cartselected:', JSON.stringify(cartselected));
-      /*
-	  uni.showToast({
-        title: '礼物包~'+JSON.stringify(cartselected) ,
-        
-        icon: 'none',
-        duration: 1500
-      });
-	 */
 	  uni.navigateTo({
         url: '../order/checkout/checkout?cartIds=' + cartIds + '&amount=' + total + '&carts=' + JSON.stringify(cartselected) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_note=' + order_note + '&username=' + username + '&token=' + token
       });
 	 
     },
+	
+	query_message:function(){
+		var that = this
+		var shop_type = that.shop_type; // var formid = formId?formId:that.data.formid
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+		var page = 1
+		var pagesize =1
+		uni.request({
+			url: weburl + '/api/mqttservice/sh_query_message',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				message_type: 1,
+				shop_type: shop_type,
+				page:page,
+				pagesize:pagesize,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('hall query_message 收到消息：' + JSON.stringify(res.data));
+				let response = res.data? res.data :'';
+				let messageHidden = that.messageHidden;				
+				
+				if (response.status == 'y') {
+					let resp_message = response.result[0];
+					let messages_num = that.messages_num;
+					resp_message['title'] = resp_message['title'] ? resp_message['title'] : '我的消息';
+					resp_message['start_time'] = util.getDateStr(resp_message['start_time'] * 1000, 0);
+					resp_message['end_time'] = util.getDateStr(resp_message['end_time'] * 1000, 0);
+					that.resp_message = resp_message ;
+					that.messages_num =  messages_num + 1 ;
+					if(resp_message['type']=='7' && resp_message['webview_url']){
+						let message_content =  resp_message?JSON.parse(resp_message['content'].trim(), true):'';
+						that.main_prom_image = message_content['image']?message_content['image']:'' ;
+						that.main_prom_title = resp_message['title'] ? resp_message['title'] : '送心礼物' ;
+						that.messageHidden = !messageHidden ;
+					}
+				}
+			}
+		})
+	},
+	
     formSubmit: function (e) {
       var that = this;
       //var formId = e.detail.formId;
@@ -1387,13 +1399,13 @@ export default {
       that.$options.methods.bindCheckout(that.is_buymyself,that.carts,that.note,that.total);
       //that.submintFromId(formId, form_name);
     },
+	
     //提交formId，让服务器保存到数据库里
     submintFromId: function (formId = 0, form_name = '') {
       var that = this;
       var shop_type = that.shop_type; // var formid = formId?formId:that.data.formid
-
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       //console.log('submintFromId() formID：', formId, ' form name:', form_name);
       uni.request({
         url: weburl + '/api/client/save_member_formid',
@@ -1411,8 +1423,9 @@ export default {
         success: function (res) {
           //console.log('submintFromId() update success: ', res.data.result);
         }
-      });
+      })
     },
+	
     deleteFun: function (e) {
       var that = this;
       var index = 0;

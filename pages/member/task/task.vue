@@ -23,7 +23,7 @@
 		</swiper-item>
     </swiper>
 </view>
-<scroll-view class="container" scroll-y @scrolltolower="getMoreOrdersTapTag" @scroll="scrolltoupper">
+<scroll-view class="container" scroll-y @scrolltolower="getMoreOrdersTapTag">
   <view v-for="(item, index) in task_list" :key="index" class="task-list">
     <view class="order-item-title">{{item.title}}</view>
     <view class="order-item-message">{{item.message_info.message?'  '+item.message_info.message:''}}</view>

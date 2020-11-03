@@ -1977,7 +1977,7 @@ export default {
 			sizeType: ['original', 'compressed'],
 			success: (res) => {
 				that.new_img_arr = res.tempFilePaths
-				console.log('本次上传图片本地:', this.new_img_arr);
+				//console.log('本次上传图片本地:', that.new_img_arr);
 				that.upload(is_logo);
 			},
 			fail: (err) => {
@@ -2000,8 +2000,9 @@ export default {
 	  }else{
 		image_name = '用户资料' ;
 	  }
+	  console.log('本次上传图片本地:'+ new_img_arr+' uploadurl:'+uploadurl);
 	  if (new_img_arr) {
-	    wx.uploadFile({
+	    uni.uploadFile({
 	      url: uploadurl,
 	      filePath: new_img_arr,
 	      name: 'wechat_upimg',
@@ -2015,20 +2016,23 @@ export default {
 	      },
 	      // HTTP 请求中其他额外的 form data
 	      success: function (res) {
-	        var retinfo = JSON.parse(res.data.trim());
-	        if (retinfo['status'] == "y") {
-	          if (is_logo == 0) {
-	            //logo 处理
-				that.avatarUrl =  retinfo['result']['img_url'] ;
-				that.update_userinfo() ;
-	          }
-	        } else {
-	          wx.showToast({
-	            title: image_name+'图片加载失败，请再试一次',
-	            icon: 'none',
-	            duration: 2000
-	          });
-	        }
+			console.log('上传图片完成:'+ JSON.stringify(res)+' uploadurl:'+uploadurl)
+			if(res.data){
+				var retinfo = JSON.parse(res.data.trim());
+				if (retinfo['status'] == "y") {
+				  if (is_logo == 0) {
+				    //logo 处理
+					that.avatarUrl =  retinfo['result']['img_url'] ;
+					that.update_userinfo() ;
+				  }
+				} else {
+				  wx.showToast({
+				    title: image_name+'图片加载失败，请再试一次',
+				    icon: 'none',
+				    duration: 2000
+				  });
+				}
+			}	        
 	      }
 	    });
 	  }

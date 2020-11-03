@@ -227,10 +227,12 @@ export default {
 			var goods_name = e.name ; 
 			var goods_owner = e.goods_owner ; 
 			var from_username = e.username
+			var from_nickname = e.wx_nickname
+			var from_headimg = e.wx_headimg
 			var m_id = e.m_id
 			
 			uni.navigateTo({
-				url: '/pages/customerservice/chatroomservice?frompage=/pages/customerservice/customerservice&goods_id='+goods_id+'&goods_name='+goods_name+'&goods_owner='+goods_owner+'&from_username='+from_username+'&m_id='+m_id
+				url: '/pages/customerservice/chatroomservice?frompage=/pages/customerservice/customerservice&goods_id='+goods_id+'&goods_name='+goods_name+'&goods_owner='+goods_owner+'&from_username='+from_username+'&from_headimg='+from_headimg+'&from_nickname='+from_nickname+'&m_id='+m_id+'&customer=2&is_refresh=1'
 			})
 		},
 	  

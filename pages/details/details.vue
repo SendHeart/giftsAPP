@@ -591,7 +591,7 @@ import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var from_page = getApp().globalData.from_page;
-var userInfo = wx.getStorageSync('userInfo') ? wx.getStorageSync('userInfo') : '';
+var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var appid = getApp().globalData.appid;
 var secret = getApp().globalData.secret;
 var uploadurl = getApp().globalData.uploadurl;
@@ -886,7 +886,7 @@ export default {
 		var that = this;
 		var is_back = options.is_back ? options.is_back : 0;
 		if (is_back == 1) options = wx.getStorageSync('details_options');
-		var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
+		var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
 		var phonemodel = wx.getStorageSync('phonemodel') ? wx.getStorageSync('phonemodel') : 'Andriod';
 		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
 		username = options.username ? options.username : username;
@@ -1718,11 +1718,15 @@ export default {
 		var that = this
 		var shop_type = that.shop_type
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
+		var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 		var goods_skuid = that.commodityAttr[0]['id']
 		var goods_id = that.goodsid
 		var goods_shop_id = that.goods_shop_id
 		var goods_name = that.goodsname
 		var goods_owner = that.goodsowner?that.goodsowner:that.goods_id
+		var from_nickname = userInfo.nickName
+		var from_headimg = userInfo.avatarUrl
 		
 		if (!username) {
 		  //登录
@@ -1731,10 +1735,9 @@ export default {
 			})
 		} else {
 			uni.navigateTo({
-				url: '/pages/wechat/wechat?goods_id=' + goods_id + '&goods_owner=' + goods_owner + '&goods_name=' + goods_name + '&goods_shop_id=' + goods_shop_id+ '&qun_type=1'
+				url: '/pages/customerservice/chatroomservice?frompage=/pages/details/details&goods_id='+goods_id+'&goods_name='+goods_name+'&goods_owner='+goods_owner+ '&goods_shop_id=' + goods_shop_id+'&from_username='+username+'&from_headimg='+from_headimg+'&from_nickname='+from_nickname+'&m_id='+m_id+'&customer=1&qun_type=1&is_refresh=1'
 			})
-		}
-		
+		}		
 	},
     returnTapTag: function () {
       var that = this;

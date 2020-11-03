@@ -1,9 +1,9 @@
 <script>
-	var wxToast = require("./toast/toast.vue");
-	const weburl = 'https://sendheart.dreamer-inc.com';
-	const wssurl = 'wss://sendheart.dreamer-inc.com';
+	var wxToast = require("./toast/toast.vue")
+	const weburl = 'https://sendheart.dreamer-inc.com'
+	const wssurl = 'wss://sendheart.dreamer-inc.com'
 	const playerurl = 'http://play.dreamer-inc.com/live'
-	const mqtturl = 'wss://sendheart.dreamer-inc.com';
+	const mqtturl = 'wss://manager.itoldfarmer.com'
 	const face_licenseIDAndroid = 'sendheartAppFace-face-android' //百度人脸识别 licenseID
 	const face_licenseIDIOS = 'sendheartAppFace-face-ios' //百度人脸识别 licenseID
 	import Vue from 'vue'
@@ -13,6 +13,7 @@
 			var that = this//调用API从本地缓存中获取数据
 			var weburl = that.$options.globalData.weburl
 			var mqtturl = that.$options.globalData.mqtturl
+			var wssurl = that.$options.globalData.wssurl
 			var appid = that.$options.globalData.appid;
 			var appsecret = that.$options.globalData.secret;
 			var shop_type = that.$options.globalData.shop_type;
@@ -313,6 +314,7 @@
 			miniprogram_id:'gh_89f1da9a2991', 
 			weburl: weburl,
 			wssurl: wssurl,
+			mqtturl:mqtturl,
 			playerurl:playerurl,
 			uploadurl: 'https://sendheart.dreamer-inc.com/api/upload/index4',
 			httpserviceurl: 'https://sendheart.dreamer-inc.com/api/upload/http_service',

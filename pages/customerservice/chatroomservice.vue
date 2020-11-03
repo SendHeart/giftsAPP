@@ -8,7 +8,7 @@
 					</view>
 					<view class="m-content">
 						<view v-if="message.content!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}">
-							<view  :class="'m-content-head-'+message.user">{{message.content}} </view>
+							<view :id="'msg_content'+index" :class="'m-content-head-'+message.user">{{message.content}} </view>
 						</view>
 						<view v-if="message.imageurl!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}" @tap="imgYu(message.imageurl)">
 							<easy-loadimage class="m-image" mode="widthFix"
@@ -18,7 +18,7 @@
 						</view>
 					</view>
 					<view v-if="message.content!='' || message.imageurl!=''" class="m-right">
-						<image class="head_icon" :src="message.avatarUrl" v-if="message.user=='customer'"></image>
+						<image class="head_icon" :src="from_headimg" v-if="message.user=='customer'"></image>
 					</view>
 				</view>				
 			</view>	
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-	import mqtt_service from '@/utils/mqtt.js';
+	//import mqtt_service from '@/utils/mqtt.js';
 	import util from '@/utils/util.js';
 	import {
 		mapState
@@ -55,6 +55,7 @@
 	var uploadurl = getApp().globalData.uploadurl;
 	var weburl = getApp().globalData.weburl;
 	var wssurl = getApp().globalData.wssurl;
+	var mqtturl = getApp().globalData.mqtturl;
 	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 	var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
@@ -62,8 +63,11 @@
 	var user_group_id = uni.getStorageSync('useruser_group_idInfo') ? uni.getStorageSync('user_group_id') : '0'
 	var shop_type = getApp().globalData.shop_type;
 	var socketOpen = getApp().globalData.websocketOpen?getApp().globalData.websocketOpen:false;
-	var socketMsgQueue = [];
-	var sendMsgQueue = [];
+	var socketMsgQueue = []
+	var socketRcvMsg = []
+	var chat_messages = []
+	var is_sending =false
+	var is_customer = '0'
 	export default {
 		data() {
 			return {
@@ -73,6 +77,7 @@
 				animationData:{},
 				showTow:false,
 				frompage:'',
+				qun_type:'0',
 				shop_type: shop_type,
 				uploadurl: uploadurl,
 				page:0,
@@ -93,6 +98,7 @@
 					mitemHeight: 0,
 				},
 				scrollTop: 0,
+				message_len:0,
 				messages: [{
 					user: 'home',
 					headimg:'',
@@ -114,6 +120,9 @@
 				mqtt_sub_topic: '',
 				mqtt_pub_content:'',
 				websocket_pub_message:'',
+				from_username:'',
+				from_nickname:'',
+				from_headimg:'',
 				mqtt_pub_list:[],
 				Qos: 1,
 				mqtt_sendmessage: '',
@@ -134,7 +143,7 @@
 					resubscribe: true //如果连接断开并重新连接，则会再次自动订阅已订阅的主题（默认true）
 				},
 				socktBtnTitle: '连接socket',
-				socket_message: '',
+				socket_message: '',		
 			}
 		},
 		components: {			
@@ -155,16 +164,35 @@
 		},		 
 		
 		onLoad: function (options) { //
-			var that = this;
-			that.mqtt_goodsid = options.goods_id ? options.goods_id : that.mqtt_goodsid;
+			var that = this
+			var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : ''
+			var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : ''
+			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+			
+			that.mqtt_goodsid = options.goods_id ? options.goods_id : that.mqtt_goodsid
+			var mqtt_pub_title = that.mqtt_goodsid+'_'+that.mqtt_mid
+			var current_date = util.formatTime(new Date())
+			
 			that.mqtt_mid = options.m_id ? options.m_id : that.mqtt_mid;
 			that.goods_name = options.goods_name ? options.goods_name : ''
 			that.goods_owner = options.goods_owner ? options.goods_owner : ''
-			that.from_username = options.from_username ? options.from_username : 0;
+			that.goods_shop_id = options.goods_shop_id ? options.goods_shop_id : 0			
+			that.from_username = options.from_username ? options.from_username : that.from_username;
+			that.from_nickname = options.from_nickname ? options.from_nickname : that.from_nickname;
+			that.from_headimg = options.from_headimg ? options.from_headimg : that.from_headimg;
 			that.qun_type = options.qun_type ? options.qun_type : '1'
+			is_customer = options.customer ? options.customer : '0'
 			that.bar_title = that.goods_name?that.goods_name.substring(0,12):''
 			that.frompage = options.frompage ? options.frompage : ''
-			 
+			let is_refresh = options.is_refresh ? options.is_refresh : 0
+			/*
+			if(is_refresh == 1){
+				that.messages=[]
+				uni.redirectTo({
+					url: '/pages/chatroomservice/chatroomservice?goods_id=' + that.mqtt_goodsid + '&goods_owner=' + that.goods_owner + '&goods_name=' + that.goods_name + '&goods_shop_id=' + that.goods_shop_id+ '&from_username=' + that.from_username+ '&from_nickname=' + that.from_nickname+ '&from_headimg=' + that.from_headimg+ '&qun_type='+that.qun_type+'&m_id'+that.mqtt_mid+'&is_refresh=0'
+				})
+			}
+			*/
 			var screen_para=uni.getSystemInfoSync()
 			 
 			that.style.pageHeight = screen_para.windowHeight;
@@ -176,111 +204,184 @@
 					that.goBack()
 				}
 			}
+			let bar_title = is_customer=='1'?that.bar_title+'_用户':that.bar_title+'_客服'
 			uni.setNavigationBarTitle({
-				title: that.bar_title+'_群客服'
+				title: bar_title
 			})
 		
 			that.mqtt_pub_topic = 'SH_GDS01_' + that.mqtt_goodsid //+'_'+ that.mqtt_mid
 			that.mqtt_sub_topic = 'SH_GDS01_' + that.mqtt_goodsid //+'_'+ that.mqtt_mid
 			//that.mqtt_connect()
-			that.initSocketMessage()
+			//that.initSocketMessage()
 			console.log('chatroomservice onload mqtt_pub_topic:'+that.mqtt_pub_topic+' mqtt_sub_topic:'+that.mqtt_sub_topic)
-			 
+			/*
+			let websocket_start_message = {
+				message_type: 2,  //商品服务群
+				username: username,
+				to_username:that.from_username,
+				m_id:that.mqtt_mid,
+				shop_type: shop_type,
+				title: mqtt_pub_title,
+				goods_id:that.mqtt_goodsid,
+				content: 'Starting',
+				imageurl:'',
+				user:'home',
+				from_headimg:userInfo.avatarUrl,
+				from_nickname:userInfo.nickname,
+				from_username:username,
+				createtime:current_date
+			}
+			//that.socket_message = JSON.stringify(websocket_start_message)
+			socketMsgQueue.push( JSON.stringify(websocket_start_message));
+			that.sendSocketMessage()
+			*/
 			if(that.mqtt_goodsid || that.goods_owner){
 				that.get_wechat_list()
-			}			 
+			}	
+			that.timer_heartbeat = setInterval(function () {
+				that.heartbeat() //心跳
+			}, 10*1000)
+			that.timer_get_wechat = setInterval(function () {
+				that.get_wechat_list()  //避免websocket遗漏
+			}, 40*1000)
+			
 		},
 		methods: {	
 			onBackPress(e) {
 				var that = this
-				that.mqtt_unsubscribe()
-				that.mqtt_unconnect()
+				//that.mqtt_unsubscribe()
+				//that.mqtt_unconnect()
+				var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : ''
+				var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : ''
+				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+				var current_date = util.formatTime(new Date())
+				var mqtt_pub_title = that.mqtt_goodsid+'_'+that.mqtt_mid
+				clearInterval(that.timer_heartbeat)
+				clearInterval(that.timer_get_wechat)
+				//that.mqtt_unconnect()
+				let websocket_end_message = {
+					message_type: 2,  //商品服务群
+					username: username,
+					to_username:that.from_username,
+					m_id:that.mqtt_mid,
+					shop_type: shop_type,
+					title: mqtt_pub_title,
+					goods_id:that.mqtt_goodsid,
+					content: 'Endding',
+					imageurl:'',
+					user:'home',
+					from_headimg:userInfo.avatarUrl,
+					from_nickname:userInfo.nickname,
+					from_username:username,
+					createtime:current_date
+				}
+				that.socket_message = JSON.stringify(websocket_end_message)
+				that.sendSocketMessage()
+				that.messages = []
+				chat_messages = []
+				is_customer = '0'
+				//socketOpen = false
 			}, 
 			
-			reSend: function () {
-				//失败后重新发送
-				var that = this; //失败重发			 
-				var reSendMsgQueue = sendMsgQueue;
-				for (var i = 0; i < reSendMsgQueue.length; i++) {
-					uni.sendSocketMessage({
-						data: reSendMsgQueue[i],
-						success: function (res) {
-							//console.log("sendSocketMessage 重发完成");
-							//console.log(rcvnew);
-							sendMsgQueue.splice(i, 1);
-						},
-						fail: function (res) {
-							//console.log("sendSocketMessage 重发失败");
-							uni.showToast({
-								title: '网络故障',
-								icon: 'loading',
-								duration: 2000
-							})
-						}
-					})
+			heartbeat: function () {
+				//心跳信息
+				var that = this
+				var current_date = util.formatTime(new Date())
+				
+				let websocket_heart_message = {
+					message_type: 2,  //商品服务群
+					username: username,
+					m_id:that.mqtt_mid,
+					shop_type: shop_type,
+					//title: mqtt_pub_title,
+					goods_id:that.mqtt_goodsid,
+					//goods_owner:that.goods_owner,
+					content: 'sh_gds_heartbeat',
+					//imageurl:'',
+					user:'home',
+					//from_headimg:userInfo.avatarUrl,
+					//from_nickname:userInfo.nickname,
+					//from_username:username,
+					createtime:current_date
 				}
+				
+				uni.sendSocketMessage({
+					data: JSON.stringify(websocket_heart_message), //自身定义一个发送消息对象
+					success: function(res) {								
+						//console.log('chatroomservice WebSocket发送完成！socketMsgQueue:'+JSON.stringify(socketMsgQueue))
+					},
+					fail: function(error) {
+						socketOpen = false;
+						getApp().globalData.websocketOpen = socketOpen
+						console.log('chatroomservice WebSocket heart beat 发送失败！res:'+JSON.stringify(error))
+						uni.showToast({
+							title: '网络故障',
+							icon: 'loading',
+							duration: 1500
+						})	
+						that.initSocketMessage()
+						return						
+					}
+				})
 			},
 			 
 			initSocketMessage: function () {
 				var that = this
 				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-				var uid = username + '_' + shop_type
+				var uid = username + '_' + shop_type+'_'+that.mqtt_goodsid
 				var remindTitle = socketOpen ? '正在关闭' : '正在连接';
 				var goods_id = that.mqtt_goodsid
 				if (!socketOpen) {
-					console.log('initSocketMessage socketOpen:'+socketOpen+' wssurl:'+wssurl+' goods_id:'+goods_id);
+					console.log('chatroomservice initSocketMessage socketOpen:'+socketOpen+' wssurl:'+wssurl+' goods_id:'+goods_id+' socketMsgQueue:'+JSON.stringify(socketMsgQueue));
 					uni.connectSocket({
-						url: wssurl + '/gcs',
-						success:function() {
-							uni.onSocketOpen(function(res) {
-								console.log('WebSocket连接已打开', wssurl + '/wss');
-								uni.hideToast();
-								that.socktBtnTitle = '断开socket'
-								socketOpen = true	
-								getApp().globalData.websocketOpen = socketOpen							
-								uni.sendSocketMessage({
-									data: uid
-								})
-								if(socketMsgQueue.length > 0){
-									for (var i = 0; i < socketMsgQueue.length; i++) {
-										let socket_message = socketMsgQueue[i]
-										console.log('initSocketMessage i:'+i+' socket_message:'+socket_message);
-										uni.sendSocketMessage({
-											data: socket_message, //自身定义一个发送消息对象
-											success: function() {
-												var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-												var response = res.data?JSON.parse(res.data.trim(), true):'';
-												 
-												//console.log('收到服务器内容：' + res.data.trim());
-															 
-												if (response.status == 'y') {
-													var recv_message = response.result
-													var recv_content = JSON.parse(recv_message['d']['content'])
-													var reply_message = {
-														user: recv_content['user'],
-														type:recv_message['d']['type']?recv_message['d']['type']:'text',
-														content: recv_content['content']?recv_content['content']:'感谢您的支持',
-														hasSub: recv_message['d']['hasSub']?recv_message['d']['hasSub']:false,
-														subcontent: recv_message?recv_message['d']['type']:'',
-													}
-													console.log('收到来自' + topic + '的消息' + message.toString())
-													if(recv_content['user']!='customer'){
-														that.addMessage(recv_content['user'], reply_message['content'], reply_message['hasSub'],reply_message['type'],reply_message['subcontent'],recv_content['imageurl'])	
-													}
-												}
-											},
-											fail: function() {
-												socketOpen = false;
-												getApp().globalData.websocketOpen = socketOpen
-												console.log('WebSocket发送失败，请检查！');
-												//that.socktBtnTitle = '连接socket'
-												uni.hideToast();
-											}
-										})
-									}
-								}
-							})
-						},
+						url: wssurl + '/wss'
+					})
+					uni.onSocketError(function (error) {
+						socketOpen = false;
+						getApp().globalData.websocketOpen = socketOpen
+						console.log('chatroomservice initSocketMessage onSocketError WebSocket连接打开失败，请检查！'+JSON.stringify(error));
+						
+						that.socktBtnTitle = '连接socket'
+						uni.hideToast();
+					})
+					uni.onSocketOpen(function(res) {
+						console.log('chatroomservice WebSocket连接已打开 wssurl:'+ wssurl + '/wss');
+						uni.hideToast();
+						that.socktBtnTitle = '断开socket'
+						socketOpen = true	
+						getApp().globalData.websocketOpen = socketOpen							
+						uni.sendSocketMessage({
+							data: uid
+						})
+						//that.sendSocketMessage()
+						that.get_wechat_list()
+					})	
+					uni.onSocketMessage(function (res) {
+						let username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+						let recv_message = res.data?JSON.parse(res.data, true):'';								 
+						//console.log('chatroomservice 收到服务器内容：' + res.data)
+						if(recv_message['d']){						
+							let reply_message = {
+								user: recv_message['d']['user'],
+								type:recv_message['d']['type']?recv_message['d']['type']:'text',
+								content: recv_message['d']['content']?recv_message['d']['content']:'感谢您的支持',
+								imageurl: recv_message['d']['imageurl']?recv_message['d']['imageurl']:'',
+								hasSub: recv_message['d']['hasSub']?recv_message['d']['hasSub']:false,
+								subcontent: recv_message?recv_message['d']['type']:'',
+							}
+							console.log('chatroomservice 收到来自' + reply_message['user'] + '的消息' + JSON.stringify(reply_message)+' is_customer:'+is_customer)
+							if((reply_message['user']=='customer' && is_customer!='1') || (reply_message['user']=='home' && is_customer=='1')){
+								that.addMessage(reply_message['user'], reply_message['content'], reply_message['hasSub'],reply_message['type'],reply_message['subcontent'],reply_message['imageurl'])	
+							} 
+						}
+					})
+					uni.onSocketClose(function (res) {
+						socketOpen = false
+						getApp().globalData.websocketOpen = socketOpen
+						console.log('chatroomservice onSocketClose WebSocket 已关闭！');
+						//uni.hideToast();
+						//that.socktBtnTitle = '连接socket'
+						that.initSocketMessage()
 					})
 				} 
 			},
@@ -288,37 +389,54 @@
 			sendSocketMessage: function () {
 				var that = this;
 				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-				var myDate = util.formatTime(new Date());
-				var message = that.socket_message;
+				var myDate = util.formatTime(new Date())
+				//var message = that.socket_message;
 			 
 				if (!socketOpen) {
-					console.log('sendSocketMessage socketOpen:'+socketOpen+' message:'+ message);
-					socketMsgQueue.push(message);
+					//console.log('chatroomservice sendSocketMessage socketOpen:'+socketOpen);
+					//socketMsgQueue.push(message);
 					that.initSocketMessage();
 				} else {
-					console.log('sendSocketMessage message:'+ message);
-					uni.sendSocketMessage({
-						data: message,
-						success: function (res) {
-							console.log("sendSocketMessage 完成"+res);
-						},
-						fail: function (res) {
-							console.log("sendSocketMessage 通讯失败");
-							uni.showToast({
-								title: '网络故障',
-								icon: 'loading',
-								duration: 1500
-							})
-							
-							socketOpen = false
-							getApp().globalData.websocketOpen = socketOpen
-							socketMsgQueue.push(message)
-							that.initSocketMessage()
+					if(socketMsgQueue.length > 0){
+						if(is_sending){
+							console.log('chatroomservice sendSocketMessage 系统繁忙！is_sending:'+is_sending)
+							//return
+						}else{
+							is_sending = true
 						}
-					})
+						 
+						let resend_msg = socketMsgQueue
+						for (var i = 0; i < resend_msg.length; i++) {
+							let socket_message = resend_msg[i]
+							//console.log('chatroomservice sendSocketMessage i:'+i+' socket_message:'+socket_message);
+							uni.sendSocketMessage({
+								data: socket_message, //自身定义一个发送消息对象
+								success: function(res) {									
+									socketMsgQueue.splice(i, 1)
+									if(socketMsgQueue.length == 0) is_sending = false
+									//console.log('chatroomservice WebSocket发送完成！socketMsgQueue:'+JSON.stringify(socketMsgQueue))
+								},
+								fail: function(error) {
+									socketOpen = false;
+									getApp().globalData.websocketOpen = socketOpen
+									console.log('chatroomservice WebSocket发送失败！res:'+JSON.stringify(error))
+									uni.showToast({
+										title: '网络故障',
+										icon: 'loading',
+										duration: 1500
+									})
+									that.initSocketMessage()
+									return
+									//that.socktBtnTitle = '连接socket'
+									//uni.hideToast();
+								}
+							})
+						}						
+						//console.log('chatroomservice sendSocketMessage is_sending:'+is_sending+' socketMsgQueue:'+JSON.stringify(socketMsgQueue));
+					}
 				}
 			},
-			
+			/*
 			mqtt_connect: function(type = 0) {
 				var that = this
 				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
@@ -342,13 +460,7 @@
 					uni.showLoading({
 						title: '连接中···'
 					})
-					/*
-					uni.showToast({
-					  title: '连接中···',
-					  icon: 'loading',
-					  duration: 2000
-					})
-					*/
+					 
 					console.log(mqtt_hosts, this.mqtt_options)
 					this.mqtt_client = mqtt_service.connect(
 						mqtt_hosts,
@@ -358,13 +470,7 @@
 					this.mqtt_client.on('connect', () => {
 						uni.hideLoading()
 						this.is_connect = true
-						/*
-						uni.showToast({
-						  title: '连接成功',
-						  icon: 'success',
-						  duration: 2000
-						})
-						*/
+						 
 						console.log('连接成功');
 						this.mqtt_subscribe()
 					})
@@ -385,7 +491,7 @@
 						}						
 					})
 				}  
-					
+				
 				this.mqtt_client.on('reconnect', error => {
 					//uni.hideLoading();
 					this.is_connect = false
@@ -395,17 +501,12 @@
 				this.mqtt_client.on('error', error => {
 					uni.hideLoading()
 					this.is_connect = false
-					/*
-					uni.showToast({
-					  title: '连接失败!',
-					  icon: 'loading',
-					  duration: 1000
-					})
-					*/
+					 
 					console.log('连接失败');
 				})
 			},
 			
+		   
 			mqtt_subscribe: function() {
 				// 判断是否已成功连接
 				if (!this.mqtt_client || !this.mqtt_client.connected) {
@@ -422,36 +523,10 @@
 					qos: this.Qos
 				}, error => {
 					if (!error) {
-						/*
-						uni.showToast({
-						  title: '订阅成功',
-						  icon: 'loading',
-						  duration: 1000
-						});
-						*/
+						
 						console.log('订阅成功'+this.mqtt_sub_topic);
 					}
 				})
-			
-				/* //订阅多个主题
-				this.client.subscribe(['one', 'two', 'three'], { qos: 1 }, err => {
-					console.log(err || '订阅成功');
-					this.show(err || '订阅成功');
-				});
-			
-				    // 订阅不同 qos 的不同主题
-				this.client.subscribe(
-				[
-					{ hello: 1 },
-					{ 'one/two/three': 2 },
-					{ '#': 0 }
-				],
-				(err) => {
-					this.show();console.log(err || '订阅成功')
-				},
-				)			
-				}); 
-				*/
 			},
 			
 			mqtt_publish: function() {
@@ -490,13 +565,7 @@
 						let index = pub_list['d']['index']
 						this.update_pub_list(index)
 						
-						/*
-						uni.showToast({
-						  title: '消息发布成功',
-						  icon: 'loading',
-						  duration: 1000
-						});
-						*/
+						
 					})
 				}				
 				return true 
@@ -509,13 +578,7 @@
 					this.mqtt_sub_topic,
 					err => {
 						console.log(err || '取消订阅成功');
-						/*
-						uni.showToast({
-						  title: '取消订阅成功',
-						  icon: 'loading',
-						  duration: 1000
-						});
-						*/
+						
 					}
 				);
 			},
@@ -527,19 +590,14 @@
 				} else {
 					this.mqtt_client.end();
 					this.mqtt_client = null
-					/*
-					uni.showToast({
-					  title: '成功断开连接',
-					  icon: 'loading',
-					  duration: 1000
-					})
-					*/
+					
 					console.log('断开连接');
 				}
 				this.is_connect = false
 				return true
 			},
-			
+			*/
+		   
 			goBack: function() {
 				var that = this
 				that.mqtt_unconnect()
@@ -563,25 +621,64 @@
 			
 			getInputMessage: function () { //获取子组件的输入数据
 				var that = this
-				if(that.inputValue == '') return 
-				var message = {
-					type: 'text',
-					content: that.inputValue
+				if(that.inputValue == '') {
+					return 
+				} else if(!socketOpen){
+					uni.showToast({
+					  title: '系统繁忙,请稍候',
+					  icon: 'loading',
+					  duration: 2000
+					})
+					that.initSocketMessage()
+					return
 				}
-				console.log('getInputMessage message:'+message)
-				that.addMessage('customer', message.content, false)
-				that.inputValue = ''
+				let user = is_customer=='1'?'customer':'home'
+				var inputmessage = {
+					user:user,
+					type: 'text',
+					content: that.inputValue,
+					imageurl: '',
+					hasSub: false,
+					subcontent: '',
+				}
+				console.log('getInputMessage inputmessage:'+JSON.stringify(inputmessage))
+				that.getSocketMessage(inputmessage)
 				/*
-				if(this.is_connect == false){
-					console.log('getInputMessage:当前未连接');
-					return false 
-				}else{
+				if(!is_sending) {
 					that.addMessage('home', message.content, false)
 					that.inputValue = ''
-				}	
+				}else{
+					console.log('getInputMessage 系统繁忙 is_sending:'+is_sending+' socketMsgQueue:'+JSON.stringify(socketMsgQueue));
+					uni.showToast({
+					  title: '系统繁忙,请稍候',
+					  icon: 'loading',
+					  duration: 2000
+					})	
+					that.sendSocketMessage()
+				}
 				*/
+			}, 
+			
+			getSocketMessage: function (Msginfo = {}) { //获取子组件的输入数据
+				var that = this
+				if(!Msginfo) { 
+					return
+				} 
+				
+				console.log('getSocketMessage Msginfo:'+JSON.stringify(Msginfo))
+				if(!is_sending) {
+					that.addMessage(Msginfo['user'], Msginfo['content'], Msginfo['hasSub'],Msginfo['type'],Msginfo['subcontent'],Msginfo['imageurl'])	
+				} else {
+					console.log('getSocketMessage 系统繁忙 is_sending:'+is_sending+' socketMsgQueue:'+JSON.stringify(socketMsgQueue));
+					uni.showToast({
+					  title: '系统繁忙,请稍候',
+					  icon: 'loading',
+					  duration: 2000
+					})
+					that.sendSocketMessage()
+				}				
 			},
-			 
+			
 			update_pub_list: function (index = 0) {
 				var that = this					
 				//if(index =='0') return 
@@ -609,14 +706,17 @@
 					subcontent: subcontent,
 					imageurl:imageaddr?imageaddr:imageurl,
 				}
-			
-				that.websocket_pub_message = {
+				
+				let websocket_pub_message = {
 					message_type: 2,  //商品服务群
 					username: username,
+					to_username:that.from_username,
 					m_id:m_id,
 					shop_type: shop_type,
 					title: mqtt_pub_title,
 					goods_id:that.mqtt_goodsid,
+					goods_owner:that.goods_owner,
+					content_type:type,
 					content: content,
 					imageurl:imageurl,
 					user:user,
@@ -626,45 +726,29 @@
 					createtime:current_date
 				}
 				console.log('addMessage message:'+JSON.stringify(message))
-				that.messages.push(message)
-				if(user=='customer'){
+				chat_messages.push(message)
+				that.messages = chat_messages
+				console.log('chatroomservice addMessage messages len:'+chat_messages.length+' info:'+JSON.stringify(chat_messages))
+				if(is_sending) {
+					console.log('chatroomservice addMessage() 系统繁忙 is_sending: '+is_sending)
+					console.log('chatroomservice addMessage socketMsgQueue:'+JSON.stringify(socketMsgQueue))
+					return
+				} 		
+				 
+				if((user=='home' && is_customer != '1')|| (user=='customer' && is_customer == '1')){
 					//that.mqtt_pub_list.push(message)
-					that.socket_message = JSON.stringify(that.websocket_pub_message)
+					let socket_message = JSON.stringify(websocket_pub_message)
+					socketMsgQueue.push(socket_message);
+					//console.log('chatroomservice addMessage socketMsgQueue:'+JSON.stringify(socketMsgQueue))
 					//that.mqtt_publish()
 					that.sendSocketMessage()
+					that.inputValue = ''				
 				}
-				that.message_len++
-				if(that.message_len == 1){
-					//更新商品群状态信息
-					that.update_goods_custservice()
-				}
+				 
 				//that.inputValue = ''
 				setTimeout(function () {
 					that.scrollToBottom()
 				}, 300)
-				
-				//console.log('addMessage message:'+JSON.stringify(message))
-				/*
-				if(this.is_connect == false){
-					console.log('addMessage:当前未连接');
-					return false
-				}else{
-					that.messages.push(message)
-					
-					if(user=='home'){ 
-						console.log('addMessage message:'+JSON.stringify(message)+' user:'+user)
-						//that.mqtt_pub_list.push(message)
-						that.socket_message = JSON.stringify(that.websocket_pub_message)
-						//that.mqtt_publish()
-						that.sendSocketMessage()
-					}
-					
-					//that.inputValue = ''
-					setTimeout(function () {
-						that.scrollToBottom()
-					}, 300)
-				}
-				*/
 			},
 			
 			//查询历史记录
@@ -704,7 +788,8 @@
 						//console.log(wechat_list)
 						
 						if (wechat_list) {	
-							var len = wechat_list.length		
+							var len = wechat_list.length	
+							chat_messages = []
 							for (var i = len -1; i >= 0; i--) {
 								 //console.log('i:'+i+' wechat info:'+ wechat_list[i])
 								 if(wechat_list[i]['content'][0]['content']!='' || wechat_list[i]['content'][0]['imageurl']!=''){
@@ -717,10 +802,12 @@
 									 	subcontent: wechat_list[i]['subcontent'],
 									 	imageurl:wechat_list[i]['content'][0]['imageurl'],
 									 }
-									 that.messages.push(message)
+									 chat_messages.push(message)
 								 }
 							}
+							that.messages = chat_messages
 						}
+						that.initSocketMessage()
 					}
 				})
 			},
@@ -734,13 +821,13 @@
 					that.style.mitemHeight = 0;
 					//console.log('query:',JSON.stringify(res[0]))
 					res[0].forEach(function (rect) {
-						//console.info(rect.height);
+						//console.info('chatroomservice scrollToBottom id:'+rect.id+' msg_content:'+msg_content)
 						that.style.mitemHeight = that.style.mitemHeight + rect.height;
 					})
 						
 					if (that.style.mitemHeight > that.style.contentViewHeight) {
 						that.scrollTop = that.style.mitemHeight - that.style.contentViewHeight ;
-						console.info('scrollToBottom scrollTop:'+that.scrollTop)					
+						//console.info('scrollToBottom scrollTop:'+that.scrollTop)					
 						
 						setTimeout(function () {
 							uni.pageScrollTo({
@@ -780,15 +867,15 @@
 			},
 			
 			startRecognize: function () {
-				var options = {};
-				var that = this;
-				options.engine = 'iFly';
-				that.inputValue = "";
+				var that = this
+				var options = {}				
+				options.engine = 'iFly'
+				that.inputValue = ""
 				plus.speech.startRecognize(options, function (s) {
-					console.log(s);
-					that.inputValue += s;
+					console.log(s)
+					that.inputValue += s
 				}, function (e) {
-					console.log("语音识别失败：" + e.message);
+					console.log("语音识别失败：" + e.message)
 				});
 			},
 		
@@ -796,9 +883,7 @@
 				var that = this
 				var new_img_arr = that.new_img_arr
 				var img_arr = that.img_arr
-				if (that.is_connect == false) {
-					return false
-				}		
+						
 				uni.chooseImage({
 					sizeType: ['original', 'compressed'],
 					success: function (res) {
