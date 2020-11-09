@@ -58,14 +58,14 @@ page {
 
 .search .wx-input {
 	display: flex;
-  flex-direction: row;
+	flex-direction: row;
 	width: 80%;
 	height: 60rpx;
-  background: #ffffff;
+	background: #ffffff;
 	border-radius: 120rpx;
-  text-align: left;
-  z-index: 99;
-  margin-left: 20rpx;
+	text-align: left;
+	z-index: 99;
+	margin-left: 20rpx;
 }
 .wx-input input {
   margin: 0;

@@ -564,15 +564,12 @@ export default {
 
               } //totalFee = order_price.toFixed(2) * 100
 
-
-              that.setData({
-                orderObjects: orderObjects[0]
-              });
-              wx.navigateTo({
-                url: '/pages/order/orderdetail/orderdetail?order_object=' + JSON.stringify(that.orderObjects) + '&order_id=' + orderObjects['id']
-              });
+				that.orderObjects =  orderObjects[0]
+				uni.navigateTo({
+					url: '/pages/order/orderdetail/orderdetail?order_object=' + JSON.stringify(that.orderObjects) + '&order_id=' + orderObjects['id']
+				})
             } else {
-              wx.showToast({
+              uni.showToast({
                 title: res.data.info,
                 icon: 'loading',
                 duration: 1500
@@ -582,7 +579,7 @@ export default {
         });
       } else {
         //图片预览
-        wx.previewImage({
+        uni.previewImage({
           current: src,
           // 当前显示图片的http链接
           urls: imgList // 需要预览的图片http链接列表
@@ -607,11 +604,11 @@ export default {
           coupons_type = 1;
         }
 
-        wx.navigateTo({
+        uni.navigateTo({
           url: '/pages/member/couponrcv/couponrcv?receive=1&coupons_flag=9&coupons_type=' + coupons_type + '&coupons_id=' + coupon_id + '&msg_id=' + msg_id
         });
       } else if (msg_type == 6) {
-        wx.switchTab({
+        uni.switchTab({
           url: '/pages/member/task/task'
         });
       }
@@ -625,7 +622,7 @@ export default {
 
       if (task_status < 9) {}
 
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/member/task/task?task=1&image=' + image + '&msg_id=' + msg_id
       });
     },
@@ -1026,7 +1023,7 @@ export default {
 
           if (wishflag == 1) {
             /*
-            wx.navigateTo({
+            uni.navigateTo({
               url: '/pages/details/details'
             })
             */
@@ -1078,7 +1075,7 @@ export default {
         wx.switchTab({
           url: '../../hall/hall'
         })*/
-        wx.navigateTo({
+        uni.navigateTo({
           url: '/pages/list/list'
         });
       }

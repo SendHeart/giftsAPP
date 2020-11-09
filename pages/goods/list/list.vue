@@ -1,11 +1,11 @@
 <template>
 <view>
 <view v-if="!hidddensearch" :hidden="hidddensearch" class="search">
-		<view class="wx-input">
-    <input name="search" :value="keyword" placeholder="好礼搜一下" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag"></input>
-    <image @tap="searchTapTag" src="/static/images/search-btn.png"></image>
-    </view>
-    <text class="searchcancel" @tap="goBack">取消</text>
+	<view class="wx-input">
+		<input name="search" :value="keyword" placeholder="好礼搜一下" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag"></input>
+		<image @tap="searchTapTag" src="/static/images/search-btn.png"></image>
+	</view>
+	<text class="searchcancel" @tap="goBack">取消</text>
 </view>
 <!--<view  wx:if="!hidddensearch" hidden='{{hidddensearch}}' class="serach-comm">
   <view class="search-comm-vote linegray">

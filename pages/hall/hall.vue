@@ -2,16 +2,19 @@
 	<view class="page" :style="'height:'+windowHeight">
 		<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d" style="z-index:9;"></uni-nav-bar>
 		<view class="search">
-		    <view class="wx-input" @tap='searchTapTag'>
-		      <image @tap='searchTapTag' src="/static/images/search-btn.png"></image>
-		      <text></text>
-		    </view>
+			<view class="wx-input" @tap='searchTapTag'>
+				<uni-icons :color="'#999999'" class="icon-search" type="search" size="18" />
+				<text>会员制购物商城</text>
+			</view>
+			<!--		
 		    <view class="page-title">
 		      <text>会员制购物商城</text>
 		    </view>
+			-->
 		    <view class="page-title2" @tap="messagesTapTag">
 		       <text>了解什么是会员制</text>
 		    </view>
+			
 		</view>
 		<view class="all-classify" v-if="hiddenallclassify">
 			<view class="catg-title" @click.stop="openAllTapTag">
@@ -328,7 +331,7 @@
 
 <script>
 var util = require("utils/util.js"); //获取应用实例
-
+import uniSearchBar from '@/components/uni-search-bar/uni-search-bar.vue'
 //import addTips from "pages/common/weplug-add-tips-master/index";
 //import imageloader from "../../common/imageloader/imageloader";
 import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
@@ -569,6 +572,7 @@ export default {
 		//uniLoadMore,  
 		//uniIcons,
 		uniNavBar,
+		uniSearchBar,
 		//MescrollUni,
 		//MescrollBody,
 		PdList,
@@ -665,7 +669,7 @@ export default {
 				that.dkheight = winHeight;
 				that.winHeight = winHeight;
 				that.winWidth = winWidth;
-		//console.log('getSystemInfo:', res);
+				//console.log('getSystemInfo:', res);
 			}
 		})
 		//that.query_cart();
@@ -2048,11 +2052,12 @@ export default {
 		var hall_banner = that.hall_banner;
 		var gift_para_interval = that.gift_para_interval
 		var cat_id = that.tab_value>0? that.tab_value:1
-		//console.log('hall get_project_gift_para navList2:', navList_new);
-		if(navList_new && gift_para_interval == 0) {
+		//console.log('hall get_project_gift_para navList2:', navList_new);		
+		if(navList_new && gift_para_interval == 0 ) {
 			that.set_project_gift_para()
 			return 
 		} 
+		that.get_menubar()
 		uni.request({
 			url: weburl + '/api/client/get_project_gift_para',
 			method: 'POST',

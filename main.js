@@ -8,9 +8,11 @@ import store from './store'
 import cuCustom from './colorui/components/cu-custom.vue'
 Vue.component('cu-custom',cuCustom)
 
+import mInput from '@/components/m-input.vue'
 import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"
 import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
 import uniIcons from "@/components/uni-icons/uni-icons.vue"
+Vue.component('m-input', mInput)
 Vue.component('mescroll-body', MescrollBody)
 Vue.component('mescroll-uni', MescrollUni)
 Vue.component('uni-icons', uniIcons)

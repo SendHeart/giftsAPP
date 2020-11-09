@@ -135,22 +135,24 @@
   </view>
   <view v-if="order_shape!=5" class="delivery-detail-info">
     <text style="text-indent:20rpx;font-weight:bold;" @tap="expressTapTag">物流跟踪</text>
-    <block v-for="(itme, index) in delivery_status" :key="index">
-      <view class="delivery-detail-info-text">
-      <view class="timeline-date" style="margin-left:20rpx;">
-           <!-- <text style="width:10%;margin-right:20rpx;">|</text> -->
-          <text style="width:80%;margin-left:20rpx;color:#999;">{{itme.AcceptTime}}</text>
-        </view>
-        <view class="timeline-date" style="margin-left:20rpx;">
-          <!-- <text style="width:10%;margin-right:20rpx;">|</text> -->
-          <text style="width:80%;overflow:hidden;position:relative;margin-left:20rpx;">{{itme.AcceptStation}}</text>
-        </view>
-        <view class="timeline-date" style="margin-left:20rpx;">
-           <!-- <text style="width:10%;margin-right:20rpx;">|</text> -->
-          <text style="width:80%;margin-left:20rpx;">{{itme.operator}}</text>
-        </view>
-      </view>
-    </block>
+    <view class="delivery-detail-info-text">
+		<uni-steps :options="delivery_trace" :active="delivery_step_active" direction="column" />
+	</view>
+	<!--
+	<view v-for="(accept, index) in delivery_trace" :key="index">
+      <view class="delivery-detail-info-text">		 
+			<view class="timeline-date" style="margin-left:20rpx;">			
+				<text style="width:80%;margin-left:20rpx;color:#999;">{{accept.AcceptTime}}</text>
+			</view>
+			<view class="timeline-date" style="margin-left:20rpx;">          
+				<text style="width:80%;overflow:hidden;position:relative;margin-left:20rpx;">{{accept.AcceptStation}}</text>
+			</view>
+			<view class="timeline-date" style="margin-left:20rpx;">          
+				<text style="width:80%;margin-left:20rpx;">{{accept.operator}}</text>
+			</view>			
+		</view>	 
+    </view>
+	-->
   </view>
 </view>
 <view class="footer">
@@ -170,13 +172,14 @@
 </template>
 
 <script>
+import uniSteps from '@/components/uni-steps/uni-steps.vue'
 var weburl = getApp().globalData.weburl;
 var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
 var shop_type = getApp().globalData.shop_type;
-
+var delivery_info_list = []
 export default {
 	data() {
     return {
@@ -197,8 +200,9 @@ export default {
 		deliveryname: '',
 		deliverystepinfo: '',
 		deliveryinfo: [],
-		delivery_status: [],
+		delivery_trace:[],
 		deliveryflag: 0,
+		delivery_step_active: 1,
 		tel: '',
 		rcvtime: '',
 		page: 1,
@@ -231,9 +235,11 @@ export default {
 	}
 	},
 
-  components: {},
+  components: {
+	  uniSteps
+  },
   props: {},
-  onLoad: function (options) {
+  onLoad: function (options={}) {
 		// 订单状态，已下单为1，已付为2，已发货为3，已收货为4 5已经评价 6退款 7部分退款 8用户取消订单 9作废订单 10退款中
 		var that = this;
 		var orders = that.orders;
@@ -447,59 +453,62 @@ export default {
 		var that = this;
 		var shop_type = that.shop_type;
 		var order_no = that.order_no;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-		var deliveryflag = that.deliveryflag;
-		console.log('物流详情:' + order_no + ' ' + username + ' ' + token);
-		if (deliveryflag == 1) return; //从服务器获取订单物流信息
-			wx.request({
-				url: weburl + '/api/client/query_delivery_info',
-				method: 'POST',
-				data: {
-					username: username,
-					access_token: token,
-					order_no: order_no,
-					shop_type: shop_type
-				},
-				header: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Accept': 'application/json'
-				},
-				success: function (res) {
-					console.log(res.data);					
-					if (!res.data.result) {
-						wx.showToast({
-						title: '暂无物流信息',
-						icon: 'loading',
-						duration: 1500
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		//var deliveryflag = that.deliveryflag;
+		console.log('物流详情:' + order_no + ' ' + username + ' ' + token+' order shape:'+that.order_shape);
+		//if (deliveryflag == 1) return; //从服务器获取订单物流信息
+		uni.request({
+			url: weburl + '/api/client/query_delivery_info',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				order_no: order_no,
+				shop_type: shop_type
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {							
+				if (!res.data.result) {
+					uni.showToast({
+					title: '暂无物流信息',
+					icon: 'loading',
+					duration: 1500
 					});
-					setTimeout(function () {//wx.navigateBack();
-					}, 500);
 				} else {
 					if (res.data.result['status_list'].length < 2) {
-						wx.showToast({
+						uni.showToast({
 							title: '暂无轨迹信息',
 							icon: 'loading',
 							duration: 1500
-						});
-						setTimeout(function () {//wx.navigateBack();
-						}, 500);
+						})
 					}
 
-					var deliveryinfo = res.data.result;
-					var status_list = deliveryinfo['status_list'];
-					var delivery_status = that.delivery_status;
-
+					let deliveryinfo = res.data.result;
+					let status_list = deliveryinfo['status_list'];
+					//console.log('order orderdetail expressTapTag: '+JSON.stringify(status_list));		
+					let delivery_trace_info = [];
 					if (status_list) {
-						var index = status_list.length - 1;
-						for (var i = 0; i < status_list.length; i++) {
-							delivery_status[index - i] = status_list[i];
-						}
+						let index = status_list.length - 1;
+						for (let i = 0; i < status_list.length; i++) {
+							let trace_info = {
+								title: status_list[i]['AcceptTime'],
+								desc: status_list[i]['AcceptStation'],
+							}
+							delivery_trace_info.push(trace_info);
+						}	
+						that.delivery_step_active = index
 					}
-
+					
 					that.deliveryinfo = deliveryinfo
-					that.delivery_status = delivery_status
-					that.deliveryflag = 1
+					delivery_info_list = delivery_trace_info
+					that.delivery_trace = delivery_info_list
+					
+					console.log('order orderdetail expressTapTag delivery_info_list: '+JSON.stringify(that.delivery_trace));
+					//that.deliveryflag = 1 
 					that.pageScrollToBottom();
 				}
 			}
@@ -616,13 +625,13 @@ export default {
 			}
 			})
 		} else {
-			wx.showToast({
+			uni.showToast({
 				title: '订单不存在',
 				icon: 'loading',
 				duration: 1500
 			});
 			setTimeout(function () {
-				wx.navigateBack();
+				uni.navigateBack();
 			}, 1500);
 		}
     },
@@ -686,8 +695,8 @@ export default {
 	showGoods: function (e) {
 		var that = this;
 		var skuId = e.currentTarget.dataset.skuId;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		var goods_id = e.currentTarget.dataset.goodsId;
 		var goods_name = e.currentTarget.dataset.goodsName;
 		var goods_shape = e.currentTarget.dataset.goodsShape;

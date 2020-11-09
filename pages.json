@@ -73,6 +73,12 @@
 		{
 			"path": "pages/details/details",
 			"style": {
+				"app-plus": {
+				   "titleNView": false , //禁用原生导航栏
+				   "bounce":"none"
+				},
+				"enablePullDownRefresh": false,
+				"mp-alipay":{"allowsBounceVertical":"NO"} ,
 				"navigationBarTitleText": "详情"  
 			}
 		},
@@ -186,13 +192,33 @@
 		{
 			"path": "pages/customerservice/customerservice",
 			"style": {
-				"navigationBarTitleText": "客服"
+				"navigationBarTitleText": "客服"				
 			}
 		},
 		{
 			"path": "pages/customerservice/chatroomservice",
 			"style": {
-				"navigationBarTitleText": "服务群管理"
+				"navigationBarTitleText": "服务群管理",
+				"app-plus": {
+					"titleNView": {
+						//"autoBackButton":"false",
+						//"backgroundcolor":"#f7f7f7",
+						"titletext":"iflower",
+						//"titlecolor":"#000000",
+						"buttons": 
+							[ 
+								{
+									"index":"0",
+									"text": "查历史", 
+									"fontSize":"12",								
+									"width":"100",
+									"float": "right",
+									"color":"#fff"
+								}
+							]
+					},
+					"scrollIndicator":"none"
+				}
 			}
 		},
 		{

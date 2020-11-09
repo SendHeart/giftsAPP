@@ -215,19 +215,19 @@ page {
 	width: 100%;
 	height: 80rpx;
 	font-size:32rpx;
-  font-weight: bold;
-  color:white;
-  text-align: center;
-  display: flex;
+	font-weight: bold;
+	color:white;
+	text-align: center;
+	display: flex;
 	flex-direction: column;
-  justify-content:center;
+	justify-content:center;
 	/*margin-left: 15rpx;*/
 }
 .status1 {
-background-color: #E34C55;
+	background-color: #E34C55;
 }
 .status2 {
-background-color: #E34C55;
+	background-color: #E34C55;
 }
 .top-bar2 {
   height: 72rpx;
@@ -329,11 +329,11 @@ background-color: #E34C55;
 }
 .delivery-detail-info-text {
 	display: flex;
-  flex-direction:column;
-  font-size: 24rpx;
+	flex-direction:column;
+	font-size: 24rpx;
 	margin-left: 10rpx;
-  margin-right: 10rpx;
-  color:#444;
+	margin-right: 10rpx;
+	color:#444;
 }
 
 .timeline-date {
@@ -351,6 +351,7 @@ background-color: #E34C55;
   position: fixed;
   bottom: 0;
   border-top: 1rpx solid #eee;
+  z-index:999;
 }
 
 /*购物车按钮、收藏等*/

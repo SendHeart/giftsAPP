@@ -1,10 +1,13 @@
 <template>
-<view> 
+<view>	
 <view scroll-y class="pagewrap" :style="'heigth:'+winHeight+'px;'+((!modalHidden||!cardcelehidden||!cardnamehidden||!cardregisterhidden||!cardlovehidden)?'position:fixed;':'')">
 	<view class="share-goods">
-		<view class="share-buttons" style="justify-content: flex-end">
+		<view class="share-buttons" style="justify-content: space-between">
+			<view class="btnback" @tap="goBack()">
+				<uni-icons :color="'#333'" class="icon-arrowleft" type="arrowleft" size="18" />
+			</view>
 			<view v-if="goodsshape==4||goodsshape==5" class="btnshare" @tap="cardEditTapTag">		    
-			<image class="shareto" src="/static/images/u72.png"></image>
+				<image class="shareto" src="/static/images/u72.png"></image>
 		        编辑
 			</view>
 			<view v-if="goodsshape==1 && !showVideo" class="btnshare" @tap="sharegoodsTapTag">
@@ -1193,8 +1196,8 @@ export default {
 						//card_image_height = parseFloat(that.winWidth*7*2/5)       
 						}
 
-						that.goodsshape = goods_info[0]['shape'],
-						that.goodsowner = goods_info[0]['goods_owner']
+						that.goodsshape = goods_info[0]['shape']?goods_info[0]['shape']:'',
+						that.goodsowner = goods_info[0]['goods_owner']?goods_info[0]['goods_owner']:''
 						that.goodsname = goods_info[0]['name']
 						that.goodsinfo = goods_info[0]['act_info']
 						that.goodstag = goods_info[0]['goods_tag']

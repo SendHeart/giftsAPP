@@ -259,12 +259,13 @@ export default {
 		var share_path = '/pages/hall/hall?task=' + task + '&msg_id=' + msg_id + '&refername=' + username + '&sharetime=' + currenttime
 		var title = '好友' + nickname + '邀请你一起参与送心礼物任务~';
 		var currenttime = that.currenttime;
-		//if(!shareImage) return ;
+		if(!shareImage) return ;
+		//#ifdef APP-PLUS
 	  	uni.share({
 			provider: 'weixin',
 			type: 2,
 			//href: "http://uniapp.dcloud.io/",
-			title: title,
+			//title: title,
 			scene: 'WXSenceTimeline', //WXSceneSession分享到聊天界面  WXSenceTimeline分享到朋友圈  WXSceneFavorite分享到微信收藏
 			imageUrl: shareImage,
 	  	  success: (res) => {
@@ -292,6 +293,7 @@ export default {
 	  			}
 	  	  }
 	  	})
+		//#endif
 	  },
 	  shareToWXminiProgram: function () { //分享到微信小程序
 		var that = this
@@ -307,36 +309,37 @@ export default {
 		var shareImage = that.navList2.length == 0 ? that.new_task_image : that.navList2[9]['img'];
 		var share_path = '/pages/hall/hall?task=' + task + '&msg_id=' + msg_id + '&refername=' + username + '&sharetime=' + currenttime
 		var title = '好友' + nickname + '邀请你一起参与送心礼物任务~';
-		//if(!shareImage) return ;
+		if(!shareImage) return ;
 		uni.share({
-	  	  provider: 'weixin',
-	  	  type: 5,
-	  	  title: title,
-	  	  imageUrl: shareImage,
-	  	  miniProgram: {
+			provider: 'weixin',
+			type: 5,
+			scene: 'WXSceneSession',
+			title: title,
+			imageUrl: shareImage, //'https://sendheart.dreamer-inc.com/uploads/new_task_share.png',
+			miniProgram: {
 	  	          id: miniprogram_id,  // gh_aefe7ce896f6
-	  	          path: share_path,
+	  	          path: '/pages/hall/hall?task=' + task + '&msg_id=' + msg_id + '&refername=' + username + '&sharetime=' + currenttime,
 	  	          type: 0,
 	  	          webUrl: 'http://uniapp.dcloud.io'
-	  	      },
-	  	  success: (ret) => {
-	  	    console.log(ret)
+			},
+			success: (ret) => {
+				console.log(ret)
 	  		/*
-	  	   uni.showModal({
-	  	       title: '分享成功',
-	  	       content: 'res:'+ JSON.stringify(res)
-	  	   })
-	  	   */
-	  	  },
-	  	  fail: (err) => {
-	  	    console.log(err)
-	  			uni.showModal({
-	  			    title: '分享失败',
-	  			    content: 'error:'+ JSON.stringify(err)
-	  			}) 
-	  	  }
-	  	})
-	  },
+			uni.showModal({
+				title: '分享成功',
+				content: 'res:'+ JSON.stringify(res)
+			})
+			*/
+			},
+			fail: (err) => {
+				console.log(err)
+				uni.showModal({
+					title: '分享失败',
+					content: 'error:'+ JSON.stringify(err)
+				}) 
+			}
+		})
+	},
 	   
 	onShareApp: function (options) {
 	    var that = this;
