@@ -555,7 +555,7 @@
 			<form v-if="goods_is_flag=='1' || goods_is_qianggou=='1' || goods_is_recommend=='1'" @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:18%;">
 				<button class="sec-btn" formType="submit">
 					<image class="icon-detail" src="../../static/images/chat.png"></image>
-					<text style="font-size: 20rpx;">服务群</text>
+					<text style="font-size: 20rpx;">客服</text>
 				</button>
 			</form>
 			<form v-if="goodsshape!=5&&goodsshape!=4" @submit="formSubmit" data-name="wishcart" report-submit="true" style="width:18%;">

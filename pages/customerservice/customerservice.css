@@ -56,7 +56,8 @@ page {
 }
 
 .chatroom-title {
-	height: 50rpx;
+	height: 90rpx;
+	line-height: 90rpx;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;/*子项横轴上居中对齐*/
@@ -64,7 +65,7 @@ page {
 	border-top: 1px solid #eee;	
 	border-bottom: 1px solid #eee;
 	background: #FFFFFF;
-	padding:25rpx;
+	padding:0 auto;
 	z-index: 1;
 }
 
@@ -161,9 +162,12 @@ page {
 	text-align:center;
 }
 .smallbtn2 {
-	border: 3rpx solid #999;
-	color: #999;
-	padding: 5rpx;
+	height: 55rpx;
+	line-height: 55rpx;
+	font-size: 26rpx;
+	color: #e34c55;
+	width: 90rpx;
 	border-radius: 8rpx;
-	margin-right: 6rpx;
+	margin-left:10rpx;
+	text-align:center;
 }

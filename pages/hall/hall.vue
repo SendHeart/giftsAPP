@@ -682,10 +682,10 @@ export default {
 
 		if (!username) {
 		/*
-			wx.navigateTo({
+			uni.navigateTo({
 				url: '/pages/login/login'
 			})
-			wx.switchTab({
+			uni.switchTab({
 				url: '/pages/my/index'
 			})
 		*/
@@ -720,7 +720,7 @@ export default {
 					uni.setStorageSync('taskrefername', refername);
 				}
 
-				wx.request({
+				uni.request({
 					url: weburl + '/api/client/get_task_refer',
 					method: 'POST',
 					data: {
@@ -852,11 +852,11 @@ export default {
 	
 	bindPickFriends: function () {
 		 /*
-	    wx.navigateTo({
+	    uni.navigateTo({
 	      url: '/pages/member/friends/friends'
 	    })
 		*/
-	    wx.switchTab({
+	    uni.switchTab({
 	         url: '/pages/member/friends/friends'
 	    });
 	 },
@@ -952,7 +952,7 @@ export default {
 	
     searchTapTag: function (e) {
       var that = this; //console.log('搜索关键字：' + that.data.search_goodsname)
-      wx.navigateTo({
+      uni.navigateTo({
         url: '/pages/goods/list/list?search=1'
       });
     },
@@ -971,7 +971,7 @@ export default {
           },
           fail: function (res) {
             //console.log("sendSocketMessage 重发失败");
-            wx.showToast({
+            uni.showToast({
               title: '网络故障',
               icon: 'loading',
               duration: 2000
@@ -1322,7 +1322,7 @@ export default {
       if (cartselected.length == 0) {
         //that.$options.methods.query_cart();
         //that.$options.methods.sum();
-        wx.showToast({
+        uni.showToast({
           title: '礼物包是空的，先挑选礼物吧~',
           /* 文案修改 */
           icon: 'none',
@@ -1394,7 +1394,7 @@ export default {
       } else if (form_name == 'buymyself') {
 		  that.is_buymyself = 1
 	  } else if (form_name == 'pickgift') {
-		wx.navigateTo({
+		uni.navigateTo({
 		  url: '/pages/list/list?username=' + username + '&token=' + token
 		});
 		return 
@@ -1451,8 +1451,8 @@ export default {
 	delete_cart: function (isConfirm=0) {
 	  var that = this;
 	  var shop_type = that.shop_type;
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	  var sku_id =  that.sku_id;
 	  var weburl = getApp().globalData.weburl;
 	  var carts = that.carts ;
@@ -1538,8 +1538,8 @@ export default {
 	showGoods: function (e) {
       // 点击购物车某件商品跳转到商品详情
 		var objectId = e.id ; //currentTarget.dataset.objectId;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
 		var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
 		var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
@@ -1834,7 +1834,7 @@ export default {
 		that.status = 'loading';
 		
 		try{
-			wx.request({
+			uni.request({
 			  url: weburl + '/api/client/query_member_goods_prom',
 			  method: 'POST',
 			  data: {
@@ -2130,7 +2130,7 @@ export default {
 				var navList_new = res.data.result;
 	
 				if (!navList_new) {
-					wx.showToast({
+					uni.showToast({
 						title: '没有菜单项',
 						icon: 'loading',
 						duration: 1500
@@ -2145,8 +2145,8 @@ export default {
 					}
 				}
 				that.navList = navList_new ;
-				that.index = navlist_toView ;
-				that.activeIndex = navlist_toView ;
+				//that.index = navlist_toView ;
+				//that.activeIndex = navlist_toView ;
 				//console.log('get_menubar navlist_toView:'+navlist_toView+' navList_new:'+ JSON.stringify(navList_new));
 				that.tab = navList_new[navlist_toView]['id'] ;
 				that.tab_value = navList_new[navlist_toView]['value'] ;

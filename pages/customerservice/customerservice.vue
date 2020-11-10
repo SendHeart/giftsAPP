@@ -1,7 +1,9 @@
 <template>
 <view>
 	<view class="chatroom-title">
-		<text>我的商品服务群</text>
+		<text>查询:</text>
+		<uni-search-bar placeholder="商品ID" @input="input_goodsid" clearButton="no" nocancel="yes" nobutton="yes" @confirm="searchTapTag" />
+		<uni-search-bar placeholder="商品名称" @input="input_goodsname" clearButton="no" nocancel="no" nobutton="yes" @confirm="searchTapTag" />
 	</view>
 	<mescroll-body ref="mescrollRef" top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick"  @topclick="goTop" @init="mescrollInit">	 <!-- @scroll="scroll" -->
 		<view v-for="(item,index) in recommentList"  :key="index">
@@ -61,7 +63,9 @@ export default {
 	data() {
 	return {
 	    scrollTop: 0,
-	    main_title_Bg: weburl + "/uploads/xianshe_hall_banner.png",	   
+		old: {
+			scrollTop: 0
+		},
 	    username: username,
 	    token: token,	   
 	    recommentList: [],
@@ -69,7 +73,6 @@ export default {
 	    pagesize:pagesize,
 	    all_rows: 0,
 	    rall_rows: 0,
-	    rpage_num: 0,
 		page_num:0,
 	    windowWidth: 0,
 	    windowHeight: 0,	    
@@ -77,6 +80,8 @@ export default {
 	    avatarUrl: userInfo.avatarUrl,
 	    shop_type: shop_type,	  
 	    goodsshape:1,
+		search_goodsid:'',
+		search_goodsname:'',
 		is_loading: false,
 		
 		downOption:{
@@ -136,21 +141,18 @@ export default {
 	},
 	methods: {	
 		showGoods: function (e) {
-			var objectId = e.id ; //currentTarget.dataset.objectId;
 			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 			var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			var objectId = e.id ; //currentTarget.dataset.objectId;
 			var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
 			var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
 			var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
-			var goods_name = e.name ; //currentTarget.dataset.goodsName;
-			 
-			var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
-			 
+			var goods_name = e.name ; //currentTarget.dataset.goodsName;			 
+			var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;			 
 			var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
 			var activity_image = e.activity_image?e.activity_image:''
-		 
-			image = image?image:activity_image?activity_image:'' ;
-			getApp().globalData.hall_gotop = 0;
+			image = image?image:activity_image?activity_image:'' 
+			
 			var show_goods_options = {
 				sku_id:objectId,
 				id:goods_id,
@@ -161,7 +163,7 @@ export default {
 				token:token,
 				username:username
 			}
-			uni.setStorageSync('show_goods_options', show_goods_options);
+			//uni.setStorageSync('show_goods_options', show_goods_options);
 			uni.navigateTo({
 				url: '/pages/details/details?id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_info=' + goods_info +  '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
 			})
@@ -190,21 +192,16 @@ export default {
 					'Accept': 'application/json'
 				},
 				success: function (res) {           
-					var recommentslist = res.data.result;
-					 
+					var recommentslist = res.data.result
+					that.page_num = res.data.all_rows
 					if (recommentslist) {
 						for (var i = 0; i < recommentslist.length; i++) {
 							if (recommentslist[i]['image'].indexOf("http") < 0) {
 								recommentslist[i]['image'] = weburl + '/' + recommentslist[i]['image'];
 							}
-						}
-						 
-						var rpage_num = that.rpage_num
-						rpage_num = (recommentslist.length / pagesize + 0.5)
+						}					 
+						
 						that.recommentList = recommentslist
-						 
-						that.rall_rows = recommentslist.length
-						that.rpage_num = rpage_num.toFixed(0)
 					}
 				}
 			})
@@ -236,125 +233,146 @@ export default {
 			})
 		},
 	  
-	  // mescroll组件初始化的回调,可获取到mescroll对象
-	mescrollInit(mescroll) {
-		this.mescroll = mescroll;
-	},
-	  /*下拉刷新的回调 */
-	downCallback(mescroll) {
+		searchTapTag: function (res) {
+			var that = this
+			console.log('customerservice searchTapTag() value：' + res.value)	      
+			that.page = 1
+			that.downCallback(that.mescroll)
+			uni.hideKeyboard()//隐藏软键盘  
+		},
+		
+		input_goodsid:function(res) {
+			var that = this
+			that.search_goodsid = res.value
+			//console.log('customerservice input_goodsid() value：' + res.value)	
+		},
+		
+		input_goodsname:function(res) {
+			var that = this
+			that.search_goodsname = res.value
+			//console.log('customerservice input_goodsname() value：' + res.value)	
+		},
+		
+		// mescroll组件初始化的回调,可获取到mescroll对象
+		mescrollInit(mescroll) {
+			this.mescroll = mescroll;
+		},
+		/*下拉刷新的回调 */
+		downCallback(mescroll) {
 	  	// 这里加载你想下拉刷新的数据, 比如刷新轮播数据
 	  	// loadSwiper();
 	  	// 下拉刷新的回调,默认重置上拉加载列表为第一页 (自动执行 mescroll.num=1, 再触发upCallback方法 )
 	  	//mescroll.endSuccess() ;	  
-		this.page =  1 
-		mescroll.resetUpScroll()	  	
-	},
+			this.page =  1 
+			mescroll.resetUpScroll()	  	
+		},
 	  
-	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
-	upCallback(mescroll) {
+		/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
+		upCallback(mescroll) {
 	  	//联网加载数据
-	  	this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
+			this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 	  		//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
-	  		mescroll.endSuccess(curPageData.length);
+				mescroll.endSuccess(curPageData.length);
 	  		//设置列表数据
-	  		if(mescroll.num == 1|| this.page == 1) {
-	  			this.recommentList = []; //如果是第一页需手动制空列表
-	  		}
-	  		if(curPageData=='n'){
-	  			mescroll.endByPage(this.page, this.all_rows)
-	  		}else{
-	  			this.recommentList=this.page==1?curPageData:this.recommentList.concat(curPageData); //追加新数据
+				if(mescroll.num == 1|| this.page == 1) {
+					this.recommentList = []; //如果是第一页需手动制空列表
+				}
+				if(curPageData=='n'){
+					mescroll.endByPage(this.page, this.all_rows)
+				}else{
+					this.recommentList=this.page==1?curPageData:this.recommentList.concat(curPageData); //追加新数据
 	  			//console.log("mescroll.num:" , mescroll.num + " mescroll.size:" + mescroll.size  +" recommentList:" + this.recommentList);
-	  		}
+				}
 	  		
-	  	}, () => {
+			}, () => {
 	  		//联网失败的回调,隐藏下拉刷新的状态
-	  		mescroll.endErr();
-	  	})
-	},
+				mescroll.endErr();
+			})
+		},
 	  //点击空布局按钮的回调
-	emptyClick(){
-	  	uni.showToast({
-	  		title:'点击了按钮'
-	  	})
-	},
+		emptyClick(){
+			uni.showToast({
+				title:'点击了按钮'
+			})
+		},
 	  
-	getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
-	  	var that = this;
-	  	var shop_type = that.shop_type
-	  	var page = that.page
-	  	var pagesize = that.pagesize
-		var page_num = that.page_num
-	  	 
-	  	if(page > page_num && page>1) {
-	  		console.log('加载完成 page:', page, 'page_num:',page_num);
-	  		that.is_loading = false ;
-	  		successCallback && successCallback('n');
-	  		return 
-	  	}else{
-	  		that.is_loading = true 
-	  	}
+		getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+			var that = this;
+			var shop_type = that.shop_type
+			var page = that.page
+			var pagesize = that.pagesize
+			var page_num = that.page_num
+			var search_goodsid = that.search_goodsid
+			var search_goodsname = that.search_goodsname
+		
+			if(page > page_num && page>1) {
+				console.log('加载完成 page:', page, 'page_num:',page_num);
+				that.is_loading = false ;
+				successCallback && successCallback('n');
+				return 
+			}else{
+				that.is_loading = true 
+			}
 	  	
-	  	if( page == 1){
-	  		that.orders = []
-	  		that.orders_show = []
-	  		that.page_num = 0
-	  	}
-	  	uni.request({
-	  		url: weburl + '/api/mqttservice/query_custservice',
-	  		method: 'POST',
-	  		data: {
-	  			username: username,
-	  			access_token: token,
-	  			shop_type:shop_type,
-	  			query_type:'chatroom', 
-	  			page: page,
-	  			pagesize: pagesize 
-	  		},
-	  		header: {
-	  			'Content-Type': 'application/x-www-form-urlencoded',
-	  			'Accept': 'application/json'
-	  		},
-	  		success: function (res) {           
-	  			var recommentslist = res.data.result;
-	  			console.log('加载 page:'+ JSON.stringify(recommentslist)+' page:'+ that.page+' page_num:'+that.page_num);
+			if( page == 1){
+				that.orders = []
+				that.orders_show = []
+				that.page_num = 0
+			}
+			uni.request({
+				url: weburl + '/api/mqttservice/query_custservice',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					shop_type:shop_type,
+					query_type:'chatroom', 
+					page: page,
+					pagesize: pagesize,
+					search_goodsid:search_goodsid,
+					search_goodsname:search_goodsname,
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {           
+					var recommentslist = res.data.result
+					that.page_num = res.data.all_rows;
+					console.log('加载 page:'+ JSON.stringify(recommentslist)+' page:'+ that.page+' page_num:'+that.page_num);
 	  			 
-	  			if (recommentslist) {
-	  				for (var i = 0; i < recommentslist.length; i++) {
-	  					if (recommentslist[i]['image'] && recommentslist[i]['image'].indexOf("http") < 0) {
-	  						recommentslist[i]['image'] = weburl + '/' + recommentslist[i]['image'];
-	  					}
-	  				}
-	  				 
-	  				var rpage_num = that.rpage_num
-	  				rpage_num = (recommentslist.length / pagesize + 0.5)
-	  				//that.recommentList = recommentslist
-	  				 
-	  				that.rall_rows = recommentslist.length
-	  				that.rpage_num = rpage_num.toFixed(0)
-					successCallback && successCallback(recommentslist)
-	  			}				
-	  		}
-		})	  	
-	},
+					if (recommentslist) {
+						for (var i = 0; i < recommentslist.length; i++) {
+							if (recommentslist[i]['image'] && recommentslist[i]['image'].indexOf("http") < 0) {
+								recommentslist[i]['image'] = weburl + '/' + recommentslist[i]['image'];
+							}
+						}  				 
+					
+						//that.recommentList = recommentslist
+						that.page = page + 1 ;
+						successCallback && successCallback(recommentslist)
+					}				
+				}
+			})	  	
+		},
 	  
 	  //回到顶部
-	goTop: function (e) {
+		goTop: function (e) {
 	  // 一键回到顶部
-	  	var that = this;
-	  	that.page = 1 ;
-	  	that.pageoffset = 0 ;
-	  	that.mescroll.resetUpScroll()
-	  	//getApp().globalData.hall_gotop = 0;
-	     // 解决view层不同步的问题
-	  	//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
-	  	that.$nextTick(function() {
-	  		that.mescroll.scrollTo(0) ;
-	  	});
-	  	that.mescroll.scrollTop = that.old.scrollTop
-	},
+			var that = this;
+			that.page = 1 ;
+			that.pageoffset = 0 ;
+			that.mescroll.resetUpScroll()
+			//getApp().globalData.hall_gotop = 0;
+			// 解决view层不同步的问题
+			//console.log('goTop scrollTop:', that.mescroll.scrollTop); 
+			that.$nextTick(function() {
+				that.mescroll.scrollTo(0) ;
+			});
+			that.mescroll.scrollTop = that.old.scrollTop
+		},
 	
-	setData: function (obj) {
+		setData: function (obj) {
 			let that = this
 			let keys = []
 			let val, data
