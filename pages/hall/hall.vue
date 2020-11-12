@@ -632,18 +632,19 @@ export default {
 			});
 		}
 		that.query_message()
+		that.get_menubar()
 		//socketMsgQueue.push(that.message)
 		//that.initSocketMessage()
 		setInterval(function () {
 			//that.initSocketMessage()
 			that.query_message()
 			that.gift_para_interval = 1  //获取业务参数 
+			that.get_menubar()
 		}, 60*1000)
 		
 		that.get_project_gift_para();
 		that.reloadData();
-		//that.sum();
-		that.get_menubar();
+		//that.sum();		
 		//that.query_friends();
 	},
 	
@@ -2057,7 +2058,7 @@ export default {
 			that.set_project_gift_para()
 			return 
 		} 
-		that.get_menubar()
+		
 		uni.request({
 			url: weburl + '/api/client/get_project_gift_para',
 			method: 'POST',

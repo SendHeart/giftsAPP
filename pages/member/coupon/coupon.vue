@@ -372,15 +372,15 @@ export default {
     },
     showGoods: function (e) {
       var skuId = e.currentTarget.dataset.skuId;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var goods_id = e.currentTarget.dataset.goodsId;
       var goods_name = e.currentTarget.dataset.goodsName;
       console.log('showGoods');
       console.log(goods_name + ' ' + goods_id);
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../../details/details?sku_id=' + skuId + '&goods_name=' + goods_name + '&id=' + goods_id + '&token=' + token + '&username=' + username
-      });
+      })
     },
     setData: function (obj) {
       let that = this;

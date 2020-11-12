@@ -243,7 +243,7 @@ page {
 .search .wx-input {
 	display: flex;
 	flex-direction: row;
-	width: 80%;
+	width: 60%;
 	height: 60rpx;
 	background: #ffffff;
 	border-radius: 120rpx;

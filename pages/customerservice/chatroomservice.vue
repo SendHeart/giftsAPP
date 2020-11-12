@@ -881,7 +881,14 @@
 							}
 							that.messages = chat_messages
 						}else{
-							that.page = that.page>1?that.page-1:1 
+							if(page > 1){
+								uni.showToast({
+								  title: '到顶了',
+								  icon: 'loading',
+								  duration: 1500
+								})
+							}							
+							that.page = that.page>1?that.page-1:1							 
 						}
 						that.initSocketMessage()
 					}

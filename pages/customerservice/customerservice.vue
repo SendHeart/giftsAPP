@@ -3,7 +3,7 @@
 	<view class="chatroom-title">
 		<text>查询:</text>
 		<uni-search-bar placeholder="商品ID" @input="input_goodsid" clearButton="no" nocancel="yes" nobutton="yes" @confirm="searchTapTag" />
-		<uni-search-bar placeholder="商品名称" @input="input_goodsname" clearButton="no" nocancel="no" nobutton="yes" @confirm="searchTapTag" />
+		<uni-search-bar placeholder="商品名称" @input="input_goodsname" clearButton="no" nocancel="yes" nobutton="yes" @confirm="searchTapTag" />
 	</view>
 	<mescroll-body ref="mescrollRef" top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick"  @topclick="goTop" @init="mescrollInit">	 <!-- @scroll="scroll" -->
 		<view v-for="(item,index) in recommentList"  :key="index">

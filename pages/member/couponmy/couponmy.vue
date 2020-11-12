@@ -48,7 +48,7 @@ var navList2_init = [{
   value: "",
   img: "/uploads/wishlist.png"
 }];
-var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [];
+var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [];
 var navList_order = [{
   id: "avaliable",
   title: "未使用"
@@ -114,19 +114,19 @@ export default {
   props: {},
   onLoad: function (options) {
     var that = this;
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-    var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
+    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+    var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
     var red = options.red ? options.red : 0;
     console.log('查询我的优惠券 username:',username);
 	if (!username) {
-       wx.navigateTo({
+       uni.navigateTo({
         url: '/pages/login/login?frompage=/pages/member/couponmy/couponmy'
       })
       
     }else{
 		if (red > 0) {
-		  wx.setNavigationBarTitle({
+		  uni.setNavigationBarTitle({
 		    title: '送心红包'
 		  });
 		  that.setData({
@@ -218,11 +218,11 @@ export default {
     goBack: function () {
       var pages = getCurrentPages();
       if (pages.length > 1) {
-        wx.navigateBack({
+        uni.navigateBack({
           changed: true
         }); //返回上一页
       } else {
-        wx.switchTab({
+        uni.switchTab({
           url: '../../hall/hall'
         });
       }
@@ -257,169 +257,150 @@ export default {
       that.query_coupon();
     },
     returnTapTag: function (e) {
-      wx.switchTab({
+      uni.switchTab({
         url: '../../hall/hall'
-      });
+      })
     },
     couponTapTag: function (e) {
-      wx.navigateTo({
+		/*
+      uni.navigateTo({
         url: '../../list/list'
-      });
+      })
+	  */
+	  uni.switchTab({
+	    url: '../../hall/hall'
+	  });
     },
-    scroll: function (event) {
+	
+	scroll: function (event) {
       //该方法绑定了页面滚动时的事件，我这里记录了当前的position.y的值,为了请求数据之后把页面定位到这里来。
-      this.setData({
-        scrollTop: event.detail.scrollTop
-      });
+	  that.scrollTop =  event.detail.scrollTop
     },
     topLoad: function (event) {
       //   该方法绑定了页面滑动到顶部的事件，然后做上拉刷新
       //page = 1;
-      this.setData({
-        //list: [],
-        scrollTop: 0
-      }); //loadMore(this);
-
+	  this.scrollTop = 0 
       console.log("lower");
     },
-    getMoreOrdersTapTag: function (e) {
-      var that = this;
-      var page = that.page + 1;
-      var pagesize = that.pagesize;
-      var all_rows = that.all_rows;
+	
+	getMoreOrdersTapTag: function (e) {
+		var that = this;
+		var page = that.page + 1;
+		var pagesize = that.pagesize;
+		var all_rows = that.all_rows;
 
-      if (page > that.page_num) {
-        wx.showToast({
-          title: '没有更多记录了',
-          icon: 'none',
-          duration: 1000
-        });
-        return;
-      }
-
-      that.setData({
-        page: page
-      });
-      that.query_coupon();
-    },
+		if (page > that.page_num) {
+			wx.showToast({
+				title: '没有更多记录了',
+				icon: 'none',
+				duration: 1000
+			})
+			return
+		}
+		that.page = page
+		that.query_coupon();
+	},
+	
     get_project_gift_para: function () {
-      var that = this;
-      var navList_new = that.navList2;
-      var shop_type = that.shop_type;
-      var page = that.page;
-      var pagesize = that.pagesize;
-      console.log('couponmy get_project_gift_para navList2:', navList2);
+		var that = this;
+		var navList_new = that.navList2;
+		var shop_type = that.shop_type;
+		var page = that.page;
+		var pagesize = that.pagesize;
+		console.log('couponmy get_project_gift_para navList2:', navList2);
 
-      if (!navList_new) {
+		if (!navList_new) {
         //项目列表
-        wx.request({
-          url: weburl + '/api/client/get_project_gift_para',
-          method: 'POST',
-          data: {
-            type: 2,
-            //暂定
-            shop_type: shop_type
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            console.log('get_project_gift_para:', res.data.result);
-            navList_new = res.data.result;
+			uni.request({
+				url: weburl + '/api/client/get_project_gift_para',
+				method: 'POST',
+				data: {
+					type: 2,
+					//暂定
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+            '		Accept': 'application/json'
+				},
+				success: function (res) {
+					console.log('get_project_gift_para:', res.data.result);
+					navList_new = res.data.result;
 
-            if (!navList_new) {
-              /*
-               wx.showToast({
-                 title: '没有菜单项2',
-                 icon: 'loading',
-                 duration: 1500
-               });
-               */
-              return;
-            }
-          }
-        });
-      }
-
-      that.setData({
-        navList2: navList_new //coupon_img: navList_new[7]['img'],
-
-      });
-      setTimeout(function () {
-        that.setData({
-          loadingHidden: true
-        });
-      }, 1500);
+					if (!navList_new) {
+						return
+					}
+				}
+			})
+		}
+		that.navList2 = navList_new      
+		setTimeout(function () {
+			that.loadingHidden = true
+		},1500);
     },
-    query_coupon: function () {
-      var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
-      var coupons_status = that.tab2;
-      var page = that.page;
-      var pagesize = that.pagesize;
-      var all_rows = that.all_rows;
-      var page_num = that.page_num;
-      var shop_type = that.shop_type;
-      var coupons_type = that.coupons_type ? that.coupons_type : 1;
-      wx.request({
-        url: weburl + '/api/client/query_coupon',
-        method: 'POST',
-        data: {
-          username: username,
-          access_token: token,
-          page: page,
-          pagesize: pagesize,
-          shop_type: shop_type,
-          coupons_status: coupons_status,
-          quan_type: coupons_type //1优惠券 2红包 3积分券
+	
+	query_coupon: function () {
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+		var coupons_status = that.tab2;
+		var page = that.page;
+		var pagesize = that.pagesize;
+		var all_rows = that.all_rows;
+		var page_num = that.page_num;
+		var shop_type = that.shop_type;
+		var coupons_type = that.coupons_type ? that.coupons_type : 1;
+		uni.request({
+			url: weburl + '/api/client/query_coupon',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				page: page,
+				pagesize: pagesize,
+				shop_type: shop_type,
+				coupons_status: coupons_status,
+				quan_type: coupons_type //1优惠券 2红包 3积分券
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('查询优惠券:', res.data.result)
+				var coupons_list = res.data.result?res.data.result:''
+				if (coupons_list=='') {					
+					uni.showToast({
+						title: res.data.info ? res.data.info : coupons_type == 1 ? '暂无优惠券' : '暂无红包',
+						icon: 'none',
+						duration: 1500
+					});
 
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          console.log('查询优惠券:', res.data.result);
-          var coupons_list = res.data.result;
+					if (page == 1) {
+						that.coupons_list = {},
+						that.all_rows = 0
+						that.page_num = 0					
+					}
+					return
+				} else {
+					all_rows = res.data.all_rows
+					for (var i = 0; i < coupons_list.length; i++) {
+						coupons_list[i]['start_time'] = util.getDateStr(coupons_list[i]['start_time'] * 1000, 0);
+						coupons_list[i]['end_time'] = util.getDateStr(coupons_list[i]['end_time'] * 1000, 0);
+					}
 
-          if (!res.data.result) {
-            wx.showToast({
-              title: res.data.info ? res.data.info : coupons_type == 1 ? '暂无优惠券' : '暂无红包',
-              icon: 'none',
-              duration: 1500
-            });
+					if (page > 1 && coupons_list) {
+					//向后合拼
+						coupons_list = that.coupons_list.concat(coupons_list);
+					}
 
-            if (page == 1) {
-              that.setData({
-                coupons_list: {},
-                all_rows: 0,
-                page_num: 0
-              });
-            }
-          } else {
-            all_rows = res.data.all_rows;
-
-            for (var i = 0; i < coupons_list.length; i++) {
-              coupons_list[i]['start_time'] = util.getDateStr(coupons_list[i]['start_time'] * 1000, 0);
-              coupons_list[i]['end_time'] = util.getDateStr(coupons_list[i]['end_time'] * 1000, 0);
-            }
-
-            if (page > 1 && coupons_list) {
-              //向后合拼
-              coupons_list = that.coupons_list.concat(coupons_list);
-            }
-
-            page_num = all_rows / pagesize + 0.5;
-            that.setData({
-              coupons_list: coupons_list,
-              page_num: page_num.toFixed(0)
-            });
-          }
-        }
-      });
+					page_num = all_rows / pagesize + 0.5;
+					that.coupons_list = coupons_list,
+					that.page_num = page_num.toFixed(0)					
+				}
+			}
+		})
     },
     setData: function (obj) {
       let that = this;

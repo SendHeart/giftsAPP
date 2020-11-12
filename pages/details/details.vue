@@ -1155,7 +1155,7 @@ export default {
 				that.image_save(share_goods_image, 'goods_image_cache_' + goodsid); // console.log('商品详情图片下载缓存 goods_image_cache_' + goodsid, share_goods_image)
 			}
 
-			wx.request({
+			uni.request({
 				url: weburl + '/api/client/get_goods_list',
 				method: 'POST',
 				data: {
@@ -1249,7 +1249,7 @@ export default {
 		} // 商品详情图片
 		// console.log('商品详情图片', image_pic)
 
-		wx.request({
+		uni.request({
 			url: weburl + '/api/client/get_goodsdesc_list',
 			method: 'POST',
 			data: {
@@ -2591,7 +2591,7 @@ export default {
       uni.downloadFile({
       	url: image_url,
       	success: (res) => {
-      		console.log('downloadFile success, res is', res)
+      		console.log('details/details image_save() downloadFile success, res is', res)
       		var img_tempFilePath = res.tempFilePath;
 			uni.saveFile({
 				tempFilePath: img_tempFilePath,

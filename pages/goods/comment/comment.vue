@@ -123,8 +123,8 @@ export default {
     showGoods: function (e) {
       // 点击购物车某件商品跳转到商品详情
       var objectId = e.currentTarget.dataset.objectId;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username =uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var goods_id = e.currentTarget.dataset.goodsId;
       var goods_name = e.currentTarget.dataset.goodsName;
       var goods_price = e.currentTarget.dataset.goodsPrice;
@@ -132,19 +132,19 @@ export default {
       var goods_sale = e.currentTarget.dataset.sale; //var carts = this.data.carts;
 
       var sku_id = objectId;
-      wx.navigateTo({
+      uni.navigateTo({
         url: '../../details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&token=' + token + '&username=' + username
       });
     },
     //获取商品信息
     get_goods_list: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var page = that.page;
       var goods_id = that.goods_id;
       var goods_skuid = that.goods_skuid;
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/get_goods_list',
         method: 'POST',
         data: {
@@ -171,7 +171,7 @@ export default {
             that.goods_img = goods_info[0]['image']
             // 商品SKU
 
-            wx.request({
+            uni.request({
               url: weburl + '/api/client/get_goodssku_list',
               method: 'POST',
               data: {
@@ -215,13 +215,13 @@ export default {
               }
             });
           } else {
-            wx.showToast({
+            uni.showToast({
               title: '服务已暂停',
               icon: 'loading',
               duration: 3000
             });
             setTimeout(function () {
-              wx.navigateBack();
+              uni.navigateBack();
             }, 1500);
           }
         }
@@ -229,9 +229,9 @@ export default {
     },
     get_order_comment: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var page = that.page;
       var pagesize = that.pagesize;
       var goods_id = that.goods_id;
@@ -241,7 +241,7 @@ export default {
       var img_arr = that.img_arr;
 
       if (goods_id > 0) {
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/get_order_comment',
           method: 'POST',
           data: {
@@ -308,7 +308,7 @@ export default {
 
       for (var i = 0; i < new_img_addr.length; i++) {
         var count = new_img_addr.length;
-        wx.uploadFile({
+        uni.uploadFile({
           url: uploadurl,
           filePath: new_img_addr[i],
           name: 'wechat_upimg',
@@ -340,7 +340,7 @@ export default {
         });
       }
 
-      wx.showToast({
+      uni.showToast({
         title: '已提交！',
         duration: 2000
       });
@@ -355,7 +355,7 @@ export default {
       var img_arr = that.img_arr;
 
       if (img_arr.length + new_img_arr.length < 3) {
-        wx.chooseImage({
+        uni.chooseImage({
           sizeType: ['original', 'compressed'],
           success: function (res) {
            that.new_img_arr = new_img_arr.concat(res.tempFilePaths)
@@ -363,7 +363,7 @@ export default {
           }
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: '最多上传三张图片',
           icon: 'loading',
           duration: 3000
@@ -413,7 +413,7 @@ export default {
       var content = that.content ? that.content : '';
 
       if (content == '') {
-        wx.showToast({
+        uni.showToast({
           title: '评论内容不能为空',
           icon: 'none',
           duration: 1500
@@ -429,9 +429,9 @@ export default {
     },
     send_comment: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : '';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+      var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : '';
       var goods_id = that.goods_id;
       var goods_skuid = that.goods_skuid;
       var order_skuid = that.order_skuid;
@@ -446,7 +446,7 @@ export default {
       var shop_type = that.shop_type;
       var comm_type = that.comm_type;
       console.log('提交评论:', upimg_url, content);
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/order_comment',
         method: 'POST',
         data: {
@@ -468,13 +468,13 @@ export default {
           'Accept': 'application/json'
         },
         success: function (res) {
-          wx.showToast({
+          uni.showToast({
             title: '点评完成',
             icon: 'success',
             duration: 1000
           });
           console.log('点评完成', res);
-          wx.navigateBack();
+          uni.navigateBack();
         }
       });
     },

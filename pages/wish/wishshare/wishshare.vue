@@ -131,10 +131,10 @@ var navList2_init = [{
   value: "",
   img: "/uploads/wechat_share.png"
 }];
-var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [];
+var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [];
 var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : {};
-const recorderManager = wx.getRecorderManager();
-const myaudio = wx.createInnerAudioContext();
+const recorderManager = uni.getRecorderManager();
+const myaudio = uni.createInnerAudioContext();
 const options = {
   duration: 180 * 1000,
   //指定录音的时长，单位 ms
@@ -293,114 +293,104 @@ export default {
   },
   props: {},
 
-  onLoad(options) {
-    var that = this;
-	console.log('options:',options)
-    var is_back = options.is_back ? options.is_back : 0;
-    if (is_back == 1) options = uni.getStorageSync('wishshare_options');
-    var share_order_id = options.share_order_id ? options.share_order_id : 0;
-    var share_order_shape = options.share_order_shape ? options.share_order_shape : 1;
-    var card_type = options.card_type ? options.card_type : 0;
-	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
-	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
-	that.userauth_shoper = userauth.shoper ;
-	that.avatarUrl = userInfo.avatarUrl ;
-	that.share_goods_avatarUrl =  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
-    uni.setStorageSync('wishshare_options', options);
-    that.get_project_gift_para();
-	console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
-    if (share_order_id > 0 && (parseInt(share_order_shape) == 5 || parseInt(share_order_shape) == 4)) {
-      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-      var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-      uni.request({
-        url: weburl + '/api/client/query_order',
-        method: 'POST',
-        data: {
-          username: username ? username : openid,
-          access_token: token,
-          order_id: share_order_id,
-          shop_type: shop_type
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          var orderObjects = res.data.result;
-          console.log(' wishshare onload() 订单查询:', orderObjects); // 存储地址字段
+	onLoad(options) {
+		var that = this;
+		console.log('options:',options)
+		var is_back = options.is_back ? options.is_back : 0;
+		if (is_back == 1) options = uni.getStorageSync('wishshare_options');
+		var share_order_id = options.share_order_id ? options.share_order_id : 0;
+		var share_order_shape = options.share_order_shape ? options.share_order_shape : 1;
+		var card_type = options.card_type ? options.card_type : 0;
+		var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : '';
+		var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+		that.userauth_shoper = userauth.shoper ;
+		that.avatarUrl = userInfo.avatarUrl ;
+		that.share_goods_avatarUrl =  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
+		uni.setStorageSync('wishshare_options', options);
+		that.get_project_gift_para();
+		console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
+		if (share_order_id > 0 && (parseInt(share_order_shape) == 5 || parseInt(share_order_shape) == 4)) {
+			var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+			var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+			var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+			uni.request({
+				url: weburl + '/api/client/query_order',
+				method: 'POST',
+				data: {
+					username: username ? username : openid,
+					access_token: token,
+					order_id: share_order_id,
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					var orderObjects = res.data.result;
+					console.log(' wishshare onload() 订单查询:', orderObjects); // 存储地址字段
+						for (var i = 0; i < orderObjects.length; i++) {
+							if (orderObjects[i]['logo'].indexOf("http") < 0) {
+								orderObjects[i]['logo'] = weburl + '/' + orderObjects[i]['logo'];
+							}
+							orderObjects[i]['logo'] = orderObjects[i]['logo'].replace('http:', 'https:');
+							for (var j = 0; j < orderObjects[i]['order_sku'].length; j++) {
+								if (orderObjects[i]['order_sku'][j]['sku_image'].indexOf("http") < 0) {
+									orderObjects[i]['order_sku'][j]['sku_image'] = weburl + orderObjects[i]['order_sku'][j]['sku_image'];
+								}
+								orderObjects[i]['order_sku'][j]['sku_image'] = orderObjects[i]['order_sku'][j]['sku_image'].replace('http:', 'https:');
+							}
+						}
 
-          for (var i = 0; i < orderObjects.length; i++) {
-            if (orderObjects[i]['logo'].indexOf("http") < 0) {
-              orderObjects[i]['logo'] = weburl + '/' + orderObjects[i]['logo'];
-            }
+						if ((orderObjects[0]['shape'] == 5 || orderObjects[0]['shape'] == 4) && orderObjects[0]['m_desc']) {
+							//console.log(' wishshare onload() 互动卡订单 m_desc:', orderObjects[0]['m_desc'])
+							var m_desc = JSON.parse(orderObjects[0]['m_desc']);
+							var voice_url = m_desc['voice'];
 
-            orderObjects[i]['logo'] = orderObjects[i]['logo'].replace('http:', 'https:');
+							if (voice_url) {
+								uni.downloadFile({
+									url: voice_url,
+							//音频文件url                  
+									success: res => {
+										if (res.statusCode === 200) {
+											console.log('录音文件下载完成', res.tempFilePath);
+											that.order_voice = res.tempFilePath
+											that.voice_url = voice_url
+										}
+									}
+								});
+							}
+							//var card_register_info = m_desc['card_register_info']
 
-            for (var j = 0; j < orderObjects[i]['order_sku'].length; j++) {
-              if (orderObjects[i]['order_sku'][j]['sku_image'].indexOf("http") < 0) {
-                orderObjects[i]['order_sku'][j]['sku_image'] = weburl + orderObjects[i]['order_sku'][j]['sku_image'];
-              }
+							that.card_register_inf = m_desc['card_register_info'] ? m_desc['card_register_info'] : ''
+							that.card_name_info = m_desc['card_name_info'] ? m_desc['card_name_info'] : ''
+							that.card_love_info = m_desc['card_love_info'] ? m_desc['card_love_info'] : ''
+							that.card_cele_info = m_desc['card_cele_info'] ? m_desc['card_cele_info'] : ''
+							that.card_template = m_desc['card_template'] ? m_desc['card_template'] : ''
+							that.card_color = m_desc['color'] ? m_desc['color'] : '#333'
+							that.card_type = m_desc['card_template'] ? m_desc['card_template'][0]['type'] : card_type
+		   
+							uni.setNavigationBarTitle({
+								title: '互动分享'
+							})
+						}
+						console.log('card card_template:', that.card_template, ' card_love_info:', that.card_love_info);
+					}
+				})
+			}
 
-              orderObjects[i]['order_sku'][j]['sku_image'] = orderObjects[i]['order_sku'][j]['sku_image'].replace('http:', 'https:');
-            }
-          }
-
-          if ((orderObjects[0]['shape'] == 5 || orderObjects[0]['shape'] == 4) && orderObjects[0]['m_desc']) {
-            //console.log(' wishshare onload() 互动卡订单 m_desc:', orderObjects[0]['m_desc'])
-            var m_desc = JSON.parse(orderObjects[0]['m_desc']);
-            var voice_url = m_desc['voice'];
-
-            if (voice_url) {
-              uni.downloadFile({
-                url: voice_url,
-                //音频文件url                  
-                success: res => {
-                  if (res.statusCode === 200) {
-                    console.log('录音文件下载完成', res.tempFilePath);
-                    that.setData({
-                      order_voice: res.tempFilePath,
-                      voice_url: voice_url
-                    });
-                  }
-                }
-              });
-            }
-			//var card_register_info = m_desc['card_register_info']
-
-            that.setData({
-              card_register_info: m_desc['card_register_info'] ? m_desc['card_register_info'] : '',
-              card_name_info: m_desc['card_name_info'] ? m_desc['card_name_info'] : '',
-              card_love_info: m_desc['card_love_info'] ? m_desc['card_love_info'] : '',
-              card_cele_info: m_desc['card_cele_info'] ? m_desc['card_cele_info'] : '',
-              card_template: m_desc['card_template'] ? m_desc['card_template'] : '',
-              card_color: m_desc['color'] ? m_desc['color'] : '#333',
-              card_type: m_desc['card_template'] ? m_desc['card_template'][0]['type'] : card_type
-            }); //console.log('card card_template:', that.data.card_template, ' card_love_info:', card_love_info)
-
-            uni.setNavigationBarTitle({
-              title: '互动分享'
-            });
-          }
-          console.log('card card_template:', that.card_template, ' card_love_info:', that.card_love_info);
-        }
-      });
-    }
-
-    uni.getSystemInfo({
-      success: function (res) {
-        console.log('wishshare getSystemInfo:', res);
-        that.setData({
-          windowHeight: res.windowHeight ? res.windowHeight : that.windowHeight,
-          windowWidth: res.windowWidth ? res.windowWidth : that.windowWidth,
-          dkheight: res.windowHeight - 10
-        });
-      }
-    });
-   setTimeout(function () {
-     that.reloadData();
-   }, 1000);
-  },
+			uni.getSystemInfo({
+				success: function (res) {
+					console.log('wishshare getSystemInfo:', res)
+					that.windowHeight = res.windowHeight ? res.windowHeight : that.windowHeight
+					that.windowWidth = res.windowWidth ? res.windowWidth : that.windowWidth
+					that.dkheight = res.windowHeight - 10
+				}
+			});
+			setTimeout(function () {
+				that.reloadData();
+		}, 1000);
+	},
 
   onShow: function () {
     var that = this;
@@ -409,8 +399,8 @@ export default {
     var that = this;
     var res;
     var m_id = that.m_id;
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
     var nickname = that.nickname;
     var msg_id = that.msg_id;
     var task = that.task;
@@ -609,7 +599,7 @@ export default {
 		var share_goods_name = this.share_goods_name?this.share_goods_name:'送心礼物分享' ;
 		var share_goods_image = this.share_goods_image?this.share_goods_image:'' ;
 		var share_goods_id = this.share_goods_id?this.share_goods_id:0 ;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var miniprogram_id = this.miniprogram_id ;
 		var shareImage = this.shareImage ;
 		share_goods_image = share_goods_image?share_goods_image:shareImage
@@ -783,9 +773,9 @@ export default {
       var that = this;
       var formId = formId;
       var shop_type = that.shop_type;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      wx.request({
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+      uni.request({
         url: weburl + '/api/client/save_member_formid',
         method: 'POST',
         data: {
@@ -808,28 +798,28 @@ export default {
       var pages = getCurrentPages();
 
       if (pages.length > 1 && that.share_order_shape != 5 && that.share_order_shape != 4) {
-        wx.navigateBack({
+        uni.navigateBack({
           changed: true
         }); //返回上一页
       } else if (that.share_order_shape == 5 || that.share_order_shape == 4) {
-        wx.switchTab({
+        uni.switchTab({
           url: '../../index/index'
         });
       } else {
-        wx.switchTab({
+        uni.switchTab({
           url: '../../hall/hall'
         });
       }
     },
     get_project_gift_para: function () {
       var that = this;
-      var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}];
+      var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
       var shop_type = that.shop_type;
       console.log('wishshare get_project_gift_para navList2:', navList2);
 
       if (navList2.length == 0) {
         //项目列表
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/get_project_gift_para',
           method: 'POST',
           data: {
@@ -871,7 +861,7 @@ export default {
     },
     startRecode: function () {
       var that = this;
-      wx.getSetting({
+      uni.getSetting({
         success(res) {
           var authMap = res.authSetting;
           var length = Object.keys(authMap).length;
@@ -879,14 +869,14 @@ export default {
 
           if (authMap.hasOwnProperty('scope.record')) {
             if (!res.authSetting['scope.record']) {
-              wx.showModal({
+              uni.showModal({
                 title: '用户未授权',
                 content: '请授权录音权限',
                 showCancel: false,
                 success: function (res) {
                   if (res.confirm) {
                     console.log('用户点击确定授权录音权限');
-                    wx.openSetting({
+                    uni.openSetting({
                       success: function success(res) {
                         console.log('openSetting success', res.authSetting);
                       }
@@ -903,7 +893,7 @@ export default {
         shutRecordingdis: "block",
         openRecordingdis: "none"
       });
-      wx.showLoading({
+      uni.showLoading({
         title: '录音中'
       }); //开始录音计时   
 
@@ -929,7 +919,7 @@ export default {
           shutRecordingdis: "none",
           openRecordingdis: "block"
         });
-        that.current_voice = res.tempFilePath, wx.hideLoading(); //结束录音计时  
+        that.current_voice = res.tempFilePath, uni.hideLoading(); //结束录音计时  
 
         clearInterval(that.setInter);
         myaudio.src = res.tempFilePath;
@@ -941,7 +931,7 @@ export default {
       var that = this;
       var goods_id = that.share_goods_id;
       var urls = uploadurl;
-      wx.uploadFile({
+      uni.uploadFile({
         url: uploadurl,
         filePath: voice,
         name: 'wechat_upimg',
@@ -976,7 +966,7 @@ export default {
             console.log('录音上传完成', voice, new_rec_url);
             that.update_order_note();
           } else {
-            wx.showToast({
+            uni.showToast({
               title: '录音上传返回失败',
               icon: 'none',
               duration: 1000
@@ -999,7 +989,7 @@ export default {
         myaudio.src = order_voice;
         myaudio.play();
       } else if (voice_url) {
-        wx.downloadFile({
+        uni.downloadFile({
           url: new_rec_url,
           //音频文件url                  
           success: res => {
@@ -1011,7 +1001,7 @@ export default {
           }
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: '暂无录音',
           icon: 'none',
           duration: 1000
@@ -1020,14 +1010,14 @@ export default {
     },
     update_order_note: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username =uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var share_order_id = that.share_order_id;
       var share_order_note = that.share_order_note;
       var share_order_shape = that.share_order_shape;
       var new_rec_url = that.new_rec_url ? that.new_rec_url : that.voice_url;
       var cardvoicetime = that.recordingTimeqwe ? that.recordingTimeqwe : that.cardvoicetime;
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/update_order_note',
         method: 'POST',
         data: {
@@ -1049,7 +1039,7 @@ export default {
           var order_data = res.data.result;
 
           if (res.data.status == 'n') {
-            wx.showToast({
+            uni.showToast({
               title: res.data.info,
               icon: 'none',
               duration: 2000
@@ -1110,7 +1100,7 @@ export default {
 	  var share_live_name = options.liveroom_name ? options.liveroom_name : ''
 	  var share_live_logo = options.liveroom_logo ? options.liveroom_logo : ''
 	  var share_live_wx_headimg = options.share_live_wx_headimg ? options.share_live_wx_headimg : '';
-	  console.log('wishshare reloadData options:', options, 'share_order_wx_headimg:', share_order_wx_headimg, ' avatarUrl:', that.avatarUrl, 'share_goods_id:', share_goods_id, '');
+	  console.log('wish/wishshare reloadData() options:', options, 'share_order_wx_headimg:', share_order_wx_headimg, ' share_goods_wx_headimg:', that.share_goods_wx_headimg, 'share_goods_id:', share_goods_id, '');
 		if(share_order_wx_headimg){
 			if (share_order_wx_headimg.indexOf("https://wx.qlogo.cn") >= 0) {
 			  share_order_wx_headimg = share_order_wx_headimg.replace('https://wx.qlogo.cn', weburl + '/qlogo');
@@ -1119,34 +1109,30 @@ export default {
      
 	  //var cardvoice = wx.getStorageSync('cardvoice')
       //var cardvoicetime = wx.getStorageSync('cardvoicetime')
-
-      that.setData({
-        m_id: m_id,
-        task: task,
-        task_image: task_image,
-        msg_id: msg_id,
-        activity_id: activity_id,
-        activity_image: activity_image,
-        activity_name: activity_name,
-        activity_headimg: activity_headimg,
-        share_art_id: share_art_id,
-        share_art_cat_id: share_art_cat_id,
-        share_art_title: share_art_title,
-        share_art_image: share_art_image,
-        share_art_wx_headimg: share_art_wx_headimg,
-        share_goods_id: share_goods_id,
-        share_goods_price: share_goods_price,
-        share_goods_name: share_goods_name,
-        share_goods_org: share_goods_org,
-        share_goods_shape: share_goods_shape,
-        share_goods_image: share_goods_image,
-        share_goods_image2: share_goods_image2,
-        share_goods_wx_headimg: share_goods_wx_headimg,
-        share_goods_title: activity_id > 0 ? share_activity_title : share_goods_title,
-        share_goods_desc: share_goods_desc,
-        share_goods_qrcode_cache: share_goods_qrcode_cache,
-		 
-      });
+		that.m_id = m_id
+		that.task = task
+		that.task_image = task_image
+		that.msg_id = msg_id
+		that.activity_id = activity_id
+		that.activity_name = activity_name
+		that.activity_image = activity_image
+		that.activity_headimg = activity_headimg
+		that.share_art_id = share_art_id
+		that.share_art_cat_id = share_art_cat_id
+		that.share_art_title = share_art_title
+		that.share_art_image = share_art_image
+		that.share_art_wx_headimg = share_art_wx_headimg
+		that.share_goods_id = share_goods_id
+		that.share_goods_price = share_goods_price
+		that.share_goods_name = share_goods_name
+		that.share_goods_org = share_goods_org
+		that.share_goods_shape = share_goods_shape
+		that.share_goods_image = share_goods_image
+		that.share_goods_image2 = share_goods_image2
+		that.share_goods_title = activity_id > 0 ? share_activity_title : share_goods_title
+		that.share_goods_wx_headimg = share_goods_wx_headimg
+		that.share_goods_desc = share_goods_desc
+		that.share_goods_qrcode_cache = share_goods_qrcode_cache
 		that.qr_type = qr_type
 	    that.share_order_shape = share_order_shape
 		that.share_order_id = share_order_id
@@ -1201,7 +1187,7 @@ export default {
       var activity_id = that.activity_id + 0;
       var share_goods_id = that.share_goods_id + 0;
 	  var share_live_id = that.share_live_id + 0;
-      wx.showToast({
+      uni.showToast({
         title: share_order_shape == 5 || share_order_shape == 4 ? "加载中" : "开始生成海报",
         icon: 'loading',
         duration: 1500
@@ -1245,7 +1231,7 @@ export default {
 	  uni.downloadFile({
 	  	url: image_url,
 	  	success: (res) => {
-	  		console.log('downloadFile success, res is', res)
+	  		console.log('wish/wishshare image_save() downloadFile success image_url: ',image_url,' res is', res)
 	  		var img_tempFilePath = res.tempFilePath;
 			/*
 			uni.saveFile({
@@ -1266,52 +1252,53 @@ export default {
 	  	}
 	  })
 	},
-    eventDraw: function () {
-      var that = this;
-      var m_id = that.m_id;
-      var wechat_share = that.wechat_share ? that.wechat_share : that.task_image;
-      var shop_type = that.shop_type;
-      var qr_type = that.qr_type?that.qr_type:'wishshare';
-      var task = that.task;
-      var msg_id = that.msg_id;
-      var activity_id = that.activity_id ? that.activity_id : 0;
-      var activity_image = that.activity_image ? that.activity_image : that.activity_share_image;
-      var activity_name = that.activity_name;
-      var share_activity_title = that.share_activity_title;
-      var share_goods_id = that.share_goods_id ? that.share_goods_id : 0;
-      var share_goods_bg = that.share_goods_bg;
-      var share_goods_name = that.share_goods_name ? that.share_goods_name : '';
-      var share_goods_price = that.share_goods_price ? that.share_goods_price : 0;
-      var share_goods_image = that.share_goods_image ? that.share_goods_image : '';
-      var share_goods_qrcode = that.share_goods_qrcode_cache ? that.share_goods_qrcode_cache : weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + share_goods_id + '&m_id=' + m_id;
-      var share_goods_wx_headimg = that.share_goods_wx_headimg!='undefined'&&that.share_goods_wx_headimg ? that.share_goods_wx_headimg : that.share_goods_avatarUrl;
-      var share_goods_title = that.share_goods_title;
-      var share_goods_desc = that.share_goods_desc;
-      var nickname = that.nickname?that.nickname:'朋友';
-      var share_art_id = that.share_art_id ? that.share_art_id : 0;
-      var share_art_cat_id = that.share_art_cat_id ? that.share_art_cat_id : 0;
-      var share_art_title = that.share_art_title ? that.share_art_title : '';
-      var share_art_image = that.share_art_image ? that.share_art_image : '';
-      var share_art_wx_headimg = that.share_art_wx_headimg ? that.share_art_wx_headimg : that.avatarUrl;
-      var share_art_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_art_id=' + share_art_id + '&share_art_cat_id=' + share_art_cat_id + '&m_id=' + m_id;
-      var share_order_id = that.share_order_id ? that.share_order_id : 0;
-      var share_order_note = that.share_order_note?that.share_order_note:share_goods_title;
-      var share_order_shape = that.share_order_shape;
-      var share_order_bg = that.share_order_bg;
-      var card_register_info = that.card_register_info; //shape:4 互动卡 
+	
+	eventDraw: function () {
+		var that = this;
+		var m_id = that.m_id;
+		var wechat_share = that.wechat_share ? that.wechat_share : that.task_image;
+		var shop_type = that.shop_type;
+		var qr_type = that.qr_type?that.qr_type:'wishshare';
+		var task = that.task;
+		var msg_id = that.msg_id;
+		var activity_id = that.activity_id ? that.activity_id : 0;
+		var activity_image = that.activity_image ? that.activity_image : that.activity_share_image;
+		var activity_name = that.activity_name;
+		var share_activity_title = that.share_activity_title;
+		var share_goods_id = that.share_goods_id ? that.share_goods_id : 0;
+		var share_goods_bg = that.share_goods_bg;
+		var share_goods_name = that.share_goods_name ? that.share_goods_name : '';
+		var share_goods_price = that.share_goods_price ? that.share_goods_price : 0;
+		var share_goods_image = that.share_goods_image ? that.share_goods_image : '';
+		var share_goods_qrcode = that.share_goods_qrcode_cache ? that.share_goods_qrcode_cache : weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + share_goods_id + '&m_id=' + m_id;
+		var share_goods_wx_headimg = that.share_goods_avatarUrl; //that.share_goods_wx_headimg!='undefined'&&that.share_goods_wx_headimg ? that.share_goods_wx_headimg : 
+		var share_goods_title = that.share_goods_title;
+		var share_goods_desc = that.share_goods_desc;
+		var nickname = that.nickname?that.nickname:'朋友';
+		var share_art_id = that.share_art_id ? that.share_art_id : 0;
+		var share_art_cat_id = that.share_art_cat_id ? that.share_art_cat_id : 0;
+		var share_art_title = that.share_art_title ? that.share_art_title : '';
+		var share_art_image = that.share_art_image ? that.share_art_image : '';
+		var share_art_wx_headimg = that.share_art_wx_headimg ? that.share_art_wx_headimg : that.avatarUrl;
+		var share_art_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_art_id=' + share_art_id + '&share_art_cat_id=' + share_art_cat_id + '&m_id=' + m_id;
+		var share_order_id = that.share_order_id ? that.share_order_id : 0;
+		var share_order_note = that.share_order_note?that.share_order_note:share_goods_title;
+		var share_order_shape = that.share_order_shape;
+		var share_order_bg = that.share_order_bg;
+		var card_register_info = that.card_register_info; //shape:4 互动卡 
 
-      var card_name_info = that.card_name_info; //shape:4 互动卡 名片内容
+		var card_name_info = that.card_name_info; //shape:4 互动卡 名片内容
 
-      var card_love_info = that.card_love_info; //shape:4 互动卡 爱心卡内容
+		var card_love_info = that.card_love_info; //shape:4 互动卡 爱心卡内容
 
-      var card_cele_info = that.card_cele_info; //shape:5 贺卡请柬 
+		var card_cele_info = that.card_cele_info; //shape:5 贺卡请柬 
 
-      var card_template = that.card_template; //shape:4 互动卡 名片模板
+		var card_template = that.card_template; //shape:4 互动卡 名片模板
 
-      var card_type = that.card_type ? that.card_type : 0; //var card_color = that.data.card_color //贺卡请柬文字颜色
+		var card_type = that.card_type ? that.card_type : 0; //var card_color = that.data.card_color //贺卡请柬文字颜色
 
-      var share_order_wx_headimg = that.share_order_wx_headimg;
-      var share_order_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_order_id=' + share_order_id + '&share_order_shape=' + share_order_shape + '&m_id=' + m_id;
+		var share_order_wx_headimg = that.share_order_wx_headimg;
+		var share_order_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_order_id=' + share_order_id + '&share_order_shape=' + share_order_shape + '&m_id=' + m_id;
 	
 		var share_live_id = that.share_live_id
 		var share_live_name = that.share_live_name
@@ -1328,8 +1315,7 @@ export default {
 
       if (activity_id > 0) {
         console.log('activity_id:', activity_id);
-        that.setData({
-          painting: {
+        that.painting = {
             width: 500,
             height: 700,
             windowHeight: that.windowHeight,
@@ -1381,11 +1367,9 @@ export default {
               height: 125
             }]
           }
-        });
       } else if (share_goods_id) {
-        console.log('share_goods_id:', share_goods_id);
-        that.setData({
-          painting: {
+        console.log('wish/wishshare eventDraw() share_goods_id:'+ share_goods_id+' share_goods_wx_headimg:'+share_goods_wx_headimg+' share_goods_qrcode:'+share_goods_qrcode+' share_goods_image:'+share_goods_image)
+		that.painting = {
             width: 360,
             height: 600,
             //windowHeight: 550,
@@ -1506,8 +1490,8 @@ export default {
               width: 60,
               height: 60
             }]
-          }
-        });
+		}
+        
       } else if (share_order_shape == 4 && card_register_info && share_goods_id == 0) {
         //互动卡
         console.log('share_order_shape:', share_order_shape);
@@ -1699,9 +1683,7 @@ export default {
 
           views = views.concat(view_item);
         }
-
-        that.setData({
-          painting: {
+		that.painting = {
             width: views_width,
             height: views_height,
             windowHeight: that.windowHeight,
@@ -1709,8 +1691,7 @@ export default {
             clear: true,
             background: 'white',
             views: views
-          }
-        });
+		}
 		console.log('名片 share_order_shape views:',views);
       } else if (share_order_shape == 4 && card_love_info && share_goods_id == 0) {
         //互动卡 爱心卡
@@ -2153,10 +2134,10 @@ export default {
 
       });
 	  */
-      wx.saveImageToPhotosAlbum({
+      uni.saveImageToPhotosAlbum({
         filePath: this.shareImage,
         success(res) {
-          wx.showToast({
+          uni.showToast({
             title: '图片已保存到相册，赶紧晒一下吧~',
             icon: 'none',
             duration: 1500
@@ -2189,7 +2170,7 @@ export default {
 		//const { width, height, views, background, radius = 0 } = this.posterData;
 		 
 		for (let i = 0; i < views.length; i++) {
-			console.log('canvasdrawer onload views.length:',views.length,' i:',i) ;
+			//console.log('wish/wishshare readyPigment()  views:',views[i],' i:',i) ;
 		    if (views[i].type === 'image') {
 		        //let _img = views[i].url;
 		        let _views = views[i];
@@ -2197,8 +2178,8 @@ export default {
 				 
 		        drawData = {
 		            ..._views,
-		        };
-				console.log('canvasdrawer onload image drawData:',drawData,' i:',i) ;
+		        }
+				//console.log('wish/wishshare readyPigment() drawData:',drawData,' i:',i) ;
 		        this.drawImage(drawData);
 				
 		    } else if (views[i].type === 'text') {
@@ -2241,7 +2222,7 @@ export default {
 					}) 
 					*/
 					//wx.hideLoading();
-				console.error('toTempFilePath error:'+JSON.stringify(err))
+					console.error('toTempFilePath error:'+JSON.stringify(err))
 				}
 			},this)
 		}, 2000);
@@ -2265,7 +2246,7 @@ export default {
 	    if (index < imageList.length) {
 	        this.getImageInfo(imageList[index]).then(imgInfo => {
 				tempFileList.push(imgInfo)
-				console.log('图片临时文件imgInfo:',imgInfo)
+				console.log('wish/wishshare downLoadImages() 图片临时文件imgInfo:',imgInfo)
 				this.tempFileList = tempFileList;
 				this.downLoadImages(index + 1);
 	        })
@@ -2434,10 +2415,10 @@ export default {
 	    } else {
 			if(url){
 				 this.ctx.drawImage(url, left, top, width, height);
-				 console.log('wishshare drawImage url:',url, left, top, width, height);
+				 console.log('wish/wishshare drawImage() url:',url, left, top, width, height);
 			}else{
 				uni.showModal({
-				    title: 'drawImage 图片文件不存在',
+				    title: '图片文件不存在',
 				    content: 'draw url:'+ url
 				}) 
 			}
@@ -2636,7 +2617,7 @@ export default {
 		            this.imageList = [];
 		            this.tempFileList = [];
 					this.shareImage = res.tempFilePath ;
-					wx.hideLoading();
+					uni.hideLoading();
 					/*
 		            this.$emit('success', {
 		                width,
@@ -2653,7 +2634,7 @@ export default {
 		        }
 		    },
 			fail: err => {
-				wx.hideLoading();
+				uni.hideLoading();
 				uni.showModal({
 				    title: '图片保存本地失败',
 				    content: 'saveImageToLocal'+err

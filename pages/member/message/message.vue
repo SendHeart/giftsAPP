@@ -315,17 +315,17 @@ export default {
 		var activeIndex2 = 0;
 		var TabCur = that.TabCur ;
 
-		if (getApp().globalData.messageflag == 0) {
+		if (that.messageflag == 0) {
 			TabCur = 1
-		} else if (getApp().globalData.messageflag == 1) {
+		} else if (that.messageflag == 1) {
 			TabCur = 2
 		} else {
 			TabCur = 0
 		}
-		console.log('message onShow messageflag:', getApp().globalData.messageflag, 'activeIndex2:', activeIndex2)
+		console.log('message onShow messageflag:', that.messageflag, 'activeIndex2:', activeIndex2)
 		
 		that.TabCur = TabCur
-		that.messageflag = getApp().globalData.messageflag
+		//that.messageflag = getApp().globalData.messageflag
 
 		if (TabCur == 0) {
 			that.get_ai_rules()
@@ -524,7 +524,7 @@ export default {
       imgList.push(event.currentTarget.dataset.list); //获取data-list
 
       if (order_no) {
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/query_order',
           method: 'POST',
           data: {
@@ -695,20 +695,18 @@ export default {
     //确定按钮点击事件 
     tryagain: function () {
       var that = this;
-      that.setData({
-        messageflag: getApp().globalData.messageflag
-      });
+	  //that.messageflag =getApp().globalData.messageflag
     },
     //获取消息
     get_member_messages: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var shop_type = that.shop_type;
       var page = that.page;
       var pagesize = that.pagesize;
       var message_type = that.message_type;
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/get_member_messages',
         method: 'POST',
         data: {
