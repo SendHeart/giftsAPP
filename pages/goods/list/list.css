@@ -163,7 +163,6 @@ page {
 	top:60rpx;
 	position: fixed;
 	z-index:999;
-	/*margin-left: 15rpx;*/
 }
 
 .banner image {
@@ -206,51 +205,51 @@ swiper-item image {
 }
 
 .venues_box {
-  margin: 80rpx auto;
-  width: 96%;
-  padding-bottom: 0rpx;
-  overflow: hidden;
-  z-index: 1;
+	margin: 150rpx auto;
+	width: 96%;
+	padding-bottom: 0rpx;
+	overflow: hidden;
+	z-index: 1;
 }
 
 .venues_item {
-  margin-bottom:15rpx;
-  background: #ffffff;
-  border-radius: 14rpx;
-  padding-bottom: 10rpx;
-  padding-top: 10rpx;
-  box-sizing: border-box;
-  display: inline-block;
+	margin-bottom:15rpx;
+	background: #ffffff;
+	border-radius: 14rpx;
+	padding-bottom: 10rpx;
+	padding-top: 10rpx;
+	box-sizing: border-box;
+	display: inline-block;
 }
-.box-left,.box-right{
-  display: inline-block;
-  vertical-align: top;
-  width: 49%;
+.box-left,.box-right {
+	display: inline-block;
+	vertical-align: top;
+	width: 49%;
 }
 .box-right{
-  float: right;
+	float: right;
 }
 .venues_item .mainpic {
-  display: block;
-  width: 354rpx;
-  height: 100%;
+	display: block;
+	width: 354rpx;
+	height: 100%;
 }
 .venues_item .goods-org {
-  color: #fff;
-  font-size: 22rpx;
-  background: #EC4844;
-  text-align: center;
-  padding: 0 8rpx;
-  border-radius: 6rpx;
+	color: #fff;
+	font-size: 22rpx;
+	background: #ff952d;
+	text-align: center;
+	padding: 0 8rpx;
+	border-radius: 6rpx;
 }
 .venues_item .img-discount {
-  color: #fff;
-  font-size: 22rpx;
-  background: #EC4844;
-  text-align: center;
-  padding: 0 8rpx;
-  border-radius: 6rpx;
-  margin-right: 8rpx;
+	color: #fff;
+	font-size: 22rpx;
+	background: #ff952d;
+	text-align: center;
+	padding: 0 8rpx;
+	border-radius: 6rpx;
+	margin-right: 8rpx;
 }
 .venues_item .goods_name {
   color: #444;

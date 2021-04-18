@@ -63,7 +63,7 @@ var navList2 = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [
 import canvasdrawer from "../../../common/canvasdrawer/canvasdrawer";
 
 export default {
-  data() {
+	data() {
     return {
       title_name: '二维码',
       title_logo: '/static/images/footer-icon-05.png',
@@ -115,99 +115,93 @@ export default {
 	  	},
 	  ]
     };
-  },
+	},
 
-  components: {
-    canvasdrawer,
-	uniPopup
-  },
-  props: {},
-  onLoad: function (options) {
-    var that = this;
-    console.log('share options:', options);
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
-    var hiddenqrcode = that.hiddenqrcode;
-    var appid = that.appid;
-    var secret = that.secret;
-    var qr_type = options.qr_type ? options.qr_type : '';
-    var act_id = options.act_id ? options.act_id : '';
-    var act_title = options.act_title ? options.act_title : '';
-    var coupons_json = options.coupons ? options.coupons : '';
-	 console.log('share coupons_json:', coupons_json);
-    var coupons = coupons_json ? JSON.parse(coupons_json) : [{}];
-    var coupons_name = coupons_json ? coupons['name'] : '';
-    var coupons_id = coupons_json ? coupons['id'] : 0;
-    var coupons_type = coupons_json ? coupons['type'] : 1;
-    var coupons_flag = coupons_json ? coupons['flag'] : 0; //var share_activity_qrcode_cache = options.share_activity_qrcode_cache ? options.share_activity_qrcode_cache : ''
-    //var share_coupon_qrcode_cache = options.share_coupon_qrcode_cache ? options.share_coupon_qrcode_cache : ''
-    //var share_member_qrcode_cache = options.share_member_qrcode_cache ? options.share_member_qrcode_cache : ''
+	components: {
+		canvasdrawer,
+		uniPopup
+	},
+	props: {},
+	
+	onLoad: function (options) {
+		var that = this;
+		console.log('share options:', options);
+		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
+		var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0;
+		var hiddenqrcode = that.hiddenqrcode;
+		var appid = that.appid;
+		var secret = that.secret;
+		var qr_type = options.qr_type ? options.qr_type : '';
+		var act_id = options.act_id ? options.act_id : '';
+		var act_title = options.act_title ? options.act_title : '';
+		var coupons_json = options.coupons ? options.coupons : '';
+		console.log('share coupons_json:', coupons_json);
+		var coupons = coupons_json ? JSON.parse(coupons_json) : [{}];
+		var coupons_name = coupons_json ? coupons['name'] : '';
+		var coupons_id = coupons_json ? coupons['id'] : 0;
+		var coupons_type = coupons_json ? coupons['type'] : 1;
+		var coupons_flag = coupons_json ? coupons['flag'] : 0; //var share_activity_qrcode_cache = options.share_activity_qrcode_cache ? options.share_activity_qrcode_cache : ''
+		//var share_coupon_qrcode_cache = options.share_coupon_qrcode_cache ? options.share_coupon_qrcode_cache : ''
+		//var share_member_qrcode_cache = options.share_member_qrcode_cache ? options.share_member_qrcode_cache : ''
 
-    var share_coupon_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&coupons_flag=' + coupons_flag + '&coupons_type=' + coupons_type + '&coupons_id=' + coupons_id + '&coupons=' + coupons_json;
-    var share_activity_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&act_id=' + act_id;
-    var share_member_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type;
-
-    if (qr_type == 'membershare') {//that.image_save(share_member_qrcode, 'member_qrcode_cache_' + m_id)
-    } else if (act_id) {//that.image_save(share_activity_qrcode, 'activity_qrcode_cache_' + act_id)
-    }
-
-    that.setData({
-      username: username,
-      appid: appid,
-      secret: secret,
-      qr_type: qr_type,
-      act_id: act_id,
-      act_title: act_title,
-      coupons: coupons,
-      coupons_json: coupons_json,
-      hiddenqrcode: true,
-      coupons_name: coupons_name,
-      coupons_id: coupons_id,
-      coupons_type: coupons_type,
-      coupons_flag: coupons_flag,
-      share_activity_qrcode_cache: share_activity_qrcode,
-      share_coupon_qrcode_cache: share_coupon_qrcode,
-      share_member_qrcode_cache: share_activity_qrcode,
-	  isSaveImageToPhotosAlbum:false
-    });
-    wx.getSystemInfo({
-      success: function (res) {
-       // console.log(res.model);
-        if (res.model == 'iPhone X') {
-          startBarHeight = 44;
-        }
-
-        that.setData({
-          windowHeight: res.windowHeight,
-          windowWidth: res.windowWidth,
-          dkheight: res.windowHeight - 10
-        });
-      }
-    });
-    that.get_project_gift_para();
+		var share_coupon_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&coupons_flag=' + coupons_flag + '&coupons_type=' + coupons_type + '&coupons_id=' + coupons_id + '&coupons=' + coupons_json;
+		var share_activity_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&act_id=' + act_id;
+		var share_member_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type;
+		/*
+		if (qr_type == 'membershare') {//that.image_save(share_member_qrcode, 'member_qrcode_cache_' + m_id)
+		} else if (act_id) {//that.image_save(share_activity_qrcode, 'activity_qrcode_cache_' + act_id)
+		}
+		*/
+		that.username = username
+		that.appid = appid
+		that.secret = secret
+		that.qr_type = qr_type
+		that.act_id = act_id
+		that.act_title = act_title
+		that.coupons = coupons
+		that.coupons_json = coupons_json
+		that.hiddenqrcode = true
+		that.coupons_name = coupons_name
+		that.coupons_id = coupons_id
+		that.coupons_type = coupons_type
+		that.coupons_flag = coupons_flag
+		that.share_activity_qrcode_cache = share_activity_qrcode
+		that.share_coupon_qrcode_cache = share_coupon_qrcode
+		that.share_member_qrcode_cache = share_activity_qrcode
+		that.isSaveImageToPhotosAlbum =false
+		uni.getSystemInfo({
+			success: function (res) {
+		// console.log(res.model);
+				if (res.model == 'iPhone X') {
+					startBarHeight = 44;
+				}
+				that.windowHeight = res.windowHeight
+				that.windowWidth = res.windowWidth
+				that.dkheight = res.windowHeight - 10       
+			}
+		})
+		that.get_project_gift_para();
     
-	wx.showLoading({
-	  title: '开始生成分享码' //mask: true
-	});
+		wx.showLoading({
+			title: '开始生成分享码' //mask: true
+		});
 	 
-    setTimeout(function () {
-      that.setData({
-        loadingHidden: true
-      });
-      that.eventDraw();
-    }, 2000); // that.eventDraw()
-  },
-  onShow: function () {
-    var that = this;
-    var pages = getCurrentPages();
+		setTimeout(function () {
+			that.loadingHidden = true  
+			that.eventDraw();
+		}, 2000); // that.eventDraw()
+	},
+	
+	onShow: function () {
+		var that = this;
+		var pages = getCurrentPages();
 
-    if (pages.length > 1) {
-      that.setData({
-        title_logo: '../../../images/back.png'
-      });
-    }
-  },
-  methods: {
+		if (pages.length > 1) {
+			that.title_logo = '../../../images/back.png'
+		}
+	},
+	
+	methods: {
 	  /*
 	shareToWeixin: function (scene) {
 		uni.share({

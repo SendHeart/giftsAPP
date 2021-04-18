@@ -98,9 +98,9 @@
 			upCallback(mescroll) {
 				//联网加载数据
 				//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
-				this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
+				this.getListDataFromNet(this.page, this.pagesize, (curPageData)=>{
 					//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
-					console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
+					//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
 					mescroll.endSuccess(curPageData.length);
 					//设置列表数据
 					if(mescroll.num == 1|| this.page == 1) this.pdList = []; //如果是第一页需手动制空列表

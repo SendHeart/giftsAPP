@@ -34,9 +34,9 @@
     </view>
 </view>
 <view class="carts-footer">
-	<view class="select-and-amount" @tap="bindSelectAll">
-		<uni-icons :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color='#e34c55'></uni-icons>
-		<text>全选</text>
+	<view class="select-and-amount" >
+		<uni-icons :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color='#e34c55' @tap="bindUnSelectAll"></uni-icons>
+		<text style="margin-left: 30rpx;" @tap="bindSelectAll">全选</text>
 		<text>{{total>0?'￥'+total:''}}</text>
 	</view>
 	<view class="button" @tap="bindCheckout">立即结算</view>
@@ -67,7 +67,6 @@
 
 <script>
 var weburl = getApp().globalData.weburl;
-var shop_type = getApp().globalData.shop_type;
 var shop_type = getApp().globalData.shop_type;
 var weburl = getApp().globalData.weburl;
 var page = 1;
@@ -234,16 +233,16 @@ export default {
         that.carts = carts
         that.minusStatuses = minusStatuses
         // update database
-        var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-        var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+        var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+        var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
         var sku_id = carts[index]['id']
         that.updateCart(username, sku_id, num, token);
-        wx.hideLoading();
+        uni.hideLoading();
         that.sum();
 	},
 	
 	bindManual: function (e) {
-        wx.showLoading({
+        uni.showLoading({
           title: '',
           mask: true
         });
@@ -252,10 +251,8 @@ export default {
         var num = parseInt(e.detail.value);
         carts[index]['num'] = num;
         // 将数值与状态写回
-        this.setData({
-          carts: carts
-        });
-        wx.hideLoading();
+        this.carts = carts
+        uni.hideLoading();
         this.sum();
 	},
 	
@@ -263,11 +260,7 @@ export default {
         // 什么都不做，只为打断跳转
 	},
 	
-	bindCheckbox: function (cart_index) {
-        wx.showLoading({
-          title: '操作中',
-          mask: true
-        });
+	bindCheckbox: function (cart_index) {         
         var that = this;
         /*绑定点击事件，将checkbox样式改变为选中与非选中*/
         //拿到下标值，以在carts作遍历指示用
@@ -278,28 +271,35 @@ export default {
         // 对勾选状态取反
         carts[index]['selected'] = !selected;
         // 写回经点击修改后的数组
-        that.setData({
-          carts: carts,
-        });
+		that.carts = carts
+        
         // update database
-        var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-        var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+        var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+        var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
         var sku_id = carts[index]['id'];
         var buy_num = carts[index]['num'];
-        that.updateCart(username, sku_id, buy_num, token);
-        wx.hideLoading();
+        that.updateCart(username, sku_id, buy_num, token)        
         that.sum();
 	},
 	
-	bindSelectAll: function () {
+	bindUnSelectAll: function () {
+		var that = this
+		var selectedAllStatus = that.selectedAllStatus;
+	    // 取反操作
+		selectedAllStatus = !selectedAllStatus;
+		that.bindSelectAll(selectedAllStatus)
+	},
+
+
+	bindSelectAll: function (selectedAllStatus=true) {
         wx.showLoading({
           title: '操作中',
           mask: true
         });
         // 环境中目前已选状态
-        var selectedAllStatus = this.selectedAllStatus;
+        //var selectedAllStatus = this.selectedAllStatus;
         // 取反操作
-        selectedAllStatus = !selectedAllStatus;
+        //selectedAllStatus = !selectedAllStatus;
         // 购物车数据，关键是处理selected值
         var carts = this.carts;
         // 遍历
@@ -308,12 +308,10 @@ export default {
           // update selected status to db
         }
     
-        this.setData({
-          selectedAllStatus: selectedAllStatus,
-          carts: carts,
-        });
-        wx.hideLoading();
-        this.sum();
+        this.selectedAllStatus = selectedAllStatus
+        this.carts = carts
+        uni.hideLoading();
+        this.sum()
     
 	},
 	
@@ -513,7 +511,7 @@ export default {
             if (res.confirm) {
               // 从网络上将它删除
               // 购物车单个删除
-              wx.request({
+              uni.request({
                 url: weburl + '/api/client/delete_cart',
                 method: 'POST',
                 data: { 
@@ -577,16 +575,23 @@ export default {
 		var that = this
         var carts = this.carts;
         // 计算总金额
-        var total = 0;
+        var total = 0
+		var selected_num = 0
         for (var i = 0; i < carts.length; i++) {
           if (carts[i]['selected']) {
-            total += carts[i]['num'] * carts[i]['sell_price'];
+            total += carts[i]['num'] * carts[i]['sell_price']
+			selected_num++
           }
         }
         total = total.toFixed(2);
         // 写回经点击修改后的数组
         that.carts = carts
         that.total = total
+		if(selected_num == 0){
+			that.selectedAllStatus = false
+		}else{
+			that.selectedAllStatus = true
+		}
 	},
 	
 	showGoods: function (e) {
@@ -712,7 +717,7 @@ export default {
 				var carts = []
 				var cartlist = res.data.result.list;
 				var showmorehidden;
-			//console.log('reloadData cartlist:'+JSON.stringify(cartlist));
+				//console.log('reloadData cartlist:'+JSON.stringify(cartlist));
 				var index = 0;
 				for (var key in cartlist) {
 					for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
@@ -737,29 +742,30 @@ export default {
 				} else {
 					showmorehidden = true
 				}
-            //倒序
-            /*
-            var k = carts.length
-            var carts_sort = []
-            var minusStatuses_sort = []
-            var j=0
-            for (var i = k-1; i >=0 ; i--) {
-              carts_sort[j] = carts[i]
-              if(j>1){
-                carts_sort[j]['hidden'] = 1
-              } else{
-                carts_sort[j]['hidden'] = 0
-              }
-              minusStatuses_sort[j] = minusStatuses[i]
-              j++
-            }
-            */
-            //console.log('reloadData carts:'+JSON.stringify(carts));
+				//倒序
+				/*
+				var k = carts.length
+				var carts_sort = []
+				var minusStatuses_sort = []
+				var j=0
+				for (var i = k-1; i >=0 ; i--) {
+					carts_sort[j] = carts[i]
+					if(j>1){
+						carts_sort[j]['hidden'] = 1
+					} else{
+						carts_sort[j]['hidden'] = 0
+					}
+					minusStatuses_sort[j] = minusStatuses[i]
+					j++
+				}
+				*/
+				//console.log('reloadData carts:'+JSON.stringify(carts));
 				that.carts = carts
 				that.minusStatuses = minusStatuses
 				that.selectedAllStatus = false
 				that.showmorehidden = showmorehidden
 				that.all_rows = carts.length
+				that.bindSelectAll()
 			}
 		})
     

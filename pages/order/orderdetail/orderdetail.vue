@@ -350,18 +350,18 @@ export default {
 	
 	methods: {
 	copyorderinfo: function (e) {
-	    var that = this;
-	    var order_info_no = e.order_no?'订单:'+e.order_no:'';
-	    var order_info_num = e.order_sku[0]['sku_num'] ? ' 数量:' +  e.order_sku[0]['sku_num'] : ''
-	    var order_info_goodsname = e.order_sku[0]['goods_name'] ? ' 商品:' + e.order_sku[0]['goods_name'] : ''
-	    var order_info = order_info_no + order_info_num + order_info_goodsname
+		var that = this;
+		var order_info_no = e.order_no?'订单:'+e.order_no:'';
+		var order_info_num = e.order_sku[0]['sku_num'] ? ' 数量:' +  e.order_sku[0]['sku_num'] : ''
+		var order_info_goodsname = e.order_sku[0]['goods_name'] ? ' 商品:' + e.order_sku[0]['goods_name'] : ''
+		var order_info = order_info_no + order_info_num + order_info_goodsname
 		//console.log('copyorderinfo success data:',order_info);
-	    uni.setClipboardData({
-	        data: order_info,
-	        success: function () {
-	            console.log('copyorderinfo success data:',order_info);
-	        }
-	    });
+		uni.setClipboardData({
+			data: order_info,
+			success: function () {
+				console.log('copyorderinfo success data:',order_info);
+			}
+		})
 	},
 	
     pageScrollToBottom: function () {

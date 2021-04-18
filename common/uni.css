@@ -542,6 +542,8 @@ radio-group label, checkbox-group label{
 	display: flex;
 	width: 100%;
 	flex-direction: row;
+	justify-content: center;
+	text-align: center;
 }
 .uni-navigate-right.uni-media-list {
 	padding-right: 74upx;

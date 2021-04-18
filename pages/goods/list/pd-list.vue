@@ -11,18 +11,24 @@
 							<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
 							-->
 							<view class="goods-tags">
-								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">京东物流</text>
+								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
 							<text class="goods_name">{{item.name}}</text>
 							<view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
+							<view class="goods-tags">
+								<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
+							</view>
 							<view class="goods_bottom">
+								<!--
 								<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 									<text space="ensp">{{item.goods_tag}}</text>
 								</view>
+								-->
+								
 								<view class="price-list">
 									<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-									<view class="price-now">￥{{item.sell_price}}</view>
+									<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 								</view>
 							</view>
 					</view>
@@ -38,19 +44,25 @@
 							<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
 							-->
 							<view class="goods-tags">
-								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">京东物流</text>
+								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
 							<text class="goods_name">{{item.name}}</text>
 						<!-- </navigator> -->
 						<view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
+						<view class="goods-tags">
+							<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
+						</view>
 						<view class="goods_bottom">
+							<!--
 							<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 								<text space="ensp">{{item.goods_tag}} </text>
 							</view>
+							-->
+							
 							<view class="price-list">
 								<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-								<view class="price-now">￥{{item.sell_price}}</view>
+								<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 							</view>
 						</view>
 					</view>
@@ -103,23 +115,23 @@
 		},
 		
 		methods: {
-			 showGoods: function (e) {
-			   var objectId = e.id ; //currentTarget.dataset.objectId;
-			   var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-			   var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-			   var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
-			   var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
-			   var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
-			   var goods_name = e.name ; //currentTarget.dataset.goodsName;
-			   var goods_price = e.sell_price ; //.dataset.goodsPrice;
-			   var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
-			   var goods_sale = e.sale ; //currentTarget.dataset.sale;
-			   var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
-			   var activity_image = e.activity_image?e.activity_image:''
-			   var sku_id = objectId;
-			   image = image?image:activity_image?activity_image:'' ;
-			   getApp().globalData.hall_gotop = 0;
-			   var show_goods_options = {
+			showGoods: function (e) {
+				var objectId = e.id ; //currentTarget.dataset.objectId;
+				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+				var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+				var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
+				var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
+				var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
+				var goods_name = e.name ; //currentTarget.dataset.goodsName;
+				var goods_price = e.sell_price ; //.dataset.goodsPrice;
+				var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
+				var goods_sale = e.sale ; //currentTarget.dataset.sale;
+				var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
+				var activity_image = e.activity_image?e.activity_image:''
+				var sku_id = objectId;
+				image = image?image:activity_image?activity_image:'' ;
+				getApp().globalData.hall_gotop = 0;
+				var show_goods_options = {
 			   		  sku_id:objectId,
 			   		  id:goods_id,
 			   		  goods_shape:goods_shape,
@@ -131,12 +143,12 @@
 			   		  image:image,
 			   		  token:token,
 			   		  username:username
-			   } ;
-			   uni.setStorageSync('show_goods_options', show_goods_options);
-			   wx.navigateTo({
-			     url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
-			   });
-			 },
+				} ;
+				uni.setStorageSync('show_goods_options', show_goods_options);
+				uni.navigateTo({
+					url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
+				});
+			},
 		}
 	}
 </script>

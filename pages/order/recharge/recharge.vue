@@ -1,5 +1,5 @@
 <template>
-<view class="page" :style="'height:'+windowHeight">
+<view scroll-y class="page" :style="'heigth:'+windowHeight+'px;'">
 	<view class="carts-container" v-for="(item, index) in carts" :key="index" >
 		<view class="carts-info">
 			<view class="carts-item">
@@ -39,10 +39,10 @@
 				<text>{{recharge_title4}}</text>
 			</view>
 		</view>
-		<view class="recharge_recomment" style='margin-top:10rpx;'>
+		<view class="recharge-recomment" style='margin-top:10rpx;'>
 			<image :src="recharge_recomment_image" background-size="cover" mode="widthFix"></image>
 		</view>
-		<view class="recharge-note">
+		<view class="recharge-agreement">
 			<view class="select-and-amount" >
 				<uni-icons @tap="bindAgree()" style="margin:20rpx;" :type="selectedAgreeStatus ? 'checkbox-filled' : 'circle'" size="18" color='#e34c55'></uni-icons>
 				<text @tap="bindRechargeRule" style="margin-right:20rpx;">{{recharge_note}}</text>
@@ -50,11 +50,12 @@
 			<view class="select-and-amount">
 				<text style="margin-left:20rpx;margin-right:20rpx;color:#eeeee;">{{recharge_note2}}</text>
 			</view>
-		</view>
-		<view class="recharge-confirm" >
-			<text class="recharge-amount">{{amount}}</text>
-			<button @tap="confirmOrder" >去支付</button>
-		</view>
+		</view>		
+	</view>
+	<view class="recharge-confirm">
+		<text class="recharge-title">充值会籍费: </text>
+		<text class="recharge-amount">{{amount}}</text>
+		<button @tap="confirmOrder" >去支付</button>
 	</view>
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
@@ -102,7 +103,7 @@ export default {
 		art_cat_id: "",
 		art_image: "",
 		dkheight: "800",
-		windowHeight:'500',
+		windowHeight:'1100',
 		agreementinfoshowflag: 0,
 		playsxinfoshowflag: 0,
 		modalHiddenPlaysx: false,

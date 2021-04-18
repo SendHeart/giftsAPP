@@ -1,10 +1,12 @@
 <template>
 	<view class="page" :style="'height:'+windowHeight">
 		<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d" style="z-index:9;"></uni-nav-bar>
+		 
 		<view class="search">
-			<view class="wx-input" @tap='searchTapTag'>
+			<image class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover" />
+			<view class="wx-input" style="background-color:#000000" @tap='searchTapTag'>
 				<uni-icons :color="'#999999'" class="icon-search" type="search" size="18" />
-				<text>会员制购物商城</text>
+				<text>搜索我的品质生活</text>
 			</view>
 			<!--		
 		    <view class="page-title">
@@ -12,7 +14,7 @@
 		    </view>
 			-->
 		    <view class="page-title2" @tap="messagesTapTag">
-		       <text>了解什么是会员制</text>
+		       <text>了解会员制</text>
 		    </view>
 			
 		</view>
@@ -61,7 +63,7 @@
 					<block v-for="(banner_list, index) in hall_banner" :key="index">
 						<swiper-item>
 							<view @click="bannerTapTag" :data-bannerlink="banner_list.link">
-								<image :src="banner_list.img" class="slide-image" mode="aspectFill"></image>
+								<image :src="banner_list.img" class="slide-image" mode="Widthfix"></image>
 							</view>
 						</swiper-item>
 					</block>
@@ -278,27 +280,29 @@
 				  </view>
 				</view>
 				-->
+				<!--
 				<view v-if="pdList.length>0" class="recomment-title" @tap="bindPickGoods">
 				  <text>近期热门<text class="title_ex">大家都在送</text></text>
 				  <text class="more">更多...</text>
 				</view>
+				-->
 			</view>
 		</view>
 		<pd-list v-if="page>0" :activeIndex="activeIndex" :list="pdList" :scrollTop="image_refresh"></pd-list>
 		</mescroll-body>
 		<view class="main_message" :hidden="messageHidden" :style="'height:' + dkheight + 'px;'">
-		  <view class="t_w">
+			<view class="t_w">
 		    <!--右上角图标开始-->
-		    <view class="t_image" @tap="messageCandel">
-		      <image class="t_image1" src="../../static/images/icon-no.png"></image>
-		    </view>
+				<view class="t_image" @tap="messageCancel">
+					<image class="t_image1" src="../../static/images/icon-no.png"></image>
+				</view>
 		    <!-- 消息通知 -->
-		    <view v-if="main_prom_image" class="main_red" :style="'width:600rpx;height:683rpx;background-image:url(' + main_prom_image + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%; text-align: center;align-items: center;padding:20rpx;z-index:9999;'" @tap="messageConfirm">
-		      <!--
-		    <text class="" style='margin-top:250rpx;font-size:40rpx;color:#fff;'>{{main_prom_note?'':''}}</text>
-			-->
-		    </view>
-		  </view>
+				<view v-if="main_prom_image" class="main_red" :style="'width:600rpx;height:683rpx;background-image:url(' + main_prom_image + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%; text-align: center;align-items: center;padding:20rpx;z-index:9999;'" @tap="messageConfirm">
+				<!--
+				<text class="" style='margin-top:250rpx;font-size:40rpx;color:#fff;'>{{main_prom_note?'':''}}</text>
+				-->
+				</view>
+			</view>
 		</view>
 		<view>
 			<uni-popup :show="!modalFriendinfoHidden" type="bottom" :custom="true" :mask-click="false">
@@ -441,7 +445,7 @@ export default {
 		interval: 7000,
 		duration: 300,
 		circular: true,
-		hall_banner: weburl + "/uploads/songxin_banner.png",
+		hall_banner: weburl + "/uploads/hb_banner.png?rand="+Math.random()*100,
 		//默认的banner图
 		banner_link: "pages/list/list?navlist=1",
 		//默认的banner图 跳转链接
@@ -491,8 +495,7 @@ export default {
 		friends_page:1,
 		friends_pagesize:10,
 		rpage_num: 1,
-		isPush:false,
-		
+		isPush:false,		
 		touchstop: false,
 		loading_note: "",
 		deleteindex: "",
@@ -952,7 +955,8 @@ export default {
     },
 	
     searchTapTag: function (e) {
-      var that = this; //console.log('搜索关键字：' + that.data.search_goodsname)
+      var that = this
+	   //console.log('搜索关键字：' + that.data.search_goodsname)
       uni.navigateTo({
         url: '/pages/goods/list/list?search=1'
       });
@@ -1605,30 +1609,32 @@ export default {
       });
     },
     //确定按钮点击事件 
-    messageConfirm: function () {
-      var that = this;
-      var messageHidden = that.messageHidden;
-	  var resp_message = that.resp_message ;
-      that.messageHidden = !messageHidden
-      that.notehidden = !that.notehidden
-	  if(resp_message['type']=='6' ){
-		uni.navigateTo({
-			url: '/pages/member/task/task'
-		});
-	  }
-	  if(resp_message['type']=='7' && resp_message['webview_url']){
-		 var webview_url = resp_message['webview_url']
-		 uni.navigateTo({
-		    url: '/pages/customerservice/customerservice?url='+webview_url
-		 }); 
-	  }
-    },
+	messageConfirm: function () {
+		var that = this;
+		var messageHidden = that.messageHidden;
+		var resp_message = that.resp_message ;
+		that.messageHidden = !messageHidden
+		that.notehidden = !that.notehidden
+		if(resp_message['type']=='6' ){
+			uni.navigateTo({
+				url: '/pages/member/task/task'
+			});
+		}
+		if(resp_message['type']=='7' && resp_message['webview_url']){
+			var webview_url = resp_message['webview_url']
+			uni.navigateTo({
+				url: '/pages/customerservice/customerservice?url='+webview_url
+			}); 
+		}
+	},
+	
     //取消按钮点击事件  
-    messageCandel: function () {
-      var that = this;
-      that.messageHidden = true,
-      that.notehidden = !that.notehidden
-    },
+	messageCancel: function () {
+		var that = this;
+		that.messageHidden = true
+		that.notehidden = !that.notehidden
+	},
+	
     query_cart: function () {
       var that = this;
       var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';

@@ -1,0 +1,158 @@
+<template>
+	<view class="m-item" :id="'message'+cid">
+		<view class="m-left" v-if="message.user=='home'">
+			<image class="head_icon" src="/static/images/homeHL.png" ></image>
+		</view>
+		<view class="m-content">
+			<view v-if="message.content!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}">
+				<view  :class="'m-content-head-'+message.user">{{message.content}} </view>
+			</view>
+			<view v-if="message.imageurl!=''" class="m-content-head" :class="{'m-content-head-right':message.user=='customer'}" @tap="imgYu(message.imageurl)">
+				<easy-loadimage class="m-image" mode="widthFix"
+				    :scroll-top="scrollTop"
+				    :image-src="message.imageurl" >
+				</easy-loadimage>
+			</view>
+		</view>
+		<view v-if="message.content!='' || message.imageurl!=''" class="m-right">
+			<image class="head_icon" :src="message.avatarUrl" v-if="message.user=='customer'"></image>
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		mapState
+	} from 'vuex'
+	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
+	export default {
+		data(){
+		    return {
+		         
+		    }
+		},
+		 
+		props: {
+			message: {
+				type: Object,
+				default() {
+                    return {};
+                }
+			},
+			cid: {
+				type: [Number, String],
+				default: ''
+			},
+			scrollTop: {
+				type: Number,
+				default: 0
+			}
+		},
+		components: {
+			easyLoadimage,
+		},
+		computed: mapState(['user']),
+		onLoad:function(){
+			var that = this
+			console.log('messageshow onload() scrollTop:'+that.scrollTop)
+		},
+		methods:{
+			imgYu: function (imageurl) {
+				var imgList = [];
+				imgList.push(imageurl);
+				uni.previewImage({
+					current: imageurl,
+					urls: imgList // 需要预览的图片http链接列表
+				})
+			},
+		}
+	}
+</script>
+
+<style>
+	.m-item {
+		display: flex;
+		flex-direction: row;
+		padding-top: 20upx;
+	}
+
+	.m-left {
+		display: flex;
+		flex-direction: row;
+		width: 120upx;
+		justify-content: center;
+		align-items: flex-start;
+	}
+
+	.m-content {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		word-break: break-all;
+	}
+	
+	.m-right {
+		display: flex;
+		width: 120upx;
+		justify-content: center;
+		align-items: flex-end;
+	}
+
+	.head_icon {
+		width: 80upx;
+		height: 80upx;
+		border-radius: 50%;
+	}
+
+	.m-content-head {
+		position: relative;
+	}
+
+	.m-content-head-right {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.m-content-head-home {
+		text-align: left;
+		background: #1482d1;
+		border: 1px #1482d1 solid;
+		border-radius: 20upx;
+		padding: 20upx;
+		color: white;
+	}
+
+	.m-content-head-home:before {
+		border: 15upx solid transparent;
+		border-right: 15upx solid #1482d1;
+		left: -26upx;
+		width: 0;
+		height: 0;
+		position: relative;
+		content: ' '
+	}
+
+	.m-content-head-customer {
+		border: 1upx white solid;
+		background: white;
+		border-radius: 20upx;
+		padding: 20upx;
+	}
+
+	.m-content-head-customer:after {
+		border: 15upx solid transparent;
+		border-left: 15upx solid white;
+		top: 20upx;
+		right: -26upx;
+		width: 0;
+		height: 0;
+		position: relative;
+		content: ' '
+	}
+	
+	.m-image {
+		width: 200rpx;
+		border-radius: 15rpx;
+	}
+</style>

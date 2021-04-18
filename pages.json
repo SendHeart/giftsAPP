@@ -25,7 +25,7 @@
 		{
 			"path": "pages/cart/cart",
 			"style": {
-				"navigationBarTitleText": "储物空间",
+				"navigationBarTitleText": "购物袋",
 				"enablePullDownRefresh": false,
 				"backgroundTextStyle": "dark"
 			}
@@ -34,9 +34,9 @@
 		{
 			"path": "pages/member/message/message",
 			"style": {
-				"app-plus": {
-				   "titleNView": false //禁用原生导航栏
-				}
+				"navigationBarTitleText": "消息",
+				"enablePullDownRefresh": false,
+				"backgroundTextStyle": "dark"
 			}
 		},
 		{
@@ -376,7 +376,7 @@
 		{
 			"path": "pages/goods/list/list",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "搜索商品"
 			}
 		},
 		{
@@ -393,304 +393,6 @@
 				"navigationBarTitleText": "全部评价"
 			}
 		}
-		 /*,
-		{
-		    "path": "pages/tabBar/component/component",
-		    "style": {
-		        "navigationBarTitleText": "内置组件",
-		        "app-plus": {
-		           // "bounce": "vertical",
-		            "titleNView": {
-		                "buttons": [{
-		                    "text": "\ue534",
-		                    "fontSrc": "/static/uni.ttf",
-		                    "fontSize": "22px",
-		                    "color": "#FFFFFF"
-		                }]
-		            }
-		        }
-		    }
-		},
-        {
-            "path": "pages/tabBar/API/API",
-            "style": {
-                "navigationBarTitleText": "接口",
-                "app-plus": {
-                    "titleNView": {
-                        "buttons": [{
-                            "text": "\ue534",
-                            "fontSrc": "/static/uni.ttf",
-                            "fontSize": "22px",
-                            "color": "#FFFFFF"
-                        }]
-                    }
-                }
-            }
-        },
-        {
-            "path": "pages/tabBar/template/template",
-            "style": {
-                "navigationBarTitleText": "模版",
-                "app-plus": {
-                    "titleNView": {
-                        "buttons": [{
-                            "text": "\ue534",
-                            "fontSrc": "/static/uni.ttf",
-                            "fontSize": "22px",
-                            "color": "#FFFFFF"
-                        }]
-                    }
-                }
-            }
-        },
-        {
-            "path": "pages/tabBar/extUI/extUI",
-            "style": {
-                "navigationBarTitleText": "扩展组件",
-                "app-plus": {
-                    "titleNView": {
-                        "buttons": [{
-                            "text": "\ue534",
-                            "fontSrc": "/static/uni.ttf",
-                            "fontSize": "22px",
-                            "color": "#FFFFFF"
-                        }]
-                    }
-                }
-            }
-        },
-		
-        {
-            "path": "pages/component/view/view",
-            "style": {
-                "navigationBarTitleText": "view"
-            }
-        },
-        {
-            "path": "pages/component/scroll-view/scroll-view",
-            "style": {
-                "navigationBarTitleText": "scroll-view"
-            }
-        },
-        {
-            "path": "pages/component/swiper/swiper",
-            "style": {
-                "navigationBarTitleText": "swiper"
-            }
-        },
-        // #ifndef MP-TOUTIAO
-        {
-            "path": "pages/component/cover-view/cover-view",
-            "style": {
-                "navigationBarTitleText": "cover-view"
-            }
-        },
-        {
-            "path": "pages/component/movable-view/movable-view",
-            "style": {
-                "navigationBarTitleText": "movable-view"
-            }
-        },
-        // #endif
-        {
-            "path": "pages/component/text/text",
-            "style": {
-                "navigationBarTitleText": "text"
-            }
-        },
-        {
-            "path": "pages/component/rich-text/rich-text",
-            "style": {
-                "navigationBarTitleText": "rich-text"
-            }
-        },
-        {
-            "path": "pages/component/progress/progress",
-            "style": {
-                "navigationBarTitleText": "progress"
-            }
-        },
-        {
-            "path": "pages/component/button/button",
-            "style": {
-                "navigationBarTitleText": "button"
-            }
-        },
-        {
-            "path": "pages/component/checkbox/checkbox",
-            "style": {
-                "navigationBarTitleText": "checkbox"
-            }
-        },
-        {
-            "path": "pages/component/form/form",
-            "style": {
-                "navigationBarTitleText": "form"
-            }
-        },
-        {
-            "path": "pages/component/input/input",
-            "style": {
-                "navigationBarTitleText": "input",
-                "app-plus": {
-                    "softinputNavBar": "none"
-                }
-            }
-        },
-        {
-            "path": "pages/component/label/label",
-            "style": {
-                "navigationBarTitleText": "label"
-            }
-        },
-        {
-            "path": "pages/component/picker/picker",
-            "style": {
-                "navigationBarTitleText": "picker"
-            }
-        },
-        {
-            "path": "pages/component/picker-view/picker-view",
-            "style": {
-                "navigationBarTitleText": "picker-view"
-            }
-        },
-        {
-            "path": "pages/component/radio/radio",
-            "style": {
-                "navigationBarTitleText": "radio"
-            }
-        },
-        {
-            "path": "pages/component/slider/slider",
-            "style": {
-                "navigationBarTitleText": "slider"
-            }
-        },
-        {
-            "path": "pages/component/switch/switch",
-            "style": {
-                "navigationBarTitleText": "switch"
-            }
-        },
-        {
-            "path": "pages/component/textarea/textarea",
-            "style": {
-                "navigationBarTitleText": "textarea"
-            }
-        },
-        // #ifdef APP-PLUS || MP-WEIXIN
-        {
-            "path": "pages/component/editor/editor",
-            "style": {
-                "navigationBarTitleText": "editor"
-            }
-        },
-        // #endif
-        {
-            "path": "pages/component/navigator/navigator",
-            "style": {
-                "navigationBarTitleText": "navigator"
-            }
-        },
-        {
-            "path": "pages/component/navigator/navigate/navigate",
-            "style": {
-                "navigationBarTitleText": "navigatePage"
-            }
-        },
-        {
-            "path": "pages/component/navigator/redirect/redirect",
-            "style": {
-                "navigationBarTitleText": "redirectPage"
-            }
-        },
-        {
-            "path": "pages/component/image/image",
-            "style": {
-                "navigationBarTitleText": "image"
-            }
-        },
-        // #ifndef MP-ALIPAY
-        {
-            "path": "pages/component/video/video",
-            "style": {
-                "navigationBarTitleText": "video"
-            }
-        },
-        // #endif
-        // #ifndef MP-ALIPAY || MP-TOUTIAO
-        {
-            "path": "pages/component/audio/audio",
-            "style": {
-                "navigationBarTitleText": "audio"
-            }
-        },
-        // #endif
-        // #ifndef MP-TOUTIAO
-        {
-            "path": "pages/component/map/map",
-            "style": {
-                "navigationBarTitleText": "map"
-            }
-        },
-        // #endif
-        {
-            "path": "pages/component/canvas/canvas",
-            "style": {
-                "navigationBarTitleText": "canvas"
-            }
-        },
-        {
-            "path": "pages/component/web-view/web-view",
-            "style": {
-                "navigationBarTitleText": "web-view"
-            }
-        },
-        // #ifdef APP-PLUS
-        {
-            "path": "pages/component/web-view-local/web-view-local",
-            "style": {}
-        },
-        // #endif
-        {
-            "path": "platforms/app-plus/speech/speech",
-            "style": {
-                "navigationBarTitleText": "语音识别"
-            }
-        },
-        {
-            "path": "platforms/app-plus/orientation/orientation",
-            "style": {
-                "navigationBarTitleText": "方向传感器"
-            }
-        },
-        {
-            "path": "platforms/app-plus/proximity/proximity",
-            "style": {
-                "navigationBarTitleText": "距离传感器"
-            }
-        },
-        {
-            "path": "platforms/app-plus/push/push",
-            "style": {
-                "navigationBarTitleText": "推送"
-            }
-        },
-        {
-            "path": "platforms/app-plus/shake/shake",
-            "style": {
-                "navigationBarTitleText": "摇一摇"
-            }
-        },
-       
-        {
-            "path": "platforms/app-plus/feedback/feedback",
-            "style": {
-                "navigationBarTitleText": "问题反馈"
-            }
-        }
-		*/
     ],
 	/*
     "subPackages": [{
@@ -1575,10 +1277,10 @@
         }
     },
     "tabBar": {
-		"color": "#fff",
-		"selectedColor": "#EC4844",
+		"color": "#EEEEEE",
+		"selectedColor": "#FFFFFF",
 		"borderStyle": "black",
-		"backgroundColor": "#444444",
+		"backgroundColor": "#1d1d1d",
         "list": [{
                 "pagePath": "pages/hall/hall",
                 "iconPath": "/static/images/home.png",
@@ -1597,9 +1299,9 @@
 			
 			{
 				"pagePath": "pages/member/message/message",
-				"iconPath": "/static/images/logo.png",
-				"selectedIconPath": "/static/images/logo_s.png",
-				"text": "智能助手"
+				"iconPath": "/static/images/mess.png",
+				"selectedIconPath": "/static/images/mess_s.png",
+				"text": "消息"
 			},
 			/*
 			{
@@ -1613,7 +1315,7 @@
 		   	"pagePath": "pages/cart/cart",
 		   	"iconPath": "/static/images/history.png",
 		   	"selectedIconPath": "/static/images/history_s.png",
-		   	"text": "储物空间"
+		   	"text": "购物袋"
 			},
 			{
 				"pagePath": "pages/my/index",

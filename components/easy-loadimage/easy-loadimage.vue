@@ -1,6 +1,6 @@
 <template>
     <view class="easy-loadimage" :id="uid">
-        <image class="origin-img" :src="imageSrc" :mode="mode"
+        <image class="origin-img" lazy-load :src="imageSrc" :mode="mode"
             v-if="loadImg&&!isLoadError" 
             v-show="showImg"
             :class="{'no-transition':!openTransition,'show-transition':showTransition&&openTransition}"
@@ -8,7 +8,7 @@
             @error="handleImgError">
         </image>
         <view class="loadfail-img" v-else-if="isLoadError"></view>
-        <view :class="['loading-img',loadingMode]" v-show="!showImg&&!isLoadError"></view>
+        <view :class="['loading-img',loadingMode]" v-show="!showImg &&!isLoadError"></view>
     </view>
 </template>
 <script>
@@ -29,6 +29,7 @@ export default{
         },
         scrollTop:{
             type: Number,
+			default:0
         },
         loadingMode:{
             type: String,
@@ -46,8 +47,11 @@ export default{
         }
     },
     watch:{
-        scrollTop(val){
-            this.onScroll(val)
+        scrollTop(val,oldval){
+            //this.onScroll(val)
+			this.$nextTick(() => {
+				this.onScroll()
+			})
         }
     },
     data(){
@@ -62,24 +66,30 @@ export default{
     methods:{
         init(){
             this.uid = 'uid-' + generateUUID();
-            this.$nextTick(this.onScroll)
+            //this.$nextTick(this.onScroll)
+			this.$nextTick(() => {
+				this.onScroll()
+			})
         },
         handleImgLoad(e){
-            // console.log('success');
-            this.showImg = true;
-            // this.$nextTick(function(){
-            //     this.showTransition = true
-            // })
+            //console.log('success');
+			this.showImg = true;
+			this.$nextTick(function(){
+				this.showTransition = true
+			})
+			/*
             setTimeout(()=>{
                 this.showTransition = true
             },50)
+			*/
         },
         handleImgError(e){
             // console.log('fail');
             this.isLoadError = true;
         },
-        onScroll(scrollTop){
+        onScroll(scrollTop=0){
             // 加载ing时才执行滚动监听判断是否可加载
+			//console.log('easy-loadimage onScroll() loadImg:'+this.loadImg+' scrollTop:'+JSON.stringify(scrollTop))
             if(this.loadImg || this.isLoadError) return;
             const id = this.uid
             const query = uni.createSelectorQuery().in(this);

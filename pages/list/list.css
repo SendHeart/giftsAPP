@@ -345,6 +345,22 @@ swiper-item image {
 .price-now::first-letter {
   font-size: 20rpx;
 }
+.price-now .sfont {
+  font-size: 20rpx;
+}
+
+.left-tag {
+  height: 32rpx;
+  line-height: 32rpx;
+  color: #fc9326;
+  font-size: 24rpx;
+  text-align: center;
+  border: 1rpx #EC4844 solid;
+  border-radius: 6rpx;
+  padding: 2rpx 6rpx;
+}
+
+
 .goods_bottom {
   display: flex;
   flex-direction: row;

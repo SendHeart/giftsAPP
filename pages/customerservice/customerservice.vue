@@ -6,10 +6,21 @@
 		<uni-search-bar placeholder="商品名称" @input="input_goodsname" clearButton="no" nocancel="yes" nobutton="yes" @confirm="searchTapTag" />
 	</view>
 	<mescroll-body ref="mescrollRef" top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick"  @topclick="goTop" @init="mescrollInit">	 <!-- @scroll="scroll" -->
-		<view v-for="(item,index) in recommentList"  :key="index">
+		<view v-for="(item,index) in recommentList" :key="index">
 			<view class="chat-info">
 				<view class="chat-title">
-					<view style="line-height: 80rpx;">{{(item.goods_id>0)?'ID:':''}}{{item.goods_id}}</view>
+					<view style="line-height: 80rpx;">
+						<text style="margin-right:10px;">
+							{{(item.goods_id>0)?'ID:':''}}{{item.goods_id}}
+						</text>						
+					</view>
+					<view v-if="item.msg_num > 0" style="width: 100px; display: flex;flex-direction: row;">
+						<uni-icons type="chat" :color="'#e80000'" size="20" />						 
+						<view style="margin-left:-3px;">
+							<uni-badge :text="' '+item.msg_num" type="warning" size="small" />
+						</view>
+						 
+					</view>
 					<view class="chat-userinfo" @tap="navigateToChatroom(item)">
 						<view class="chat-nickname">{{item.m_id?'ID:'+item.m_id+' ':''}}</view>
 						<view class="chat-nickname">{{item.wx_nickname?item.wx_nickname+' ':''}}</view>
@@ -19,7 +30,7 @@
 				<view class="chat-content">
 					<image  @tap="showGoods(item)" class="chat-img" :src="item.image"></image>
 					<view class="chat-item">
-						<view class="chat-goods-name">{{item.name}}</view>
+						<text class="chat-goods-name">{{item.name}}</text>
 						<!--
 						<view class="chat-goods-tags">
 							<view class="left-name-tag">{{item.act_info?item.act_info:''}}</view>
@@ -38,7 +49,7 @@
 
 <script>
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
-	
+import uniBadge from '@/components/uni-badge/uni-badge.vue'
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
 var shop_type = getApp().globalData.shop_type;
@@ -107,7 +118,9 @@ export default {
 	}
 	},
 	mixins: [MescrollMixin], // 使用mixin
-	components: {},
+	components: {
+		uniBadge
+	},
 	props: {},
 	mounted() {
 		this.isInit = true; // 标记为true

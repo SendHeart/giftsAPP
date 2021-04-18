@@ -193,8 +193,8 @@
 				}
 			}, false);
 			//#endif
-			wx.setStorageSync('appid', appid);
-			wx.setStorageSync('appsecret', appsecret);
+			uni.setStorageSync('appid', appid);
+			uni.setStorageSync('appsecret', appsecret);
 			uni.getSystemInfo({
 				success: function(e) {
 					// #ifndef MP

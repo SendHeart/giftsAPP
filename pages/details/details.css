@@ -131,11 +131,12 @@ page {
   height: 300rpx;
 }
 
-.shopping_container {
+
+.shopping-container {
   display: flex;
   flex-direction: column;
   justify-content: center; /*子项横轴上居中对齐*/
-  text-align: center;
+  text-align: left;
   background: #fff;
   border-top: 1rpx solid #eee;
   margin-bottom: 1rpx;
@@ -143,54 +144,64 @@ page {
   z-index: 1;
 }
 
-.shopping_container .img_tag {
+.shopping-container .img-tag {
   width: 10%;
   height: 30rpx;
   margin: 10px;
 }
 
-.shopping_container .goods-name {
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  width: 96%;
-  margin: 0 auto;
-  font-size: 34rpx;
-  font-weight: bold;
-  color: #444;
+.icontags {
+  font-size: 22rpx;
+  background-color: #444;
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+  color: #fff;
 }
-.shopping_container .goods-org {
-  color: #EC4844;
+
+.shopping-container .goods-name {
+	display: flex;
+	flex-direction: column;
+	align-content: left;
+	width: 94%;
+	margin: 0 auto;
+	font-size: 34rpx;
+	font-weight: 600;
+	color: #444;
+}
+.shopping-container .goods-org {
+  color: #999999;
   font-size: 24rpx;
   margin-left:10rpx;
 }
 
-.shopping_container .goods_prom {
-  display: block;
-  color: #EC4844;
-  font-size: 28rpx;
-  font-weight: normal;
-  white-space: nowrap;
-  overflow-x: hidden;
+.shopping-container .goods-prom {
+	display: block;
+	color: #999999;
+	font-size: 28rpx;
+	font-weight: normal;
+	white-space: nowrap;
+	overflow-x: hidden;
 }
 
-.shopping_container .goods-info {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 0;
-  font-size: 32rpx;
+.shopping-container .goods-info {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: left;
+	padding: 20rpx 0;
+	font-size: 28rpx;
+	width: 94%;
+	margin: 0 auto;
 }
 
 .goods-info .left-tag {
-  width: 200rpx;
-  height: 60rpx;
-  background: #EC4844;
-  border-radius: 0 10rpx 10rpx 0;
-  line-height: 60rpx;
-  color: #fff;
-  font-size: 28rpx;
+	background: #eeeeee;
+	border-radius: 10rpx;
+	color: #999;
+	font-size: 24rpx;
+	text-align: center;
+	padding: 6rpx 20rpx;
+	width: 30%;
 }
 
 .goods-info .right-tag {
@@ -202,7 +213,7 @@ page {
 }
 .goods-info .price-real {
 font-size: 32rpx;
-  color: #EC4844;
+  color: #FF952D;
   font-weight: bold;
   text-align: right;
 } 
@@ -355,7 +366,7 @@ font-size: 32rpx;
 	text-align: center;
 	width: 90%;
 	height: 80rpx;
-	background-color: #EC4844;
+	background-color: #FF952D;
 	color: #fff;
 	border-radius: 20rpx;
 	font-size: 28rpx;
@@ -372,7 +383,7 @@ font-size: 32rpx;
 	color: #444444;
 	font-size: 24rpx;
 	border-radius: 0;
-	border-right: 1rpx solid #eee;
+	border-right: 0rpx solid #eee;
 	display: flex;
 	flex-direction: column;
 }
@@ -622,7 +633,7 @@ font-size: 32rpx;
   border: 3rpx solid #e34c55;
 }
 .comm-listitem {
-  color: #e34c55;
+  color: #999999;
   font-size: 24rpx;
   font-weight: bold;
   line-height: 64rpx;

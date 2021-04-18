@@ -24,15 +24,6 @@
   content:'\e6d5';
 }
 
-.recharge-amount {
-	color:red;
-	font-size:24rpx;
-}
-
-.recharge-amount:before {
-	content: '￥';	
-}
-
 .recharge-info {
 	width: 100%;
 	margin-top: 20rpx;
@@ -44,6 +35,7 @@
 	display: flex;
 	flex-direction: row;
 	justify-content:space-around; 
+	background-color: #FF952D;
 	padding: 10rpx;
 	z-index: 1;
 }
@@ -60,11 +52,12 @@
 	border-radius: 20rpx;
 	border: 1rpx solid #eee;
 	overflow: hidden;
+	background-color: #FFCA4B;
 }
 
 .recharge-item-selected {
-	background: #e34c55;
-	color: #fff;
+	background: #fff4e3!important;
+	color: #000000!important;
 }
 
 .recharge-item-unselected {
@@ -88,53 +81,75 @@
 	content: '￥';	
 }
 
-.recharge_recomment {
+.recharge-recomment {
 	width: 100%;
 	background-color: #f2f2f2;
 	background-repeat: norepeat;
 	align-content: center;
 	opacity: 1;
-	background-size: 100% 80%;
+	background-size: 100% 100%;
 }
 
-.recharge_recomment image {
+.recharge-recomment image {
   width: 100%;
   height: 300rpx;
 }
 
 .recharge-confirm {
 	display: flex;
+	position: fixed;	
 	flex-direction: row;
 	justify-content:center; 
 	text-align: center;
 	align-content: center;
 	width: 100%;
-	margin:20rpx auto ;
-	z-index: 1;
+	height: 96rpx;	
+	z-index: 100;
+	bottom: 0;
+	border-top: 1px solid #eee;
+	background: #FFFFFF;
+	padding: 12rpx;
 }
 
 .recharge-confirm button {
-	line-height: 100rpx;
-	width: 220rpx;
-	height: 100rpx;
-	background: #4c7ce3;
-	color: white;
-	font-size: 34rpx;
-	border-radius: 50rpx;
+	line-height: 96rpx;
+	width: 250rpx;
+	height: 96rpx;
+	/*background: linear-gradient(to bottom, #e34c55 0%,#e30715 100%);*/
+	background: #FF952D;
+	color: #ffffff;
+	font-size: 32rpx;
+	border-radius: 20rpx;
 	margin-right:50rpx;
 }
 
 .recharge-confirm text {
-	line-height: 100rpx;
-	height: 100rpx;
-	width: 170rpx;
-	font-size: 48rpx;
+	display: flex;
+	flex-direction: row;
+	justify-content:center; 
+	text-align: center;
+	align-content: center;	
+	margin:0 auto ;
+	padding:20rpx 0;
+	z-index: 1;	
+}
+.recharge-amount {
+	width: 15%;
+	font-size:30rpx !important;
 	font-weight: bold;
-	color: #444;
-	padding: 10rpx;
-	margin-left: 60rpx;
+	margin: 0 !important;
+	text-align: left !important;
 }
 
+.recharge-agreement{
+	padding-bottom: 60px;
+}
+.recharge-amount:before {
+	content: '￥';	
+}
+.recharge-confirm .recharge-title{
+	width: 20%;
+}
 .carts-container {
 	position: relative;
 	width: 100%;

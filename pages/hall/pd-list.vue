@@ -1,6 +1,6 @@
 <!-- 商品列表组件 <pd-list :list="xx"></pd-list> -->
 <template>
-	<view class="pd-list">
+	<view class="pd-list" style="margin-top: 20rpx;">
 		<!--瀑布流列表-->
 		<view v-if="activeIndex > 0" id="venues_box" class="venues-box">
 		  <view class="box-left">
@@ -19,7 +19,7 @@
 					<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
 					-->
 				  <view class="goods-tags">
-		            <text v-if="item.goods_org==4" class="goods-org">京东物流</text>
+		            <text v-if="item.goods_org==4" class="goods-org">极速达</text>
 		            <text v-if="item.discount<100" class="img-discount">可用券</text>
 		          </view>
 		          <text class="goods-name">{{item.name}}</text>
@@ -29,7 +29,7 @@
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-		            <view class="price-now">￥{{item.sell_price}}</view>
+		            <view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 		          </view>
 		        </view>
 		      </view>
@@ -52,7 +52,7 @@
 						<image :hidden="item.show"  class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />  
 					-->
 				  <view class="goods-tags">
-		            <text v-if="item.goods_org==4" class="goods-org">京东物流</text>
+		            <text v-if="item.goods_org==4" class="goods-org">极速达</text>
 		            <text v-if="item.discount<100" class="img-discount">可用券</text>
 		          </view>
 		          <text class="goods-name">{{item.name}}</text>
@@ -62,7 +62,7 @@
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-		            <view class="price-now">￥{{item.sell_price}}</view>
+		            <view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 		          </view>
 		        </view>
 		      </view>
@@ -75,17 +75,22 @@
 				    :scroll-top="scrollTop"
 				    :image-src="item.image" >
 				</easy-loadimage>
-				-->	    
+				-->
 				<image class="recomm-img" :src="item.image"></image>
-					
-				<text style="font-size:12px;">{{item.name}}</text>
-			    <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
-			    <view class="goods-tags">
-			      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
-			    </view>    
-				<view class="price-list">
-				  <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-				  <view class="price-now">￥{{item.sell_price}}</view>
+				<view class="recomm-item-info">					
+					<view class="goods-tags">
+						<text v-if="item.goods_org==4" class="goods-org">极速达</text>
+						<text v-if="item.discount<100" class="img-discount">可用券</text>
+					</view>
+					<text class="goods-name">{{item.name}}</text>
+					<view class="goods-prom">{{item.act_info?item.act_info:''}}</view>  
+					<view class="goods-tags">
+						<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
+					</view>    
+					<view class="price-list">
+						<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
+						<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
+					</view>
 				</view>
 			 </view>
 		</view>

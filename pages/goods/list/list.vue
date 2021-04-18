@@ -1,25 +1,32 @@
 <template>
 <view>
 <view v-if="!hidddensearch" :hidden="hidddensearch" class="search">
-	<view class="wx-input">
-		<input name="search" :value="keyword" placeholder="好礼搜一下" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag"></input>
-		<image @tap="searchTapTag" src="/static/images/search-btn.png"></image>
+	<view class="wx-input" style="background-color:#000000">		 
+		<uni-icons :color="'#999999'" class="icon-search" type="search" size="20" style="margin-left: 20rpx;margin-top: -5rpx;" />
+		<input name="search" :value="keyword" placeholder="输入商品名称" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag" style="color:#F0F0F0;font-size:14px;"></input>
+		<uni-icons :color="'#999999'" class="icon-clear" type="clear" size="20" @tap="clear_goodsnameTapTag" style="margin-right: 20rpx;margin-top: -7rpx;" />
 	</view>
+	<!--
 	<text class="searchcancel" @tap="goBack">取消</text>
+	-->
 </view>
-<!--<view  wx:if="!hidddensearch" hidden='{{hidddensearch}}' class="serach-comm">
+<!--
+<view  wx:if="!hidddensearch" hidden='{{hidddensearch}}' class="serach-comm">
   <view class="search-comm-vote linegray">
     <text>对结果是否满意?</text>
     <view class="search-comm-confirm" style=''>
       <view bindtap="satisfyTagTap" data-satisfy="1" class='lable' style="{{satisfy==1?'background-color:green;color:white':'background-color:white;color:gray'}}">是</view>
       <view bindtap="satisfyTagTap" data-satisfy="2" class='lable'style="{{satisfy==2?'background-color:green;color:white':'background-color:white;color:gray'}}">否</view>
     </view> 
-</view>-->
-<movable-area class="inlinetips" :style="'margin-left:' + windowWidth-45 + 'px;margin-top:' + (hidddensearch?80:130) + 'rpx;'"><!-- style="height:{{dkheight}}px"  这个组件撑满页面时部分手机无法点击进入详情页-->
+</view>
+-->
+<!--
+<movable-area class="inlinetips" :style="'margin-left:' + windowWidth-45 + 'px;margin-top:' + (hidddensearch?80:130) + 'rpx;'">
 <movable-view class="floatlayer" x="330" y="10" direction="all">
 <image src="../../../static/images/floatbanner.png" @tap="gotoAITagTap"></image>
 </movable-view>
 </movable-area>
+-->
 <view class="banner" :style="(hidddensearch?'top:0;':'top:80rpx;')">
 	<view class="top-bar2" style>
 		<block v-for="(item, index) in navList2" :key="index">
@@ -31,7 +38,7 @@
 		</block>
 	</view>
 </view>
-<mescroll-body top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+<mescroll-body top="10" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 	<pd-list :list="pdList"></pd-list>
 </mescroll-body>
 <!--
@@ -71,7 +78,7 @@ var navList2 = [{
 export default {
   data() {
     return {
-      title_name: '搜索礼物',
+      title_name: '搜索商品',
       title_logo: '/static/images/footer-icon-05.png',
       img_discount: '/static/images/discount.png',
       default_img: weburl + '/uploads/default_goods_image.png',
@@ -82,7 +89,7 @@ export default {
       all_rows: 1,
       venuesItems: [],
       hidddensearch: true,
-      search_goodsname: null,
+      search_goodsname: '',
       keyword: '',
       satisfy: true,
       is_satiify: 0,
@@ -179,20 +186,21 @@ export default {
     var goods_type_value = options.goods_type_value ? options.goods_type_value : 0;
     var goods_type = 'goods_middle_search';
     var hidddensearch = options.search == 1 ? false : true;
-    middle_title = options.search == 1 ? '搜索礼物' : middle_title;
-	  wx.setNavigationBarTitle({
-	      title: middle_title
-	    })
-    that.setData({
-      username: username,
-      token: token,
-      navlist_toView: navlist_toView,
-      goods_type: goods_type,
-      goods_type_value: goods_type_value,
-      hidddensearch: hidddensearch
-    });
+    middle_title = options.search == 1 ? '搜索商品' : middle_title
+	
+	uni.setNavigationBarTitle({
+		title: middle_title
+	})
+	
+    that.username = username
+    that.token = token
+    that.navlist_toView = navlist_toView
+    that.goods_type = goods_type
+    that.goods_type_value = goods_type_value
+    that.hidddensearch = hidddensearch
+	that.keyword = ''
      
-    wx.getSystemInfo({
+    uni.getSystemInfo({
       success: function (res) {
         that.setData({
           platform: res.platform,
@@ -209,9 +217,7 @@ export default {
     var pages = getCurrentPages();
 
     if (pages.length > 1) {
-      that.setData({
-        title_logo: '/images/back.png'
-      });
+      that.title_logo = '/images/back.png'
     }
 	/*
 	setTimeout(() => {
@@ -228,7 +234,7 @@ export default {
   },
   mounted() {
   	this.isInit = true; // 标记为true
-  	this.mescroll.triggerDownScroll();
+  	//this.mescroll.triggerDownScroll();
   },
   methods: {
 	load: function() {
@@ -256,11 +262,11 @@ export default {
       var pages = getCurrentPages();
 
       if (pages.length > 1) {
-        wx.navigateBack({
+        uni.navigateBack({
           changed: true
         }); //返回上一页
       } else {
-        wx.switchTab({
+        uni.switchTab({
           url: '../hall/hall'
         });
       }
@@ -286,17 +292,16 @@ export default {
       }
 
       if (tab != 'search_goodsname') {
-        search_goodsname = '';
+        search_goodsname = ''
       }
 
-      that.setData({
-        activeIndex: index,
-        tab: tab,
-        tab_value: tab_value,
-        page: 1,
-        search_goodsname: search_goodsname,
-        toView: toView ? toView : 0,
-      });
+      that.activeIndex = index
+      that.tab = tab
+      that.tab_value = tab_value
+      that.page = 1
+      that.search_goodsname = search_goodsname
+      that.toView = toView ? toView : 0
+	  
 	  that.goTop()
       //console.log('toView:' + that.toView);
       //that.get_goods_list();
@@ -353,7 +358,7 @@ export default {
     goTop: function (e) {
       // 一键回到顶部
 		var that = this;
-		var navList_new = wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : '';
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : '';
      	that.pdList = [] ;
 		that.page = 1 ;
 		that.pageoffset = 0 ;
@@ -389,10 +394,12 @@ export default {
     search_goodsnameTapTag: function (e) {
       var that = this;
       var keyword = e.detail.value;
-      that.setData({
-        keyword: keyword
-      });
+      that.keyword = keyword
     },
+	clear_goodsnameTapTag: function () {
+	  var that = this	   
+	  that.keyword = ''
+	},
 	showGoods: function (e) {
 	  // 点击购物车某件商品跳转到商品详情
 	  var objectId = e.id ; //currentTarget.dataset.objectId;
@@ -459,7 +466,7 @@ export default {
 		//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
 		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
-			console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
+			//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
 			mescroll.endSuccess(curPageData.length);
 			//设置列表数据
 			if(mescroll.num == 1|| this.page == 1) {
@@ -489,8 +496,8 @@ export default {
 		var page = that.page;
 		var pagesize = that.pagesize;
 		var pageoffset = that.pageoffset;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		var goods_type = that.goods_type;
 		var goods_type_value = that.goods_type_value;
 		var goods_sales = that.tab2;
@@ -498,21 +505,30 @@ export default {
 		var search_goodsname = that.search_goodsname;
 		var keyword = that.keyword;
 		var shop_type = that.shop_type;
-		var shape = 1;
+		var shape = 1
 		var all_rows = that.all_rows
-	
-		if(page > all_rows && page>1) {
-			console.log('加载完成 page:', page, 'all_rows:',all_rows);
-			that.is_goodslist_loading = false ;
-			successCallback && successCallback('n');
-			return ;
+		if(keyword=='') {
+			console.log('商品名称为空:', keyword)
+			that.is_goodslist_loading = false
+			 uni.showToast({
+			 	title: '商品名称为空',
+			 	icon: 'loading',
+			 	duration: 2000
+			 });
+			successCallback && successCallback('n')
+			return 
 		}
-		that.is_goodslist_loading = true ;
-		
+		if(page > all_rows && page>1) {
+			console.log('加载完成 page:', page, 'all_rows:',all_rows)
+			that.is_goodslist_loading = false 
+			successCallback && successCallback('n')
+			return 
+		}
+		that.is_goodslist_loading = true 		
 		that.status = 'loading';
 		
-		try{
-			wx.request({
+		try {
+			uni.request({
 			  url: weburl + '/api/client/get_goods_list',
 			  method: 'POST',
 			  data: {
@@ -540,41 +556,47 @@ export default {
 			    var pageoffset = res.data.pageoffset;
 				
 			    if (!venuesItems_new) {
-					that.is_goodslist_loading = false ;
+					that.is_goodslist_loading = false 
+					uni.showToast({
+						title: '搜到内容为空',
+						icon: 'loading',
+						duration: 2000
+					});	
 					successCallback && successCallback(res.data.status);
 					return;
 			    } 
 				
-			    if (venuesItems_new) {
-			      for (var i = 0; i < venuesItems_new.length; i++) {
-			        venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
+				if (venuesItems_new) {
+					for (var i = 0; i < venuesItems_new.length; i++) {
+						venuesItems_new[i]['short_name'] = venuesItems_new[i]['name'].substring(0, 10) + '...';
 						
-			        if (!venuesItems_new[i]['act_info']) {
-			          venuesItems_new[i]['act_info'] = '';
-			        }
+						if (!venuesItems_new[i]['act_info']) {
+							venuesItems_new[i]['act_info'] = '';
+						}
 						
-			        if (!venuesItems_new[i]['goods_tag']) {
-			          venuesItems_new[i]['goods_tag'] = '';
-			        } else {
-			          venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
-			        }
-					if (venuesItems_new[i]['activity_image'].indexOf("http") < 0 && venuesItems_new[i]['activity_image']) {
-					  venuesItems_new[i]['activity_image'] = weburl + '/' + venuesItems_new[i]['activity_image'];
-					}
+						if (!venuesItems_new[i]['goods_tag']) {
+							venuesItems_new[i]['goods_tag'] = '';
+						} else {
+							venuesItems_new[i]['goods_tag'] = venuesItems_new[i]['goods_tag'].substring(0, 10);
+						}
+						if (venuesItems_new[i]['activity_image'].indexOf("http") < 0 && venuesItems_new[i]['activity_image']) {
+							venuesItems_new[i]['activity_image'] = weburl + '/' + venuesItems_new[i]['activity_image'];
+						}
 					
-					if (venuesItems_new[i]['image'].indexOf("http") < 0 && venuesItems_new[i]['image']) {
-					  venuesItems_new[i]['image'] = weburl + '/' + venuesItems_new[i]['image'];
-					}
+						if (venuesItems_new[i]['image'].indexOf("http") < 0 && venuesItems_new[i]['image']) {
+							venuesItems_new[i]['image'] = weburl + '/' + venuesItems_new[i]['image'];
+						}
 								
-			        venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
+						venuesItems_new[i]['image'] = venuesItems_new[i]['activity_image'] ? venuesItems_new[i]['activity_image'] : venuesItems_new[i]['image'];
 	
-				  }
-				  that.page = page + 1 ;
-				  that.pageoffset = pageoffset ;
-				  that.all_rows = all_rows ;
-				  console.log('加载 page:', page, 'all_rows:',all_rows,' venuesItems_new:',venuesItems_new);
-				  // 回调
-				  successCallback && successCallback(venuesItems_new);
+					}
+					that.page = page + 1 ;
+					that.pageoffset = pageoffset ;
+					that.all_rows = all_rows ;
+					console.log('加载 page:', page, 'all_rows:',all_rows,' venuesItems_new:',JSON.stringify(venuesItems_new));
+									
+					// 回调
+					successCallback && successCallback(venuesItems_new);
 			    }
 			  }
 			});

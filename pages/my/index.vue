@@ -1,41 +1,57 @@
 <template>
-<view class="page">
-	<mescroll-body top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
+<view class="page">	
+	<mescroll-body v-show="!isShowImg" top="30" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
 	<view class="" scroll-y >
-		<view style="display:flex;flex-direction: row;justify-content: center;">
+		<view class="memcard" >
 			<view class="userinfo">
+				<!--
 				<view class="userinfo-title">
 					<image class="userinfo-title-scanqr" src="/static/images/scanqr_s.png" background-size="cover" @tap="scan"></image>
 					<text class="userinfo-title-mid">{{m_id>0?'ID:'+m_id:''}}</text>
 				</view>
+				-->
 				<view class="userinfo-cards-info">
 					<image class="userinfo-cards-logo" :src="card_logo?card_logo:default_avatar" mode="aspectFill" />
 					<view class="userinfo-cards-name">
 						<text class="userinfo-cards-title">{{card_name}}</text>
 					</view>
-					<image class="userinfo-avatar" @click.stop="chooseImage(0)" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover"></image>
+					<view class="userinfo-cards-mid">
+						<text class="cards-id">{{m_id>0?'MEMBER ID:'+m_id:''}}</text>
+					</view>					 
 				</view>
-				<view class="userinfo-cards-item" v-if="card_no!=''">
-					<text class="userinfo-cards-no">Global No.{{card_no}}</text>
+				<view class="user-info">
+					<view>
+						<image class="user-info-avatar" @click.stop="chooseImage(0)" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover"></image>
+					</view>
+					<view><text class="user-info-nickname" @click.stop="user_nicknameTapTag()">{{nickname?nickname:'匿名'}}</text></view>
 				</view>
-				<view class="userinfo-cards-item" v-if="card_no!=''">
-					<text class="userinfo-cards-due">发于:{{card_due_start}}</text>
-					<text class="userinfo-cards-due">止于:{{card_due_end}}</text>
+				
+				<view class="userinfo-cards-item" v-if="card_no!=''">					 
+					<text class="userinfo-cards-no">CARD No. {{card_no}}</text>
+				</view>
+				<view class="userinfo-cards-item" style="margin:40rpx 0 0 20rpx; justify-content: left;" v-if="card_no!='' && hiddenNickname">
+					<text class="userinfo-cards-due">VALID FROM:{{card_due_start}}</text>
+					<text class="userinfo-cards-due">VALID THRU:{{card_due_end}}</text>
 				</view>
 				<view class="userinfo-cards-nickname" v-if="card_no!=''">
 					<view v-if="!hiddenNickname" style="display: flex;flex-direction:column;justify-content: center;">
 						<input class="userinfo-nickname" style="margin-top:0rpx;color:#FFFFFF;border:1px solid #efefef;" maxlength="50" v-model="nickname" placeholder="请输入昵称" @input="onKeyUserNickNameInput" />
 						<button class="userinfo-nickname" style="margin-top:0rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="update_userinfo">确定</button>						
 					</view>					
-					<text v-if="hiddenNickname" class="userinfo-nickname" @click.stop="user_nicknameTapTag()">{{nickname?nickname:'匿名'}}</text>
-					<text v-if="hiddenNickname" class="userinfo-cards-expend" @tap="navigateToRecharge">延长会员期限</text>
-				</view>
-				<view class="userinfo-cards-nickname" v-if="card_no==''">
-					<button class="userinfo-cards-join" style="margin-top:10rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#444;background:#f2f2f2" hover-class='none' @tap="navigateToRecharge">立即入会</button>
-				</view>
+				</view>				
 			</view>
 		</view>
-		
+		<view class="cardrenew">
+			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue" @tap="navigateToRecharge">     
+				<text>您的会员卡已过期，继续使用请延长会籍期限</text>
+			</view>
+			<view class="cardrenew-btn" v-if="card_no!='' && is_card_overdue" @tap="navigateToRecharge">
+				<text>延长会籍期限</text>
+			</view>
+			<view class="cardrenew-btn" v-if="card_no==''" @tap="navigateToRecharge">     
+				<text>立即入会</text>
+			</view>
+		</view>
 		<view class="menu-area">
 			<view @tap="navigateToOrder" class="order" data-status="0">
 				<image src="/static/images/order.png" />
@@ -54,27 +70,27 @@
 				<text>待收货</text>
 			</view>
 		  	<view @tap="navigateToOrder" class="order" data-status="5">
-				<image src="/static/images/iconfont-help.png" />
+				<image src="/static/images/tuihuanhuo.png" />
 				<text>退换货</text>
 			</view>
 			<view @tap="navigateToMyCoupon" class="order">
-				<image src="/static/images/iconfont-card.png" />
-				<text>优惠券</text>
+				<image src="/static/images/youhuiquan.png" />
+				<text>贝叶金</text>
 			</view>
 			<view @tap="navigateToAccount" class="order">
 				<image src="/static/images/account.png" />
 				<text>我的钱包</text>
 			</view>
 			<view @tap="navigateToAgreement('29')" class="order">
-				<image src="/static/images/u633.png" />
-				<text>会员协议</text>
+				<image src="/static/images/xieyi.png" />
+				<text>会籍协议</text>
 			</view>
 			<view @tap="navigateToCustomerService" class="order">
-				<image src="/static/images/u631.png" class="png" mode="aspectFit"></image>
-				<text>联系客服</text>
+				<image src="/static/images/kefu.png" class="png" mode="aspectFit"></image>
+				<text>VIP客服</text>
 			</view>
 			<view @tap="relogin" class="order">
-				<image src="/static/images/icon_login_name_red.png" />
+				<image src="/static/images/reset.png" />
 				<text>重新登录</text>
 			</view>
 			<view v-if="userauth.location == 1" @tap="navigateToMyLocation" class="order">
@@ -88,7 +104,7 @@
 			</view>
 			<view v-if="userauth.article==1" @tap="navigateToArticle" class="order">
 				<image src="/static/images/u621.png" />
-				<text>送心文章</text>
+				<text>黑贝会文章</text>
 			</view>
 			<view v-if="userauth.shoper==1" @tap="navigateToShopowner" class="order">
 				<image src="/static/images/u633.png" />
@@ -249,6 +265,42 @@
 	</view>
 	</scroll-view>
 	-->
+	<uni-popup :show="isShowImg" type="top" :custom="true" :mask-click="false">
+		<view class="uni-tip-content">
+			<view class='cropper-content'>
+				<view class="uni-corpper" :style="'width:'+cropperInitW+'px;height:'+cropperInitH+'px;background:#000'">
+					<view class="uni-corpper-content" :style="'width:'+cropperW+'px;height:'+cropperH+'px;left:'+cropperL+'px;top:'+cropperT+'px'">
+						<image :src="imageSrc" :style="'width:'+cropperW+'px;height:'+cropperH+'px'"></image>
+						<view class="uni-corpper-crop-box" @touchstart.stop="contentStartMove" @touchmove.stop="contentMoveing" @touchend.stop="contentTouchEnd"
+						    :style="'left:'+cutL+'px;top:'+cutT+'px;right:'+cutR+'px;bottom:'+cutB+'px'">
+							<view class="uni-cropper-view-box">
+								<view class="uni-cropper-dashed-h"></view>
+								<view class="uni-cropper-dashed-v"></view>
+								<view class="uni-cropper-line-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-line-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-line-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-line-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-point point-t" data-drag="top" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-point point-tr" data-drag="topTight"></view>
+								<view class="uni-cropper-point point-r" data-drag="right" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-point point-rb" data-drag="rightBottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-point point-b" data-drag="bottom" @touchstart.stop="dragStart" @touchmove.stop="dragMove" @touchend.stop="dragEnd"></view>
+								<view class="uni-cropper-point point-bl" data-drag="bottomLeft"></view>
+								<view class="uni-cropper-point point-l" data-drag="left" @touchstart.stop="dragStart" @touchmove.stop="dragMove"></view>
+								<view class="uni-cropper-point point-lt" data-drag="leftTop"></view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class='cropper-config'>				 
+				<button type="primary reverse" @click="cancelImage" style='margin-top: 30rpx;'> 取消 </button>
+				<button type="warn" @click="getImageInfo" style='margin-top: 30rpx;'>确定</button>
+			</view>
+			<canvas canvas-id="myCanvas" :style="'position:absolute;border: 1px solid red; width:'+imageW+'px;height:'+imageH+'px;top:-9999px;left:-9999px;'"></canvas>
+		</view>		
+	</uni-popup>
+	
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">{{article_title}}</view>
@@ -279,159 +331,209 @@
 </template>
 
 <script>
-var wxparse = require("wxParse/wxParse.js"); 
-import uParse from '@/components/uParse/src/wxParse.vue' ;
-import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
-import permision from "@/common/permission.js"
-import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
-import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
-//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
-import PdList from "./pd-list.vue";
-var weburl = getApp().globalData.weburl;
-var appid = getApp().globalData.appid;
-var appsecret = getApp().globalData.secret;
-var user_type = getApp().globalData.user_type ? getApp().globalData.user_type : 0;
-var shop_type = getApp().globalData.shop_type;
-var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
-var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
-var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
-var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : {};
-var user_group_id = uni.getStorageSync('user_group_id') ? uni.getStorageSync('user_group_id') : 0;
-var user_group_name = uni.getStorageSync('user_group_name') ? uni.getStorageSync('user_group_name') : '';
-var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
-var uploadurl = getApp().globalData.uploadurl;
+	var wxparse = require("wxParse/wxParse.js"); 
+	import uParse from '@/components/uParse/src/wxParse.vue' ;
+	import uniPopup from '@/components/uni-popup/uni-popup.vue' ;
+	import permision from "@/common/permission.js"
+	import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue'
+	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+	//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
+	import PdList from "./pd-list.vue";
+	var weburl = getApp().globalData.weburl;
+	var appid = getApp().globalData.appid;
+	var appsecret = getApp().globalData.secret;
+	var user_type = getApp().globalData.user_type ? getApp().globalData.user_type : 0;
+	var shop_type = getApp().globalData.shop_type;
+	var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+	var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
+	var m_id = uni.getStorageSync('m_id') ? uni.getStorageSync('m_id') : 0;
+	var userInfo = uni.getStorageSync('userInfo') ? uni.getStorageSync('userInfo') : '';
+	var userauth = uni.getStorageSync('userauth') ? uni.getStorageSync('userauth') : {};
+	var user_group_id = uni.getStorageSync('user_group_id') ? uni.getStorageSync('user_group_id') : 0;
+	var user_group_name = uni.getStorageSync('user_group_name') ? uni.getStorageSync('user_group_name') : '';
+	var navList2 = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
+	var uploadurl = getApp().globalData.uploadurl;
 
+	let sysInfo = uni.getSystemInfoSync();
+	let SCREEN_WIDTH = sysInfo.screenWidth
+	let PAGE_X, // 手按下的x位置
+		PAGE_Y, // 手按下y的位置 
+		PR = sysInfo.pixelRatio, // dpi
+		T_PAGE_X, // 手移动的时候x的位置
+		T_PAGE_Y, // 手移动的时候Y的位置
+		CUT_L, // 初始化拖拽元素的left值
+		CUT_T, // 初始化拖拽元素的top值
+		CUT_R, // 初始化拖拽元素的
+		CUT_B, // 初始化拖拽元素的
+		CUT_W, // 初始化拖拽元素的宽度
+		CUT_H, //  初始化拖拽元素的高度
+		IMG_RATIO, // 图片比例
+		IMG_REAL_W, // 图片实际的宽度
+		IMG_REAL_H, // 图片实际的高度
+		DRAFG_MOVE_RATIO = 1, //移动时候的比例,
+		INIT_DRAG_POSITION = 100, // 初始化屏幕宽度和裁剪区域的宽度之差，用于设置初始化裁剪的宽度
+		DRAW_IMAGE_W = sysInfo.screenWidth // 设置生成的图片宽度
+		
 export default {
 	data() {
-	return {
-		title_name: '我的',
-		title_logo: '/static/images/footer-icon-05.png',
-		share_art_image: weburl + '/uploads/share_art_image.jpg',
-		nickname: userInfo.nickname ? userInfo.nickname : '匿名',
-		avatarUrl: userInfo.avatarUrl,
-		m_id:m_id,
-		default_avatar: weburl + '/uploads/avatar.png',
-		hideviewagreementinfo: true,
-		agreementinfoshowflag: 0,
-		playsxinfoshowflag: 0,
-		artinfoshowflag: 0,
-		scrollTop: 0,
-		image_refresh:0,
-		scrollTop_init: 10,
-		modalHiddenCele: true,
-		modalHiddenAgreement: true,
-		modalHiddenBankcard: true,
-		modalHiddenPlaysx: false,
-		modalHiddenMember:true,
-		modalHiddenArt: true,
-		modalHiddenArtInfo: true,
-		modalHiddenPhone: true,
-		modalHiddenUserName: true,
-		modalHiddenScan:false,
-		modalName:null,
-		hiddenNickname:true,
-		shop_type: shop_type,
-		index: 0,
-		art_index: 0,
-		web_url: '',
-		web_id: '',
-		image_save_count: 0,
-		needPhoneNumber: '微信授权',
-		needUserName: '微信授权',
-		login_button:'登录',
-		inputShowed: false,
-		bank_name: "",
-		bank_id: "",
-		bankcard_no: "",
-		bankcard_name: "",
-		bank_info: "",
-		user_name: "",
-		user_gender: "",
-		agreementInfo: "",
-		playsxInfo: "",
-		article: "",
-		article_title:"",
-		dkheight: "800",
-		webviewurl: "",
-		art_title: "",
-		art_id: "",
-		art_cat_id: "",
-		art_image: "",
-		navList2: "",
-		hall_banner: "",
-		middle1_img: "",
-		middle2_img: "",
-		middle3_img: "",
-		middle4_img: "",
-		middle1_title: "",
-		middle2_title: "",
-		middle3_title: "",
-		middle4_title: "",
-		middle1_note: "",
-		middle2_note: "",
-		middle3_note: "",
-		middle4_note: "",
-		loadingHidden: false,
-		page:1,
-		all_rows: 0,
-		rall_rows: 0,
-		refer_id: "",
-		frompage: "",
-		user_type: "",
-		user_level:"",
-		userauth:userauth,
-		userInfo: userInfo,
-		userauth_coupon:0,
-		userauth_shoper:0,
-		userauth_customerservice:0,
-		userauth_host:0,
-		userauth_celebration:0,
-		userauth_location:0,
-		userauth_article:0,
-		user_group_id:user_group_id,
-		user_group_name:user_group_name,
-		new_img_arr:"",
-		scan_result:"",
-		windowHeight:'500',
-		card_name:'黑贝会 Member',
-		card_logo:'',
-		card_logo_init:weburl + '/uploads/HB001.png',
-		card_no:'',
-		card_due_start:'0000-00-00',
-		card_due_end:'0000-00-00',
-		old: {
-			scrollTop: 0
-		},
-		current_scrollTop: 0,
-		contentText: {
-			contentdown: '上拉加载更多',
-			contentrefresh: '加载中',
-			contentnomore: '没有更多'
-		},
-		downOption:{
-			auto:false, // 不自动加载
-			use:false,
-			isLock:true,
-		},
-		upOption:{
-			auto:false, // 不自动加载
-			onScroll:true,
-			page: {
-				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
-				size: 20, // 每页数据的数量
+		return {
+			title_name: '我的',
+			title_logo: '/static/images/footer-icon-05.png',
+			share_art_image: weburl + '/uploads/share_art_image.jpg',
+			nickname: userInfo.nickname ? userInfo.nickname : '匿名',
+			avatarUrl: userInfo.avatarUrl,
+			m_id:m_id,
+			default_avatar: weburl + '/uploads/avatar.png',
+			hideviewagreementinfo: true,
+			agreementinfoshowflag: 0,
+			playsxinfoshowflag: 0,
+			artinfoshowflag: 0,
+			scrollTop: 0,
+			image_refresh:0,
+			scrollTop_init: 10,
+			modalHiddenCele: true,
+			modalHiddenAgreement: true,
+			modalHiddenBankcard: true,
+			modalHiddenPlaysx: false,
+			modalHiddenMember:true,
+			modalHiddenArt: true,
+			modalHiddenArtInfo: true,
+			modalHiddenPhone: true,
+			modalHiddenUserName: true,
+			modalHiddenScan:false,
+			modalName:null,
+			hiddenNickname:true,
+			shop_type: shop_type,
+			index: 0,
+			art_index: 0,
+			web_url: '',
+			web_id: '',
+			image_save_count: 0,
+			needPhoneNumber: '微信授权',
+			needUserName: '微信授权',
+			login_button:'登录',
+			inputShowed: false,
+			bank_name: "",
+			bank_id: "",
+			bankcard_no: "",
+			bankcard_name: "",
+			bank_info: "",
+			user_name: "",
+			user_gender: "",
+			agreementInfo: "",
+			playsxInfo: "",
+			article: "",
+			article_title:"",
+			dkheight: "800",
+			webviewurl: "",
+			art_title: "",
+			art_id: "",
+			art_cat_id: "",
+			art_image: "",
+			navList2: "",
+			hall_banner: "",
+			middle1_img: "",
+			middle2_img: "",
+			middle3_img: "",
+			middle4_img: "",
+			middle1_title: "",
+			middle2_title: "",
+			middle3_title: "",
+			middle4_title: "",
+			middle1_note: "",
+			middle2_note: "",
+			middle3_note: "",
+			middle4_note: "",
+			loadingHidden: false,
+			page:1,
+			all_rows: 0,
+			rall_rows: 0,
+			refer_id: "",
+			frompage: "",
+			user_type: "",
+			user_level:"",
+			userauth:userauth,
+			userInfo: userInfo,
+			userauth_coupon:0,
+			userauth_shoper:0,
+			userauth_customerservice:0,
+			userauth_host:0,
+			userauth_celebration:0,
+			userauth_location:0,
+			userauth_article:0,
+			user_group_id:user_group_id,
+			user_group_name:user_group_name,
+			new_img_arr:[],
+			scan_result:"",
+			windowHeight:'500',
+			card_name:'黑贝会 Member',
+			card_logo:'',
+			card_logo_init:weburl + '/uploads/HB001.png',
+			card_no:'',
+			card_due_start:'0000-00-00',
+			card_due_end:'0000-00-00',
+			is_card_overdue:false,
+			old: {
+				scrollTop: 0
 			},
-			noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
-			empty:{
-				tip: '~ 空空如也 ~', // 提示
-				btnText: '去看看'
-			}
-		},
-		pdList: [] ,// 数据列表
-		isInit: false, // 列表是否已经初始化
-		scrollY: 0,
-	};
+			current_scrollTop: 0,
+			contentText: {
+				contentdown: '上拉加载更多',
+				contentrefresh: '加载中',
+				contentnomore: '没有更多'
+			},
+			downOption:{
+				auto:false, // 不自动加载
+				use:false,
+				isLock:true,
+			},
+			upOption:{
+				auto:false, // 不自动加载
+				onScroll:true,
+				page: {
+					num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+					size: 20, // 每页数据的数量
+				},
+				noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+				empty:{
+					tip: '~ 空空如也 ~', // 提示
+					btnText: '去看看'
+				}
+			},
+			pdList: [] ,// 数据列表
+			isInit: false, // 列表是否已经初始化
+			scrollY: 0,
+			//for corp
+			is_logo:0,
+			imageSrc: 'https://img-cdn-qiniu.dcloud.net.cn/demo_crop.jpg',
+			isShowImg: false,
+			// 初始化的宽高
+			cropperInitW: SCREEN_WIDTH,
+			cropperInitH: SCREEN_WIDTH,
+			// 动态的宽高
+			cropperW: SCREEN_WIDTH,
+			cropperH: SCREEN_WIDTH,
+			// 动态的left top值
+			cropperL: 0,
+			cropperT: 0,
+		
+			transL: 0,
+			transT: 0,
+		
+			// 图片缩放值
+			scaleP: 0,
+			imageW: 0,
+			imageH: 0,
+		
+			// 裁剪框 宽高
+			cutL: 0,
+			cutT: 0,
+			cutB: SCREEN_WIDTH,
+			cutR: '100%',
+			qualityWidth: DRAW_IMAGE_W,
+			innerAspectRadio: DRAFG_MOVE_RATIO
+		}
 	},
   
 	mixins: [MescrollMixin], // 使用mixin
@@ -566,9 +668,9 @@ export default {
 			}			 
 		}, 1000)
 		//console.log('my index userauth_coupon:', that.userauth_coupon);
-  },
+	},
   
-  onShareAppMessage: function () {
+	onShareAppMessage: function () {
     var that = this;
     var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
     var share_art_id = that.art_id;
@@ -743,6 +845,11 @@ export default {
 					that.card_no = res.data.result['card_no']
 					that.card_due_start = res.data.result['card_due_start']
 					that.card_due_end = res.data.result['card_due_end']
+					let card_due_end_str = that.card_due_end +' 23:59:59'
+					let time_due_end = new Date(card_due_end_str).getTime()
+					let time_now = Date.now()
+					that.is_card_overdue = Math.floor((time_now - parseInt(time_due_end)) / 1000)>0?false:true
+					
 					var userauth = JSON.parse(res.data.result['userauth'])
 					uni.setStorageSync('token', that.token)
 					uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
@@ -1251,7 +1358,7 @@ export default {
           }
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: '银行卡输入有误',
           icon: 'loading',
           duration: 1500
@@ -1309,38 +1416,38 @@ export default {
         return;
       }
 
-      wx.request({
-        url: weburl + '/api/client/update_name',
-        method: 'POST',
-        data: {
-          username: username ? username : openid,
-          access_token: token,
-          full_name: user_name,
-          sex: user_gender,
-          shop_type: shop_type
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          if (res.data.status = 'y') {
-            wx.setStorageSync('user_name', user_name);
-          } else {
-            wx.showToast({
-              title: '姓名更新失败',
-              icon: 'none',
-              duration: 1000
-            });
-          }
-        }
-      });
+		uni.request({
+			url: weburl + '/api/client/update_name',
+			method: 'POST',
+			data: {
+				username: username ? username : openid,
+				access_token: token,
+				full_name: user_name,
+				sex: user_gender,
+				shop_type: shop_type
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				if (res.data.status = 'y') {
+					uni.setStorageSync('user_name', user_name);
+				} else {
+					uni.showToast({
+						title: '姓名更新失败',
+						icon: 'none',
+						duration: 1000
+					})
+				}
+			}
+		})
     },
 	
 	user_nicknameTapTag: function () {
-	  var that = this;
-	  var hiddenNickname = that.hiddenNickname
-	  that.hiddenNickname = !hiddenNickname
+		var that = this;
+		var hiddenNickname = that.hiddenNickname
+		that.hiddenNickname = !hiddenNickname
 	},
 	
     user_nameTapTag: function (e) {
@@ -1351,26 +1458,27 @@ export default {
 	
     //按钮点击事件  获取姓名
     modalBindconfirmUsername: function () {
-      var that = this;
-      var user_name = that.user_name;
-      var user_gender = that.user_gender;
+		var that = this;
+		var user_name = that.user_name;
+		var user_gender = that.user_gender;
 
-      if (user_name && user_gender) {
-       that.modalHiddenUserName = !that.modalHiddenUserName
-        that.getUserName(user_name, user_gender);
-      } else {
-        var needUserName = '需要您的姓名和性别';
-        that.needUserName = needUserName
-      }
-    },
+		if (user_name && user_gender) {
+			that.modalHiddenUserName = !that.modalHiddenUserName
+			that.getUserName(user_name, user_gender);
+		} else {
+			var needUserName = '需要您的姓名和性别';
+			that.needUserName = needUserName
+		}
+	},
 	
-    radiochange: function (e) {
-      var that = this;
-      var user_gender = e.detail.value; //console.log('radio发生change事件，携带的value值为：', e.detail.value)
+	radiochange: function (e) {
+		var that = this;
+		var user_gender = e.detail.value; 
+		//console.log('radio发生change事件，携带的value值为：', e.detail.value)
 
-      that.user_gender = user_gender
-      uni.setStorageSync('user_gender', user_gender);
-    },
+		that.user_gender = user_gender
+		uni.setStorageSync('user_gender', user_gender);
+	},
 	
 	navigateToAgreement: function (art_id) {
 		var that = this;
@@ -1687,123 +1795,131 @@ export default {
         url: '../member/shopowner/shopowner?'
       });
     },
-    navigateToCelebration: function (e) {
-      var that = this;
-      var shop_type = that.shop_type;
-      wx.request({
-        url: weburl + '/api/client/get_project_gift_para',
-        method: 'POST',
-        data: {
-          username: username,
-          access_token: token,
-          shop_type: shop_type,
-          type: 1
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          console.log(res.data.result);
-          var webviewurl = res.data.result;
-          this.webviewurl = webviewurl
-          this.modalHiddenCele = !that.modalHiddenCele
-        }
-      });
-    },
-    bindCelePickerChange: function (e) {
-      var that = this;
-      var selected_index = e.detail.value;
-      var web_url = that.webviewurl[selected_index]['url'];
-      var web_id = that.webviewurl[selected_index]['id'];
-      console.log('celebration picker发送选择改变，携带值为', e.detail.value);
-      that.web_url = web_url
-      that.web_id = web_id
-      that.index = selected_index
-    },
+	
+	navigateToCelebration: function (e) {
+		var that = this;
+		var shop_type = that.shop_type;
+		uni.request({
+			url: weburl + '/api/client/get_project_gift_para',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				type: 1
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log(res.data.result);
+				var webviewurl = res.data.result;
+				this.webviewurl = webviewurl
+				this.modalHiddenCele = !that.modalHiddenCele
+			}
+		})
+	},
+	
+	bindCelePickerChange: function (e) {
+		var that = this;
+		var selected_index = e.detail.value;
+		var web_url = that.webviewurl[selected_index]['url'];
+		var web_id = that.webviewurl[selected_index]['id'];
+		console.log('celebration picker发送选择改变，携带值为', e.detail.value);
+		that.web_url = web_url
+		that.web_id = web_id
+		that.index = selected_index
+	},
     //确定按钮点击事件  祝福贺卡
-    modalBindconfirmCele: function () {
-      var that = this;
-     that.modalHiddenCele = !that.modalHiddenCele
-      uni.navigateTo({
-        url: '../member/aboutus/aboutus?url=' + that.web_url
-      });
-    },
+	modalBindconfirmCele: function () {
+		var that = this;
+		that.modalHiddenCele = !that.modalHiddenCele
+		uni.navigateTo({
+			url: '../member/aboutus/aboutus?url=' + that.web_url
+		});
+	},
+	
     //取消按钮点击事件  祝福贺卡
-    modalBindcancelCele: function () {
-      var that = this;
-      that.modalHiddenCele = !that.modalHiddenCele
-    },
+	modalBindcancelCele: function () {
+		var that = this;
+		that.modalHiddenCele = !that.modalHiddenCele
+	},
+	
     //按钮点击事件  获取手机号
-    modalBindconfirmPhone: function () {
-      var that = this;
-      var user_phone = wx.getStorageSync('user_phone') ? wx.getStorageSync('user_phone') : '';
+	modalBindconfirmPhone: function () {
+		var that = this;
+		var user_phone = wx.getStorageSync('user_phone') ? wx.getStorageSync('user_phone') : '';
 
-      if (user_phone) {
-         that.modalHiddenPhone = !that.modalHiddenPhone
-      } else {
-        var needPhoneNumber = '需要您的手机号授权';
-        that.needPhoneNumber = needPhoneNumber
-      }
-    },
-    bindArtPickerChange: function (e) {
-      var that = this;
-      var selected_index = e.detail.value;
-      var art_title = that.article[selected_index]['title'];
-      var art_image = that.article[selected_index]['image'];
-      var art_id = that.article[selected_index]['id'];
-      var art_cat_id = that.article[selected_index]['cat_id'];
-      console.log('article picker发送选择改变，携带值为', e.detail.value);
-      that.art_title =  art_title
-      that.art_id = art_id
-      that.art_cat_id = art_cat_id
-      that.art_index = selected_index
-      that.art_image = art_image ? art_image : that.share_art_image
-    },
+		if (user_phone) {
+			that.modalHiddenPhone = !that.modalHiddenPhone
+		} else {
+			var needPhoneNumber = '需要您的手机号授权';
+			that.needPhoneNumber = needPhoneNumber
+		}
+	},
+	
+	bindArtPickerChange: function (e) {
+		var that = this;
+		var selected_index = e.detail.value;
+		var art_title = that.article[selected_index]['title'];
+		var art_image = that.article[selected_index]['image'];
+		var art_id = that.article[selected_index]['id'];
+		var art_cat_id = that.article[selected_index]['cat_id'];
+		console.log('article picker发送选择改变，携带值为', e.detail.value);
+		that.art_title =  art_title
+		that.art_id = art_id
+		that.art_cat_id = art_cat_id
+		that.art_index = selected_index
+		that.art_image = art_image ? art_image : that.share_art_image
+	},
     //确定按钮点击事件  文章
-    modalBindconfirmArt: function () {
-      var that = this;
-      that.showArt();
-    },
+	modalBindconfirmArt: function () {
+		var that = this;
+		that.showArt();
+	},
+	
     //取消按钮点击事件 文章
-    modalBindcancelArt: function () {
-      var that = this;
-      that.modalHiddenArtInfo = true
-      that.modalHiddenArt = true
-      that.artinfoshowflag = 0
-    },
+	modalBindcancelArt: function () {
+		var that = this;
+		that.modalHiddenArtInfo = true
+		that.modalHiddenArt = true
+		that.artinfoshowflag = 0
+	},
     //确定按钮点击事件  文章内容
-    modalBindconfirmArtInfo: function () {
-      var that = this;
-      that.modalHiddenArtInfo = true
-      that.modalHiddenArt = true
-      that.artinfoshowflag = 0
-      that.art_id = 0
-      that.art_cat_id = 0
-    },
+    
+	modalBindconfirmArtInfo: function () {
+		var that = this;
+		that.modalHiddenArtInfo = true
+		that.modalHiddenArt = true
+		that.artinfoshowflag = 0
+		that.art_id = 0
+		that.art_cat_id = 0
+	},
     //确定按钮点击事件  文章分享
-    modalBindShareArtInfo: function () {
-      var that = this;
-      that.modalHiddenArtInfo = true
-      that.modalHiddenArt = true
-      that.artinfoshowflag = 0
-      var selected_index = that.art_index;
-      var art_title = that.article[selected_index]['title'];
-      var art_image = that.article[selected_index]['image'] ? that.article[selected_index]['image'] : that.share_art_image;
-      var art_id = that.article[selected_index]['id'];
-      var art_cat_id = that.article[selected_index]['cat_id'];
-      var art_wx_headimg = that.article[selected_index]['wx_headimg'];
-      uni.navigateTo({
-        url: '/pages/wish/wishshare/wishshare?share_art_id=' + art_id + '&share_art_cat_id=' + art_cat_id + '&share_art_image=' + art_image + '&share_art_wx_headimg=' + art_wx_headimg + '&share_art_title=' + art_title
-      });
-      that.art_id = 0
-      that.art_cat_id = 0
-    },
-    navigateToMessage: function (e) {
-      uni.navigateTo({
-        url: '../member/message/message?'
-      });
-    },
+	modalBindShareArtInfo: function () {
+		var that = this;
+		that.modalHiddenArtInfo = true
+		that.modalHiddenArt = true
+		that.artinfoshowflag = 0
+		var selected_index = that.art_index;
+		var art_title = that.article[selected_index]['title'];
+		var art_image = that.article[selected_index]['image'] ? that.article[selected_index]['image'] : that.share_art_image;
+		var art_id = that.article[selected_index]['id'];
+		var art_cat_id = that.article[selected_index]['cat_id'];
+		var art_wx_headimg = that.article[selected_index]['wx_headimg'];
+		uni.navigateTo({
+			url: '/pages/wish/wishshare/wishshare?share_art_id=' + art_id + '&share_art_cat_id=' + art_cat_id + '&share_art_image=' + art_image + '&share_art_wx_headimg=' + art_wx_headimg + '&share_art_title=' + art_title
+		});
+		that.art_id = 0
+		that.art_cat_id = 0
+	},
+	
+	navigateToMessage: function (e) {
+		uni.navigateTo({
+			url: '../member/message/message?'
+		})
+	},
 
     /*
     onGotUserInfo: function (e) {
@@ -1865,7 +1981,6 @@ export default {
       var that = this;
       that.modalHiddenAgreement = !that.modalHiddenAgreement
       uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
-
       that.goBack();
     },
     //取消按钮点击事件  用户协议
@@ -1891,94 +2006,88 @@ export default {
       this.art_id = 0
       this.art_cat_id = 0
       this.playsxinfoshowflag = 0
-    },
+    },	
 	
-    get_project_gift_para: function () {
-      var that = this;
-      var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
-      var shop_type = that.shop_type;
-      var hall_banner = that.hall_banner;
-      console.log('hall get_project_gift_para navList2:', navList_new);
+	get_project_gift_para: function () {
+		var that = this;
+		var navList_new = uni.getStorageSync('navList2') ? uni.getStorageSync('navList2') : [{}];
+		var shop_type = that.shop_type;
+		var hall_banner = that.hall_banner;
+		console.log('hall get_project_gift_para navList2:', navList_new);
 
-      if (navList2.length == 0) {
-        //项目列表
-        wx.request({
-          url: weburl + '/api/client/get_project_gift_para',
-          method: 'POST',
-          data: {
-            type: 2,
+		if (navList2.length == 0) {
+			uni.request({
+				url: weburl + '/api/client/get_project_gift_para',
+				method: 'POST',
+				data: {
+					type: 2,
             //暂定 1首页单图片 2首页轮播  
-            shop_type: shop_type,
-			query_type:'APP',
-          },
-          header: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json'
-          },
-          success: function (res) {
-            console.log('get_project_gift_para:', res.data.result);
-            navList_new = res.data.result;
+					shop_type: shop_type,
+					query_type:'APP',
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					console.log('get_project_gift_para:', res.data.result);
+					navList_new = res.data.result
+					if (!navList_new) {
+						return
+					} else {
+						uni.setStorageSync('navList2', navList_new);
+						that.navList2 = navList_new
+						that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
+						//首页banner图
+						that.middle1_img = navList_new[11]['img']
+						that.middle2_img = navList_new[12]['img']
+						that.middle3_img = navList_new[13]['img']
+						that.middle4_img = navList_new[14]['img']
+						that.middle1_title = navList_new[11]['title']
+						that.middle2_title = navList_new[12]['title']
+						that.middle3_title = navList_new[13]['title']
+						that.middle4_title = navList_new[14]['title']
+						that.middle1_note = navList_new[11]['note']
+						that.middle2_note = navList_new[12]['note']
+						that.middle3_note = navList_new[13]['note']
+						that.middle4_note = navList_new[14]['note']
+					}
+				}
+			});
+		} else {
+			that.navList2 = navList_new
+			that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
+			//首页banner图
+			that.middle1_img = navList_new[11]['img']
+			that.middle2_img = navList_new[12]['img']
+			that.middle3_img = navList_new[13]['img']
+			that.middle4_img = navList_new[14]['img']
+			that.middle1_title = navList_new[11]['title']
+			that.middle2_title = navList_new[12]['title']
+			that.middle3_title = navList_new[13]['title']
+			that.middle4_titl = navList_new[14]['title']
+			that.middle1_note = navList_new[11]['note']
+			that.middle2_note = navList_new[12]['note']
+			that.middle3_note = navList_new[13]['note']
+			that.middle4_note = navList_new[14]['note']
+		}
 
-            if (!navList_new) {
-              /*
-               wx.showToast({
-                 title: '没有菜单项2',
-                 icon: 'loading',
-                 duration: 1500
-               });
-               */
-              return;
-            } else {
-              uni.setStorageSync('navList2', navList_new);
-              that.navList2 = navList_new
-              that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
-              //首页banner图
-              that.middle1_img = navList_new[11]['img']
-              that.middle2_img = navList_new[12]['img']
-              that.middle3_img = navList_new[13]['img']
-              that.middle4_img = navList_new[14]['img']
-              that.middle1_title = navList_new[11]['title']
-              that.middle2_title = navList_new[12]['title']
-              that.middle3_title = navList_new[13]['title']
-              that.middle4_title = navList_new[14]['title']
-              that.middle1_note = navList_new[11]['note']
-              that.middle2_note = navList_new[12]['note']
-              that.middle3_note = navList_new[13]['note']
-              that.middle4_note = navList_new[14]['note']
-            }
-          }
-        });
-      } else {
-        that.navList2 = navList_new
-        that.hall_banner = navList_new[3] ? navList_new[3] : hall_banner
-        //首页banner图
-        that.middle1_img = navList_new[11]['img']
-        that.middle2_img = navList_new[12]['img']
-        that.middle3_img = navList_new[13]['img']
-        that.middle4_img = navList_new[14]['img']
-        that.middle1_title = navList_new[11]['title']
-        that.middle2_title = navList_new[12]['title']
-        that.middle3_title = navList_new[13]['title']
-        that.middle4_titl = navList_new[14]['title']
-        that.middle1_note = navList_new[11]['note']
-        that.middle2_note = navList_new[12]['note']
-        that.middle3_note = navList_new[13]['note']
-        that.middle4_note = navList_new[14]['note']
-      }
-
-      setTimeout(function () {
-       that.loadingHidden = true
-      }, 1500);
-    },
+		setTimeout(function () {
+			that.loadingHidden = true
+		}, 1500);
+	},
 
 	chooseImage: async function(is_logo = 0) {
 		var that = this
+		that.is_logo = is_logo
+		that.getImage()
+		/*
 		uni.chooseImage({
 			sizeType: ['original', 'compressed'],
 			success: (res) => {
 				that.new_img_arr = res.tempFilePaths
 				//console.log('本次上传图片本地:', that.new_img_arr);
-				that.upload(is_logo);
+				that.upload(is_logo)
 			},
 			fail: (err) => {
    			// #ifdef APP-PLUS
@@ -1988,6 +2097,7 @@ export default {
    			// #endif
 			}
 		})
+		*/
 	},
 
 	upload: function (is_logo = 0 ) {
@@ -2127,11 +2237,11 @@ export default {
 		})
 	},
 	
-    navigateToShare: function () {
-      var that = this;
-      var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0; //var share_member_qrcode = wx.getStorageSync('member_qrcode_cache_' + m_id)
+	navigateToShare: function () {
+		var that = this;
+		var m_id = wx.getStorageSync('m_id') ? wx.getStorageSync('m_id') : 0; //var share_member_qrcode = wx.getStorageSync('member_qrcode_cache_' + m_id)
 
-      var qr_type = 'membershare'; // var share_member_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + appsecret + '&shop_type=' + shop_type + '&qr_type=' + qr_type
+		var qr_type = 'membershare'; // var share_member_qrcode = weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + appsecret + '&shop_type=' + shop_type + '&qr_type=' + qr_type
       //that.image_save(share_member_qrcode, 'member_qrcode_cache_' + m_id)
 
       /*
@@ -2149,15 +2259,15 @@ export default {
       }, 1300)
       */
 
-      uni.navigateTo({
-        url: '/pages/member/share/share?qr_type=membershare' //+ '&share_member_qrcode_cache=' + share_member_qrcode_cache
-
-      });
-    },
+		uni.navigateTo({
+			url: '/pages/member/share/share?qr_type=membershare' //+ '&share_member_qrcode_cache=' + share_member_qrcode_cache
+		})
+	},
+	
     navigateToCoupon: function () {
       uni.navigateTo({
         url: '/pages/member/couponsnd/couponsnd'
-      });
+      })
     },
     navigateToMyCoupon: function () {
       uni.navigateTo({
@@ -2167,74 +2277,596 @@ export default {
     navigateToMyRedpackage: function () {
       uni.navigateTo({
         url: '/pages/member/couponmy/couponmy?red=1'
-      });
+      })
     },
-    setData: function (obj) {
-      let that = this;
-      let keys = [];
-      let val, data;
-      Object.keys(obj).forEach(function (key) {
-        keys = key.split('.');
-        val = obj[key];
-        data = that.$data;
-        keys.forEach(function (key2, index) {
-          if (index + 1 == keys.length) {
-            that.$set(data, key2, val);
-          } else {
-            if (!data[key2]) {
-              that.$set(data, key2, {});
-            }
-          }
-          data = data[key2];
-        });
-      });
-    }
-  }
+	
+	getImage: function () {
+		var _this = this
+		uni.chooseImage({
+			success: function (res) {
+				_this.isShowImg = true	
+				_this.imageSrc = res.tempFilePaths[0]				
+				_this.loadImage()
+			},
+		})
+	},
+	
+	loadImage: function () {
+		var _this = this
+		uni.showLoading({
+			title: '图片加载中...',
+		})
+		
+		uni.getImageInfo({
+			src: _this.imageSrc,
+			success: function success(res) {
+				IMG_RATIO = res.width / res.height
+				if (IMG_RATIO >= 1) {
+					IMG_REAL_W = SCREEN_WIDTH
+					IMG_REAL_H = SCREEN_WIDTH / IMG_RATIO
+				} else {
+					IMG_REAL_W = SCREEN_WIDTH * IMG_RATIO
+					IMG_REAL_H = SCREEN_WIDTH
+				}
+				let minRange = IMG_REAL_W > IMG_REAL_H ? IMG_REAL_W : IMG_REAL_H
+				INIT_DRAG_POSITION = minRange > INIT_DRAG_POSITION ? INIT_DRAG_POSITION : minRange
+				// 根据图片的宽高显示不同的效果   保证图片可以正常显示
+				if (IMG_RATIO >= 1) {
+					let cutT = Math.ceil((SCREEN_WIDTH / IMG_RATIO - (SCREEN_WIDTH / IMG_RATIO - INIT_DRAG_POSITION)) / 2);
+					let cutB = cutT;
+					let cutL = Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH + INIT_DRAG_POSITION) / 2);
+					let cutR = cutL;
+					_this.setData({
+						cropperW: SCREEN_WIDTH,
+						cropperH: SCREEN_WIDTH / IMG_RATIO,
+						// 初始化left right
+						cropperL: Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH) / 2),
+						cropperT: Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH / IMG_RATIO) / 2),
+						cutL: cutL,
+						cutT: cutT,
+						cutR: cutR,
+						cutB: cutB,
+						// 图片缩放值
+						imageW: IMG_REAL_W,
+						imageH: IMG_REAL_H,
+						scaleP: IMG_REAL_W / SCREEN_WIDTH,
+						qualityWidth: DRAW_IMAGE_W,
+						innerAspectRadio: IMG_RATIO
+					})
+				} else {
+					let cutL = Math.ceil((SCREEN_WIDTH * IMG_RATIO - (SCREEN_WIDTH * IMG_RATIO)) / 2);
+					let cutR = cutL;
+					let cutT = Math.ceil((SCREEN_WIDTH - INIT_DRAG_POSITION) / 2);
+					let cutB = cutT;
+					_this.setData({
+						cropperW: SCREEN_WIDTH * IMG_RATIO,
+						cropperH: SCREEN_WIDTH,
+						// 初始化left right
+						cropperL: Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH * IMG_RATIO) / 2),
+						cropperT: Math.ceil((SCREEN_WIDTH - SCREEN_WIDTH) / 2),
+	
+						cutL: cutL,
+						cutT: cutT,
+						cutR: cutR,
+						cutB: cutB,
+						// 图片缩放值
+						imageW: IMG_REAL_W,
+						imageH: IMG_REAL_H,
+						scaleP: IMG_REAL_W / SCREEN_WIDTH,
+						qualityWidth: DRAW_IMAGE_W,
+						innerAspectRadio: IMG_RATIO
+					})
+				}
+						 
+				uni.hideLoading()
+			}
+		})
+	},
+	// 拖动时候触发的touchStart事件
+	contentStartMove(e) {
+		PAGE_X = e.touches[0].pageX
+		PAGE_Y = e.touches[0].pageY
+	},
+	
+	// 拖动时候触发的touchMove事件
+	contentMoveing(e) {
+		var _this = this
+		var dragLengthX = (PAGE_X - e.touches[0].pageX) * DRAFG_MOVE_RATIO
+		var dragLengthY = (PAGE_Y - e.touches[0].pageY) * DRAFG_MOVE_RATIO
+		// 左移
+		if (dragLengthX > 0) {
+			if (this.cutL - dragLengthX < 0) dragLengthX = this.cutL
+		} else {
+			if (this.cutR + dragLengthX < 0) dragLengthX = -this.cutR
+		}
+	
+		if (dragLengthY > 0) {
+			if (this.cutT - dragLengthY < 0) dragLengthY = this.cutT
+		} else {
+			if (this.cutB + dragLengthY < 0) dragLengthY = -this.cutB
+		}
+		this.cutL = this.cutL - dragLengthX
+		this.cutT = this.cutT - dragLengthY
+		this.cutR = this.cutR + dragLengthX
+		this.cutB = this.cutB + dragLengthY
+	
+		PAGE_X = e.touches[0].pageX
+		PAGE_Y = e.touches[0].pageY
+	},
+	
+	contentTouchEnd() {
+	
+	},
+	
+	// 获取图片
+	getImageInfo() {
+		var _this = this;
+		uni.showLoading({
+			title: '图片生成中...',
+		});
+		// 将图片写入画布
+		const ctx = uni.createCanvasContext('myCanvas');
+		ctx.drawImage(_this.imageSrc, 0, 0, IMG_REAL_W, IMG_REAL_H);
+		ctx.draw(true, () => {
+			// 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊  位置不对的问题 canvasT = (_this.cutT / _this.cropperH) * (_this.imageH / pixelRatio)
+			var canvasW = ((_this.cropperW - _this.cutL - _this.cutR) / _this.cropperW) * IMG_REAL_W;
+			var canvasH = ((_this.cropperH - _this.cutT - _this.cutB) / _this.cropperH) * IMG_REAL_H;
+			var canvasL = (_this.cutL / _this.cropperW) * IMG_REAL_W;
+			var canvasT = (_this.cutT / _this.cropperH) * IMG_REAL_H;
+			uni.canvasToTempFilePath({
+				x: canvasL,
+				y: canvasT,
+				width: canvasW,
+				height: canvasH,
+				destWidth: canvasW,
+				destHeight: canvasH,
+				quality: 0.5,
+				canvasId: 'myCanvas',
+				success: function (res) {
+					uni.hideLoading()
+					// 成功获得地址的地方
+					/*
+					uni.previewImage({
+						current: '', // 当前显示图片的http链接
+						urls: [res.tempFilePath] // 需要预览的图片http链接列表
+					})
+					*/
+				
+					_this.new_img_arr[0]=res.tempFilePath
+					_this.isShowImg = false
+					console.log('my/index getImageInfo() canvasToTempFilePath:'+JSON.stringify(res))
+					_this.upload(_this.is_logo)
+				}
+			});
+		});
+	},
+	
+	// 设置大小的时候触发的touchStart事件
+	dragStart(e) {
+		T_PAGE_X = e.touches[0].pageX
+		T_PAGE_Y = e.touches[0].pageY
+		CUT_L = this.cutL
+		CUT_R = this.cutR
+		CUT_B = this.cutB
+		CUT_T = this.cutT
+	},
+	
+	// 设置大小的时候触发的touchMove事件
+	dragMove(e) {
+		var _this = this
+		var dragType = e.target.dataset.drag
+		switch (dragType) {
+			case 'right':
+				var dragLength = (T_PAGE_X - e.touches[0].pageX) * DRAFG_MOVE_RATIO
+				if (CUT_R + dragLength < 0) dragLength = -CUT_R
+				this.setData({
+					cutR: CUT_R + dragLength
+				})
+				break;
+			case 'left':
+				var dragLength = (T_PAGE_X - e.touches[0].pageX) * DRAFG_MOVE_RATIO
+				if (CUT_L - dragLength < 0) dragLength = CUT_L
+				if ((CUT_L - dragLength) > (this.cropperW - this.cutR)) dragLength = CUT_L - (this.cropperW - this.cutR)
+				this.setData({
+					cutL: CUT_L - dragLength
+				})
+				break;
+			case 'top':
+				var dragLength = (T_PAGE_Y - e.touches[0].pageY) * DRAFG_MOVE_RATIO
+				if (CUT_T - dragLength < 0) dragLength = CUT_T
+				if ((CUT_T - dragLength) > (this.cropperH - this.cutB)) dragLength = CUT_T - (this.cropperH - this.cutB)
+				this.setData({
+					cutT: CUT_T - dragLength
+				})
+				break;
+			case 'bottom':
+				var dragLength = (T_PAGE_Y - e.touches[0].pageY) * DRAFG_MOVE_RATIO
+				if (CUT_B + dragLength < 0) dragLength = -CUT_B
+				this.setData({
+					cutB: CUT_B + dragLength
+				})
+				break;
+			case 'rightBottom':
+				var dragLengthX = (T_PAGE_X - e.touches[0].pageX) * DRAFG_MOVE_RATIO
+				var dragLengthY = (T_PAGE_Y - e.touches[0].pageY) * DRAFG_MOVE_RATIO
+	
+				if (CUT_B + dragLengthY < 0) dragLengthY = -CUT_B
+				if (CUT_R + dragLengthX < 0) dragLengthX = -CUT_R
+				let cutB = CUT_B + dragLengthY;
+				let cutR = CUT_R + dragLengthX;
+	
+				this.setData({
+					cutB: cutB,
+					cutR: cutR
+				})
+				break;
+			default:
+				break;
+		}
+	},
+	cancelImage:function(){
+		var that = this
+		that.isShowImg = false
+	},
+	setData: function (obj) {
+		let that = this
+		let keys = []
+		let val, data
+		Object.keys(obj).forEach(function (key) {
+			keys = key.split('.');
+			val = obj[key];
+			data = that.$data;
+			keys.forEach(function (key2, index) {
+				if (index + 1 == keys.length) {
+					that.$set(data, key2, val);
+				} else {
+					if (!data[key2]) {
+						that.$set(data, key2, {});
+					}
+				}
+				data = data[key2];
+			})
+		})
+	},	
+}
 }
 </script>
 <style>
 @import "./index.css";
-/*
-@import "../../components/uParse/src/wxParse.css";
-*/
+	.uni-content-info {
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: block;
+		align-items: center;
+		flex-direction: column; 
+		z-index:9999;
+	}
 
-.wxParse {
-	line-height: 1.8;
-	font-size: 24rpx;
-	height: 600rpx;
- }
+	.cropper-config {
+		padding: 20rpx 40rpx;
+	}
+
+	.cropper-content {
+		min-height: 750rpx;
+		width: 100%;
+	}
+
+	.uni-corpper {
+		position: relative;
+		overflow: hidden;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
+		box-sizing: border-box;
+	}
+
+	.uni-corpper-content {
+		position: relative;
+	}
+
+	.uni-corpper-content image {
+		display: block;
+		width: 100%;
+		min-width: 0 !important;
+		max-width: none !important;
+		height: 100%;
+		min-height: 0 !important;
+		max-height: none !important;
+		image-orientation: 0deg !important;
+		margin: 0 auto;
+	}
+	/* 移动图片效果 */
+
+	.uni-cropper-drag-box {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		cursor: move;
+		background: rgba(0, 0, 0, 0.6);
+		z-index: 1;
+	}
+	/* 内部的信息 */
+
+	.uni-corpper-crop-box {
+		position: absolute;
+		background: rgba(255, 255, 255, 0.3);
+		z-index: 2;
+	}
+
+	.uni-corpper-crop-box .uni-cropper-view-box {
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		outline: 1rpx solid #69f;
+		outline-color: rgba(102, 153, 255, .75)
+	}
+	/* 横向虚线 */
+
+	.uni-cropper-dashed-h {
+		position: absolute;
+		top: 33.33333333%;
+		left: 0;
+		width: 100%;
+		height: 33.33333333%;
+		border-top: 1rpx dashed rgba(255, 255, 255, 0.5);
+		border-bottom: 1rpx dashed rgba(255, 255, 255, 0.5);
+	}
+	/* 纵向虚线 */
+
+	.uni-cropper-dashed-v {
+		position: absolute;
+		left: 33.33333333%;
+		top: 0;
+		width: 33.33333333%;
+		height: 100%;
+		border-left: 1rpx dashed rgba(255, 255, 255, 0.5);
+		border-right: 1rpx dashed rgba(255, 255, 255, 0.5);
+	}
+	/* 四个方向的线  为了之后的拖动事件*/
+
+	.uni-cropper-line-t {
+		position: absolute;
+		display: block;
+		width: 100%;
+		background-color: #69f;
+		top: 0;
+		left: 0;
+		height: 1rpx;
+		opacity: 0.1;
+		cursor: n-resize;
+	}
+
+	.uni-cropper-line-t::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: 0rpx;
+		width: 100%;
+		-webkit-transform: translate3d(0, -50%, 0);
+		transform: translate3d(0, -50%, 0);
+		bottom: 0;
+		height: 41rpx;
+		background: transparent;
+		z-index: 11;
+	}
+
+	.uni-cropper-line-r {
+		position: absolute;
+		display: block;
+		background-color: #69f;
+		top: 0;
+		right: 0rpx;
+		width: 1rpx;
+		opacity: 0.1;
+		height: 100%;
+		cursor: e-resize;
+	}
+
+	.uni-cropper-line-r::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 41rpx;
+		-webkit-transform: translate3d(-50%, 0, 0);
+		transform: translate3d(-50%, 0, 0);
+		bottom: 0;
+		height: 100%;
+		background: transparent;
+		z-index: 11;
+	}
+
+	.uni-cropper-line-b {
+		position: absolute;
+		display: block;
+		width: 100%;
+		background-color: #69f;
+		bottom: 0;
+		left: 0;
+		height: 1rpx;
+		opacity: 0.1;
+		cursor: s-resize;
+	}
+
+	.uni-cropper-line-b::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: 0rpx;
+		width: 100%;
+		-webkit-transform: translate3d(0, -50%, 0);
+		transform: translate3d(0, -50%, 0);
+		bottom: 0;
+		height: 41rpx;
+		background: transparent;
+		z-index: 11;
+	}
+
+	.uni-cropper-line-l {
+		position: absolute;
+		display: block;
+		background-color: #69f;
+		top: 0;
+		left: 0;
+		width: 1rpx;
+		opacity: 0.1;
+		height: 100%;
+		cursor: w-resize;
+	}
+
+	.uni-cropper-line-l::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 41rpx;
+		-webkit-transform: translate3d(-50%, 0, 0);
+		transform: translate3d(-50%, 0, 0);
+		bottom: 0;
+		height: 100%;
+		background: transparent;
+		z-index: 11;
+	}
+
+	.uni-cropper-point {
+		width: 5rpx;
+		height: 5rpx;
+		background-color: #69f;
+		opacity: .75;
+		position: absolute;
+		z-index: 3;
+	}
+
+	.point-t {
+		top: -3rpx;
+		left: 50%;
+		margin-left: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-tr {
+		top: -3rpx;
+		left: 100%;
+		margin-left: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-r {
+		top: 50%;
+		left: 100%;
+		margin-left: -3rpx;
+		margin-top: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-rb {
+		left: 100%;
+		top: 100%;
+		-webkit-transform: translate3d(-50%, -50%, 0);
+		transform: translate3d(-50%, -50%, 0);
+		cursor: n-resize;
+		width: 36rpx;
+		height: 36rpx;
+		background-color: #69f;
+		position: absolute;
+		z-index: 1112;
+		opacity: 1;
+	}
+
+	.point-b {
+		left: 50%;
+		top: 100%;
+		margin-left: -3rpx;
+		margin-top: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-bl {
+		left: 0%;
+		top: 100%;
+		margin-left: -3rpx;
+		margin-top: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-l {
+		left: 0%;
+		top: 50%;
+		margin-left: -3rpx;
+		margin-top: -3rpx;
+		cursor: n-resize;
+	}
+
+	.point-lt {
+		left: 0%;
+		top: 0%;
+		margin-left: -3rpx;
+		margin-top: -3rpx;
+		cursor: n-resize;
+	}
+	/* 裁剪框预览内容 */
+
+	.uni-cropper-viewer {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.uni-cropper-viewer image {
+		position: absolute;
+		z-index: 2;
+	}
+	
+	.wxParse {
+		line-height: 1.8;
+		font-size: 24rpx;
+		height: 600rpx;
+	}
  
 /* 提示窗口 */
-.uni-tip {
-	padding: 15px;
-	width: 300px;
-	background: #fff;
-	box-sizing: border-box;
-	border-radius: 10px;
-}
+	.uni-tip {
+		padding: 15px;
+		width: 300px;
+		background: #fff;
+		box-sizing: border-box;
+		border-radius: 10px;
+	}
 
-.uni-tip-title {
-	text-align: center;
-	font-weight: bold;
-	font-size: 16px;
-	color: #333;
-}
+	.uni-tip-title {
+		text-align: center;
+		font-weight: bold;
+		font-size: 16px;
+		color: #333;
+	}
 
-.uni-tip-content {
-	padding: 15px;
-	font-size: 14px;
-	color: #666;
-}
+	.uni-tip-content {
+		padding: 15px;
+		font-size: 14px;
+		color: #666;
+	}
 
-.uni-tip-group-button {
-	margin-top: 10px;
-	display: flex;
-}
+	.uni-tip-group-button {
+		margin-top: 10px;
+		display: flex;
+	}
 
-.uni-tip-button {
-	width: 100%;
-	text-align: center;
-	font-size: 14px;
-	color: #3b4144;
-}
+	.uni-tip-button {
+		width: 100%;
+		text-align: center;
+		font-size: 14px;
+		color: #3b4144;
+	}
 </style>

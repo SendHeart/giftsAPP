@@ -50,6 +50,7 @@
 		mapState
 	} from 'vuex'
 	import easyLoadimage from '@/components/easy-loadimage/easy-loadimage.vue'
+	import uniBadge from '@/components/uni-badge/uni-badge.vue'
 	//var mqtt_client ;
 	//var mqtt_service = require('mqtt/dist/mqtt.min.js')
 	var uploadurl = getApp().globalData.uploadurl;
@@ -148,7 +149,8 @@
 			}
 		},
 		components: {			
-			easyLoadimage,			
+			easyLoadimage,	
+			uniBadge,
 		},	
 		computed: mapState(['user']),
 		created: function () { 
@@ -198,7 +200,7 @@
 			 
 			that.style.pageHeight = screen_para.windowHeight;
 			that.style.contentViewHeight = that.style.pageHeight - 80
-			//console.log('wechat onload options:'+JSON.stringify(options)) 
+			console.log('wechat onload options:'+JSON.stringify(options)) 
 			
 			if(that.qun_type=='1'){
 				if(that.mqtt_goodsid == 0){
@@ -214,7 +216,7 @@
 			that.mqtt_sub_topic = 'SH_GDS01_' + that.mqtt_goodsid //+'_'+ that.mqtt_mid
 			//that.mqtt_connect()
 			//that.initSocketMessage()
-			console.log('chatroomservice onload mqtt_pub_topic:'+that.mqtt_pub_topic+' mqtt_sub_topic:'+that.mqtt_sub_topic)
+			//console.log('chatroomservice onload mqtt_pub_topic:'+that.mqtt_pub_topic+' mqtt_sub_topic:'+that.mqtt_sub_topic)
 			/*
 			let websocket_start_message = {
 				message_type: 2,  //商品服务群
@@ -242,6 +244,8 @@
 			}
 			if(is_customer == '1'){
 				that.update_goods_custservice()
+			}else{
+				that.update_home_custservice()
 			}
 			that.timer_heartbeat = setInterval(function () {
 				that.heartbeat() //心跳
@@ -503,6 +507,40 @@
 				})
 			},
 			
+			//更新客服阅读标志
+			update_home_custservice: function() { 
+				var that = this;
+				var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+				var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+				var shop_type = that.shop_type; 	
+				var goods_id = that.mqtt_goodsid
+				var goods_owner = that.goods_owner
+				var m_id = that.mqtt_mid
+				var from_username = that.from_username
+				if(is_customer == 1) {
+					return
+				} 
+				uni.request({
+					url: weburl + '/api/mqttservice/update_home_custservice',
+					method: 'POST',
+					data: {
+						username: username,
+						access_token: token,
+						shop_type: shop_type,
+						goods_id: goods_id,
+						goods_owner:goods_owner,
+						from_mid:m_id,
+						from_username:from_username,
+					},
+					header: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'Accept': 'application/json'
+					},
+					success: function (res) {
+						console.log('chatroomservice update_home_custservice：'+ JSON.stringify(res.data.result))
+					}
+				})
+			},
 			/*
 			mqtt_connect: function(type = 0) {
 				var that = this
@@ -800,10 +838,10 @@
 				console.log('addMessage message:'+JSON.stringify(message))
 				chat_messages.push(message)
 				that.messages = chat_messages
-				console.log('chatroomservice addMessage messages len:'+chat_messages.length+' info:'+JSON.stringify(chat_messages))
+				//console.log('chatroomservice addMessage messages len:'+chat_messages.length+' info:'+JSON.stringify(chat_messages))
 				if(!socketOpen) {
 					console.log('chatroomservice addMessage() 掉线了 socketOpen: '+socketOpen)
-					console.log('chatroomservice addMessage socketMsgQueue:'+JSON.stringify(socketMsgQueue))
+					//console.log('chatroomservice addMessage socketMsgQueue:'+JSON.stringify(socketMsgQueue))
 					return
 				} 		
 				 

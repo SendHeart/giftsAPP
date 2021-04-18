@@ -167,33 +167,37 @@
 		<view v-if="goodsshape==4 && card_type==2" :hidden="!cardnamehidden" class="card-name-note">
 			<textarea style="font-size:28rpx;" @blur="cardnameNoteTextAreaBlur" :value="card_name_note" placeholder="请输入简介(限80个汉字)" placeholder-style="text-align:center;color:#e2e2e2;" maxlength="80"></textarea>
 		</view>
-		<view class="shopping_container">
+		<view class="shopping-container">
 			<view class="goods-name">
 				<text>{{goodsname?goodsname:''}}</text>
-				<text class="goods_prom">{{goodsinfo?goodsinfo:''}}</text>
+				<text class="goods-prom"><text class="icontags">推荐理由</text>{{goodsinfo?goodsinfo:''}}</text>
 			</view>
 			<view v-if="goodsshape!=5 && goodsshape!=4" class="goods-info">
 				<text class="left-tag">{{goodssale>0?goodssale:'0'}}人已购</text>
 				<view class="right-tag">
 					{{marketprice>0?'':''}} 
 					<text class="price-market">{{marketprice>0?'￥'+marketprice:''}}</text>
-					{{marketprice>0?'':''}} 
+					{{marketprice>0?'':''}}会员价 
 					<text class="price-real">{{goodsprice>0?'￥'+goodsprice:''}}</text>
 				</view>
 			</view>
+			<!--
 			<view v-if="goodsshape!=5 && goodsshape!=4" class="fitfor">
 				<text>适合送</text>
 				<text class="goods_tag">{{goodstag?goodstag:''}}</text>
 			</view>
+			-->
 			<view v-if="goodsdiscount<100" class="prd-prom">
 				<image src="/static/images/discount.png" style="width:75rpx;height:32rpx;"></image>
 				{{discountinfo}}
 			</view>
 			<view v-if="goodsorg!=5" class="comm-text">
+				<!--
 				<text class="comm-name">服务</text>
+				-->
 				<view class="comm-listitem">
 					<image class="icon-item" src="/static/images/icon-zp.png"></image>
-					<text>假一赔十</text>
+					<text>放心正品</text>
 				</view>
 				<view class="comm-listitem">
 					<image class="icon-item" src="/static/images/icon-by.png"></image>
@@ -201,14 +205,20 @@
 				</view>
 				<view class="comm-listitem">
 					<image class="icon-item" src="/static/images/icon-tk.png"></image>
-					<text>送礼对方接受后付款</text>
+					<text>7天无理由退货</text>
+				</view>
+				<view class="comm-listitem">
+					<image class="icon-item" src="/static/images/icon-tq.png"></image>
+					<text>7特权保障</text>
 				</view>
 			</view>
 			<view v-if="goodsorg!=5" class="comm-text">
+				<!--
 				<text class="comm-name">物流</text>
+				-->
 				<view class="comm-listitem">
 					<image class="icon-item" src="/static/images/icon-wl.png"></image>
-					<text v-if="(goodsshape!=5&&goodsshape!=4&&goodsorg==4)" class="goods-org">京东物流</text>
+					<text v-if="(goodsshape!=5&&goodsshape!=4&&goodsorg==4)" class="goods-org">极速达</text>
 				</view>
 			</view>
 			<view v-if="(goodsshape!=5&&goodsshape!=4)"  class="comm-text2">
@@ -552,18 +562,20 @@
 					<text style="font-size: 20rpx;">评论</text>
 				</button>
 			</form>
-			<form v-if="goods_is_flag=='1' || goods_is_qianggou=='1' || goods_is_recommend=='1'" @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:18%;">
+			<form v-if="goods_is_flag=='1' || goods_is_qianggou=='1' || goods_is_recommend=='1'" @submit="formSubmit" data-name="myqunTapTag" report-submit="true" style="width:15%;">
 				<button class="sec-btn" formType="submit">
-					<image class="icon-detail" src="../../static/images/chat.png"></image>
+					<image class="icon-detail" src="../../static/images/kefu.png"></image>
 					<text style="font-size: 20rpx;">客服</text>
 				</button>
 			</form>
+			<!--
 			<form v-if="goodsshape!=5&&goodsshape!=4" @submit="formSubmit" data-name="wishcart" report-submit="true" style="width:18%;">
 				<button class="sec-btn" formType="submit">
 					<image class="icon-detail" src="../../static/images/bottom-unpraise.png"></image>
 					<text style="font-size: 20rpx;">+心愿单</text>
 				</button>  
 			</form>
+			-->
 			<form v-if="goodsorg!=5" @submit="formSubmit" data-name="buyGift" report-submit="true" style="width:25%;">
 				<button class="add-cart2" formType="submit">
 					<text>+购物车</text>
@@ -2530,8 +2542,8 @@ export default {
 
       var share_goods_desc = that.share_desc;
       var share_avatarUrl = that.share_avatarUrl;
-      var wx_headimg_cache = wx.getStorageSync('wx_headimg_cache');
-      var goods_image_cache = wx.getStorageSync('goods_image_cache_' + share_goods_id);
+      var wx_headimg_cache = uni.getStorageSync('wx_headimg_cache');
+      var goods_image_cache = uni.getStorageSync('goods_image_cache_' + share_goods_id);
       var share_goods_qrcode = that.share_goods_qrcode //wx.getStorageSync('goods_qrcode_cache_' + share_goods_id);
       var card_type = that.card_type;
       //share_goods_wx_headimg =  wx_headimg_cache ? wx_headimg_cache : share_goods_wx_headimg;

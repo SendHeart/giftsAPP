@@ -306,7 +306,7 @@ export default {
 		that.userauth_shoper = userauth.shoper ;
 		that.avatarUrl = userInfo.avatarUrl ;
 		that.share_goods_avatarUrl =  userInfo.avatarUrl? userInfo.avatarUrl:'/static/images/my.png',
-		uni.setStorageSync('wishshare_options', options);
+		uni.setStorageSync('wishshare_options', options)
 		that.get_project_gift_para();
 		console.log(' wishshare onload() 订单 share_order_id:', share_order_id,' share_order_shape:',share_order_shape,' options:',options); // 存储地址字段
 		if (share_order_id > 0 && (parseInt(share_order_shape) == 5 || parseInt(share_order_shape) == 4)) {
@@ -1271,7 +1271,7 @@ export default {
 		var share_goods_price = that.share_goods_price ? that.share_goods_price : 0;
 		var share_goods_image = that.share_goods_image ? that.share_goods_image : '';
 		var share_goods_qrcode = that.share_goods_qrcode_cache ? that.share_goods_qrcode_cache : weburl + '/api/WXPay/getQRCode?username=' + username + '&appid=' + appid + '&secret=' + secret + '&shop_type=' + shop_type + '&qr_type=' + qr_type + '&share_goods_id=' + share_goods_id + '&m_id=' + m_id;
-		var share_goods_wx_headimg = that.share_goods_avatarUrl; //that.share_goods_wx_headimg!='undefined'&&that.share_goods_wx_headimg ? that.share_goods_wx_headimg : 
+		var share_goods_wx_headimg = that.share_goods_wx_headimg!='undefined'&&that.share_goods_wx_headimg ? that.share_goods_wx_headimg:that.share_goods_avatarUrl; // 
 		var share_goods_title = that.share_goods_title;
 		var share_goods_desc = that.share_goods_desc;
 		var nickname = that.nickname?that.nickname:'朋友';

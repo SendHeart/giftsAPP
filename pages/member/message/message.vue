@@ -1,14 +1,16 @@
 <template>
 <view class="page" :style="'height:'+windowHeight">
-	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
 	<!--
-	
+	<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d"></uni-nav-bar>
+	-->
+	<!--	
 	<scroll-view scroll-x class="bg-black nav text-center">
 		<view class="cu-item" :class="index==TabCur?'text-red cur':''" v-for="(item,index) in navList_order" :key="index" @tap="onOrderTapTag" :data-id="index" :data-tab="item.id">
 			{{item.title}}
 		</view>
 	</scroll-view>
 	-->
+	<!--
 	<view class="top-bar2">
 	  <block v-for="(item, index) in navList_order" :key="index">
 	    <view :id="'v_' + index" :data-id="index" :data-title="item.title" :data-tab="item.id" :class="'top-bar-item2 ' + (index == TabCur ? 'top-bar-active2' : '')" @click.stop="onOrderTapTag">
@@ -16,7 +18,9 @@
 	    </view>
 	  </block>
 	</view>
-	<view class="container"> 
+	-->
+	<view class="container">
+		<!--
 		<view v-if="messageflag==2" v-for="(rlist, rindex) in rule_list" :key="rindex" class="ai-goods">
 			<view class="goods-item" v-if="(rindex==selected_num)"> 
 				<view class="ai-goods-title">{{rlist.title}}</view>
@@ -26,177 +30,188 @@
 					</block>
 				</view>
 			</view>
-		</view> 
+		</view>
+		 -->
+		 <!-- bindtap="selectBtnTap"
 		<view v-if="messageflag==2" class="opt-buttons">
 			<form @submit="formSubmit" data-name="selectBtn_last" report-submit="true" :hidden="selected_start">
-				<button class="opt-button2" formType="submit">返回上一项</button> <!-- bindtap="selectBtnTap" -->
+				<button class="opt-button2" formType="submit">返回上一项</button>  
 			</form>
 			<form @submit="formSubmit" data-name="selectBtn_next" report-submit="true" :hidden="selected_all">
 				<button class="opt-button" style="width:300rpx;margin-left:50rpx;" formType="submit">继续</button>
 			</form>
 			<form @submit="formSubmit" data-name="selectBtn" report-submit="true" :hidden="!selected_all">
-				<button class="opt-button" style="width:300rpx;margin-left:50rpx;" formType="submit">开始推荐</button> <!-- bindtap="selectBtnTap" -->
+				<button class="opt-button" style="width:300rpx;margin-left:50rpx;" formType="submit">开始推荐</button>
 			</form>
 		</view>
-
+		-->
+		<!--
 		<view v-if="messageflag==3" :class="'loadingshow ' + (isLoadingTrue?'isLoadingShow':'isLoadingHide')" :style="'height:' + dkheight + 'px;'" catchtouchmove="move">
 			<view class="select-goods-list">
 				<view class="select-goods" :style="'height:' + dkheight-80 + 'px;'">
-					<image class="img-loading" :src="loading_img"></image> <!-- ../../../images/loading.gif-->
+					<image class="img-loading" :src="loading_img"></image>
 					<text class="loadingtext">正在为您挑选中...</text>
 				</view>
 			</view>
 		</view>
-	<view v-if="messageflag==3" class="select-goods-list">
-		<view class="select-goods">
-			<view class="select-goods-title1">最佳推荐</view>
-			<view class @tap="showGoods" :data-goods-id="select_goods_list.id" :data-image="select_goods_list.image" :data-goods-name="select_goods_list.name" :data-goods-price="select_goods_list.sell_price">
-				<image class="select-goods-image" :src="(select_goods_list.activity_image?select_goods_list.activity_image:select_goods_list.image)" mode="aspectFill"></image>
-				<view class="select-goods-content">{{select_goods_list.name}}</view>
-				<view class="select-goods-content" style="color:#999;font-weight:normal;">{{select_goods_list.act_info}}</view>
-				<view class="price-list"> 
-          <!--{{select_goods_list.market_price>0?'市场价':''}} <view class="price-market">{{select_goods_list.market_price>0?'￥'+select_goods_list.market_price+' ':''}}</view>-->
-					{{select_goods_list.market_price>0?'':''}}<view class="price-now">￥{{select_goods_list.sell_price}}</view>
+		-->
+		<!--
+		<view v-if="messageflag==3" class="select-goods-list">
+			<view class="select-goods">
+				<view class="select-goods-title1">最佳推荐</view>
+				<view class @tap="showGoods" :data-goods-id="select_goods_list.id" :data-image="select_goods_list.image" :data-goods-name="select_goods_list.name" :data-goods-price="select_goods_list.sell_price">
+					<image class="select-goods-image" :src="(select_goods_list.activity_image?select_goods_list.activity_image:select_goods_list.image)" mode="aspectFill"></image>
+					<view class="select-goods-content">{{select_goods_list.name}}</view>
+					<view class="select-goods-content" style="color:#999;font-weight:normal;">{{select_goods_list.act_info}}</view>
+					<view class="price-list"> 
+						{{select_goods_list.market_price>0?'市场价':''}} <view class="price-market">{{select_goods_list.market_price>0?'￥'+select_goods_list.market_price+' ':''}}</view> 
+						{{select_goods_list.market_price>0?'':''}}
+						<view class="price-now">￥{{select_goods_list.sell_price}}</view>
+					</view>
+				</view>
+				<view class="opt-buttons">
+					<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_list.id" report-submit="true">
+						<view style="margin-top:10rpx;margin-bottom:10rpx;">
+							<button class="send-button" formType="submit">立即购买</button> 
+						</view>
+					</form>
 				</view>
 			</view>
-		<view class="opt-buttons">
-			<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_list.id" report-submit="true">
-				<view style="margin-top:10rpx;margin-bottom:10rpx;">
-					<button class="send-button" formType="submit">立即购买</button> <!-- bindtap="addCart" -->
+		
+			<view v-if="select_goods_1" class="select-goods">
+				<view class="select-goods-title">备选一</view>
+				<view class @tap="showGoods" :data-goods-id="select_goods_1.id" :data-image="select_goods_1.image" :data-goods-name="select_goods_1.name" :data-goods-price="select_goods_1.sell_price">
+					<image class="select-goods-image" :src="select_goods_1.image" mode="aspectFill"></image>
+					<view class="select-goods-content">{{select_goods_1.name}}</view>
+					<view class="select-goods-content" style="color:gray">{{select_goods_1.act_info}}</view>
+					<view class="price-list"> 
+					{{select_goods_1.market_price>0?'':''}} <view class="price-market">{{select_goods_1.market_price>0?'￥'+select_goods_1.market_price+' ':''}}</view>
+					{{select_goods_1.market_price>0?'':''}}<view class="price-now">￥{{select_goods_1.sell_price}}</view>
+					</view>
 				</view>
-			</form>
-		</view>
-    </view>
-    <view v-if="select_goods_1" class="select-goods">
-      <view class="select-goods-title">备选一</view>
-      <view class @tap="showGoods" :data-goods-id="select_goods_1.id" :data-image="select_goods_1.image" :data-goods-name="select_goods_1.name" :data-goods-price="select_goods_1.sell_price">
-        <image class="select-goods-image" :src="select_goods_1.image" mode="aspectFill"></image>
-        <view class="select-goods-content">{{select_goods_1.name}}</view>
-        <view class="select-goods-content" style="color:gray">{{select_goods_1.act_info}}</view>
-         <view class="price-list"> 
-           {{select_goods_1.market_price>0?'':''}} <view class="price-market">{{select_goods_1.market_price>0?'￥'+select_goods_1.market_price+' ':''}}</view>
-          {{select_goods_1.market_price>0?'':''}}<view class="price-now">￥{{select_goods_1.sell_price}}</view>
-        </view>
-      </view>
-       <view class="opt-buttons">
-        <form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_1.id" report-submit="true">
-        <view style="margin-top:10rpx;margin-bottom:10rpx;">
-          <button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
-        </view>
-      </form>
-      </view>
-    </view>
-	<view v-if="select_goods_2" class="select-goods">
-		<view class="select-goods-title">备选二</view>
-		<view class @tap="showGoods" :data-goods-id="select_goods_2.id" :data-image="select_goods_2.image" :data-goods-name="select_goods_2.name" :data-goods-price="select_goods_2.sell_price">
-			<image class="select-goods-image" :src="select_goods_2.image" mode="aspectFill"></image>
-			<view class="select-goods-content">{{select_goods_2.name}}</view>
-			<view class="select-goods-content" style="color:gray">{{select_goods_2.act_info}}</view>
-				<view class="price-list">   
-					{{select_goods_2.market_price>0?'':''}} <view class="price-market">{{select_goods_2.market_price>0?'￥'+select_goods_2.market_price+' ':''}}</view>
-					{{select_goods_2.market_price>0?'':''}}<view class="price-now">￥{{select_goods_2.sell_price}}</view>
-				</view> 
-			</view>
-			<view class="opt-buttons">
-				<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_2.id" report-submit="true">
-				<view style="margin-top:10rpx;margin-bottom:10rpx;">
-					<button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
+				<view class="opt-buttons">
+					<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_1.id" report-submit="true">
+						<view style="margin-top:10rpx;margin-bottom:10rpx;">
+						<button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
+						</view>
+					</form>
 				</view>
-				</form>
 			</view>
-		</view>
-		<view class="sentbtn">
-		<text @tap="goBack">以上推荐都不合适，我要自己选</text>
-		</view>
-	</view>
-	<view v-if="messageflag==9" class="select-goods-list">
-		<view class="select-goods">
-			<view class="noselect-goods-info">亲，暂无推荐的礼品，请简化条件</view> 
-			<view class="opt-buttons">
-				<view style="margin-top:50rpx;margin-bottom:20rpx;">
-					<button type="warn" size="mini" hover-class="button-hover" class="button" @tap="tryagain">再试一次</button>
+			<view v-if="select_goods_2" class="select-goods">
+				<view class="select-goods-title">备选二</view>
+				<view class @tap="showGoods" :data-goods-id="select_goods_2.id" :data-image="select_goods_2.image" :data-goods-name="select_goods_2.name" :data-goods-price="select_goods_2.sell_price">
+					<image class="select-goods-image" :src="select_goods_2.image" mode="aspectFill"></image>
+					<view class="select-goods-content">{{select_goods_2.name}}</view>
+					<view class="select-goods-content" style="color:gray">{{select_goods_2.act_info}}</view>
+					view class="price-list">   
+						{{select_goods_2.market_price>0?'':''}} <view class="price-market">{{select_goods_2.market_price>0?'￥'+select_goods_2.market_price+' ':''}}</view>
+						{{select_goods_2.market_price>0?'':''}}<view class="price-now">￥{{select_goods_2.sell_price}}</view>
+					</view> 
+				</view>
+				<view class="opt-buttons">
+					<form @submit="formSubmit" data-name="addCart" :data-goods-id="select_goods_2.id" report-submit="true">
+						<view style="margin-top:10rpx;margin-bottom:10rpx;">
+							<button class="send-button" type="warn" formType="submit" size="mini" hover-class="button-hover">立即购买</button>
+						</view>
+					</form>
 				</view>
 			</view>
 			<view class="sentbtn">
-				<text @tap="goBack">我要自己手动挑选</text>
+				<text @tap="goBack">以上推荐都不合适，我要自己选</text>
 			</view>
 		</view>
-	</view>
-	<view v-if="messageflag==0" v-for="(blist, index) in task_list" :key="index" class="msg-list">
-		<view class="msg-title">
-			<text>{{blist.addtime}}</text> 
-			<text @tap="task_action" :data-msg-id="blist.msg_id" :data-task-status="blist.task_info.task_status" :data-url="blist.message_info.url" :data-image="blist.message_info.image" :style="((blist.task_info.task_status==9||blist.msg_status==1)?' color:#999':' color:#e34c55') + ';'">{{(blist.task_info.task_status==9||blist.msg_status==1)?'已完成':'未完成，继续'}}</text>
-		</view>
-		<view class="msg-item" @tap="task_action">
-			<image class="msg-item-image" :data-order-no="blist.message_info.order_no" :data-list="blist.message_info.image" :data-message="blist.message_info.message" :data-message-type="blist.message_info.message_type" :data-amount="blist.message_info.amount" :data-amount-type="blist.message_info.amount_type" :data-content="blist.message_info.content" :data-footer="blist.message_info.footer" :data-accept-time="blist.message_info.accept_time" :data-start-time="blist.message_info.start_time" :data-end-time="blist.message_info.end_time" :data-image="blist.message_info.image" :src="blist.message_info.image" mode="aspectFill"></image>
-			<view class="msg-item-content">
-				<text class="msg-item-text">{{blist.title}}</text>
-				<text class="msg-item-text2">{{blist.message_info.message}}</text> 
+		-->
+		<!--
+		<view v-if="messageflag==9" class="select-goods-list">
+			<view class="select-goods">
+				<view class="noselect-goods-info">亲，暂无推荐的礼品，请简化条件</view> 
+				<view class="opt-buttons">
+					<view style="margin-top:50rpx;margin-bottom:20rpx;">
+						<button type="warn" size="mini" hover-class="button-hover" class="button" @tap="tryagain">再试一次</button>
+					</view>
+				</view>
+				<view class="sentbtn">
+					<text @tap="goBack">我要自己手动挑选</text>
+				</view>
 			</view>
 		</view>
-	</view>
-	<view v-if="messageflag==1" v-for="(blist, index) in message_list" :key="index" class="msg-list">
-		<view class="msg-title">
-		<text class="msg-item-text3">{{blist.title}}</text>
-			<text @tap="message_action" :data-msg-id="blist.msg_id" :data-msg-type="blist.type" :data-coupon-id="blist.message_info.coupon_id" :data-amount-type="blist.message_info.amount_type" style="color:#fff;background:#e34c55;">{{(blist.type==4)?'领取奖励':''}}</text>  
-		<text>{{blist.addtime}}</text>
+		-->
+		
+		<view v-if="messageflag==0" v-for="(blist, index) in task_list" :key="index" class="msg-list">
+			<view class="msg-title">
+				<text>{{blist.addtime}}</text> 
+				<text @tap="task_action" :data-msg-id="blist.msg_id" :data-task-status="blist.task_info.task_status" :data-url="blist.message_info.url" :data-image="blist.message_info.image" :style="((blist.task_info.task_status==9||blist.msg_status==1)?' color:#999':' color:#e34c55') + ';'">{{(blist.task_info.task_status==9||blist.msg_status==1)?'已完成':'未完成，继续'}}</text>
+			</view>
+			<view class="msg-item" @tap="task_action">
+				<image class="msg-item-image" :data-order-no="blist.message_info.order_no" :data-list="blist.message_info.image" :data-message="blist.message_info.message" :data-message-type="blist.message_info.message_type" :data-amount="blist.message_info.amount" :data-amount-type="blist.message_info.amount_type" :data-content="blist.message_info.content" :data-footer="blist.message_info.footer" :data-accept-time="blist.message_info.accept_time" :data-start-time="blist.message_info.start_time" :data-end-time="blist.message_info.end_time" :data-image="blist.message_info.image" :src="blist.message_info.image" mode="aspectFill"></image>
+				<view class="msg-item-content">
+					<text class="msg-item-text">{{blist.title}}</text>
+					<text class="msg-item-text2">{{blist.message_info.message}}</text> 
+				</view>
+			</view>
 		</view>
-		<view class="msg-item" @tap="imgYu" :data-list="blist.message_info.image" :data-message="blist.message_info.message" :data-order-no="blist.message_info.order_no" :data-message-type="blist.message_info.message_type" :data-amount="blist.message_info.amount" :data-amount-type="blist.message_info.amount_type" :data-content="blist.message_info.content" :data-footer="blist.message_info.footer" :data-accept-time="blist.message_info.accept_time" :data-start-time="blist.message_info.start_time" :data-end-time="blist.message_info.end_time">
-		<image class="msg-item-image" :data-image="blist.message_info.image" :src="blist.message_info.image" mode="aspectFill"></image>
-		<view class="msg-item-content">
-			<text :class="(blist.message_info.message_type==6?'msg-item-text':'msg-item-text2')">{{blist.message_info.message}}</text>
+		<view v-if="messageflag==1" v-for="(blist, index) in message_list" :key="index" class="msg-list">
+			<view class="msg-title">
+				<text class="msg-item-text3">{{blist.title}}</text>
+				<text @tap="message_action" :data-msg-id="blist.msg_id" :data-msg-type="blist.type" :data-coupon-id="blist.message_info.coupon_id" :data-amount-type="blist.message_info.amount_type" style="color:#fff;background:#e34c55;">{{(blist.type==4)?'领取奖励':''}}</text>  
+				<text>{{blist.addtime}}</text>
+			</view>
+			<view class="msg-item" @tap="imgYu" :data-list="blist.message_info.image" :data-message="blist.message_info.message" :data-order-no="blist.message_info.order_no" :data-message-type="blist.message_info.message_type" :data-amount="blist.message_info.amount" :data-amount-type="blist.message_info.amount_type" :data-content="blist.message_info.content" :data-footer="blist.message_info.footer" :data-accept-time="blist.message_info.accept_time" :data-start-time="blist.message_info.start_time" :data-end-time="blist.message_info.end_time">
+				<image class="msg-item-image" :data-image="blist.message_info.image" :src="blist.message_info.image" mode="aspectFill"></image>
+				<view class="msg-item-content">
+					<text :class="(blist.message_info.message_type==6?'msg-item-text':'msg-item-text2')">{{blist.message_info.message}}</text>
+				</view>
+			</view>
 		</view>
+		<view style="display:flex;flex-direction: row;justify-content: center;">
+			<view v-if="page_num>1 & messageflag==1" hover-class="none" class="morebtn" @tap="getMoreAccountTapTag">查看更多 ({{page}}/{{page_num}})</view>
 		</view>
-	</view>
-	<view style="display:flex;flex-direction: row;justify-content: center;">
-	  <view v-if="page_num>1 & messageflag==1" hover-class="none" class="morebtn" @tap="getMoreAccountTapTag">查看更多 ({{page}}/{{page_num}})</view>
-	</view>
-</view> 
+	</view> 
 
- <view class="message" :hidden="messageHidden" @tap="messageConfirm" :style="'height:' + dkheight + 'px;'">
-    <view class="t_w">
-      <!--右上角图标开始-->
-      <!-- 
-      <view class="t_image"  bindtap="messageCandel">
-        <image class="t_image1" src="{{resp_message.image}}"></image>
-      </view>
-      -->
-      <!--右上角图标结束-->
-      <!--弹出框开始-->
-      <!-- 红包 -->
-      <view v-if="message.message_type==1||message.message_type==2" class="red-item" :style="'background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;'">
-          <!-- <view class="bg_view">{{resp_message.title}}</view> -->
-          <text class="red-name">{{message.message}}</text>
-          <text class="red-value">{{message.message_type==1?'现金￥'+message.amount+'元':'积分:'+message.amount}}</text>
-          <text class="red-content">{{message.content}}</text>
-          <text class="red-footer">{{message.footer}}</text>
-          <text class="red-dueday">{{message.start_time?'(有效期:'+message.start_time+'至':''}}{{message.end_time?message.end_time+')':''}}</text>
-          <!-- 
-          <view class="txtys">{{resp_message.message}}</view>
-          -->
-          <!--确定开始-->
-          <!-- 
-          <view class="txtsure">
-            <view class="txtsurebg" bindtap="messageCandel">
-              <text class="txtsurename">确定</text>
-            </view>        
-          </view>
-          -->
-          <!--确定结束-->
-      </view>
-      <!-- 优惠券 -->
-      <view v-if="message.message_type==3" class="coupon-item" :style="'height:150px;background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;'">
-        <text class="coupon-name">{{message.message}}</text>
-        <text class="coupon-content">{{message.content}}</text>
-        <text class="coupon-footer">{{message.footer}}</text>
-        <text class="coupon-dueday">{{message.start_time?'(有效期:'+message.start_time+'至':''}}{{message.end_time?message.end_time+')':''}}</text>
-      </view>
-      <!-- 消息通知 -->
-      <view v-if="message.message_type>3" class="coupon-item" :style="'background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;height:130rpx; text-align: left;align-items: left; padding:20rpx;'">
-        <text class="coupon-name" style="font-size:30rpx; text-overflow:ellipsis; white-space:wrap;">{{message.message}}</text>
-      </view>
-    </view>
-     <!--弹出框结束-->
+	<view class="message" :hidden="messageHidden" @tap="messageConfirm" :style="'height:' + dkheight + 'px;'">
+		<view class="t_w">
+		<!--右上角图标开始-->
+		<!-- 
+		<view class="t_image"  bindtap="messageCandel">
+			<image class="t_image1" src="{{resp_message.image}}"></image>
+		</view>
+		-->
+		<!--右上角图标结束-->
+		<!--弹出框开始-->
+		<!-- 红包 -->
+			<view v-if="message.message_type==1||message.message_type==2" class="red-item" :style="'background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;'">
+				<!-- <view class="bg_view">{{resp_message.title}}</view> -->
+				<text class="red-name">{{message.message}}</text>
+				<text class="red-value">{{message.message_type==1?'现金￥'+message.amount+'元':'积分:'+message.amount}}</text>
+				<text class="red-content">{{message.content}}</text>
+				<text class="red-footer">{{message.footer}}</text>
+				<text class="red-dueday">{{message.start_time?'(有效期:'+message.start_time+'至':''}}{{message.end_time?message.end_time+')':''}}</text>
+				<!-- 
+				<view class="txtys">{{resp_message.message}}</view>
+				-->
+				<!--确定开始-->
+				<!-- 
+				<view class="txtsure">
+					<view class="txtsurebg" bindtap="messageCandel">
+					<text class="txtsurename">确定</text>
+					</view>        
+				</view>
+				-->
+				<!--确定结束-->
+			</view>
+			<!-- 优惠券 -->
+			<view v-if="message.message_type==3" class="coupon-item" :style="'height:150px;background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;'">
+				<text class="coupon-name">{{message.message}}</text>
+				<text class="coupon-content">{{message.content}}</text>
+				<text class="coupon-footer">{{message.footer}}</text>
+				<text class="coupon-dueday">{{message.start_time?'(有效期:'+message.start_time+'至':''}}{{message.end_time?message.end_time+')':''}}</text>
+			</view>
+			<!-- 消息通知 -->
+			<view v-if="message.message_type>3" class="coupon-item" :style="'background-image:url(' + $1 + '); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;height:130rpx; text-align: left;align-items: left; padding:20rpx;'">
+				<text class="coupon-name" style="font-size:30rpx; text-overflow:ellipsis; white-space:wrap;">{{message.message}}</text>
+			</view>
+		</view>
+		<!--弹出框结束-->
 	</view>
 	<!--
 	<view :hidden="hiddenmodalput" title="提现" confirm-text="确定" cancel-text="返回" @cancel="cancel_withdraw()" @confirm="confirm_withdraw()">
@@ -305,6 +320,16 @@ export default {
 				that.dkheight = winHeight
 			}		
 		})
+		var default_para = {
+			currentTarget:{
+				dataset:{
+					id:'message',
+					index:2,
+					title:'消息'
+				}
+			}
+		}
+		that.onOrderTapTag(default_para) ;
 		 // #ifdef APP-PLUS
 		that.getPermission();
 		//#endif
@@ -726,7 +751,7 @@ export default {
           var messages_all = res.data;
           var all_rows = res.data.all_rows;
 
-          if (messages_all['status'] == 'y') {
+          if (messages_all['status'] == 'y' && messages_all['result'].length>0) {
             var messages = messages_all['result'];
             var task_list = [];
             var message_list = [];
@@ -780,12 +805,12 @@ export default {
             that.message_list = message_list
             that.task_list = task_list
             that.page_num = page_num.toFixed(0)
-            console.log('获取消息:', that.message_list, that.task_list);
+            console.log('获取消息 message_list:'+JSON.stringify( that.message_list)+' task:' + JSON.stringify( that.task_list));
           } else {
-            wx.showToast({
+            uni.showToast({
               title: '暂无消息',
               icon: 'none',
-              duration: 1000
+              duration: 3000
             });
           }
         }

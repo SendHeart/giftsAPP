@@ -82,8 +82,9 @@ page {
 	flex-direction: row;
 	justify-content: flex-start;
 	background: #F2F2F2;
-	height: 220rpx;
-	padding: 0rpx;
+	width: 100%;
+	height: 230rpx;
+	padding: 5rpx;
 	border-bottom: 1px solid #FFFFFF;
 }
 
@@ -99,20 +100,24 @@ page {
 	border-bottom: 1px solid #BBBBBB;
 }
 .chat-item {
+	/*
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-start;		
+	justify-content: flex-start;
+	*/
 	padding:25rpx;	
+	display: inline-block;
 }
 .chat-tiem .chat-goods-name {
 	font-size:12px;
 	width: 80%;
-	overflow: hidden;
 	color: #444;
 	font-size: 26rpx;
 	font-weight: bold;
-	text-overflow: -o-ellipsis-lastline;
+	height: 80rpx;
+	line-height: 80rpx;
 	text-overflow: ellipsis;
+	overflow: hidden;
 }
 .chat-info .chat-img {
 	width: 150rpx;

@@ -16,18 +16,23 @@
 							<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
 							-->
 							<view class="goods-tags">
-								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">京东物流</text>
+								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
 							<text class="goods_name">{{item.name}}</text>
 							<view class="goods_prom">{{item.act_info?item.act_info:''}}</view>
+							<view class="goods-tags">
+								<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
+							</view>
 							<view class="goods_bottom">
+								<!--
 								<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 									<text space="ensp">{{item.goods_tag}}</text>
 								</view>
+								-->
 								<view class="price-list">
 									<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-									<view class="price-now">￥{{item.sell_price}}</view>
+									<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 								</view>
 							</view>
 					</view>
@@ -48,19 +53,24 @@
 							<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
 							-->
 							<view class="goods-tags">
-								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">京东物流</text>
+								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
 							<text class="goods_name">{{item.name}}</text>
 						<!-- </navigator> -->
 						<view class="goods_prom">{{item.act_info?item.act_info:''}}</view>
+						<view class="goods-tags">
+							<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
+						</view>
 						<view class="goods_bottom">
+							<!--
 							<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 								<text space="ensp">{{item.goods_tag}} </text>
 							</view>
+							-->
 							<view class="price-list">
 								<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-								<view class="price-now">￥{{item.sell_price}}</view>
+								<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
 							</view>
 						</view>
 					</view>

@@ -2,15 +2,16 @@
 	<view class="uni-searchbar">
 		<view :class="show?'':'hide'" class="uni-searchbar-form">
 			<view :style="{borderRadius:radius+'rpx'}" class="uni-searchbar-form__box">
-				<uni-icons :color="'#999999'" class="icon-search" type="search" size="18" />
+				<uni-icons v-if="clearButton==='always'||clearButton==='auto'&&searchVal!==''" :color="'#999999'" class="icon-search" type="search" size="18" />
 				<input :placeholder="placeholder" :focus="show" v-model="searchVal" class="search-input" type="text" placeholder-style="color:#cccccc" confirm-type="search" @confirm="confirm">
 				<uni-icons :color="'#999999'" v-if="clearButton==='always'||clearButton==='auto'&&searchVal!==''" class="icon-clear" type="clear" size="24" @click="clear" />
 			</view>
 			<view :style="{borderRadius:radius+'rpx'}" class="uni-searchbar-form__text" @click="searchClick">
-				<uni-icons color="#999999" class="icon-search" type="search" size="18" />
+				<uni-icons v-if="clearButton==='always'||clearButton==='auto'&&searchVal!==''" color="#999999" class="icon-search" type="search" size="18" />
 				<text class="placeholder">{{ placeholder }}</text>
 			</view>
-			<text class="uni-searchbar-form__cancel" @click="cancel">取消</text>
+			<text v-if="nocancel=='no'" class="uni-searchbar-form__cancel" @click="cancel">取消</text>
+			<text v-if="nobutton=='no'" class="uni-searchbar-form__cancel" @click="confirm">搜索</text>
 		</view>
 	</view>
 </template>
@@ -34,7 +35,15 @@
 			clearButton: {
 				type: String,
 				default: 'auto'
-			}
+			},
+			nocancel: {
+				type: String,
+				default: 'no'
+			},
+			nobutton: {
+				type: String,
+				default: 'yes'
+			},
 		},
 		data() {
 			return {
@@ -68,7 +77,7 @@
 				this.$emit('confirm', {
 					value: this.searchVal
 				})
-			}
+			},
 		}
 	}
 </script>
@@ -89,7 +98,7 @@
 		flex: 1;
 		align-items: center;
 		width: 100%;
-		height: 64rpx;
+		height: 55rpx;
 		color: #c8c7cc;
 		background: #fff;
 		border: solid 1px #c8c7cc;
@@ -104,9 +113,9 @@
 
 	.uni-searchbar-form__box .search-input {
 		flex: 1;
-		font-size: 28rpx;
-		height: 64rpx;
-		line-height: 64rpx;
+		font-size: 20rpx;
+		height: 45rpx;
+		line-height: 45rpx;
 		color: #333
 	}
 
@@ -121,8 +130,8 @@
 		flex: 1;
 		align-items: center;
 		width: 100%;
-		height: 64rpx;
-		line-height: 64rpx;
+		height: 55rpx;
+		line-height: 55rpx;
 		text-align: center;
 		color: #c8c7cc;
 		background: #fff;
@@ -132,20 +141,20 @@
 	}
 
 	.uni-searchbar-form__text .icon-search {
-		height: 64rpx;
-		line-height: 64rpx
+		height: 55rpx;
+		line-height: 55rpx
 	}
 
 	.uni-searchbar-form__text .placeholder {
 		display: inline-block;
-		font-size: 28rpx;
+		font-size: 24rpx;
 		color: #ccc;
 		margin-left: 10rpx
 	}
 
 	.uni-searchbar-form__cancel {
 		padding-left: 20rpx;
-		line-height: 64rpx;
+		line-height: 55rpx;
 		color: #333;
 		white-space: nowrap
 	}
