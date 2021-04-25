@@ -224,14 +224,14 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx75f9d4c06ae00125",
         "setting" : {
             "urlCheck" : false
         },
         "usingComponents" : true,
         "permission" : {
             "scope.userLocation" : {
-                "desc" : "演示定位能力"
+                "desc" : "电商推广分享"
             }
         }
     },
@@ -259,5 +259,9 @@
         },
         "title" : "送心",
         "domain" : "sendheart.dreamer-inc.com"
+    },
+    "quickapp-webview" : {
+        "icon" : "",
+        "versionCode" : ""
     }
 }

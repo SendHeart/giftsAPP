@@ -14,7 +14,7 @@
 			    <text style="font-size:12px;">{{item.name}}</text>
 			    <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
 			    <view class="goods-tags">
-			      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+			      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 			    </view>    
 				<view class="price-list">
 				  <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>

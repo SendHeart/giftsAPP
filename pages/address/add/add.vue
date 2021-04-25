@@ -3,25 +3,27 @@
 <form @submit="formSubmit">
 	<view class="cell">
 	    <text>区域</text><text @tap="cascadePopup" class="area_select">{{areaSelectedStr}}</text>
-	    <text @tap="fetchPOI" class="poi">自动获取</text>       
+		<!-- 自动获取地址库和后台不一致
+	    <text @tap="fetchPOI" class="poi">自动获取</text>
+		-->
 	</view>
 	<view class="cell">
-		<text>地址</text><input name="detail" placeholder="请输入详情地址" :value="address.address"></input>
+		<text style="width: 15%;">地址</text><input name="detail" placeholder="请输入详情地址" :value="address.address" style="width: 80%;"></input>
 	</view>
 	<view v-if="is_activity==1" class="cell">
-		<text>备注</text>
-		<input name="activity_name" placeholder="请输入备注" :value="address.name"></input>
+		<text style="width: 15%;">备注</text>
+		<input name="activity_name" placeholder="请输入备注" :value="address.name" style="width: 80%;"></input>
 	</view>
 	<view class="cell">
-		<text>收件人</text>
-		<input name="full_name" placeholder="请输入收件人姓名" :value="address.full_name" type="text"></input>
+		<text style="width: 15%;">收件人</text>
+		<input name="full_name" placeholder="请输入收件人姓名" :value="address.full_name" type="text" style="width: 80%;"></input>
 	</view>
 	<view class="cell">
-		<text>手机号</text>
-		<input name="mobile" placeholder="请输入手机号码" :value="address.tel" type="number"></input>
+		<text style="width: 15%;">手机号</text>
+		<input name="mobile" placeholder="请输入手机号码" :value="address.tel" type="number" style="width: 80%;"></input>
 	</view>
   <view v-if="is_activity==1" class="cell">
-		<text>侯时</text>
+		<text style="width: 15%;">侯时</text>
 		<input name="waitting" placeholder="请输入等候时长(小时)" :value="address.waitting" type="digit"></input>
 	</view>
    <view class="upimage">
@@ -378,8 +380,8 @@ export default {
     },
     upload: function () {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var goods_id = that.goods_id;
       var new_img_addr = that.new_img_arr; //本次上传图片的手机端文件地址
 
@@ -401,7 +403,7 @@ export default {
 
       for (var i = 0; i < new_img_addr.length; i++) {
         var count = new_img_addr.length;
-        wx.uploadFile({
+        uni.uploadFile({
           url: uploadurl,
           filePath: new_img_addr[i],
           name: 'wechat_upimg',
@@ -428,7 +430,7 @@ export default {
               console.log('图片上传完成:', that.new_img_url, ' count:', count);
 
               if (count == 0) {
-                wx.request({
+                uni.request({
                   url: weburl + '/api/client/update_activity_address',
                   method: 'POST',
                   data: {
@@ -489,21 +491,21 @@ export default {
       }
     },
 	update_member_address: function () {
-	  var that = this;
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-	  var province = that.provinceObjects[that.provinceIndex];
-	  var city = that.cityObjects[that.cityIndex];
-	  var region = that.regionObjects[that.regionIndex];
-	  var town = that.townObjects[that.townIndex];
-	  var addressId = that.addressId?that.addressId:0;
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var province = that.provinceObjects[that.provinceIndex];
+		var city = that.cityObjects[that.cityIndex];
+		var region = that.regionObjects[that.regionIndex];
+		var town = that.townObjects[that.townIndex];
+		var addressId = that.addressId?that.addressId:0;
 		var shop_type = that.shop_type ;
-	  var address_name = that.detail;
-	  var detail = that.areaSelectedStr + that.detail;
-	  var mobile = that.mobile;
+		var address_name = that.detail;
+		var detail =  that.detail; //that.areaSelectedStr +
+		var mobile = that.mobile;
 	    var full_name = that.full_name;
 	  
-	  wx.request({
+	  uni.request({
 	    url: weburl + '/api/client/update_member_address',
 	    method: 'POST',
 	    data: {
@@ -527,13 +529,13 @@ export default {
 	    success: function (res) {
 	      console.log(res.data.result);
 	      console.log(res.data.info);
-	      wx.showToast({
+	      uni.showToast({
 	        title: '保存成功',
 	        duration: 500
 	      }); // 等待半秒，toast消失后返回上一页
 	  
 	      setTimeout(function () {
-	        wx.navigateBack();
+	        uni.navigateBack();
 	      }, 500);
 	    },
 	  
@@ -563,7 +565,7 @@ export default {
           }
         });
       } else {
-        wx.showToast({
+        uni.showToast({
           title: '最多上传三张图片',
           icon: 'loading',
           duration: 3000
@@ -609,8 +611,8 @@ export default {
     },
     loadAddress_activity: function (options) {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
       var shop_type = that.shop_type;
       var addressId = options.objectId;
       var img_arr = that.img_arr;
@@ -620,7 +622,7 @@ export default {
         that.setData({
           addressId: addressId
         });
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/get_activity_address',
           method: 'POST',
           data: {
@@ -657,8 +659,8 @@ export default {
     },
 	loadAddress_member: function (options) {
 	  var that = this;
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	  var shop_type = that.shop_type;
 	  var addressId = options.objectId;
 	  
@@ -668,7 +670,7 @@ export default {
 	    that.setData({
 	      addressId: addressId
 	    });
-	    wx.request({
+	    uni.request({
 	      url: weburl + '/api/client/get_member_address',
 	      method: 'POST',
 	      data: {

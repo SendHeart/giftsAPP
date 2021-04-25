@@ -148,10 +148,10 @@
 }
 
 .userinfo-cards-logo {
-	width: 80rpx;
+	width: 261rpx;
 	height: 80rpx;
 	margin: 20rpx 10rpx 0 20rpx;
-	border-radius: 40%;
+	border-radius: 10rpx
 }
 
 .userinfo-cards-info {
@@ -194,14 +194,14 @@
 
 .userinfo-cards-due {
 	color: #fff;
-	font-size: 28rpx;
+	font-size: 24rpx;
 	font-weight: normal;
 	margin-right: 20rpx;
 }
 
 .userinfo-cards-expend {
 	color: #fff;
-	font-size: 28rpx;
+	font-size: 24rpx;
 	font-weight: normal;
 	line-height: 60rpx;
 }
@@ -288,6 +288,7 @@
 .order {
 	display: inline-block;
 	width: 20%;
+	text-align: center;
 }
 
 .order image {
@@ -393,10 +394,10 @@
 .left-tag {
 	height: 32rpx;
 	line-height: 32rpx;
-	color: #EC4844;
+	color: #fc9326;
 	font-size: 24rpx;
 	text-align: center;
-	border: 2rpx #EC4844 solid;
+	border: 1rpx #EC4844 solid;
 	border-radius: 6rpx;
 	padding: 2rpx 6rpx;
 }

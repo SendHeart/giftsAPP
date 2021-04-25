@@ -1,15 +1,15 @@
 <template>
 <view>
-<view v-if="!hidddensearch" :hidden="hidddensearch" class="search">
-	<view class="wx-input" style="background-color:#000000">		 
-		<uni-icons :color="'#999999'" class="icon-search" type="search" size="20" style="margin-left: 20rpx;margin-top: -5rpx;" />
-		<input name="search" :value="keyword" placeholder="输入商品名称" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag" style="color:#F0F0F0;font-size:14px;"></input>
-		<uni-icons :color="'#999999'" class="icon-clear" type="clear" size="20" @tap="clear_goodsnameTapTag" style="margin-right: 20rpx;margin-top: -7rpx;" />
-	</view>
+	<view v-if="!hidddensearch" :hidden="hidddensearch" class="search">
+		<view class="wx-input" style="background-color:#000000">		 
+			<uni-icons :color="'#999999'" class="icon-search" type="search" size="20" style="margin-left: 20rpx;margin-top: -5rpx;" />
+			<input name="search" :value="keyword" placeholder="输入商品名称" @input="search_goodsnameTapTag" :focus="inputShowed" maxlength="10" confirm-type="search" @confirm="searchTapTag" style="color:#F0F0F0;font-size:14px;"></input>
+			<uni-icons :color="'#999999'" class="icon-clear" type="clear" size="20" @tap="clear_goodsnameTapTag" style="margin-right: 20rpx;margin-top: -7rpx;" />
+		</view>
 	<!--
 	<text class="searchcancel" @tap="goBack">取消</text>
 	-->
-</view>
+	</view>
 <!--
 <view  wx:if="!hidddensearch" hidden='{{hidddensearch}}' class="serach-comm">
   <view class="search-comm-vote linegray">
@@ -27,8 +27,8 @@
 </movable-view>
 </movable-area>
 -->
-<view class="banner" :style="(hidddensearch?'top:0;':'top:80rpx;')">
-	<view class="top-bar2" style>
+	<view class="banner" :style="(hidddensearch?'top:0;':'top:80rpx;')">
+		<view class="top-bar2" style>
 		<block v-for="(item, index) in navList2" :key="index">
 			<view :id="'v_' + index" :data-index="index" :data-title="item.title" :data-tabid="item.id" :class="'top-bar-item2 ' + (index == activeIndex2 ? 'top-bar-active2' : '')" @click.stop="onTapTag2">
 				<view>{{item.title}}</view>
@@ -36,16 +36,12 @@
 				<icon v-if="updown==1 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-downarrow" @click.stop :data-index="index"></icon>
 			</view>
 		</block>
+		</view>
 	</view>
-</view>
-<mescroll-body top="10" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
-	<pd-list :list="pdList"></pd-list>
-</mescroll-body>
-<!--
-<view class="loading-show" :hidden="loadingHidden">
-  <text>{{loading_note}}</text>
-</view>
--->
+	
+	<mescroll-body top="10" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+		<pd-list :list="pdList"></pd-list>
+	</mescroll-body>
 </view>
 </template>
 
@@ -59,7 +55,6 @@ var util = require("utils/util.js"); //获取应用实例
 import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 // 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
 import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
-
 import PdList from "./pd-list.vue";
 var weburl = getApp().globalData.weburl;
 var shop_type = getApp().globalData.shop_type;
@@ -174,24 +169,23 @@ export default {
 		MescrollBody,
 		PdList,
 	},
-	props: {},
 	
 	onLoad: function (options) {
     //console.log('onLoad', options);
     var that = this;
-    var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-    var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
     var middle_title = options.middle_title ? options.middle_title : '特色礼物';
     var navlist_toView = options.navlist ? options.navlist : 0;
     var goods_type_value = options.goods_type_value ? options.goods_type_value : 0;
     var goods_type = 'goods_middle_search';
     var hidddensearch = options.search == 1 ? false : true;
     middle_title = options.search == 1 ? '搜索商品' : middle_title
-	
+	/*
 	uni.setNavigationBarTitle({
 		title: middle_title
 	})
-	
+	*/
     that.username = username
     that.token = token
     that.navlist_toView = navlist_toView
@@ -225,6 +219,7 @@ export default {
 	}, 100)
 	*/
   },
+  
   onShareAppMessage: function () {
     return {
       title: '送心礼物',
@@ -259,8 +254,7 @@ export default {
       });
     },
     goBack: function () {
-      var pages = getCurrentPages();
-
+      var pages = getCurrentPages()
       if (pages.length > 1) {
         uni.navigateBack({
           changed: true
@@ -376,30 +370,34 @@ export default {
       var that = this;
 	  that.goTop() ;
     },
+	
     getMoreGoodsTapTag: function (e) {
-      var that = this;
-      var page = that.page + 1;
-      var all_rows = that.all_rows;
-      var is_loading = that.is_loading;
-      if (is_loading) return;
+		var that = this;
+		var page = that.page + 1;
+		var all_rows = that.all_rows;
+		var is_loading = that.is_loading;
+		if (is_loading) return;
 
-      if (page > all_rows) {
-		that.status = 'nomore';
-        return;
-      }
+		if (page > all_rows) {
+			that.status = 'nomore';
+			return;
+		}
 	  
-	  that.page = page
-      that.get_goods_list();
+		that.page = page
+		that.get_goods_list();
     },
+	
     search_goodsnameTapTag: function (e) {
-      var that = this;
-      var keyword = e.detail.value;
-      that.keyword = keyword
-    },
-	clear_goodsnameTapTag: function () {
-	  var that = this	   
-	  that.keyword = ''
+		var that = this;
+		var keyword = e.detail.value;
+		that.keyword = keyword
 	},
+	
+	clear_goodsnameTapTag: function () {
+		var that = this	   
+		that.keyword = ''
+	},
+	
 	showGoods: function (e) {
 	  // 点击购物车某件商品跳转到商品详情
 	  var objectId = e.id ; //currentTarget.dataset.objectId;
@@ -736,21 +734,18 @@ export default {
             return;
           }
 
-          that.setData({
-            navList: navList_new,
-            index: navlist_toView,
-            activeIndex: navlist_toView,
-            tab: navList_new[navlist_toView]['id'],
-            tab_value: navList_new[navlist_toView]['value']
-          });
+			that.navList = navList_new,
+			that.index = navlist_toView 
+			that.activeIndex = navlist_toView
+			that.tab = navList_new[navlist_toView]['id']
+			that.tab_value = navList_new[navlist_toView]['value']
+		 
           //that.get_goods_list();
-          setTimeout(function () {
-            that.setData({
-              loadingHidden: true
-            });
-          }, 1500);
-        }
-      });
+			setTimeout(function () {
+				that.loadingHidden= true
+			}, 1500);
+			}
+		});
     },
     setData: function (obj) {
       let that = this;

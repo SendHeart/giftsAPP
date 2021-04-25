@@ -156,6 +156,9 @@ page {
   padding: 4rpx 12rpx;
   border-radius: 10rpx;
   color: #fff;
+  margin-right: 10px;
+  line-height: 20px;
+  height: 20px;
 }
 
 .shopping-container .goods-name {
@@ -166,7 +169,7 @@ page {
 	margin: 0 auto;
 	font-size: 34rpx;
 	font-weight: 600;
-	color: #444;
+	color: #444;	
 }
 .shopping-container .goods-org {
   color: #999999;
@@ -177,10 +180,12 @@ page {
 .shopping-container .goods-prom {
 	display: block;
 	color: #999999;
-	font-size: 28rpx;
+	font-size: 22rpx;
 	font-weight: normal;
 	white-space: nowrap;
 	overflow-x: hidden;
+	line-height: 20px;
+	height: 20px;
 }
 
 .shopping-container .goods-info {
@@ -202,6 +207,8 @@ page {
 	text-align: center;
 	padding: 6rpx 20rpx;
 	width: 30%;
+	line-height: 20px;
+	height: 20px;
 }
 
 .goods-info .right-tag {

@@ -3,14 +3,14 @@
 <scroll-view scroll-y  class="container carts-list" :style="(modalHiddenCoupon?'position:fixed;':'') +'height:'+dkheight+'px;'">
   <!-- 地址 -->
 	<navigator v-if="is_buymyself==1 && order_shape!=8 && order_shape!=7" url="/pages/address/list/list" class="address-section">
-  	<view class="order-content">
-  		<image style="width:50rpx;height:50rpx;" src="/static/images/icon_address.png"></image>
+  	<view class="address-content">
+  		<image style="width:60rpx;height:60rpx;margin-left:20rpx" src="/static/images/icon_address.png"></image>
   		<view class="cen">
   			<view>
   				<text class="name">{{addressData.full_name}}</text>
   				<text class="mobile">{{addressData.tel}}</text>
   			</view>
-  			<text class="address">{{addressData.address}}</text>
+  			<text class="address">{{addressData.prov_str}}{{addressData.city_str}}{{addressData.area_str}}{{addressData.town_str}}{{addressData.address}}</text>
   		</view>
   		<image style="width:15rpx;height:30rpx;margin-right:20rpx;" src="/static/images/right-arrow.png"></image>
   	</view>
@@ -61,10 +61,12 @@
 	</view>
   </view>
   <view class="order-item">
+	<!-- 份数，不是件数，用于群发礼物订单
   <view v-if="order_shape!=5" class="order-num">
-    <text>份数:</text> <!--份数，不是件数，用于群发礼物订单 -->
+    <text>份数:</text> 
     <input type="number" @input="order_numFun" :value="order_num"></input>
   </view>
+  -->
   <view class="cell" style>
     <view style="width:18%">商品金额:</view>
     <view class="amount" style="width:32%">{{(payamount)}}
@@ -74,10 +76,12 @@
     <view class="amount" style="width:30%;">{{discountpay>0?'-'+discountpay:'0'}}</view>
   </view>
   <view class="carts-more" :hidden="showmorehidden">
+	<!--
     <view class="select-and-amount" @tap="bindSelectRedAll">
       <uni-icons style="margin:10rpx;" :type="(selectedRedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color="#e34c55"></uni-icons>
       <text style="margin-left:10rpx;">使用红包</text>
     </view>
+	-->
     <view class="select-and-amount" @tap="bindSelectAll">
       <uni-icons style="margin:10rpx;" :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color="#e34c55"></uni-icons>
       <text style="margin-left:10rpx;">使用优惠券</text>
@@ -85,7 +89,7 @@
   </view>
   <view class="confirmbtn">
   <form @submit="formSubmit" data-name="confirmOrder" report-submit="true">
-    <button class="submit" style="width:96%;" type="warn" formType="submit">提交订单</button> <!-- bindtap="confirmOrder" -->
+    <button class="submit" style="width:96%;" type="warn" formType="submit">确认订单</button>
   </form>
   </view>
   </view>
@@ -588,12 +592,12 @@ export default {
       var address = [];
 	  var address_id = that.address_id?that.address_id:0
 	  var addressIndex = that.addressIndex? that.addressIndex:0;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 	  var addressData = that.addressData
 	  var is_buymyself = that.is_buymyself ? that.is_buymyself : 0; //自购
 	  
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/get_member_address',
         method: 'POST',
         data: {
@@ -994,11 +998,15 @@ export default {
 <style >
 @import "./checkout.css";
 	.address-section {
-		padding: 30upx 0;
-		background: #fff;
+		width: 95%;
+		height: 60px;
+		padding: 30rpx;
+		background: #ffffff;
 		position: relative;
+		border-bottom: 1px solid #eee;
+		margin-bottom: 10px;
 	}
-	.order-content {
+	.address-content {
 		display: flex;
 		flex-direction: row;
 		justify-content:space-between;

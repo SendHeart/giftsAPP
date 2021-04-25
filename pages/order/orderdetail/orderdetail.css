@@ -90,7 +90,7 @@ page {
 .carts-item {
 	display: flex;
 	flex-direction: row;
-	height:150rpx;
+	height:190rpx;
 	/*width属性解决标题文字太短而缩略图偏移*/
 	width:100%;
 	border-bottom: 1rpx solid #F2f2f2;
@@ -100,10 +100,10 @@ page {
 
 /*左部图片*/
 .carts-image {
-  margin: 10rpx 20rpx;
+	margin: 10rpx 20rpx;
 	width:100rpx;
 	height:100rpx;
-  overflow-y: hidden;
+	overflow-y: hidden;
 }
 
 
@@ -113,7 +113,7 @@ page {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-  font-size:28rpx;
+	font-size:28rpx;
 	justify-content: space-between;
 }
 
@@ -127,8 +127,8 @@ page {
 /*右部描述*/
 .carts-text {
 	margin-left: 10rpx;
-	width: 100%;
-	height:220rpx;
+	width: 90%;
+	height:260rpx;
 	display: flex;
 	flex-direction: column;
 	justify-content:flex-start;
@@ -136,6 +136,7 @@ page {
 }
  
 .carts-title {
+	width: 95%;
 	font-size: 28rpx;
 	color: #444;
 	line-height: 38rpx;
@@ -144,18 +145,28 @@ page {
 	text-overflow: ellipsis;
 	word-break: break-all;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp:1; /*显示多少行*/
+	-webkit-line-clamp:2; /*显示多少行*/
 }
+
+.carts-sku-text {
+	width: 95%;
+	display: flex;
+	flex-direction: column;
+	justify-content:flex-start;
+	color: #999;
+	font-size:24rpx;
+}
+
 .carts-card-title {
 	font-size: 25rpx;
 	color: #999;
 	line-height: 38rpx;
-  display: -webkit-box ;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-all;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp:1; /*显示多少行*/
+	display: -webkit-box ;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: break-all;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp:1; /*显示多少行*/
 }
 
 /*右下部分价格与数量*/
@@ -180,6 +191,11 @@ page {
   border-radius: 8rpx;
   margin-right:10rpx;
 }
+.smallbtn3 {
+  margin-right:10rpx;
+  color: #bbbbbb;
+}
+
 /*地址*/
 .order-address {
   float: left;
@@ -279,6 +295,18 @@ page {
   color: #999;
 }
 
+.labeltext2 {
+  display: inline-block;
+  width: 70%;
+  color: #666;
+}
+
+.labeltext3 {
+  display: inline-block;
+  width: 80%;
+  color: #666;
+}
+
 /**/
 .order-detail image {
 	width:60rpx;
@@ -344,14 +372,13 @@ page {
 }
 
 
-.footer {
-  background: #f9f9f9;
-  width: 100%;
-  padding:20rpx 0 50rpx 0;
-  position: fixed;
-  bottom: 0;
-  border-top: 1rpx solid #eee;
-  z-index:999;
+.footer {  
+	width: 100%;
+	padding:20rpx 0 50rpx 0;
+	position: fixed;
+	bottom: 0;
+	border-top: rpx solid #eee;
+	z-index:999;
 }
 
 /*购物车按钮、收藏等*/

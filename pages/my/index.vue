@@ -11,10 +11,12 @@
 				</view>
 				-->
 				<view class="userinfo-cards-info">
-					<image class="userinfo-cards-logo" :src="card_logo?card_logo:default_avatar" mode="aspectFill" />
+					<image class="userinfo-cards-logo" :src="card_logo?card_logo:''" mode="aspectFill" />
+					<!--
 					<view class="userinfo-cards-name">
 						<text class="userinfo-cards-title">{{card_name}}</text>
 					</view>
+					-->
 					<view class="userinfo-cards-mid">
 						<text class="cards-id">{{m_id>0?'MEMBER ID:'+m_id:''}}</text>
 					</view>					 
@@ -42,10 +44,10 @@
 			</view>
 		</view>
 		<view class="cardrenew">
-			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue" @tap="navigateToRecharge">     
+			<view class="cardrenew-btn" v-if="card_no!='' && is_card_overdue" @tap="navigateToRecharge">     
 				<text>您的会员卡已过期，继续使用请延长会籍期限</text>
 			</view>
-			<view class="cardrenew-btn" v-if="card_no!='' && is_card_overdue" @tap="navigateToRecharge">
+			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue" @tap="navigateToRecharge">
 				<text>延长会籍期限</text>
 			</view>
 			<view class="cardrenew-btn" v-if="card_no==''" @tap="navigateToRecharge">     
@@ -92,6 +94,10 @@
 			<view @tap="relogin" class="order">
 				<image src="/static/images/reset.png" />
 				<text>重新登录</text>
+			</view>
+			<view @tap="miniprog" class="order">
+				<image src="/static/images/miniprog.png" /> 
+				<text>微信小程序</text>
 			</view>
 			<view v-if="userauth.location == 1" @tap="navigateToMyLocation" class="order">
 				<image src="/static/images/iconfont-shouhuodizhi.png" />
@@ -308,8 +314,8 @@
 				<uParse :content="article"  /> 
 			</view>
 			<view class="uni-tip-group-button">
-				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">取消</view>
-				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">确定</view>
+				<view v-if="button_cancel!=''" class="uni-tip-button" @click="modalBindconfirmPlaysx">{{button_cancel}}</view>
+				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">{{button_confirm}}</view>
 			</view>
 		</view>
 	</uni-popup>
@@ -339,6 +345,7 @@
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
 	//import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
 	import PdList from "./pd-list.vue";
+	var miniprogram_id = getApp().globalData.miniprogram_id;
 	var weburl = getApp().globalData.weburl;
 	var appid = getApp().globalData.appid;
 	var appsecret = getApp().globalData.secret;
@@ -423,6 +430,8 @@ export default {
 			user_gender: "",
 			agreementInfo: "",
 			playsxInfo: "",
+			button_confirm:'确定',
+			button_cancel:'取消',
 			article: "",
 			article_title:"",
 			dkheight: "800",
@@ -835,7 +844,7 @@ export default {
 				'Accept': 'application/json'
 			},
 			success: function (res) {
-				console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res))
+				//console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res))
 				if(res.data.result){
 					that.token = res.data.result['token']?res.data.result['token']:''
 					that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
@@ -848,8 +857,8 @@ export default {
 					let card_due_end_str = that.card_due_end +' 23:59:59'
 					let time_due_end = new Date(card_due_end_str).getTime()
 					let time_now = Date.now()
-					that.is_card_overdue = Math.floor((time_now - parseInt(time_due_end)) / 1000)>0?false:true
-					
+					that.is_card_overdue = (time_now - parseInt(time_due_end))>0?true:false
+					console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res.data),time_now,parseInt(time_due_end),that.is_card_overdue)
 					var userauth = JSON.parse(res.data.result['userauth'])
 					uni.setStorageSync('token', that.token)
 					uni.setStorageSync('extensionCode', res.data.result['extensionCode'])
@@ -870,6 +879,59 @@ export default {
 				}
 			},
 		})
+	},
+	
+	miniprog:function(){
+		var that = this 
+		// #ifdef APP-PLUS
+			// 如果是ios 需要先login 然后在 执行下面的代码
+				if (permision.isIOS) {
+					uni.login({
+						provider: 'weixin',
+						success: function(login_res) {
+								plus.share.getServices(function(res) {
+								var sweixin = null;
+								for (var i = 0; i < res.length; i++) {
+									var t = res[i];
+									if (t.id == 'weixin') {
+										sweixin = t;
+									}
+								}
+						
+								if (sweixin) {
+									sweixin.launchMiniProgram({
+										id: miniprogram_id,
+										path: 'pages/hall/hall',
+										type: 0
+									});
+								}
+							}, function(res) {
+								console.log(JSON.stringify(res));
+							});
+						}
+					});
+				} else {
+					plus.share.getServices(function(res) {
+						var sweixin = null;
+						for (let i = 0; i < res.length; i++) {
+							let t = res[i];
+							if (t.id == 'weixin') {
+								sweixin = t;
+							}
+						}
+				
+						if (sweixin) {
+							sweixin.launchMiniProgram({
+								id: miniprogram_id,
+								path: 'pages/hall/hall',
+								type: 0
+							});
+						}
+					}, function(res) {
+						console.log(JSON.stringify(res));
+					});
+				}
+		//#endif
 	},
 
 	onPageScroll:function({scrollTop}) {
@@ -1486,10 +1548,12 @@ export default {
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		//var art_id = '29'  //21送心用户协议 29会员规则和权益协议
 		var art_cat_id = '9'; //送心协议类
-
+		
 		var shop_type = that.shop_type;
 		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
 		that.article_title = art_id=='29'?"协议":'会籍说明';
+		that.button_confirm = art_id=='29'?"同意并确认":'我明白了'
+		that.button_cancel = ''
       if (agreementinfoshowflag == 0) {
 		  wx.showToast({
 		    title: '加载中',
@@ -1575,7 +1639,8 @@ export default {
 		var modalHiddenPlaysx = this.modalHiddenPlaysx;
 		var playsxinfoshowflag = this.playsxinfoshowflag;
 		var playsxInfo = this.playsxInfo
-	
+		that.button_confirm = that.art_id=='29'?"同意并确认":'我明白了'
+		that.button_cancel = ''
 		that.modalHiddenPlaysx = !modalHiddenPlaysx
 			
 		if (!this.modalHiddenPlaysx && playsxinfoshowflag == 0) {
@@ -1602,7 +1667,8 @@ export default {
 		var art_title = that.art_title ? art_title = that.art_title :'如何玩转送心'
 	 // var art_title = that.art_title ? art_title = that.art_title : '如何玩转送心';
 		var playsxinfoshowflag = that.playsxinfoshowflag;
-	 
+		that.button_confirm = art_id=='29'?"同意并确认":'我明白了'
+		that.button_cancel = ''
 		if (playsxinfoshowflag == 0) {
 			wx.showToast({
 				title: '加载中',
@@ -2860,13 +2926,18 @@ export default {
 
 	.uni-tip-group-button {
 		margin-top: 10px;
+		padding-top: 10px;
 		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		border-top: 1rpx solid #eee;
 	}
-
+	
 	.uni-tip-button {
-		width: 100%;
+		width: 50%;
 		text-align: center;
-		font-size: 14px;
-		color: #3b4144;
+		font-size: 16px;
+		border-radius: 10px;
+		color: #999;
 	}
 </style>

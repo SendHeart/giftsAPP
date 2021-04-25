@@ -28,34 +28,36 @@
       <view class="carts-text">
         <!-- 商品标题 -->
         <text class="carts-title">{{mapping.goods_name}}</text>
+		<view class="carts-sku-text">
         <view v-if="order_shape!=5 && order_shape!=4" v-for="(sku_value, index3) in mapping['sku_value']" :key="index3" style="font-size:24rpx;">
-          <text>{{sku_value?sku_value['name']+':':''}}</text>
-          <text v-if="sku_value['type']==1">{{sku_value?sku_value['value']:''}}</text>
-          <image v-if="sku_value['type']==2" :src="(sku_value?sku_value['value']:'')" style="width:30rpx;height:30rpx;"> </image> 
-          <text v-if="sku_value['type']==2">{{sku_value?sku_value['note']:''}} </text>
+			<text>{{sku_value?sku_value['name']+':':''}}</text>
+			<text v-if="sku_value['type']==1">{{sku_value?sku_value['value']:''}}</text>
+			<image v-if="sku_value['type']==2" :src="(sku_value?sku_value['value']:'')" style="width:30rpx;height:30rpx;"> </image> 
+			<text v-if="sku_value['type']==2">{{sku_value?sku_value['note']:''}} </text>
         </view>
-         <view v-if="order_shape==4 && card_name_info">
+		</view>
+		<view v-if="order_shape==4 && card_name_info">
             <text class="carts-card-title">{{card_name_info.card_name_name?'姓名:'+card_name_info.card_name_name:''}}{{card_name_info.card_name_title?'('+card_name_info.card_name_title+')':''}}{{card_name_info.card_name_phone?' 手机: '+card_name_info.card_name_phone:''}}
             </text>
             <text class="carts-card-title">{{card_name_info.card_name_addr?'地址: '+card_name_info.card_name_addr:''}}
             </text>
-          </view>
-          <view v-if="order_shape==4 && card_love_info">
+		</view>
+		<view v-if="order_shape==4 && card_love_info">
             <text class="carts-card-title">{{card_love_info.card_love_title?card_love_info.card_love_title:''}}
             </text>
             <text class="carts-card-title">{{card_love_info.card_love_related?'联系人:'+card_love_info.card_love_related:''}}{{card_love_info.card_love_phone?'手机:'+card_love_info.card_love_phone:''}}
             </text>
-          </view> 
-          <view v-if="order_shape==4 && card_register_info">
+		</view> 
+		<view v-if="order_shape==4 && card_register_info">
             <text class="carts-card-title">{{card_register_info.card_register_title?'名称:'+card_register_info.card_register_title:''}} 
             </text>
             <text class="carts-card-title">{{card_register_info.register_start_date}}{{card_register_info.register_start_time?'~'+card_register_info.register_start_time:''}}{{card_register_info.card_register_ownername?' 发起人: '+card_register_info.card_register_ownername:''}}
             </text>
-          </view>
-          <view v-if="order_shape==5 && card_cele_info">
+		</view>
+		<view v-if="order_shape==5 && card_cele_info">
             <text class="carts-card-title">{{card_cele_info.card_cele_title?card_cele_info.card_cele_title:''}} 
             </text>
-          </view>
+		</view>
         <view class="carts-subtitle">
           <text>x{{mapping.sku_num}}</text>
         </view>
@@ -102,10 +104,11 @@
       <text>{{rcvtime?rcvtime:'对方未接受'}}{{gift_status=='1'?'':''}}</text>
     </view>
   </view>
-  <view v-if="order_shape!=5" class="delivery-detail">
+  <view v-if="order_shape!=5" class="delivery-detail" @tap="address_update">
     <view class="delivery-detail-text">
       <text class="labeltext">收货人:</text>
-      <text>{{fullname?fullname:''}}</text>
+      <text class="labeltext2">{{fullname?fullname:''}}</text>
+	  <text class="smallbtn3">修改</text>
     </view>
     <view class="delivery-detail-text">
       <text class="labeltext">手机:</text>
@@ -133,7 +136,7 @@
     </view>
     -->
   </view>
-  <view v-if="order_shape!=5" class="delivery-detail-info">
+  <view v-if="order_shape!=5 && delivery_status && delivery_status.length>0" class="delivery-detail-info">
     <text style="text-indent:20rpx;font-weight:bold;" @tap="expressTapTag">物流跟踪</text>
     <view class="delivery-detail-info-text">
 		<uni-steps :options="delivery_trace" :active="delivery_step_active" direction="column" />
@@ -157,10 +160,10 @@
 </view>
 <view class="footer">
   <view class="opt-buttons">
-    <form @submit="formSubmit" data-name="express" report-submit="true" :hidden="((currentPages_length>1 && order_shape!=5)?false:true)">
+    <form @submit="formSubmit" data-name="express" report-submit="true" :hidden="((currentPages_length>1 && order_shape!=5 && order_shape!=7 && order_shape!=8)?false:true)">
       <button class="button-group" style="width:200rpx;" formType="submit">物流跟踪</button>
     </form>
-    <form @submit="formSubmit" data-name="goBack" report-submit="true" :hidden="((currentPages_length>1&&order_shape!=5)?true:false)">
+    <form @submit="formSubmit" data-name="goBack" report-submit="true" :hidden="((currentPages_length>1 && order_shape!=5 && order_shape!=7 && order_shape!=8)?true:false)">
       <button class="button-group" style="width:200rpx;" formType="submit">返回</button>
     </form>
     <form @submit="formSubmit" data-name="navigateToCustomerService" report-submit="true">
@@ -322,13 +325,13 @@ export default {
 			that.order_no = order_no
 			that.order_id = order_id
 			console.log('订单号:', order_no,' order id:',order_id);
-			that.reloadData()
+			//that.reloadData()
 		} else {
 			uni.navigateBack();
 		}
 	},
 	onShow: function () {
-		//this.reloadData();
+		this.reloadData();
 		var that = this;
 		var CurrentPages = getCurrentPages();
 
@@ -426,6 +429,17 @@ export default {
       });
     },
 	
+	address_update: function () {
+		var that = this
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var order_no = that.order_no
+		var order_id = that.order_id
+	    uni.navigateTo({
+			url: '/pages/address/list/list?order_id=' + order_id+'&order_no='+order_no 
+		})
+	},
+
 	goBack: function () {
 		var CurrentPages = getCurrentPages();
 

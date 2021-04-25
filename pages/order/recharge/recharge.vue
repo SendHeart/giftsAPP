@@ -1,5 +1,6 @@
 <template>
-<view scroll-y class="page" :style="'heigth:'+windowHeight+'px;'">
+<view class="page" :style="'height:'+windowHeight">
+	<scroll-view id="scrollview"  scroll-y="true" :style="{height: windowHeight + 'px'}" :scroll-with-animation="true" :scroll-top="scrollTop">
 	<view class="carts-container" v-for="(item, index) in carts" :key="index" >
 		<view class="carts-info">
 			<view class="carts-item">
@@ -52,20 +53,22 @@
 			</view>
 		</view>		
 	</view>
+	</scroll-view>
 	<view class="recharge-confirm">
 		<text class="recharge-title">充值会籍费: </text>
 		<text class="recharge-amount">{{amount}}</text>
 		<button @tap="confirmOrder" >去支付</button>
 	</view>
+	
 	<uni-popup :show="modalHiddenPlaysx" type="center" :custom="true" :mask-click="false">
 		<view class="uni-tip">
 			<view class="uni-tip-title">{{article_title}}</view>
 			<view class="uni-tip-content" style="overflow-y: scroll;">
 				<uParse :content="article"  /> 
 			</view>
-			<view class="uni-tip-group-button">
-				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">取消</view>
-				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">确定</view>
+			<view class="uni-tip-group-button">				 
+				<view v-if="button_cancel!=''" class="uni-tip-button" @click="modalBindconfirmPlaysx">{{button_cancel}}</view>				 
+				<view class="uni-tip-button" @click="modalBindconfirmPlaysx">{{button_confirm}}</view>
 			</view>
 		</view>
 	</uni-popup>
@@ -95,6 +98,8 @@ export default {
 		username:null,
 		token:null,
 		playsxInfo: "",
+		button_confirm:'确定',
+		button_cancel:'取消',
 		article: "",
 		article_title:"",
 		webviewurl: "",
@@ -117,10 +122,17 @@ export default {
 		shop_type: shop_type,
 		selectedAllStatus: false,
 		selectedAgreeStatus: false,
-		recharge_selected:'',
+		recharge_selected:'1',
 		discountpay:0, //折扣差额
 		payamount:0, //实际支付金额
 		order_num:1,//订单份数
+		scrollTop:0,
+		style: {
+			pageHeight: 0,
+			contentViewHeight: 0,
+			footViewHeight: 90,
+			mitemHeight: 0
+		},
     };
   },
 
@@ -130,94 +142,105 @@ export default {
   },
   
   props: {},
-  
-  onLoad: function (options) {
-    var that = this;
-	uni.showToast({
-		title: '加载中',
-		icon: 'loading',
-		duration: 1000
-	})
+	onLoad: function (options) {
+		var that = this;
+		uni.showToast({
+			title: '加载中',
+			icon: 'loading',
+			duration: 1000
+		})
 	
-	that.readCarts(options)
-    uni.getSystemInfo({
-      success: function (res) {
-        let winHeight = res.windowHeight
-        //console.log(winHeight)
-		that.windowHeight = winHeight
-        that.dkheight = winHeight - winHeight * 0.05 - 20
-      }
-    });
-  },
-  onShow: function () {
-    var that = this;
-    var pages = getCurrentPages();
-
-    if (pages.length > 1) {
-     that.title_logo = '/static/images/back.png'
-    } 
-	//that.loadAddress()
-
-  },
-  methods: {
+		that.readCarts(options)
+		uni.getSystemInfo({
+			success: function (res) {
+				let winHeight = res.windowHeight
+				//console.log(winHeight)
+				that.windowHeight = winHeight
+				that.dkheight = winHeight - winHeight * 0.05 - 20
+				that.style.pageHeight = res.windowHeight;
+		　　		that.style.contentViewHeight = res.windowHeight - uni.getSystemInfoSync().screenWidth / 750 * 100 - 70; //像素
+			}
+		})
+	},
+	
+	onShow: function () {
+		var that = this;
+		var pages = getCurrentPages();
+		if (pages.length > 1) {
+			that.title_logo = '/static/images/back.png'
+		} 
+		//that.loadAddress()
+	},
+	
+	methods: {
+	onPageScroll:function({scrollTop}) {
+	    var that = this
+		that.scrollTop = scrollTop
+		console.log('recharge onPageScroll:'+that.scrollTop)
+	},
+	
 	navigateToAgreement: function (art_id) {
 		var that = this;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
 		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
 		//var art_id = '29'  //21送心用户协议 29会员规则和权益协议
-		var art_cat_id = '9'; //送心协议类
-	
+		var art_cat_id = '9'; //送心协议类	
 		var shop_type = that.shop_type;
 		var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
 		that.article_title =art_id=='29'?"协议":'会籍说明';
-	  if (agreementinfoshowflag == 0) {
-		  wx.showToast({
-		    title: '加载中',
-		    icon: 'loading',
-		    duration: 1500
-		  });
-	    uni.request({
-	      url: weburl + '/api/client/query_art',
-	      method: 'POST',
-	      data: {
-	        username: username,
-	        access_token: token,
-	        art_id: art_id,
-	        art_cat_id: art_cat_id,
-	        shop_type: shop_type
-	      },
-	      header: {
-	        'Content-Type': 'application/x-www-form-urlencoded',
-	        'Accept': 'application/json'
-	      },
-	      success: function (res) {
-			var agreementInfo = res.data.result
-	        that.agreementInfo = res.data.result
-			that.art_id = 0
-			getApp().globalData.art_id = 0
-	        console.log('协议:', that.agreementInfo);
-			that.modalHiddenPlaysx = true ;
-			that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-			//that.article_title ="协议";
-	      }
-	    });
-	  } else {
+		that.button_confirm = art_id=='29'?"同意并确认":'我明白了' 
+		that.button_cancel = ''
+		if (agreementinfoshowflag == 0) {
+			wx.showToast({
+				title: '加载中',
+				icon: 'loading',
+				duration: 1500
+			});
+			uni.request({
+				url: weburl + '/api/client/query_art',
+				method: 'POST',
+				data: {
+					username: username,
+					access_token: token,
+					art_id: art_id,
+					art_cat_id: art_cat_id,
+					shop_type: shop_type
+				},
+				header: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Accept': 'application/json'
+				},
+				success: function (res) {
+					var agreementInfo = res.data.result
+					that.agreementInfo = res.data.result
+					that.art_id = 0
+					getApp().globalData.art_id = 0
+					console.log('协议:', that.agreementInfo);
+					that.modalHiddenPlaysx = true ;
+					that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+					//that.article_title ="协议";
+				}
+			})
+		} else {
 		  //that.article_title ="协议";
-		  that.modalHiddenPlaysx = true ;
-		  that.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-	  }
+			that.modalHiddenPlaysx = true ;
+			hat.article = that.agreementInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+		}
 	},
 	
 	navigateToPrivacy: function () {
-	  var that = this;
-	  var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-	  var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-	  var art_id = '27'; //送心隐私政策
+		var that = this;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var art_id = '27'; //送心隐私政策
 	
-	  var art_cat_id = '9'; //送心协议类
-	  var shop_type = that.shop_type;
+		var art_cat_id = '9'; //送心协议类
+		var shop_type = that.shop_type;
+		that.button_confirm = '确定'
+		that.button_cancel = '取消'
+		
 	  //var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
-	
+		
 	  uni.showToast({
 	      title: '加载中',
 	      icon: 'loading',
@@ -254,7 +277,7 @@ export default {
 		that.modalHiddenPlaysx = !that.modalHiddenPlaysx
 		that.art_id = 0
 		that.art_cat_id = 0
-		that.playsxinfoshowflag = 0
+		that.playsxinfoshowflag = 0		
 		if(that.article_title=='协议'){
 			that.modalHiddenAgreement = !that.modalHiddenAgreement
 			uni.setStorageSync('isReadAgreement', 1); //协议阅读标志
@@ -471,21 +494,36 @@ export default {
 		}, 300)
 		*/
 	},
-	  
+		
+	scrollToBottom: function () {
+		let that = this;
+		let query = uni.createSelectorQuery();
+		query.selectAll('.recharge-info').boundingClientRect();
+		query.select('#scrollview').boundingClientRect();
+		query.exec((res) => {
+			that.style.mitemHeight = 0;
+			res[0].forEach((rect) => that.style.mitemHeight = that.style.mitemHeight + rect.height + 40)   //获取所有内部子元素的高度
+			if (that.style.mitemHeight > (that.style.contentViewHeight - 100)) {   //判断子元素高度是否大于显示高度
+				that.scrollTop = that.style.mitemHeight - that.style.contentViewHeight    //用子元素的高度减去显示的高度就获益获得序言滚动的高度
+			}
+		})
+	},
+	
 	confirmOrder: function () {
 		var that = this;
 		var order_num = that.order_num;
 		var selectedAgreeStatus = that.selectedAgreeStatus
-	    var amount = that.amount
-	    if (!selectedAgreeStatus){
-	      wx.showToast({
-	        title: '请确认会员规则和权益协议',
-	        icon: 'loading',
-	        duration: 2500
-	      })
-	      return
+		var amount = that.amount
+		if (!selectedAgreeStatus){
+			uni.showToast({
+				title: '请确认会员规则和权益协议',
+				icon: 'loading',
+				duration: 2500
+			})
+			that.scrollToBottom()
+			return
 	    }else if(amount == 0){
-			wx.showToast({
+			uni.showToast({
 				title: '请选择充值金额',
 				icon: 'loading',
 				duration: 2500
@@ -850,18 +888,18 @@ export default {
         return;
       }
 
-      that.setData({
-        page: page,
-        page_red: page_red
-      });
-      that.query_coupon();
-    },
+		that.setData({
+			page: page,
+			page_red: page_red
+		});
+		that.query_coupon();
+	},
 	
 	query_coupon: function () {
 		var that = this;
-		var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-		var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-		var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 		var page = that.page;
 		var page_red = that.page_red;
 		var pagesize = that.pagesize;
@@ -1097,13 +1135,18 @@ export default {
 
 .uni-tip-group-button {
 	margin-top: 10px;
+	padding-top: 10px;
 	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	border-top: 1rpx solid #eee;
 }
 
 .uni-tip-button {
-	width: 100%;
+	width: 50%;
 	text-align: center;
-	font-size: 14px;
-	color: #3b4144;
+	font-size: 16px;
+	border-radius: 10px;
+	color: #999;
 }  
 </style>

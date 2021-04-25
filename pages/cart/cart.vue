@@ -12,8 +12,8 @@
 				  <view class="carts-title">{{cart_item.name}}</view>
 				  <view class="carts-subtitle">
 					<view class=''  >
-						<view class="carts-sku">
-							<view class="carts-sku">
+						<view v-if="cart_item['value'] && cart_item['value'].length>0">
+							<view class="carts-sku" >
 								<text v-for="(sku_value, index) in cart_item['value']" :key="index">{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
 								</text>
 							</view>
@@ -39,18 +39,20 @@
 		<text style="margin-left: 30rpx;" @tap="bindSelectAll">全选</text>
 		<text>{{total>0?'￥'+total:''}}</text>
 	</view>
-	<view class="button" @tap="bindCheckout">立即结算</view>
+	<view style="display: flex;flex-direction: column;justify-content: center;">
+		<view class="button" @tap="bindCheckout">去结算</view>
+	</view>
 </view>
 <view class="recomment-title">
     <text>精品推荐</text>
 </view>
 <view v-for="(item,index) in recommentList" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
 	<image class="recomm-img" :src="item.image"></image>
-    <text style="font-size:12px;">{{item.name}}</text>
-    <view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
-    <view class="recomm-goods-tags">
-      <text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
-    </view>    
+	<text style="font-size:12px;">{{item.name}}</text>
+	<view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
+	<view class="recomm-goods-tags">
+		<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+	</view>    
 	<view class="price-list">
 		<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
    		<view class="price-now">￥{{item.sell_price}}</view>
@@ -374,7 +376,7 @@ export default {
     
 	bindCheckout: function () {
         var that = this;
-        var order_type = 'gift'
+        var order_type = that.is_buymyself==1?'':'gift'
         var order_note = that.note
         var amount = that.total;
         var cartIds = that.calcIds();
@@ -435,7 +437,7 @@ export default {
         var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
         var status = 0;
         var amount = that.amount;
-        var order_type = 'gift';
+        var order_type = that.is_buymyself==1?'':'gift';
         var order_note = that.note;
         if (!order_note) order_note = '送你一份心意，愿美好长存!'; //默认祝福
         console.log('附言:' + order_note)

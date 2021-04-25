@@ -3,7 +3,7 @@
 		<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d" style="z-index:9;"></uni-nav-bar>
 		 
 		<view class="search">
-			<image class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover" />
+			<image @tap="userTapTag" class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover" />
 			<view class="wx-input" style="background-color:#000000" @tap='searchTapTag'>
 				<uni-icons :color="'#999999'" class="icon-search" type="search" size="18" />
 				<text>搜索我的品质生活</text>
