@@ -152,13 +152,12 @@ page {
 .top-bar {
   white-space: nowrap;
   text-align: center;
-  width: 91%;
+  width: 99%;
   height: 60rpx;
   overflow: hidden;
   background: #1D1D1D; 
   z-index:999;
   padding: 15rpx;
-  margin-right:50rpx;
    -webkit-overflow-scrolling: touch;
 }
 
@@ -207,6 +206,7 @@ page {
   width:100%;
   z-index:999;
 }
+
 .top-bar-item2 {
   display:flex;
   flex-direction: row;
@@ -218,6 +218,7 @@ page {
   line-height: 60rpx;
   font-size: 24rpx;
 }
+
 .top-bar-active2 {
   color: #fff;
 }
@@ -234,6 +235,7 @@ swiper-item image {
   margin: 0 auto;
   width: 96%;
   overflow: hidden;
+  background: #F2F2F2;
   z-index: -1;
 }
 

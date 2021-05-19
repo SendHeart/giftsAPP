@@ -1,7 +1,7 @@
 <template>
 	<view class="page" :style="'height:'+windowHeight">
 		<uni-nav-bar :fixed="true" color="#fff" background-color="#1d1d1d" style="z-index:9;"></uni-nav-bar>
-		 
+		
 		<view class="search">
 			<image @tap="userTapTag" class="userinfo-avatar" :src="userInfo.avatarUrl?userInfo.avatarUrl:default_avatar" background-size="cover" />
 			<view class="wx-input" style="background-color:#000000" @tap='searchTapTag'>
@@ -22,7 +22,7 @@
 			<view class="catg-title" @click.stop="openAllTapTag">
 				<view class="catg-titletext">全部分类</view>
 				<view class="catg-claps">
-					<image style src="/static/images/bottom-close.png"></image>
+					<image src="/static/images/icon-no.png"></image>
 				</view>
 			</view>
 			<view class="all-classify-list">
@@ -35,26 +35,27 @@
 		</view>
 		<view class="top-banner">
 			<view class="top-bar-list">
-				<!--
-				
-				<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
+				<scroll-view v-if="os_name!='IOS'" scroll-x="false" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
 				 	<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
-				</scroll-view>
+				</scroll-view>	
+				<!--			
 				<view scroll-x="true" class="top-bar">
 					<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
 				</view>
 				-->
-				<swiper class="top-bar" :vertical="false" :display-multiple-items="6" :current="scrollLeft">
-					<swiper-item v-for="(item, index) in navList" :key="index">
-						<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+				<swiper v-if="os_name=='IOS'"  class="top-bar" :vertical="false" :display-multiple-items="5" :current="scrollLeft">
+					<swiper-item v-for="(item, index) in navList" :key="index">						 
+						<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" style="width: 120rpx;" @click="onTapTag">{{item.title}}</view>
 					</swiper-item>
 				</swiper>
+				<!--
 				<view class="top-bar-image">
 					<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @click="openAllTapTag"></image>
 				</view>
+				-->
 			</view>
 		</view>
-		<mescroll-body top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
+		<mescroll-body ref="mescrollRef" top="60" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback" @emptyclick="emptyClick" @topclick="goTop" @init="mescrollInit">
 		<view class="container" scroll-y >
 			<view class="banner">
 				<swiper class="swiper-box" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)"
@@ -82,7 +83,7 @@
 						<image class="pick-goods-image" :src="middle8_img" mode="aspectFill"></image>
 						<text>{{middle8_title}}</text>
 					</view>
-
+					
 					<view v-if="middle5_img" class="image-btnbuy" @tap="bindMiddleGoods" data-goods-type="5" :data-middle-title="middle5_title">
 						<image class="pick-goods-image" :src="middle5_img" mode="aspectFill"></image>
 						<text>{{middle5_title}}</text>
@@ -100,6 +101,8 @@
 						<text>全部精选</text>
 					</view>
 				</view>
+				-->
+				<!--
 				<view class="user">
 					<view class="usertitle">我的礼物包</view>
 					<view class="usergifts" @tap="usergiftTapTag">
@@ -240,6 +243,15 @@
 				  <text class="more">更多...</text>
 				   <button wx:if="is_video_play==1" type="primary" @tap.stop='videoPlayer'>视频</button>
 				</view>
+				-->
+				<view class="middle-banner">
+					<view v-if="middle1_img" @tap="bindMiddleGoods" data-goods-type='1' :data-middle-title="middle1_title">
+						<image class="middle-banner-image" :src="middle1_img"></image>    
+						<text class="middle-banner-title">{{middle1_title}}</text>
+						<text class="middle-banner-note">{{middle1_note}}</text>        
+					</view>
+				</view>
+				<!--
 				<view class="middle-goods">
 				  <view v-if="middle1_img" class="image-btn" @tap="bindMiddleGoods" data-goods-type="1" :data-middle-title="middle1_title" style="border-top-left-radius:14rpx;">
 				    <view>
@@ -416,6 +428,7 @@ export default {
 		default_img: weburl + '/uploads/default_goods_image.png',
 		default_avatar: weburl + '/uploads/avatar.png',
 		platform: '',
+		os_name:'',
 		pagesize: pagesize,
 		pageoffset: 0,
 		hidden: true,
@@ -445,7 +458,10 @@ export default {
 		interval: 7000,
 		duration: 300,
 		circular: true,
-		hall_banner: weburl + "/uploads/hb_banner.png?rand="+Math.random()*100,
+		hall_banner: [
+			weburl + "/uploads/hb_banner.png?rand="+Math.random()*100,
+			weburl + "/uploads/hb_banner.png?rand="+Math.random()*100
+		],
 		//默认的banner图
 		banner_link: "pages/list/list?navlist=1",
 		//默认的banner图 跳转链接
@@ -536,7 +552,7 @@ export default {
 		deletecarthidden:false,
 		deletegooodsname:'',
 		is_reloading: false,
-		status: 'more',
+		load_status: 'more',
 		/*
 		contentText: {
 			contentdown: '上拉加载更多',
@@ -550,8 +566,8 @@ export default {
 			isLock:true,
 		},
 		upOption:{
-			auto:false, // 不自动加载
-			onScroll:true,
+			//auto:false, // 不自动加载
+			//onScroll:true,
 			page: {
 				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
 				size: 20, // 每页数据的数量
@@ -664,6 +680,7 @@ export default {
 		that.userInfo = userInfo ;
 		//#ifdef APP-PLUS
 		if((plus.os.name=='iOS')) that.isOpenPush() ;
+		that.os_name = plus.os.name
 		//#endif
 		uni.getSystemInfo({
 			success: function (res) {
@@ -756,9 +773,12 @@ export default {
 			that.goTop();
 		}
 		setTimeout(function () {
+			/*
 			if(that.image_refresh == 0){
-				that.image_refresh  = that.image_refresh  +1
-			}			 
+				
+			}
+			*/
+			that.image_refresh  = that.image_refresh  +1
 		}, 1000)
     //console.log('onShow get_project_gift_para:', wx.getStorageSync('navList2') ? wx.getStorageSync('navList2') : [{}]); //app.globalData.messageflag = 0
 	},
@@ -771,8 +791,10 @@ export default {
 		};
 	},
 	mounted() {
-		this.isInit = true // 标记为true
-		this.mescroll.triggerDownScroll()
+		var that = this
+		that.isInit = true // 标记为true
+		that.upCallback(that.mescroll)
+		//that.mescroll.triggerDownScroll()
 	},
 	methods: {
 	//#ifdef APP-PLUS
@@ -940,7 +962,7 @@ export default {
         that.scrollTop = 0 ;
 		that.image_refresh = that.image_refresh +that.scrollTop
 		that.pdList = [] ;
-		that.page = 0
+		that.page = 1
         that.pageoffset = 0 ;
 		that.mescroll.resetUpScroll()
 		
@@ -1087,19 +1109,19 @@ export default {
       });
     },
 	
-    goBack: function () {
-      var pages = getCurrentPages();
+	goBack: function () {
+		var pages = getCurrentPages();
 
-      if (pages.length > 1) {
-        uni.navigateBack({
-          changed: true
-        }); //返回上一页
-      } else {
-        uni.switchTab({
-          url: '../../hall/hall'
-        });
-      }
-    },
+		if (pages.length > 1) {
+			uni.navigateBack({
+				changed: true
+			}); //返回上一页
+		} else {
+			uni.switchTab({
+				url: '../../hall/hall'
+			});
+		}
+	},
 	
     bannerTapTag: function (e) {
       var that = this
@@ -1802,8 +1824,7 @@ export default {
 			if(curPageData=='n'){
 				mescroll.endByPage(this.page, this.all_rows)
 			}else{
-				this.pdList=this.pdList.concat(curPageData); //追加新数据
-				
+				this.pdList=this.pdList.concat(curPageData); //追加新数据				
 			}
 			
 		}, () => {
@@ -2026,6 +2047,9 @@ export default {
 		that.gift_para_interval = 0
 		that.navList2 = navList_new ;
 		that.hall_banner = navList_new[3] ? navList_new[3] : that.hall_banner ;
+		if(that.hall_banner.length<2){
+			that.hall_banner = that.hall_banner.concat(that.hall_banner[0])
+		}
 		that.middle1_img = navList_new[11] ? navList_new[11]['img'] : '' ;
 		that.middle2_img = navList_new[12] ? navList_new[12]['img'] : '' ;
 		that.middle3_img = navList_new[13] ? navList_new[13]['img'] : '' ;

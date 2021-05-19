@@ -1,6 +1,6 @@
 <template>
 	<view class="pd-list">
-		<view class="venues_box">
+		<view v-if="list && list.length>0" class="venues_box" >
 			<view class="box-left">	
 				<view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index" @click="showGoods(item)">
 					<view class="venues_item" v-if="index%2==0"> 

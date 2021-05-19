@@ -13,11 +13,10 @@
   content: '\e6d5';
 }
 
-page {
-  background: #1d1d1d;
+.page {
+  background: #1D1D1D;
   overflow-x: hidden;
   width: 100%;
-  height: 100%;
 }
 /* 隐藏滚动条 */
 ::-webkit-scrollbar {
@@ -112,7 +111,7 @@ page {
 .top-bar {
 	white-space: nowrap;
 	text-align: center;
-	width: 91%;
+	width: 96%;
 	height: 90rpx;
 	line-height: 110rpx;
 	overflow-x: hidden;
@@ -120,19 +119,20 @@ page {
 }
 
 .top-bar-item {
-  display:inline-block;
-  color: #fff;
-  height: 50rpx;
-  line-height:50rpx;
-  font-size: 27rpx;
-  z-index:99;
-  padding: 5rpx 5rpx 5rpx 5rpx;
-  border-radius: 10rpx;
+	display:inline-block;
+	color: #fff;
+	height: 50rpx;
+	line-height:50rpx;
+	font-size: 28rpx;
+	z-index:99;
+	text-align: center;
+	padding: 0 20rpx;
+	border-radius: 10rpx;
 }
 
 .top-bar-active {
   color: #fff;
-  background: #E52445;
+  background: #E02E24;
 }
 
 .top-bar-image {
@@ -898,6 +898,45 @@ page {
   border: none;
 }
 
+.middle-banner {
+  display: flex;
+  flex-direction: row;
+  width: 96%;
+  height: auto;
+  margin: 0 auto;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.middle-banner-image {
+  width:720rpx;
+  height:231rpx;
+}
+.middle-banner-title {
+  position: absolute;
+  left:0;
+  top: 4rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  font-size: 26rpx;
+  font-weight:800;
+  color: #fff;
+}
+.middle-banner-note {
+  position: absolute;
+  left:0;
+  top: 64rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  font-size: 28rpx;
+  font-weight:800;
+  color: #111111;
+}
+
 /*首页中部类目*/
 
 .middle-goods {
@@ -997,7 +1036,7 @@ page {
   display: none;
 }
 
-recomment-title button {
+.recomment-title button {
   line-height: 50rpx;
   text-align: center;
   width: 150rpx;
@@ -1084,14 +1123,12 @@ recomment-title button {
   color: #444;
   font-size: 26rpx;
   font-weight: bold;
-  text-overflow: -o-ellipsis-lastline;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  padding:10rpx auto;
-  padding-left: 10rpx;
+  padding:10rpx auto; 
 }
 
 .venues-item .goods_tag {
@@ -1143,7 +1180,7 @@ recomment-title button {
 }
 .price-now {
   text-indent: 0;
-  color: #EC4844;
+  color: #e34c55;
   font-size: 30rpx;
   margin-right: 24rpx;
   line-height: 1.8;
@@ -1151,13 +1188,22 @@ recomment-title button {
 }
 
 .price-now::first-letter {
-  font-size: 20rpx;
+	font-size: 20rpx;
 }
 
 .price-now .sfont {
-  font-size: 20rpx;
+	font-size: 20rpx;
 }
 
+.membericon {
+	padding: 2rpx 6rpx;
+	background: #444444;
+	color: #fff;
+	font-size: 22rpx;
+	font-weight: normal;
+	border-radius: 8rpx;
+	margin-right: 4rpx;
+}
 
 /*推荐商品列表头*/
 .recomm-item {
@@ -1167,7 +1213,7 @@ recomment-title button {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
-	height:300rpx;
+	height:360rpx;
 	color: #111111;
 	border-radius: 8rpx;
 	background: #fff;
@@ -1177,7 +1223,7 @@ recomment-title button {
 	width: 275rpx;
 	height: 275rpx;
 	margin-right: 10rpx;
-	margin-top: 10rpx;
+	margin-top: 35rpx;
 	margin-left: 10rpx;
 	float: left;
 }
@@ -1199,14 +1245,12 @@ recomment-title button {
 	color: #444;
 	font-size: 26rpx;
 	font-weight: bold;
-	text-overflow: -o-ellipsis-lastline;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
-	padding:10rpx auto;
-	padding-left: 10rpx;
+	padding:10rpx 10rpx;
 }
 
 .recomm-item-info .goods-prom {
@@ -1215,7 +1259,9 @@ recomment-title button {
   font-size: 24rpx;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   padding:5rpx 10rpx;
 }
 
@@ -1443,7 +1489,8 @@ recomment-title button {
 .status_bar {
       height: var(--status-bar-height);
       width: 100%;
-  }
+}
+  
 /* 提示窗口 */
 	.uni-tip {
 		padding: 15px;

@@ -33,19 +33,19 @@
 	-->
 	
   <view class="sentbtn2" v-if="share_art_id==0  && share_live_id==0 && share_order_shape!=5 && share_order_shape!=4" @tap="sharegoods">
-    <button >修改留言</button>
+    <button >说点什么</button>
   </view>
   <view class="sentbtn">
     <form @submit="formSubmit" data-name="eventSave" report-submit="true">
       <button formType="submit" style="width:200rpx;" type="warn">保存到相册</button> <!-- bindtap="eventSave"  -->
     </form>
     <view v-if="share_order_shape==5" style="width:100%;">
-      <button type="primary" @touchstart="startRecode" @touchend="endRecode" class="sec-btn" style="background: #fff;">
+      <button  @touchstart="startRecode" @touchend="endRecode" class="sec-btn" style="background: #fff;">
       <image class="icon-recorder" src="/static/images/record.png"></image>
     </button>
   </view>
     <form @submit="formSubmit" data-name="onShare" report-submit="true">
-      <button formType="submit" style="width:200rpx;" >立即分享</button>
+      <button type='primary' formType="submit" style="width:200rpx;background: #1AAD19;" >微信分享</button>
     </form>
   </view>
 </view>
@@ -1475,7 +1475,7 @@ export default {
               bolder: true
             }, {
               type: 'text',
-              content: '送心礼物，开启礼物社交时代!',
+              content: '黑贝会，高端会员制商店',
               fontSize: 13,
               color: '#999',
               textAlign: 'left',

@@ -4,7 +4,7 @@
 		<view class="catg-title" @click.stop="openAllTapTag">
 			<view class="catg-titletext">全部分类</view>
 			<view class="catg-claps">
-				<image style src="/static/images/bottom-close.png"></image>
+				<image style src="/static/images/icon-no.png"></image>
 			</view>
 		</view>
 		<view class="all-classify-list">
@@ -30,14 +30,21 @@
 			<!-- #ifdef APP-PLUS -->
 			
 			<!-- #endif -->
-			<scroll-view scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
+			<swiper v-if="os_name=='IOS'"  class="top-bar" :vertical="false" :display-multiple-items="5">
+				<swiper-item v-for="(item, index) in navList" :key="index">
+					<view class="top-bar-scroll-item">
+						<view :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
+					</view>
+				</swiper-item>
+			</swiper>
+			<scroll-view v-if="os_name!='IOS'"  scroll-x="true" :scroll-left="scrollLeft" :scroll-into-view="'v_' + toView" class="top-bar">
 				<view v-for="(item, index) in navList" :key="index" :id="'v_' + index" :data-index="index" :data-id="item.id" :data-title="item.title" :data-value="item.value" :class="'top-bar-item ' + (index == activeIndex ? 'top-bar-active' : '')" @click="onTapTag">{{item.title}}</view>
 			</scroll-view>
-		
+			<!--
 			<view class="top-bar-image">
 				<image style="width: 30rpx;height: 20rpx;" src="/static/images/icon_all.png" @tap="openAllTapTag"></image>
 			</view>
-			
+			-->
 		</view>
 		<view class="top-bar2">
 			<block v-for="(item, index) in navList2" :key="index">
@@ -149,6 +156,7 @@ export default {
 	  	contentrefresh: '加载中',
 	  	contentnomore: '没有更多'
 	  },
+	  os_name:'',
     };
 },
 	components: {
@@ -193,6 +201,9 @@ export default {
   onShow: function () {
     var that = this;
     var pages = getCurrentPages();
+	//#ifdef APP-PLUS
+	that.os_name = plus.os.name
+	//#endif
     if (pages.length > 1) {
       that.title_logo = '/static/images/back.png'
     }
@@ -296,24 +307,24 @@ export default {
 
     // 点击获取对应分类的数据
     onTapTag: function (e) {
-      var that = this; //var tab = e.currentTarget.id;
-      var tab = e.currentTarget.dataset.id;
-      var tab_value = e.currentTarget.dataset.value;
-      var index = e.currentTarget.dataset.index;
-      var search_goodsname = e.currentTarget.dataset.title;
-      var navList = that.navList;
-      var toView = index;
-      var hiddenallclassify = that.hiddenallclassify;
+		var that = this; //var tab = e.currentTarget.id;
+		var tab = e.currentTarget.dataset.id;
+		var tab_value = e.currentTarget.dataset.value;
+		var index = e.currentTarget.dataset.index;
+		var search_goodsname = e.currentTarget.dataset.title;
+		var navList = that.navList;
+		var toView = index;
+		var hiddenallclassify = that.hiddenallclassify;
 
-      if (index > 2 && index < navList.length) {
-        toView = index - 2;
-      } else {
-        toView = 0;
-      }
+		if (index > 2 && index < navList.length) {
+			toView = index - 2;
+		} else {
+			toView = 0;
+		}
 
-      if (tab != 'search_goodsname') {
-        search_goodsname = '';
-      }
+		if (tab != 'search_goodsname') {
+			search_goodsname = '';
+		}
 	
 		that.activeIndex = parseInt(index)
 		that.tab = tab 
@@ -324,11 +335,11 @@ export default {
 		that.pageoffset = 0
       	that.hiddenallclassify = !hiddenallclassify
       //console.log('toView:' + that.toView,'hiddenallclassify:',that.hiddenallclassify);
-      that.get_goods_list();
-      if (hiddenallclassify == false) {
-        that.openAllTapTag();
-      }
-    },
+		that.get_goods_list();
+		if (hiddenallclassify == false) {
+			that.openAllTapTag();
+		}
+	},
 	
     onTapTag2: function (e) {
       var that = this;

@@ -35,7 +35,7 @@
 					<text class="userinfo-cards-due">VALID FROM:{{card_due_start}}</text>
 					<text class="userinfo-cards-due">VALID THRU:{{card_due_end}}</text>
 				</view>
-				<view class="userinfo-cards-nickname" v-if="card_no!=''">
+				<view class="userinfo-cards-nickname">
 					<view v-if="!hiddenNickname" style="display: flex;flex-direction:column;justify-content: center;">
 						<input class="userinfo-nickname" style="margin-top:0rpx;color:#FFFFFF;border:1px solid #efefef;" maxlength="50" v-model="nickname" placeholder="请输入昵称" @input="onKeyUserNickNameInput" />
 						<button class="userinfo-nickname" style="margin-top:0rpx;line-height:50rpx;height:50rpx;font-size: 26rpx;color:#fff;background:#e02e24"  @tap="update_userinfo">确定</button>						
@@ -44,13 +44,16 @@
 			</view>
 		</view>
 		<view class="cardrenew">
-			<view class="cardrenew-btn" v-if="card_no!='' && is_card_overdue" @tap="navigateToRecharge">     
-				<text>您的会员卡已过期，继续使用请延长会籍期限</text>
+			<view class="cardrenew-btn" v-if="card_no!='' && is_card_overdue" data-recharge="3" @tap="navigateToRecharge">     
+				<text>您的会员卡已过期，请续费</text>
 			</view>
-			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue" @tap="navigateToRecharge">
-				<text>延长会籍期限</text>
+			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue && recharge_type==2" data-recharge="2" @tap="navigateToRecharge">
+				<text>延长会籍期限，请续费</text>
 			</view>
-			<view class="cardrenew-btn" v-if="card_no==''" @tap="navigateToRecharge">     
+			<view class="cardrenew-btn" v-if="card_no!='' && !is_card_overdue && recharge_type==1" data-recharge="2" @tap="navigateToRecharge">
+				<text>您的会员卡待付费开通</text>
+			</view>
+			<view class="cardrenew-btn" v-if="card_no=='' && recharge_type==1" data-recharge="1" @tap="navigateToRecharge">     
 				<text>立即入会</text>
 			</view>
 		</view>
@@ -476,13 +479,14 @@ export default {
 			new_img_arr:[],
 			scan_result:"",
 			windowHeight:'500',
-			card_name:'黑贝会 Member',
+			card_name:'',
 			card_logo:'',
-			card_logo_init:weburl + '/uploads/HB001.png',
+			card_logo_init:'',
 			card_no:'',
 			card_due_start:'0000-00-00',
 			card_due_end:'0000-00-00',
-			is_card_overdue:false,
+			is_card_overdue:false, 
+			recharge_type:0,
 			old: {
 				scrollTop: 0
 			},
@@ -755,16 +759,32 @@ export default {
 				}
 			})
 		}
-		return status;
+		return status
 	},
 	// #endif
 	
-	navigateToRecharge: function () {
+	navigateToRecharge: function (e) {
 		var that = this
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+		if (!username) {
+			let frompage = '/pages/my/index'
+			uni.navigateTo({
+				url: '/pages/login/login?frompage='+frompage
+			})
+		}else{
+			uni.navigateTo({
+				url: '/pages/order/recharge/recharge?recharge_selected=2'
+			})
+		}
+		
+		return
+		
+		/*
 		var is_recharge = 1
-		var recharge_type = 1
-		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var recharge_type = e.currentTarget.dataset.recharge?e.currentTarget.dataset.recharge:0
+		var recharge_selected = 2  //默认的充值档次 2:一年会员
+		var recharge_level = 2 //默认第二档		
 		
 		uni.request({
 			url: weburl + '/api/client/add_cart',
@@ -775,6 +795,7 @@ export default {
 				shop_type:shop_type,
 				is_recharge: is_recharge,
 				recharge_type:recharge_type,
+				recharge_level:recharge_level,
 			},
 			header: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -784,14 +805,23 @@ export default {
 				console.log('My navigateToRecharge res data:', res.data);
 				var result =  res.data.result
 				var membercard_no = result.card_no? result.card_no:''
+				var membercard_logo = result.card_logo? result.card_logo:''
 				if(membercard_no!=''){
-					wx.showToast({
-					title: '会员充值',
-					icon:'loading',
-					duration: 2000
-					})
+					that.card_no = membercard_no
+					that.card_logo = membercard_logo
+					that.recharge_type =recharge_type
+					if(recharge_type==1 || recharge_type==0) {
+						that.is_card_overdue = false 
+						return // 立即入会 暂时不转充值       
+					}else{
+					  uni.showToast({
+					    title: '会员充值',
+					    icon:'loading',
+					    duration: 2000
+					  })
+					}  
 				}else{
-					wx.showToast({
+					uni.showToast({
 						title: '会员卡生成失败',
 						icon:'loading',
 						duration: 2000
@@ -802,6 +832,7 @@ export default {
 				that.recharge_skuid = result.recharge_skuid
 				that.recharge_price = result.recharge_price
 				that.recharge_image = result.recharge_image
+				that.recharge_selected = result.recharge_selected?result.recharge_selected:recharge_selected
 				that.recharge_title1 = result.recharge_title1?result.recharge_title1:'6个月期'
 				that.recharge_title2 = result.recharge_title2?result.recharge_title2:'1年期'
 				that.recharge_title4 = result.recharge_title4?result.recharge_title4:'终身' 
@@ -815,7 +846,8 @@ export default {
 				getApp().globalData.from_page = '/pages/my/index'
 				that.queryCart(res.data.result)
 			}
-		})  
+		})
+		*/
 	},
 	  
 	query_user_info:function () {
@@ -845,6 +877,7 @@ export default {
 			},
 			success: function (res) {
 				//console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res))
+				let recharge_type = res.data.result['card_no']?2:1  
 				if(res.data.result){
 					that.token = res.data.result['token']?res.data.result['token']:''
 					that.user_group_id = res.data.result['member_group_id']?res.data.result['member_group_id']:this.user_group_id
@@ -854,10 +887,12 @@ export default {
 					that.card_no = res.data.result['card_no']
 					that.card_due_start = res.data.result['card_due_start']
 					that.card_due_end = res.data.result['card_due_end']
-					let card_due_end_str = that.card_due_end +' 23:59:59'
+					let card_due_end_str = that.card_due_end +' 23:59:59'					 
 					let time_due_end = new Date(card_due_end_str).getTime()
 					let time_now = Date.now()
-					that.is_card_overdue = (time_now - parseInt(time_due_end))>0?true:false
+					
+					that.is_card_overdue = res.data.result['is_card_overdue']?res.data.result['is_card_overdue']:false
+					that.recharge_type = res.data.result['card_due_end']=='终身'?0:recharge_type
 					console.log('my index query_user_info 用户基本信息:' + JSON.stringify(res.data),time_now,parseInt(time_due_end),that.is_card_overdue)
 					var userauth = JSON.parse(res.data.result['userauth'])
 					uni.setStorageSync('token', that.token)
@@ -1440,7 +1475,7 @@ export default {
 	  var avatarUrl = that.avatarUrl? that.avatarUrl:'';
 	  var nickname = that.nickname? that.nickname:'匿名';
 	  var hiddenNickname = that.hiddenNickname
-      wx.request({
+      uni.request({
         url: weburl + '/api/client/update_name',
         method: 'POST',
         data: {
@@ -1470,9 +1505,9 @@ export default {
 	
     getUserName: function (user_name, user_gender) {
       var that = this;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var openid = wx.getStorageSync('openid') ? wx.getStorageSync('openid') : '';
+      var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+      var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+      var openid = uni.getStorageSync('openid') ? uni.getStorageSync('openid') : '';
 
       if (!user_name || !user_gender) {
         return;

@@ -27,211 +27,217 @@
 </movable-view>
 </movable-area>
 -->
-	<view class="banner" :style="(hidddensearch?'top:0;':'top:80rpx;')">
-		<view class="top-bar2" style>
+	<view class="banner">	 
+		<view class="top-bar2">
 		<block v-for="(item, index) in navList2" :key="index">
 			<view :id="'v_' + index" :data-index="index" :data-title="item.title" :data-tabid="item.id" :class="'top-bar-item2 ' + (index == activeIndex2 ? 'top-bar-active2' : '')" @click.stop="onTapTag2">
 				<view>{{item.title}}</view>
-				<icon v-if="updown==0 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-uparrow" @click.stop :data-index="index"></icon>
-				<icon v-if="updown==1 && index == activeIndex2" style="margin-top:-2rpx;" class="Hui-iconfont iconv-downarrow" @click.stop :data-index="index"></icon>
+				<icon v-if="updown==0 && index == activeIndex2" style="padding: 5rpx ;" class="Hui-iconfont iconv-uparrow"  :data-index="index"></icon>
+				<icon v-if="updown==1 && index == activeIndex2" style="padding: 5rpx ;" class="Hui-iconfont iconv-downarrow"  :data-index="index"></icon>
 			</view>
 		</block>
 		</view>
 	</view>
 	
-	<mescroll-body top="10" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
+	<mescroll-body top="0" bottom="0" :down="downOption" @down="downCallback" :up="upOption" @up="upCallback"  @emptyclick="emptyClick" @scroll="scroll" @topclick="goTop" @init="mescrollInit">
 		<pd-list :list="pdList"></pd-list>
 	</mescroll-body>
 </view>
 </template>
 
 <script>
-var util = require("utils/util.js"); //获取应用实例
+var util = require("utils/util.js") //获取应用实例
 //import imageloader from "../../../common/imageloader/imageloader";
 //import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 //var dateUtils = require('../../../common/util.js').dateUtils;
 //import MescrollUni from "@/components/mescroll-diy/mescroll-beibei.vue";
 // 引入mescroll-mixins.js
-import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";		
+import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js"		
 // 引入mescroll-body组件 (如已在main.js注册全局组件,则省略此步骤)
-import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue"; // 注意.vue后缀不能省
-import PdList from "./pd-list.vue";
-var weburl = getApp().globalData.weburl;
-var shop_type = getApp().globalData.shop_type;
+import MescrollBody from "@/components/mescroll-uni/mescroll-body.vue" // 注意.vue后缀不能省
+import PdList from "./pd-list.vue"
+var weburl = getApp().globalData.weburl
+var shop_type = getApp().globalData.shop_type
 var navList2 = [{
-  id: "default",
-  title: "最新"
+	id: "default",
+	title: "最新"
 }, {
-  id: "hot",
-  title: "人气"
+	id: "hot",
+	title: "人气"
 }, {
-  id: "price",
-  title: "价格"
+	id: "price",
+	title: "价格"
 }];
 
 
 export default {
   data() {
     return {
-      title_name: '搜索商品',
-      title_logo: '/static/images/footer-icon-05.png',
-      img_discount: '/static/images/discount.png',
-      default_img: weburl + '/uploads/default_goods_image.png',
-      activeIndex: 0,
-      activeIndex2: 0,
-      navList2: navList2,
-      images: [],
-      all_rows: 1,
-      venuesItems: [],
-      hidddensearch: true,
-      search_goodsname: '',
-      keyword: '',
-      satisfy: true,
-      is_satiify: 0,
-      page: 1,
-      pagesize: 20,
-      pageoffset: 0,
-      indicatorDots: true,
-      vertical: false,
-      autoplay: true,
-      interval: 3000,
-      duration: 1000,
-      loadingHidden: true,
-      // loading
-      is_loading: false,
-      msgList: [],
-      hidden: true,
-      scrollTop: 0,
-	  old: {
-	  	scrollTop: 0
-	  },
-      scrollHeight: 0,
-      tab: 'is_recommend',
-      tab_value: "1",
-      tab2: 'default',
-      updown: 0,
-      //升序 降序
-      shop_type: shop_type,
-      //商家类型 1普通
-      scrollLeft: 0,
-      toView: 0,
-      inputShowed: true,
-      is_satisfy: "",
-      floorstatus: false,
-      loading_note: "",
-      username: "",
-      token: "",
-      navlist_toView: "",
-      goods_type: "",
-      goods_type_value: "",
-      userInfo: "",
-      platform: "",
-      windowHeight: "",
-      windowWidth: "",
-      dkheight: "",
-      navList: "",
-      index: "",
-	  status: 'more',
-	  contentText: {
-	  	contentdown: '上拉加载更多',
-	  	contentrefresh: '加载中',
-	  	contentnomore: '没有更多'
-	  },
-	  downOption:{
-	  	auto:false, // 不自动加载
-	  	use:false,
-	  	isLock:true,
-	  },
-	  upOption:{
-	  	auto:false, // 不自动加载
+		title_name: '搜索商品',
+		title_logo: '/static/images/footer-icon-05.png',
+		img_discount: '/static/images/discount.png',
+		default_img: weburl + '/uploads/default_goods_image.png',
+		activeIndex: 0,
+		activeIndex2: 0,
+		navList2: navList2,
+		images: [],
+		all_rows: 1,
+		venuesItems: [],
+		hidddensearch: true,
+		search_goodsname: '',
+		keyword: '',
+		satisfy: true,
+		is_satiify: 0,
+		page: 1,
+		pagesize: 20,
+		pageoffset: 0,
+		indicatorDots: true,
+		vertical: false,
+		autoplay: true,
+		interval: 3000,
+		duration: 1000,
+		loadingHidden: true,
+		// loading
+		is_loading: false,
+		msgList: [],
+		hidden: true,
+		scrollTop: 0,
+		old: {
+			scrollTop: 0
+		},
+		scrollHeight: 0,
+		tab: 'is_recommend',
+		tab_value: "1",
+		tab2: 'default',
+		updown: 0,
+		//升序 降序
+		shop_type: shop_type,
+		//商家类型 1普通
+		scrollLeft: 0,
+		toView: 0,
+		inputShowed: true,
+		is_satisfy: "",
+		floorstatus: false,
+		loading_note: "",
+		username: "",
+		token: "",
+		navlist_toView: "",
+		goods_type: "",
+		goods_type_value: "",
+		userInfo: "",
+		platform: "",
+		windowHeight: "",
+		windowWidth: "",
+		dkheight: "",
+		navList: "",
+		index: "",
+		status: 'more',
+		contentText: {
+			contentdown: '上拉加载更多',
+			contentrefresh: '加载中',
+			contentnomore: '没有更多'
+		},
+		downOption:{
+			auto:false, // 不自动加载
+			use:false,
+			isLock:true,
+		},
+		upOption:{
+			auto:false, // 不自动加载
 	  		onScroll:true,
-	  	page: {
-	  	 	num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
-	  	 	size: 20, // 每页数据的数量
-	  	},
-	  	noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
-	  	empty:{
-	  		tip: '~ 空空如也 ~', // 提示
-	  		btnText: '去看看'
-	  	}
-	  },
-	  pdList: [] ,// 数据列表
-	  isInit: false, // 列表是否已经初始化
-	  scrollY: 0
-    };
+			page: {
+				num: 0, // 当前页码,默认0,回调之前会加1,即callback(page)会从1开始
+				size: 20, // 每页数据的数量
+			},
+			noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+			empty:{
+				tip: '~ 空空如也 ~', // 提示
+				btnText: '去看看'
+			}
+		},
+		pdList: [] ,// 数据列表
+		isInit: false, // 列表是否已经初始化
+		scrollY: 0
+		}
 	},
   
 	mixins: [MescrollMixin], // 使用mixin
 	components: {
-		// imageloader,
+		//imageloader,
 		//uniLoadMore,
 		//MescrollUni,
 		MescrollBody,
 		PdList,
 	},
 	
-	onLoad: function (options) {
-    //console.log('onLoad', options);
-    var that = this;
-    var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-    var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
-    var middle_title = options.middle_title ? options.middle_title : '特色礼物';
-    var navlist_toView = options.navlist ? options.navlist : 0;
-    var goods_type_value = options.goods_type_value ? options.goods_type_value : 0;
-    var goods_type = 'goods_middle_search';
-    var hidddensearch = options.search == 1 ? false : true;
-    middle_title = options.search == 1 ? '搜索商品' : middle_title
-	/*
-	uni.setNavigationBarTitle({
-		title: middle_title
-	})
-	*/
-    that.username = username
-    that.token = token
-    that.navlist_toView = navlist_toView
-    that.goods_type = goods_type
-    that.goods_type_value = goods_type_value
-    that.hidddensearch = hidddensearch
-	that.keyword = ''
+	onLoad: function (options) {		
+		var that = this
+		console.log('goods/list/list onLoad() options:', options);
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var middle_title = options.middle_title ? options.middle_title : '';
+		var navlist_toView = options.navlist ? options.navlist : 0;
+		var goods_type_value = options.goods_type_value ? options.goods_type_value : 0;
+		var goods_type = 'goods_middle_search';
+		var hidddensearch = options.search == 1 ? false : true;
+		middle_title = options.search == 1 ? '搜索商品' : middle_title
+		 
+		uni.setNavigationBarTitle({
+			title: middle_title
+		})
+		 
+		that.username = username
+		that.token = token
+		that.navlist_toView = navlist_toView
+		that.goods_type = goods_type
+		that.goods_type_value = goods_type_value
+		that.hidddensearch = hidddensearch
+		that.keyword = ''
      
-    uni.getSystemInfo({
-      success: function (res) {
-        that.setData({
-          platform: res.platform,
-          windowHeight: res.windowHeight,
-          windowWidth: res.windowWidth,
-          dkheight: res.windowHeight - 10
-        });
-      }
-    });
-    //if (hidddensearch) that.get_goods_list();
-  },
-  onShow: function () {
-    var that = this;
-    var pages = getCurrentPages();
-
-    if (pages.length > 1) {
-      that.title_logo = '/images/back.png'
-    }
-	/*
-	setTimeout(() => {
-		this.load()
-	}, 100)
-	*/
-  },
+		uni.getSystemInfo({
+			success: function (res) {
+				that.platform = res.platform
+				that.windowHeight = res.windowHeight
+				that.windowWidth = res.windowWidth
+				that.dkheight = res.windowHeight - 10
+			}
+		})
+		
+		if (hidddensearch) {			 
+			setTimeout(() => {
+				that.goTop()
+			}, 300)
+		}
+	},
   
-  onShareAppMessage: function () {
-    return {
-      title: '送心礼物',
-      desc: '开启礼物电商时代，200万人都在用的礼物小程序！',
-      path: '/pages/list/list?refername=' + username
-    };
-  },
-  mounted() {
-  	this.isInit = true; // 标记为true
-  	//this.mescroll.triggerDownScroll();
-  },
-  methods: {
+	onShow: function () {
+		var that = this;
+		var pages = getCurrentPages();
+
+		if (pages.length > 1) {
+			that.title_logo = '/images/back.png'
+		}
+		/*
+		setTimeout(() => {
+			this.load()
+		}, 100)
+		*/
+	},
+  
+	onShareAppMessage: function () {
+		return {
+			title: '送心礼物',
+			desc: '开启礼物电商时代，200万人都在用的礼物小程序！',
+			path: '/pages/list/list?refername=' + username
+		}
+	},
+  
+	mounted() {
+		this.isInit = true; // 标记为true
+		//this.mescroll.triggerDownScroll();
+	},
+	
+	methods: {
 	load: function() {
 		uni.createSelectorQuery().selectAll('.lazy').boundingClientRect((images) => {
 			images.forEach((image, index) => {
@@ -245,26 +251,26 @@ export default {
 		this.venuesItems[e.target.dataset.index].loaded = true
 	},
 	
-    satisfyTagTap: function (e) {
-      var that = this;
-      var satisfy = e.currentTarget.dataset.satisfy;
-      that.setData({
-        satisfy: satisfy,
-        is_satisfy: satisfy ? 1 : 2
-      });
+	satisfyTagTap: function (e) {
+		var that = this;
+		var satisfy = e.currentTarget.dataset.satisfy;
+		that.satisfy = satisfy
+		that.is_satisfy = satisfy ? 1 : 2
     },
+	
     goBack: function () {
-      var pages = getCurrentPages()
-      if (pages.length > 1) {
-        uni.navigateBack({
-          changed: true
-        }); //返回上一页
-      } else {
-        uni.switchTab({
-          url: '../hall/hall'
-        });
-      }
-    },
+		var pages = getCurrentPages()
+		if (pages.length > 1) {
+			uni.navigateBack({
+				changed: true
+			}); //返回上一页
+		} else {
+			uni.switchTab({
+				url: '../hall/hall'
+			});
+		}
+	},
+	
     //事件处理函数
     swiperchange: function (e) {//console.log(e.detail.current)
     },
@@ -305,21 +311,22 @@ export default {
 	  }, 100)
 	  */
     },
-   onTapTag2: function (e) {
-     var that = this;
-     var id = e.currentTarget.id;
-     var tab = e.currentTarget.dataset.tabid;
-     var index = e.currentTarget.dataset.index;
-     var updown = that.updown == 1 ? 0 : 1;
-	 that.activeIndex2 = index 
-	 that.tab2 = tab 
-	 that.page = 1
-	 that.updown = updown
-	 that.venuesItems_show = []
-	 that.venuesItems = []
-	 that.goTop() ;
+   
+	onTapTag2: function (e) {
+		var that = this;
+		var id = e.currentTarget.id;
+		var tab = e.currentTarget.dataset.tabid;
+		var index = e.currentTarget.dataset.index;
+		var updown = that.updown == 1 ? 0 : 1;
+		that.activeIndex2 = index 
+		that.tab2 = tab 
+		that.page = 1
+		that.updown = updown
+		that.venuesItems_show = []
+		that.venuesItems = []
+		that.goTop() ;
      //that.get_goods_list();
-   },
+	},
    /*
     // 获取滚动条当前位置
     scrolltoupper: function (e) {
@@ -384,7 +391,7 @@ export default {
 		}
 	  
 		that.page = page
-		that.get_goods_list();
+		//that.get_goods_list();
     },
 	
     search_goodsnameTapTag: function (e) {
@@ -399,53 +406,55 @@ export default {
 	},
 	
 	showGoods: function (e) {
-	  // 点击购物车某件商品跳转到商品详情
-	  var objectId = e.id ; //currentTarget.dataset.objectId;
-	  var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-	  var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-	  var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
-	  var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
-	  var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
-	  var goods_name = e.name ; //currentTarget.dataset.goodsName;
-	  var goods_price = e.sell_price ; //.dataset.goodsPrice;
-	  var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
-	  var goods_sale = e.sale ; //currentTarget.dataset.sale;
-	  var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
-	  var activity_image = e.activity_image?e.activity_image:''
-	  var sku_id = objectId;
-	  image = image?image:activity_image?activity_image:'' ;
-	  getApp().globalData.hall_gotop = 0;
-	  var show_goods_options = {
-		  sku_id:objectId,
-		  id:goods_id,
-		  goods_shape:goods_shape,
-		  goods_org:goods_org,
-		  goods_info:goods_info,
-		  goods_price:goods_price,
-		  sale:goods_sale,
-		  name:goods_name,
-		  image:image,
-		  token:token,
-		  username:username
-	  } ;
-	  uni.setStorageSync('show_goods_options', show_goods_options);
+		// 点击购物车某件商品跳转到商品详情
+		var objectId = e.id ; //currentTarget.dataset.objectId;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var goods_id = e.goods_id?e.goods_id:e.id ; //currentTarget.dataset.goodsId;
+		var goods_org = e.goods_org ; //currentTarget.dataset.goodsOrg;
+		var goods_shape = e.shape ; //currentTarget.dataset.goodsShape;
+		var goods_name = e.name ; //currentTarget.dataset.goodsName;
+		var goods_price = e.sell_price ; //.dataset.goodsPrice;
+		var goods_info = e.atc_info ; //currentTarget.dataset.goodsInfo;
+		var goods_sale = e.sale ; //currentTarget.dataset.sale;
+		var image = e.image?e.image:'' ; //currentTarget.dataset.image ? e.currentTarget.dataset.image : ''; //var carts = this.data.carts
+		var activity_image = e.activity_image?e.activity_image:''
+		var sku_id = objectId;
+		image = image?image:activity_image?activity_image:'' ;
+		getApp().globalData.hall_gotop = 0;
+		var show_goods_options = {
+			sku_id:objectId,
+			id:goods_id,
+			goods_shape:goods_shape,
+			goods_org:goods_org,
+			goods_info:goods_info,
+			goods_price:goods_price,
+			sale:goods_sale,
+			name:goods_name,
+			image:image,
+			token:token,
+			username:username
+		} 
+		uni.setStorageSync('show_goods_options', show_goods_options);
 	  
-	  setTimeout(function () {
-		wx.navigateTo({
-		url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
-		});
-	  }, 100);
+		setTimeout(function () {
+			uni.navigateTo({
+				url: '/pages/details/details?sku_id=' + objectId + '&id=' + goods_id + '&goods_shape=' + goods_shape + '&goods_org=' + goods_org + '&goods_info=' + goods_info + '&goods_price=' + goods_price + '&sale=' + goods_sale + '&name=' + goods_name + '&image=' + image + '&token=' + token + '&username=' + username
+			})
+		}, 100)
 	},
-    gotoAITagTap: function (e) {
-      var that = this;
-      getApp().globalData.messageflag = 2;
-      wx.switchTab({
-        url: '/pages/member/message/message'
-      });
+	
+	gotoAITagTap: function (e) {
+		var that = this;
+		getApp().globalData.messageflag = 2;
+		uni.switchTab({
+			url: '/pages/member/message/message'
+		})
     },
 	// mescroll组件初始化的回调,可获取到mescroll对象
 	mescrollInit(mescroll) {
 		this.mescroll = mescroll;
+		console.log(" mescroll.num=" + this.mescroll.num + ", mescroll.size=" + this.mescroll.size);
 	},
 	/*下拉刷新的回调 */
 	downCallback(mescroll) {
@@ -461,7 +470,7 @@ export default {
 	/*上拉加载的回调: mescroll携带page的参数, 其中num:当前页 从1开始, size:每页数据条数,默认10 */
 	upCallback(mescroll) {
 		//联网加载数据
-		//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
+		console.log("mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size);
 		this.getListDataFromNet(mescroll.num, mescroll.size, (curPageData)=>{
 			//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
 			//console.log("i="+this.i+", mescroll.num=" + mescroll.num + ", mescroll.size=" + mescroll.size + ", curPageData.length=" + curPageData.length);
@@ -473,8 +482,7 @@ export default {
 			if(curPageData=='n'){
 				mescroll.endByPage(this.page, this.all_rows)
 			}else{
-				this.pdList=this.pdList.concat(curPageData); //追加新数据
-				
+				this.pdList=this.pdList.concat(curPageData); //追加新数据				
 			}
 			
 		}, () => {
@@ -495,7 +503,8 @@ export default {
 		var pagesize = that.pagesize;
 		var pageoffset = that.pageoffset;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+		var hidddensearch = that.hidddensearch
 		var goods_type = that.goods_type;
 		var goods_type_value = that.goods_type_value;
 		var goods_sales = that.tab2;
@@ -505,7 +514,7 @@ export default {
 		var shop_type = that.shop_type;
 		var shape = 1
 		var all_rows = that.all_rows
-		if(keyword=='') {
+		if(keyword=='' && !hidddensearch) {
 			console.log('商品名称为空:', keyword)
 			that.is_goodslist_loading = false
 			 uni.showToast({

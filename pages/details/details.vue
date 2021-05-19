@@ -1,7 +1,7 @@
 <template>
 <view>	
 <view scroll-y class="pagewrap" :style="'heigth:'+winHeight+'px;'+((!modalHidden||!cardcelehidden||!cardnamehidden||!cardregisterhidden||!cardlovehidden)?'position:fixed;':'')">
-	<view class="share-goods">
+	<view class="share-goods" v-if="!showVideo">
 		<view class="share-buttons" style="justify-content: space-between">
 			<view class="btnback" @tap="goBack()">
 				<uni-icons :color="'#333'" class="icon-arrowleft" type="arrowleft" size="18" />
@@ -19,20 +19,22 @@
 	
 	<view class="banner">
 		<view :hidden="!modalHidden" :style="(card_type==2?'margin-top:90rpx;':'')">
-			<image v-if="showVideo" class="video-close" src="/static/images/icon-no.png" @click="videoEnd"></image>
-			<image v-if="showVideo" class="video-voice" :src="video_muted?'/static/images/notification.png':'/static/images/notificationclose.png'" @click="videoVoice"></image>
+			<view v-if="showVideo" class="video-button">
+				<image class="video-close" src="/static/images/icon-no.png" @click="videoEnd"></image>
+				<image class="video-voice" :src="video_muted?'/static/images/notificationclose.png':'/static/images/notification.png'" @click="videoVoice"></image>
+			</view>
 			<swiper class="swiper-box swiper-image" @change="swiperchange" :current="cur_img_id" :indicator-dots="indicatorDots" indicator-color="rgba(0,0,0,0.1)" indicator-active-color="rgba(0,0,0,0.3)" :vertical="vertical" :autoplay="autoplay" :interval="interval" :duration="duration" :circular="circular" :style="'height:' + card_image_height + 'rpx;'">
-			<block v-for="(pic, idx) in image_pic" :key="idx">
+				<block v-for="(pic, idx) in image_pic" :key="idx">
 				<swiper-item class="swiper-item">
 					<view style="flex: 1;">
 						<view  v-if="pic.video_url==''"  >
 							<!--
+							<image :src="pic.url" class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'" :data-list="image_pic" :data-src="pic.url" @tap="imgYu" mode="aspecFit"></image>
+							-->
 							<easy-loadimage class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'"  mode="aspectFill"
 							    :scroll-top="image_refresh+cur_img_id"
 							    :image-src="pic.url" >
 							</easy-loadimage>
-							-->
-							<image :src="pic.url" class="slide-image" :style="'z-index:1;height:' + card_image_height + 'rpx;'" :data-list="image_pic" :data-src="pic.url" @tap="imgYu" mode="aspecFit"></image>
 							
 						</view>
 						<view  v-if="pic.video_url!=''" style="flex: 1;">
@@ -42,8 +44,8 @@
 							</view>
 							
 							<view v-if="showVideo"> 
-								<video id="f" class="slide-video" :src="pic.video_url" :controls="true" :show-play-btn="true"
-								:show-center-play-btn="false" :muted="video_muted" :autoplay="video_autoplay" :poster="pic.url"  :objectFit="pic.short?'':'fill'" :show-progress="false" enable-progress-gesture="false" 
+								<video class="slide-video" :src="pic.video_url" :controls="true" :show-play-btn="true"
+								:show-center-play-btn="false" :muted="video_muted" :autoplay="video_autoplay" :poster="pic.url"  :objectFit="pic.short?'contain':'fill'" :show-progress="false" enable-progress-gesture="false" 
 								@click="videoPlay" @pause="pauseVideo" @ended="videoEnd"  page-gesture="false"  @timeupdate="timeupdate" 
 								>
 								</video>
@@ -159,58 +161,58 @@
 						<image src="../../static/images/notification.png" style="width:50rpx;height:50rpx;"></image>
 					</view>
 				</swiper-item>
-			</block>
+				</block>
 			</swiper>
 		</view>
-		</view>
+	</view>
 		 
-		<view v-if="goodsshape==4 && card_type==2" :hidden="!cardnamehidden" class="card-name-note">
-			<textarea style="font-size:28rpx;" @blur="cardnameNoteTextAreaBlur" :value="card_name_note" placeholder="请输入简介(限80个汉字)" placeholder-style="text-align:center;color:#e2e2e2;" maxlength="80"></textarea>
+	<view v-if="goodsshape==4 && card_type==2" :hidden="!cardnamehidden" class="card-name-note">
+		<textarea style="font-size:28rpx;" @blur="cardnameNoteTextAreaBlur" :value="card_name_note" placeholder="请输入简介(限80个汉字)" placeholder-style="text-align:center;color:#e2e2e2;" maxlength="80"></textarea>
+	</view>
+	<view class="shopping-container">
+		<view class="goods-name">
+			<text>{{goodsname?goodsname:''}}</text>
+			<text class="goods-prom"><text class="icontags">推荐理由</text>{{goodsinfo?goodsinfo:''}}</text>
 		</view>
-		<view class="shopping-container">
-			<view class="goods-name">
-				<text>{{goodsname?goodsname:''}}</text>
-				<text class="goods-prom"><text class="icontags">推荐理由</text>{{goodsinfo?goodsinfo:''}}</text>
+		<view v-if="goodsshape!=5 && goodsshape!=4" class="goods-info">
+			<text class="left-tag">{{goodssale>0?goodssale:'0'}}人已购</text>
+			<view class="right-tag">
+				{{marketprice>0?'':''}} 
+				<text class="price-market">{{marketprice>0?'￥'+marketprice:''}}</text>
+				{{marketprice>0?'':''}}会员价 
+				<text class="price-real">{{goodsprice>0?'￥'+goodsprice:''}}</text>
 			</view>
-			<view v-if="goodsshape!=5 && goodsshape!=4" class="goods-info">
-				<text class="left-tag">{{goodssale>0?goodssale:'0'}}人已购</text>
-				<view class="right-tag">
-					{{marketprice>0?'':''}} 
-					<text class="price-market">{{marketprice>0?'￥'+marketprice:''}}</text>
-					{{marketprice>0?'':''}}会员价 
-					<text class="price-real">{{goodsprice>0?'￥'+goodsprice:''}}</text>
-				</view>
-			</view>
+		</view>
 			<!--
 			<view v-if="goodsshape!=5 && goodsshape!=4" class="fitfor">
 				<text>适合送</text>
 				<text class="goods_tag">{{goodstag?goodstag:''}}</text>
 			</view>
 			-->
-			<view v-if="goodsdiscount<100" class="prd-prom">
-				<image src="/static/images/discount.png" style="width:75rpx;height:32rpx;"></image>
+		<view v-if="goodsdiscount<100" class="prd-prom">
+			<image src="/static/images/discount.png" style="width:75rpx;height:32rpx;"></image>
 				{{discountinfo}}
+		</view>
+		<view v-if="goodsorg!=5" class="comm-text">
+			<!--
+			<text class="comm-name">服务</text>
+			-->
+			<view class="comm-listitem">
+				<image class="icon-item" src="/static/images/icon-zp.png"></image>
+				<text>放心正品</text>
 			</view>
-			<view v-if="goodsorg!=5" class="comm-text">
-				<!--
-				<text class="comm-name">服务</text>
-				-->
-				<view class="comm-listitem">
-					<image class="icon-item" src="/static/images/icon-zp.png"></image>
-					<text>放心正品</text>
-				</view>
-				<view class="comm-listitem">
-					<image class="icon-item" src="/static/images/icon-by.png"></image>
-					<text>全国包邮</text>
-				</view>
-				<view class="comm-listitem">
-					<image class="icon-item" src="/static/images/icon-tk.png"></image>
-					<text>7天无理由退货</text>
-				</view>
-				<view class="comm-listitem">
-					<image class="icon-item" src="/static/images/icon-tq.png"></image>
-					<text>7特权保障</text>
-				</view>
+			<view class="comm-listitem">
+				<image class="icon-item" src="/static/images/icon-by.png"></image>
+				<text>全国包邮</text>
+			</view>
+			<view class="comm-listitem">
+				<image class="icon-item" src="/static/images/icon-tk.png"></image>
+				<text>7天无理由退货</text>
+			</view>
+			<view class="comm-listitem">
+				<image class="icon-item" src="/static/images/icon-tq.png"></image>
+				<text>7特权保障</text>
+			</view>
 			</view>
 			<view v-if="goodsorg!=5" class="comm-text">
 				<!--
@@ -237,7 +239,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="prd-title">{{(goodsshape!=5&&goodsshape!=4)?'商品详情':'说明'}}</view>
+		<view class="prd-title">{{(goodsshape!=5&&goodsshape!=4)?'商品细节':'说明'}}</view>
 		<view class="prd-detail">
 			<view class="wxParse" :hidden="hideviewgoodsinfo">
 				<view scroll-y style="overflow: auto;">
@@ -1300,7 +1302,7 @@ export default {
 						goodsPicsInfo.image[i]['video_url'] =  goodsPicsInfo.image[i]['url'] ;
 						goodsPicsInfo.image[i]['url'] = share_goods_image ;
 						image_video.push(goodsPicsInfo.image[i]);
-					} else {
+					} else if(goodsPicsInfo.image[i]['url']) {
 						if (goodsPicsInfo.image[i]['url'].indexOf("http") < 0) {
 							goodsPicsInfo.image[i]['url'] = weburl + '/' + goodsPicsInfo.image[i]['url'];
 						}
@@ -1378,7 +1380,7 @@ export default {
 						attrValueList[i].attrValueStatus = true;
 					}
 
-					if (attrValueList[i].type == 2) {
+					if (attrValueList[i].type == 2 && attrValueList[i].value) {
 						for (var k = 0; k < attrValueList[i].value.length; k++) {
 							if (attrValueList[i].value[k].indexOf("http") < 0) {
 								attrValueList[i].value[k] = weburl + '/' + attrValueList[i].value[k];
@@ -1746,11 +1748,11 @@ export default {
 		if (!username) {
 		  //登录
 			uni.navigateTo({
-				url: '/pages/login/login?frompage=/pages/hall/hall'
+				url: '/pages/login/login?frompage=/pages/details/details?id='+goods_id
 			})
 		} else {
 			uni.navigateTo({
-				url: '/pages/customerservice/chatroomservice?frompage=/pages/details/details&goods_id='+goods_id+'&goods_name='+goods_name+'&goods_owner='+goods_owner+ '&goods_shop_id=' + goods_shop_id+'&from_username='+username+'&from_headimg='+from_headimg+'&from_nickname='+from_nickname+'&m_id='+m_id+'&customer=1&qun_type=1&is_refresh=1'
+				url: '/pages/customerservice/chatroomservice?frompage=/pages/details/details&id='+goods_id+'&goods_name='+goods_name+'&goods_owner='+goods_owner+ '&goods_shop_id=' + goods_shop_id+'&from_username='+username+'&from_headimg='+from_headimg+'&from_nickname='+from_nickname+'&m_id='+m_id+'&customer=1&qun_type=1&is_refresh=1'
 			})
 		}		
 	},
@@ -1777,7 +1779,7 @@ export default {
 			//this.videoContext.seek(1);
 		}else{
 			this.videoContext.pause();
-			this.showVideo = false ;
+			//this.showVideo = false ;
 		}
 		console.log('click videoPlay cur_img_id: ',index,this.image_pic[index].flag)
 	},
@@ -1794,18 +1796,20 @@ export default {
 		this.showVideo = false ;
 		 
 		//#ifdef APP-PLUS
-		video_cover_view.close() ;
+		//video_cover_view.close() ;
 		//#endif
 		 
 	},
 	videoVoice: function(){
 		console.log('Open Voice of Video video_play_time:',this.video_play_time,this.cur_img_id)
 		this.video_muted = !this.video_muted ;
-		this.image_pic[this.cur_img_id].initialTime = this.video_play_time ;
-		this.videoContext = uni.createVideoContext('myVideo',this)
+		this.image_pic[this.cur_img_id].initialTime = this.video_play_time 
+		if(!this.videoContext){
+			this.videoContext = uni.createVideoContext('myVideo',this)
+		}		
 		this.videoContext.play(); 
 		//#ifdef APP-PLUS
-		video_cover_view.close() ;
+		//video_cover_view.close() ;
 		//#endif
 		 
 	},
@@ -2641,7 +2645,7 @@ export default {
         success: res => {
           if (!res.authSetting['scope.userInfo']) {
             uni.navigateTo({
-              url: '/pages/login/login?frompage=/pages/details/details'
+              url: '/pages/login/login?frompage=/pages/details/details?id='+that.goodsid
             });
           }
         }
@@ -2653,7 +2657,9 @@ export default {
 	    //console.log('detail bindplay 响应', e);
 		this.showVideo = true ;
 		this.image_pic[this.cur_img_id].flag = true ;
-		this.videoContext = uni.createVideoContext('myVideo',this)
+		if(!this.videoContext){
+			this.videoContext = uni.createVideoContext('myVideo',this)
+		}		
 		this.videoContext.seek(1);
 		/*
 		uni.setStorageSync('image_pic', this.image_pic);
@@ -2668,7 +2674,7 @@ export default {
 		}, 1200);
 	   	//#endif
 		*/
-    },
+    }, 
 	 
 	//#ifdef APP-PLUS
 	createView:function (){
@@ -3026,7 +3032,8 @@ export default {
 		var that = this;
 		that.is_buymyself = 0 ;
 		that.goodsmodel_count = 0 ;
-	console.log('buyGift card_type:', that.card_type, 'goodsshape:', that.goodsshape);
+		console.log('buyGift card_type:', that.card_type, 'goodsshape:', that.goodsshape);
+		
 		var options ={}   
 		options['goodsname'] = that.goodsname ;
 		options['commodityAttr'] = that.commodityAttr ;
@@ -3046,117 +3053,135 @@ export default {
     },
     //确定按钮点击事件  
     modalBindconfirm: function () {
-      var that = this; //var card_type = that.data.card_type
-
-      this.setData({
-        modalHidden: !this.modalHidden
-      });
-      this.addCart();
-    },
-    //取消按钮点击事件  
-    modalBindcancel: function () {
-      this.setData({
-        modalHidden: !this.modalHidden
-      });
-    },
-    addCart: function () {
-      var that = this;
-      var is_buymyself = that.is_buymyself;
-      var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
-      var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var keyword = that.keyword;
-      var is_satisfy = that.is_satisfy;
-      var rule_selected_info = that.rule_selected_info;
-
-      if (!username) {
-        //登录
-		uni.navigateTo({
-			url: '/pages/login/login?frompage=/pages/hall/hall'
+		var that = this; //var card_type = that.data.card_type
+		this.setData({
+			modalHidden: !this.modalHidden
 		});
-      } else {
-        if (that.sku_id) {
-          that.insertCart(that.sku_id, that.buynum, username, token, that.shop_type, that.wishflag, is_buymyself, keyword, is_satisfy, rule_selected_info);
-        } else {
-          wx.showToast({
-            title: '该产品无货',
-            icon: 'loading',
-            duration: 1500
-          });
-        }
-      }
+		this.addCart();
+	},
+    
+	//取消按钮点击事件  
+	modalBindcancel: function () {
+		this.setData({
+			modalHidden: !this.modalHidden
+		});
+	},
+	
+	addCart: function () {
+		var that = this
+		var is_buymyself = that.is_buymyself;
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var keyword = that.keyword;
+		var is_satisfy = that.is_satisfy
+		var user_group_id = uni.getStorageSync('user_group_id') ? uni.getStorageSync('user_group_id') : '0'
+      
+		var rule_selected_info = that.rule_selected_info;
+
+		if (!username) {
+			//登录
+			uni.navigateTo({
+				url: '/pages/login/login?frompage=/pages/details/details?id='+that.goodsid
+			})
+		} else if(user_group_id == '0'){	
+			uni.showModal({
+				title: '抱歉',       
+				content: '非会员无法购物,请先加入会员', 
+				cancelText:'取消', 
+				confirmText:'加入',     
+				success: function (res) {       
+					if (res.confirm) {       
+						uni.navigateTo({
+							url: '/pages/order/recharge/recharge?recharge_selected=2'
+						})      
+					} else {    
+						console.log('用户不加入会员')       
+					}
+				}       
+			})
+		} else {
+			if (that.sku_id) {
+				that.insertCart(that.sku_id, that.buynum, username, token, that.shop_type, that.wishflag, is_buymyself, keyword, is_satisfy, rule_selected_info);
+			} else {
+				uni.showToast({
+					title: '该产品无货',
+					icon: 'loading',
+					duration: 1500
+				})
+			}
+		}
     },
     insertCart: function (sku_id, buynum, username, token, shop_type, wishflag, is_buymyself, keyword, is_satisfy, rule_selected_info) {
-      var that = this;
-      var order_shape = that.order_shape; //var shop_type = that.data.shop_type
+		var that = this;
+		var order_shape = that.order_shape; //var shop_type = that.data.shop_type
 
-      wx.request({
-        url: weburl + '/api/client/add_cart',
-        method: 'POST',
-        data: {
-          username: username,
-          access_token: token,
-          sku_id: sku_id,
-          num: buynum,
-          wishflag: wishflag,
-          shop_type: shop_type,
-          keyword: keyword,
-          is_satisfy: is_satisfy,
-          rule_selected_info: rule_selected_info
-        },
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        success: function (res) {
-          console.log('details insertCart res data:', res.data, ' wishflag：', wishflag);
-          var title = wishflag == 1 ? '已加入心愿单' : '已加入礼物包';
-          title = is_buymyself == 1 ? '自购礼品' : title;
-          title = that.card_type > 0 ? '加载中' : title;
-          title = order_shape == 5 || order_shape == 4 ? '处理中' : title;
-          wx.showToast({
-            title: title,
-            icon: 'loading',
-            duration: 2000
-          });
-          getApp().globalData.from_page = '/pages/details/details';
+		uni.request({
+			url: weburl + '/api/client/add_cart',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				sku_id: sku_id,
+				num: buynum,
+				wishflag: wishflag,
+				shop_type: shop_type,
+				keyword: keyword,
+				is_satisfy: is_satisfy,
+				rule_selected_info: rule_selected_info
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('details insertCart res data:', res.data, ' wishflag：', wishflag);
+				var title = wishflag == 1 ? '已加入心愿单' : '已加入礼物包';
+				title = is_buymyself == 1 ? '自购礼品' : title;
+				title = that.card_type > 0 ? '加载中' : title;
+				title = order_shape == 5 || order_shape == 4 ? '处理中' : title;
+				uni.showToast({
+					title: title,
+					icon: 'loading',
+					duration: 2000
+				})
+				getApp().globalData.from_page = '/pages/details/details';
 
-          if (wishflag == 1) {
-            uni.navigateTo({
-              url: '/pages/wish/wish'
-            })
-            /*
-			wx.switchTab({
-			  url: '/pages/wish/wish'
-			});
-           
-            */
-          } else {
-            if (is_buymyself == 1) {
-              that.queryCart();
-            } else {
-              console.log('details insertCart wishflag:', wishflag);
-              getApp().globalData.hall_gotop = 1;
-              wx.switchTab({
-                url: '/pages/cart/cart'
-              });
-            }
-          }
-        }
-      });
+				if (wishflag == 1) {
+					uni.navigateTo({
+						url: '/pages/wish/wish'
+					})
+					/*
+					wx.switchTab({
+						url: '/pages/wish/wish'
+					});
+					*/
+				} else {
+					if (is_buymyself == 1) {
+						that.queryCart();
+					} else {
+						console.log('details insertCart wishflag:', wishflag);
+						getApp().globalData.hall_gotop = 1;
+						uni.switchTab({
+							url: '/pages/cart/cart'
+						})
+					}
+				}
+			}
+		})
     },
     queryCart: function () {
       var that = this;
       var username = wx.getStorageSync('username') ? wx.getStorageSync('username') : '';
       var token = wx.getStorageSync('token') ? wx.getStorageSync('token') : '1';
-      var order_type = 'gift';
+	  var is_buymyself = that.is_buymyself;
+      var order_type = that.is_buymyself==1?'':'gift';
       var order_note = '送你一份礼物，希望你喜欢!'; //默认祝福
 
       var order_image = that.order_image;
       var buynum = that.buynum;
       var sku_sell_price = that.sku_sell_price;
       var amount = parseFloat(sku_sell_price) * buynum;
-      var sku_id = that.sku_id;
-      var is_buymyself = that.is_buymyself;
+      var sku_id = that.sku_id;      
       var cur_img_id = that.cur_img_id;
       var share_goods_image = that.image_pic[cur_img_id]['url'];
       var share_goods_template = that.image_pic[cur_img_id]['template_config'];
@@ -3210,7 +3235,7 @@ export default {
             cartlist[key]['sku_list'][0]['image'] = share_goods_image;
 
             for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
-              if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
+              if (cartlist[key]['sku_list'][i]['image'] && cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
                 cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image'];
               }
 
@@ -3248,7 +3273,7 @@ export default {
                   url: '../order/checkout/checkout?cartIds=' + sku_id + '&amount=' + amount + '&carts=' + JSON.stringify(carts) + '&is_buymyself=' + is_buymyself + '&order_type=' + order_type + '&order_shape=' + goodsshape + '&order_voice=' + order_voice + '&order_voicetiime=' + order_voicetime + '&order_note=' + order_note + '&order_color=' + share_goods_template[0]['color'] + '&order_image=' + share_goods_image + '&card_register_info=' + card_register_info + '&card_template=' + JSON.stringify(share_goods_template) + '&username=' + username + '&token=' + token
                 });
               } else if (card_type == 2) {
-                var card_name_info = wx.getStorageSync('card_name_info'); //从缓存中读取
+                var card_name_info = uni.getStorageSync('card_name_info'); //从缓存中读取
 
                 console.log('detail checkout 互动卡 name card  order_image:', share_goods_image, ' card_name_info:', card_name_info, ' share_goods_template:', share_goods_template);
                 uni.navigateTo({
@@ -3256,7 +3281,7 @@ export default {
                 });
               } else if (card_type == 4) {
                 //爱心卡
-                var card_love_info = wx.getStorageSync('card_love_info'); //从缓存中读取
+                var card_love_info = uni.getStorageSync('card_love_info'); //从缓存中读取
 
                 console.log('detail checkout 互动卡 love card  order_image:', share_goods_image, ' card_love_info:', card_love_info, ' share_goods_template:', share_goods_template);
                 uni.navigateTo({

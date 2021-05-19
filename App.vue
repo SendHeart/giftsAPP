@@ -24,8 +24,9 @@
 			var playerurl = that.$options.globalData.playerurl;
 			var art_id =0
 			var clientinfo = ''
-			var websocketOpen = false
+			var websocketOpen = false			
             // #ifdef APP-PLUS
+			var os_name = plus.os.name
 			clientinfo = plus.push.getClientInfo() ; //用户推送信息
             // 锁定屏幕方向
             plus.screen.lockOrientation('portrait-primary'); //锁定
@@ -344,10 +345,10 @@
 </script>
 
 <style>
-	 
+	/**/
 	/* #ifndef APP-PLUS-NVUE */
-    /* uni.css - 通用组件、模板样式库，可以当作一套ui库应用 */
-    @import './common/uni.css';
+	@import '@/components/uParse/src/wxParse.css';
+	@import './common/uni.css';
 	
     page {
         background-color: #1d1d1d !important;;

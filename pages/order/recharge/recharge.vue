@@ -3,10 +3,12 @@
 	<scroll-view id="scrollview"  scroll-y="true" :style="{height: windowHeight + 'px'}" :scroll-with-animation="true" :scroll-top="scrollTop">
 	<view class="carts-container" v-for="(item, index) in carts" :key="index" >
 		<view class="carts-info">
-			<view class="carts-item">
-				<image class="carts-image" :src="item.image?item.image:item.activity_image" mode="aspectFill" />
+			<view class="carts-item">				
 				<view class="carts-text">
+					<image class="carts-image" :src="item.image?item.image:item.activity_image" mode="aspectFill" />
+					<!--
 					<text class="carts-title">{{item.name}}</text>
+					-->
 					<text class="carts-recharge-title">{{item.goods_tag}}</text>
 					<view class="carts-sku">
 						<view v-if="order_shape==7 || order_shape==8" v-for="(sku_value, index) in item['value']" :key="index" >
@@ -21,16 +23,17 @@
 			</view>
 		</view>
 	</view>
-	<view class="recharge-info">
+	<view class="recharge-info" v-if="recharge_amount1>0||recharge_amount2>0">
 		<view class="recharge-level">
-			<view class="recharge-item" :class="recharge_selected == '1' ? 'recharge-item-selected' : 'recharge-item-unselected'" @tap="bindRechargeSelect" :data-recharge-amount="recharge_amount1" data-recharge-type='1' >
-				<text class="recharge-item-amount">{{recharge_amount1}}</text>
-				<text>{{recharge_title1}}</text>
-			</view>
 			<view class="recharge-item" :class="recharge_selected == '2' ? 'recharge-item-selected' : 'recharge-item-unselected'" @tap="bindRechargeSelect" :data-recharge-amount="recharge_amount2" data-recharge-type='2' >
 				<text class="recharge-item-amount">{{recharge_amount2}}</text>
 				<text>{{recharge_title2}}</text>
 			</view>
+			<view class="recharge-item" :class="recharge_selected == '1' ? 'recharge-item-selected' : 'recharge-item-unselected'" @tap="bindRechargeSelect" :data-recharge-amount="recharge_amount1" data-recharge-type='1' >
+				<text class="recharge-item-amount">{{recharge_amount1}}</text>
+				<text>{{recharge_title1}}</text>
+			</view>
+			
 			<view class="recharge-item"  :class=" recharge_selected == '3' ? 'recharge-item-selected' : 'recharge-item-unselected'" @tap="bindRechargeSelect" :data-recharge-amount="recharge_amount3" data-recharge-type='3' >
 				<text class="recharge-item-amount">{{recharge_amount3}}</text>
 				<text>{{recharge_title3}}</text>
@@ -46,7 +49,7 @@
 		<view class="recharge-agreement">
 			<view class="select-and-amount" >
 				<uni-icons @tap="bindAgree()" style="margin:20rpx;" :type="selectedAgreeStatus ? 'checkbox-filled' : 'circle'" size="18" color='#e34c55'></uni-icons>
-				<text @tap="bindRechargeRule" style="margin-right:20rpx;">{{recharge_note}}</text>
+				<text style="font-size:22rpx;" @tap="bindRechargeRule">{{recharge_note}}《<text  style="color:#FF952D">黑贝会会籍规则和权益协议</text>》特别规定</text>
 			</view>
 			<view class="select-and-amount">
 				<text style="margin-left:20rpx;margin-right:20rpx;color:#eeeee;">{{recharge_note2}}</text>
@@ -122,7 +125,19 @@ export default {
 		shop_type: shop_type,
 		selectedAllStatus: false,
 		selectedAgreeStatus: false,
-		recharge_selected:'1',
+		recharge_selected:'2',
+		recharge_options:'',
+		recharge_note:'勾选此选项并购买会籍资格时，即代表您已阅读、理解并接受',
+		recharge_note2 :'注意: 电子版会员卡将在购买成功后，被同时关联至您的微信账户和个人手机号，而会员卡号将作为唯一账户识别号',
+		order_voice :'',
+		order_voicetime : '',
+		order_color : '',
+		recharge_amount1:0,
+		recharge_amount2:0,
+		recharge_amount3:0,
+		recharge_amount4:0,
+		recharge_recomment_image:'',
+		order_shape:8,
 		discountpay:0, //折扣差额
 		payamount:0, //实际支付金额
 		order_num:1,//订单份数
@@ -143,14 +158,24 @@ export default {
   
   props: {},
 	onLoad: function (options) {
-		var that = this;
+		var that = this
+		if(options.recharge_options){
+			that.recharge_options = JSON.parse(options.recharge_options)
+		}else{
+			that.recharge_options = options
+		}
 		uni.showToast({
 			title: '加载中',
 			icon: 'loading',
 			duration: 1000
 		})
-	
-		that.readCarts(options)
+	 	
+		that.recharge_selected = that.recharge_options.recharge_selected?that.recharge_options.recharge_selected:that.recharge_selected
+		that.recharge_note = that.recharge_options.recharge_note ? that.recharge_options.recharge_note:that.recharge_note
+		that.recharge_note2 = that.recharge_options.recharge_note2 ? that.recharge_options.recharge_note2:that.recharge_note2
+		 
+		that.getRechargeInfo()
+		//that.readCarts(options)
 		uni.getSystemInfo({
 			success: function (res) {
 				let winHeight = res.windowHeight
@@ -179,6 +204,149 @@ export default {
 		console.log('recharge onPageScroll:'+that.scrollTop)
 	},
 	
+	getRechargeInfo: function () {
+		var that = this
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+		var shop_type = getApp().globalData.shop_type
+		var is_recharge = 1
+		var recharge_type = 1
+		var is_buymyself = 1
+		var recharge_level = that.recharge_selected 
+		var recharge_selected = that.recharge_selected
+		var buy_num = that.buy_num
+	   
+		uni.request({
+			url: weburl + '/api/client/add_cart',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type:shop_type,
+				is_recharge: is_recharge,
+				recharge_type:recharge_type,
+				recharge_level:recharge_level,
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('My getRechargeInfo res data:', res.data);
+				var result =  res.data.result
+				var membercard_no = result.card_no? result.card_no:''
+				/*
+				if (membercard_no=='') {
+					uni.showToast({
+						title: '会员卡生成失败',
+						icon:'error',
+						duration: 2000
+					})
+					return
+				}
+				*/
+				that.recharge_amount1 = result.recharge_amount1?result.recharge_amount1:'68'
+				that.recharge_amount2 = result.recharge_amount2?result.recharge_amount2:'108'
+				that.recharge_amount3 = result.recharge_amount3?result.recharge_amount3:'368'
+				that.recharge_amount4 = result.recharge_amount4?result.recharge_amount4:'1888'
+				
+				if(recharge_selected == 1) {
+					buy_num = that.recharge_amount1
+				} else if(recharge_selected == 2) {
+					buy_num = that.recharge_amount2
+				} else if(recharge_selected == 3) {
+					buy_num = that.recharge_amount3
+				} else if(recharge_selected == 4) {
+					buy_num = that.recharge_amount4
+				} else {
+					buy_num = that.recharge_amount2
+				}
+				
+				let sku_sell_price = result.recharge_price?result.recharge_price:1
+				that.amount = parseFloat(sku_sell_price) * buy_num
+				that.buy_num = buy_num				
+				that.is_buymyself = is_buymyself 
+				that.recharge_skuid = result.recharge_skuid
+				that.recharge_price = result.recharge_price
+				that.recharge_image = result.recharge_image
+				that.recharge_title1 = result.recharge_title1?result.recharge_title1:'6个月期'
+				that.recharge_title2 = result.recharge_title2?result.recharge_title2:'1年期'
+				that.recharge_title4 = result.recharge_title4?result.recharge_title4:'终身'
+				that.recharge_title3 = result.recharge_title3?result.recharge_title3:'3年期'			 
+				that.recharge_note = result.recharge_note?result.recharge_note:that.recharge_note
+				that.recharge_note2 = result.recharge_note2?result.recharge_note2:that.recharge_note2
+				that.order_voice = result.order_voice?result.order_voice:''
+				that.order_voicetime = result.order_voicetime?result.order_voicetime:''
+				that.order_color = result.order_color?result.order_color:''
+				that.queryCart()
+			}
+	    })  
+	},
+	
+	queryCart: function () {
+	    var that = this
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : ''
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1'
+	    var shop_type = getApp().globalData.shop_type
+	    var recharge_selected = that.recharge_selected
+	    var order_type = 'recharge'
+	    var order_shape = '8'
+	    var order_note = '会员充值'; 
+	    var recharge_image = that.recharge_image	
+	    var sku_id = that.recharge_skuid	    
+	    var goods_shape = 7 
+	    
+		uni.request({
+			url: weburl + '/api/client/query_cart',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				shop_type: shop_type,
+				sku_id: sku_id,
+				goods_shape:goods_shape
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				console.log('my index queryCart:', res.data);
+				var carts = []
+				var cartIds = []
+				if (!res.data.result) {
+					wx.showToast({
+						title: '会员充值:' + res.data.info,
+						icon: 'none',
+						duration: 1500
+					})
+					return
+				}
+				var cartlist = res.data.result.list;
+				var index = 0;
+				for (var key in cartlist) {
+					cartlist[key]['sku_list'][0]['image'] = recharge_image
+					for (var i = 0; i < cartlist[key]['sku_list'].length; i++) {
+						if (cartlist[key]['sku_list'][i]['image'].indexOf("http") < 0) {
+							cartlist[key]['sku_list'][i]['image'] = weburl + '/' + cartlist[key]['sku_list'][i]['image']
+						} 
+						cartlist[key]['sku_list'][i]['selected'] = true
+						cartlist[key]['sku_list'][i]['shop_id'] = key
+						cartlist[key]['sku_list'][i]['objectId'] = cartlist[key]['sku_list'][i]['id']
+						carts[index] = cartlist[key]['sku_list'][i]
+						cartIds[index] = cartlist[key]['sku_list'][i]['objectId']
+						index++;
+					}
+				}
+			
+				that.carts = carts
+				that.cartIds = cartIds
+				that.recharge_recomment_image = carts[0].activity_image?carts[0].activity_image:''
+				console.log('order/recharge getRechargeInfo() carts:', carts, 'cartIds:', cartIds)
+			}
+		})
+	},
+	  
 	navigateToAgreement: function (art_id) {
 		var that = this;
 		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
@@ -239,36 +407,34 @@ export default {
 		that.button_confirm = '确定'
 		that.button_cancel = '取消'
 		
-	  //var agreementinfoshowflag = that.agreementinfoshowflag ? that.agreementinfoshowflag : 0;
-		
-	  uni.showToast({
-	      title: '加载中',
-	      icon: 'loading',
-	      duration: 1500
-	  });
-	  uni.request({
-	    url: weburl + '/api/client/query_art',
-	    method: 'POST',
-	    data: {
-	      username: username,
-	      access_token: token,
-	      art_id: art_id,
-	      art_cat_id: art_cat_id,
-	      shop_type: shop_type
-	    },
-	    header: {
-	      'Content-Type': 'application/x-www-form-urlencoded',
-	      'Accept': 'application/json'
-	    },
-	    success: function (res) {
-	  	var privacyInfo = res.data.result
-	  	that.privacyInfo = res.data.result
-	      console.log('送心隐私政策:', that.privacyInfo);
-	  	that.modalHiddenPlaysx = true ;
-	  	that.article = that.privacyInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
-	  	that.article_title ="送心隐私政策";
-	    }
-	  });
+		uni.showToast({
+			title: '加载中',
+			icon: 'loading',
+			duration: 1500
+		});
+		uni.request({
+			url: weburl + '/api/client/query_art',
+			method: 'POST',
+			data: {
+				username: username,
+				access_token: token,
+				art_id: art_id,
+				art_cat_id: art_cat_id,
+				shop_type: shop_type
+			},
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Accept': 'application/json'
+			},
+			success: function (res) {
+				var privacyInfo = res.data.result
+				that.privacyInfo = res.data.result
+				console.log('送心隐私政策:', that.privacyInfo);
+				that.modalHiddenPlaysx = true ;
+				that.article = that.privacyInfo[0]['desc'].replace('<img', '<img style="max-width:100%;height:auto;margin:0 auto;" ');
+				that.article_title ="送心隐私政策";
+			}
+		})
 	},
 	
 	//确定按钮点击事件  玩转送心
@@ -404,6 +570,7 @@ export default {
 		var card_cele_info = options.card_cele_info ? JSON.parse(options.card_cele_info) : ''; //
 		var card_love_info = options.card_love_info ? JSON.parse(options.card_love_info) : ''; //
 		var card_template = options.card_template ? JSON.parse(options.card_template) : ''; //
+		var recharge_selected = options.recharge_selected?options.recharge_selected:that.recharge_selected
 		var recharge_title1 = options.recharge_title1 
 		var recharge_title2 = options.recharge_title2 
 		var recharge_title3 = options.recharge_title3  
@@ -510,10 +677,12 @@ export default {
 	},
 	
 	confirmOrder: function () {
-		var that = this;
-		var order_num = that.order_num;
+		var that = this
+		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
+		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		var shop_type = getApp().globalData.shop_type;
 		var selectedAgreeStatus = that.selectedAgreeStatus
-		var amount = that.amount
+		
 		if (!selectedAgreeStatus){
 			uni.showToast({
 				title: '请确认会员规则和权益协议',
@@ -522,7 +691,7 @@ export default {
 			})
 			that.scrollToBottom()
 			return
-	    }else if(amount == 0){
+	    } else if(amount == 0){
 			uni.showToast({
 				title: '请选择充值金额',
 				icon: 'loading',
@@ -531,12 +700,18 @@ export default {
 			return
 	    }
 		
+		if (!username) {
+			let frompage = '/pages/order/recharge/recharge?recharge_selected=2'
+			uni.navigateTo({
+				url: '/pages/login/login?frompage='+frompage
+			})
+		}
+		
 		var is_buymyself = that.is_buymyself; //自购
 		var address_id = that.address_id? that.address_id:0;
 		var carts = that.carts;
 		var cartIds = that.cartIds;
-		var username = uni.getStorageSync('username') ? uni.getStorageSync('username') : '';
-		var token = uni.getStorageSync('token') ? uni.getStorageSync('token') : '1';
+		
 		var selectedAllStatus = that.selectedAllStatus;
 		var selectedRedAllStatus = that.selectedRedAllStatus;
 		var selected_coupon_quan_index = that.selected_coupon_quan_index ? that.selected_coupon_quan_index : 0;
@@ -549,8 +724,9 @@ export default {
 		var selected_coupon_red_id = selectedRedAllStatus ? that.coupons_red_list[selected_coupon_red_index]['id'] : 0;
 		var selected_coupon_red_type = selectedRedAllStatus ? that.coupons_red_list[selected_coupon_red_index]['type'] : 1;
 		var status = 0;
-		var shop_type = that.shop_type;
+		
 		var amount = that.amount;
+		var buy_num = amount*100 
 		var order_type = is_buymyself==1?'app':'gift';
 		var order_image = that.order_image;
 		var order_note = that.order_note;
@@ -559,6 +735,7 @@ export default {
 		var order_voicetime = that.order_voicetime;
 		var order_color = that.order_color;
 		var order_num = that.order_num;
+		var is_recharge  = 1
 		var card_register_info = JSON.stringify(that.card_register_info);
 		var card_name_info = JSON.stringify(that.card_name_info);
 		var card_cele_info = JSON.stringify(that.card_cele_info);
@@ -575,7 +752,9 @@ export default {
 				access_token: token,
 				shop_type: shop_type,
 				sku_id: cartIds,
-				buy_type: 'cart',
+				buy_type: 'sku',
+				is_recharge:is_recharge,
+				buy_num:buy_num,
 				order_type: order_type,
 				note: order_note,
 				order_image: order_image,
@@ -606,8 +785,7 @@ export default {
 				console.log('提交订单:', res.data.result);
 				var order_data = res.data.result;
 
-				if (!res.data.info) {
-           
+				if (!res.data.info) {           
 					if (order_data['order_pay'] == 0 || is_buymyself == 0) {
 						that.delete_cart();
 						that.zero_pay(order_data['order_no']); //0支付直接送出
@@ -1131,6 +1309,7 @@ export default {
 	padding: 15px;
 	font-size: 14px;
 	color: #666;
+	text-align: left;
 }
 
 .uni-tip-group-button {

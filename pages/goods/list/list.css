@@ -52,7 +52,7 @@ page {
 	align-items: center;/*子项纵轴上居中对齐*/
 	padding: 4rpx 10rpx 8rpx 10rpx;
 	top:0rpx;
-	position: fixed;
+	position: relative;
 	z-index:999;
 }
 
@@ -81,27 +81,27 @@ page {
 .wx-input image {
 	width: 36rpx;
 	height: 36rpx;
-  margin: 12rpx 2rpx 12rpx -40rpx; 
+	margin: 12rpx 2rpx 12rpx -40rpx; 
 }
 .searchcancel {
-  width: 20%;
-  color: #eee;
-  font-size: 26rpx;
-  line-height: 60rpx;
-  text-align: center;
+	width: 20%;
+	color: #eee;
+	font-size: 26rpx;
+	line-height: 60rpx;
+	text-align: center;
 }
 .serach-comm {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: space-between;
-  background: #1d1d1d;
-  margin-bottom: 0rpx;
-  margin-top: 0rpx;
-  top:84rpx;
-  width: 100%;
-  position: fixed;
-  z-index: 999;
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	justify-content: space-between;
+	background: #1d1d1d;
+	margin-bottom: 0rpx;
+	margin-top: 0rpx;
+	top:84rpx;
+	width: 100%;
+	position: fixed;
+	z-index: 999;
 }
 
 .search-comm-vote {
@@ -143,25 +143,27 @@ page {
  font-weight:normal;
 }
 .search-comm-confirm .lable{
-  text-align: center;
-  margin-left:20rpx; 
-  border-style:solid;
-  border-width:1px; 
-  border-radius: 38rpx; 
-  width: 60rpx; 
-  height: 40rpx;
-  line-height:40rpx;
-  padding: 5rpx;  
-  background-color: green;
-  color:white;
-  font-size:22rpx;
+	text-align: center;
+	margin-left:20rpx; 
+	border-style:solid;
+	border-width:1px; 
+	border-radius: 38rpx; 
+	width: 60rpx; 
+	height: 40rpx;
+	line-height:40rpx;
+	padding: 5rpx;  
+	background-color: green;
+	color:white;
+	font-size:22rpx;
 }
 
 .banner {
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
 	width: 100%;
-	height: 60rpx;
-	top:60rpx;
-	position: fixed;
+	position: relative;
 	z-index:999;
 }
 
@@ -176,43 +178,41 @@ page {
 
 /*辅助导航 nav2*/
 .top-bar2 {
-  display:flex;
-  flex-direction: row;
-  justify-content: center;
-  height: 60rpx;
-  background: #444; 
-  width:100%;
+	display:flex;
+	flex-direction: row;
+	justify-content: center;
+	background: #444; 
+	width:100%;
 }
 .top-bar-item2 {
-  display:flex;
-  flex-direction: row;
-  justify-content: center;
-  width: 33.3%;
-  color: #ccc;
-  text-align: center;
-  height: 60rpx;
-  line-height: 60rpx;
-  font-size: 24rpx;
+	display:flex;
+	flex-direction: row;
+	justify-content: center;
+	text-align: center;
+	width: 33.3%;
+	color: #ccc;
+	font-size: 24rpx;
+	margin: 0 auto;
 }
 .top-bar-active2 {
-  color: #fff;
+	color: #fff;
 }
 
-swiper-item image {
+.swiper-item image {
     width: 100%;
     display: inline-block;
     overflow: hidden;
 }
 
-.venues_box {
-	margin: 150rpx auto;
+.venues-box {
+	margin: 10rpx auto;
 	width: 96%;
 	padding-bottom: 0rpx;
 	overflow: hidden;
 	z-index: 1;
 }
 
-.venues_item {
+.venues-item {
 	margin-bottom:15rpx;
 	background: #ffffff;
 	border-radius: 14rpx;
@@ -229,12 +229,12 @@ swiper-item image {
 .box-right{
 	float: right;
 }
-.venues_item .mainpic {
+.venues-item .mainpic {
 	display: block;
 	width: 354rpx;
 	height: 100%;
 }
-.venues_item .goods-org {
+.venues-item .goods-org {
 	color: #fff;
 	font-size: 22rpx;
 	background: #ff952d;
@@ -242,7 +242,7 @@ swiper-item image {
 	padding: 0 8rpx;
 	border-radius: 6rpx;
 }
-.venues_item .img-discount {
+.venues-item .img-discount {
 	color: #fff;
 	font-size: 22rpx;
 	background: #ff952d;
@@ -251,7 +251,7 @@ swiper-item image {
 	border-radius: 6rpx;
 	margin-right: 8rpx;
 }
-.venues_item .goods_name {
+.venues-item .goods_name {
   color: #444;
   font-size: 26rpx;
   font-weight: bold;
@@ -265,24 +265,24 @@ swiper-item image {
   padding-left: 10rpx;
 }
 
-.venues_item .goods_tag {
+.venues-item .goods_tag {
   color: #999;
   font-size: 20rpx;
   padding: 2rpx 5rpx;
   border: 1px solid #f2f2f2;
   border-radius: 6rpx;
 }
-.venues_item .goods-tags {
+.venues-item .goods-tags {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   padding:10rpx 0 0 10rpx;
 }
-.venues_item .goods_tag image{
+.venues-item .goods_tag image{
   width: 10%;
   height: 30rpx;
 }
-.venues_item .goods-prom {
+.venues-item .goods-prom {
   display: block;
   color: #999;
   font-size: 24rpx;
@@ -308,16 +308,16 @@ swiper-item image {
   display: none;
 }
 .price-market::first-letter {
-  font-size: 20rpx;
+  font-size: 24rpx;
 }
 .price-now {
   text-indent: 0;
   color: #EC4844;
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: bold;
 }
 .price-now::first-letter {
-  font-size: 20rpx;
+  font-size: 24rpx;
 }
 
 .left-tag {
@@ -331,7 +331,7 @@ swiper-item image {
   padding: 2rpx 6rpx;
 }
 
-.goods_bottom {
+.goods-bottom {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

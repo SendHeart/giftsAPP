@@ -1,13 +1,5 @@
 // mescroll-body 和 mescroll-uni 通用
-
-// import MescrollUni from "./mescroll-uni.vue";
-// import MescrollBody from "./mescroll-body.vue";
-
 const MescrollMixin = {
-	// components: { // 非H5端无法通过mixin注册组件, 只能在main.js中注册全局组件或具体界面中注册
-	// 	MescrollUni,
-	// 	MescrollBody
-	// },
 	data() {
 		return {
 			mescroll: null //mescroll实例对象
@@ -31,7 +23,7 @@ const MescrollMixin = {
 			this.mescroll = mescroll;
 			this.mescrollInitByRef(); // 兼容字节跳动小程序
 		},
-		// 以ref的方式初始化mescroll对象 (兼容字节跳动小程序: http://www.mescroll.com/qa.html?v=20200107#q26)
+		// 以ref的方式初始化mescroll对象 (兼容字节跳动小程序)
 		mescrollInitByRef() {
 			if(!this.mescroll || !this.mescroll.resetUpScroll){
 				let mescrollRef = this.$refs.mescrollRef;

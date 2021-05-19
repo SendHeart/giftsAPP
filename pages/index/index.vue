@@ -95,7 +95,7 @@
 					<text :hidden="((giftflag==0 && item.status==2 && item.gift_status==1 && currenttime>item.duetime && item.shape!=4 && item.shape!=5)?false:true)" :data-id="item.order_no" :data-index="order_idx" @tap="sendOtherTapTag" class="smallbtn2">转送</text>
 					 -->
 					
-					<text :hidden="((giftflag==0 && item.status==2 && item.order_price>0 && item.gift_status==1 && currenttime>item.duetime && item.shape!=4 && item.shape!=5)?false:true)" :data-id="item.order_no" :data-index="order_idx" @tap="refundTapTag" class="smallbtn2">退款</text>
+					<text :hidden="((giftflag==0 && item.status==2 && item.order_price>0 && item.shape!=4 && item.shape!=5)?false:true)" :data-id="item.order_no" :data-index="order_idx" @tap="refundTapTag" class="smallbtn2">退款</text>
 				</view>
 			</view>	
 			</view>

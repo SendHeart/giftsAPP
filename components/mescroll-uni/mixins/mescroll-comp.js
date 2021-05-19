@@ -1,7 +1,5 @@
 /**
- * mescroll-body写在子组件时,需通过mescroll的mixins补充子组件缺少的生命周期:
- * 当一个页面只有一个mescroll-body写在子组件时, 则使用mescroll-comp.js (参考 mescroll-comp 案例)
- * 当一个页面有多个mescroll-body写在子组件时, 则使用mescroll-more.js (参考 mescroll-more 案例)
+ * mescroll-body写在子组件时,需通过mescroll的mixins补充子组件缺少的生命周期
  */
 const MescrollCompMixin = {
 	// 因为子组件无onPageScroll和onReachBottom的页面生命周期，需在页面传递进到子组件 (一级)
@@ -15,10 +13,9 @@ const MescrollCompMixin = {
 	onPullDownRefresh(){
 		this.handlePullDownRefresh()
 	},
-	// mescroll-body写在子子子...组件的情况 (多级)
 	data() {
 		return {
-			mescroll: {
+			mescroll: { // mescroll-body写在子子子...组件的情况 (多级)
 				onPageScroll: e=>{
 					this.handlePageScroll(e)
 				},

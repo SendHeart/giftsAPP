@@ -1,10 +1,10 @@
 <!-- 商品列表组件 <pd-list :list="xx"></pd-list> -->
 <template>
 	<view class="pd-list">
-		<view class="venues_box">
+		<view class="venues-box">
 			<view class="box-left">	
 				<view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index" @click="showGoods(item)">
-					<view class="venues_item" v-if="index%2==0"> 
+					<view class="venues-item" v-if="index%2==0"> 
 							<image class="image" lazy-load :src="item.image" style="width:355rpx;height:355rpx;" />
 							<!--
 							<image :hidden="!item.show" class="image" :class="{lazy:!item.show}" :data-index="index" @load="imageLoad" :src="item.show?item.image:''"  style="width:355rpx;height:355rpx;" />
@@ -14,12 +14,12 @@
 								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
-							<text class="goods_name">{{item.name}}</text>
+							<text class="goods-name">{{item.name}}</text>
 							<view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
 							<view class="goods-tags">
 								<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 							</view>
-							<view class="goods_bottom">
+							<view class="goods-bottom">
 								<!--
 								<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 									<text space="ensp">{{item.goods_tag}}</text>
@@ -36,7 +36,7 @@
 			</view>
 			<view class="box-right">
 				<view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index" @click="showGoods(item)">
-					<view class="venues_item" v-if="index%2==1"> 
+					<view class="venues-item" v-if="index%2==1"> 
 						<!-- <navigator :url="'/pages/details/details?id=' + item.id + '&activity_image=' + item.activity_image + '&image=' + item.image + '&info=' + item.act_info + '&name=' + item.name + '&gov_price=' + item.gov_price + '&goods_price=' + item.sell_price + '&goods_marketprice=' + item.market_price + '&sale=' + item.sale + '&goods_info=' + item.act_info + '&goods_org=' + item.goods_org + '&goods_tag=' + item.goods_tag + '&goods_shape=' + item.shape+ '&card_type=' + item.card_type" hover-class="none"> -->
 							<image class="image" lazy-load :src="item.image" style="width:355rpx;height:355rpx;" />
 							<!--
@@ -47,13 +47,13 @@
 								<text v-if="item.shape!=5 && item.shape!=4 && item.goods_org==4" class="goods-org">极速达</text>
 								<text v-if="item.discount<100" class="img-discount">可用券</text>
 							</view>
-							<text class="goods_name">{{item.name}}</text>
+							<text class="goods-name">{{item.name}}</text>
 						<!-- </navigator> -->
 						<view class="goods-prom">{{item.act_info?item.act_info:''}}</view>
 						<view class="goods-tags">
 							<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已购</text>
 						</view>
-						<view class="goods_bottom">
+						<view class="goods-bottom">
 							<!--
 							<view v-if="item.shape!=4&&item.shape!=5" class="goods_tag">
 								<text space="ensp">{{item.goods_tag}} </text>
@@ -83,12 +83,13 @@
 <script>
 	export default {
 		data() {
-		  return {
-			  windowHeight: "",
-			  windowWidth: "",
-			  dkheight: "",
-		  };
+			return {
+				windowHeight: "",
+				windowWidth: "",
+				dkheight: "",
+			}
 		},
+		
 		props:{
 			list: { // 数据列表
 				type: Array,
@@ -97,21 +98,20 @@
 				}
 			}
 		},
+		
 		onLoad: function (options) {
-		  console.log('onLoad list:', this.list);
+		  console.log('goods/list/list/pd-list onLoad() list:', this.list);
 		  var that = this;
-		  var username = options.username ? options.username : wx.getStorageSync('username');
-		  var token = options.token ? options.token : wx.getStorageSync('token');
+		  var username = options.username ? options.username : uni.getStorageSync('username');
+		  var token = options.token ? options.token : uni.getStorageSync('token');
 		  uni.getSystemInfo({
-		    success: function (res) {
-		      that.setData({
-		        platform: res.platform,
-		        windowHeight: res.windowHeight,
-		        windowWidth: res.windowWidth,
-		        dkheight: res.windowHeight - 60
-		      });
-		    }
-		  });
+			success: function (res) {
+				that.platform = res.platform
+				that.windowHeight = res.windowHeight
+				that.windowWidth = res.windowWidth
+				that.dkheight = res.windowHeight - 60
+				}
+			})
 		},
 		
 		methods: {

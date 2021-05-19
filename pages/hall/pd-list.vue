@@ -1,19 +1,18 @@
 <!-- 商品列表组件 <pd-list :list="xx"></pd-list> -->
 <template>
-	<view class="pd-list" style="margin-top: 20rpx;">
+	<view class="pd-list" style="margin-top: 20rpx;background: #F2F2F2;">
 		<!--瀑布流列表-->
 		<view v-if="activeIndex > 0" id="venues_box" class="venues-box">
 		  <view class="box-left">
 			  <view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index"  @click="showGoods(item)" >
 		        <view class="venues-item" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-info="item.act_info" :data-goods-org="item.goods_org" :data-image="(item.activity_image?item.activity_image:item.image)" :data-goods-name="item.name" :data-sale="item.sale" :data-goods-price="item.sell_price" :hidden="(item.hidden==1?true:false)" v-if="index%2==0">
-					<!-- 
-					<easy-loadimage class="image" style="width:355rpx;height:355rpx;" mode="aspectFill"
-					    :scroll-top="scrollTop"
-					    :image-src="item.image" >
-					</easy-loadimage>
+					<!--
+					 <easy-loadimage class="image" style="width:355rpx;height:355rpx;" mode="aspectFill"
+					     :scroll-top="scrollTop"
+					     :image-src="item.image" >
+					 </easy-loadimage>					
 					-->
-					<image class="image" :lazy-load="true"  :src="item.image" style="width:355rpx;height:355rpx;" />
-					
+					<image class="image" :src="item.image" style="width:355rpx;height:355rpx;" />					
 					<!--
 					<image :hidden="!item.show" class="image" :class="{lazy:!item.show}" :data-index="index" @load="imageLoad" :src="item.show?item.image:''"  style="width:355rpx;height:355rpx;" />
 					<image :hidden="item.show" class="image placeholder" :class="{loaded:item.loaded}" :src="default_img"  style="width:355rpx;height:355rpx;"  />
@@ -29,7 +28,7 @@
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-		            <view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
+		            <view class="price-now"><text class="membericon">会员价</text>￥{{item.sell_price}}</view>
 		          </view>
 		        </view>
 		      </view>
@@ -38,14 +37,14 @@
 		  <view class="box-right">
 			  <view class="uni-list-cell" hover-class="uni-list-cell-hover" v-for="(item,index) in list" :key="index"  @click="showGoods(item)">
 		        <view class="venues-item" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-info="item.act_info" :data-goods-org="item.goods_org" :data-image="(item.activity_image?item.activity_image:item.image)" :data-goods-name="item.name" :data-sale="item.sale" :data-goods-price="item.sell_price" :hidden="(item.hidden==1?true:false)" v-if="index%2==1">
-		          <!-- image class="mainpic" src="{{item.image}}" binderror="imageError" data-imageindex="{{index}}" -->
+					<!-- image class="mainpic" src="{{item.image}}" binderror="imageError" data-imageindex="{{index}}" -->
 					<!--
 					<easy-loadimage class="image" style="width:355rpx;height:355rpx;"
 					    :scroll-top="scrollTop"
 					    :image-src="item.image" >
 					</easy-loadimage>
 					-->
-					<image class="image" :lazy-load="true" :src="item.image" style="width:355rpx;height:355rpx;" />
+					<image class="image" :src="item.image" style="width:355rpx;height:355rpx;" />
 					
 					<!--
 						<image :hidden="!item.show" class="image" :class="{lazy:!item.show}" :data-index="index" @load="imageLoad" :src="item.show?item.image:''"  style="width:355rpx;height:355rpx;" />
@@ -62,7 +61,7 @@
 		          </view>
 		          <view class="price-list">
 		            <view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-		            <view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
+		            <view class="price-now"><text class="membericon">会员价</text>￥{{item.sell_price}}</view>
 		          </view>
 		        </view>
 		      </view>
@@ -76,6 +75,7 @@
 				    :image-src="item.image" >
 				</easy-loadimage>
 				-->
+				
 				<image class="recomm-img" :src="item.image"></image>
 				<view class="recomm-item-info">					
 					<view class="goods-tags">
@@ -89,7 +89,7 @@
 					</view>    
 					<view class="price-list">
 						<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-						<view class="price-now"><text class="sfont">会员价</text>￥{{item.sell_price}}</view>
+						<view class="price-now"><text class="membericon">会员价</text>￥{{item.sell_price}}</view>
 					</view>
 				</view>
 			 </view>

@@ -1,69 +1,75 @@
 <template>
 <view>
-<view class="container carts-list">
-    <view v-for="(cart_item, cart_idx) in carts"  class="carts-container" :key="cart_idx" :hidden="(cart_item.hidden==1?false:false)">
-    	<view class="carts-item" :style="'left:' + itemLefts[cart_idx]+'px;'" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd">
+	<view v-if="carts == 0" class="noneresult">
+	    <text>购物袋中还没有商品</text>
+	    <button type="default" @tap="goBack">返回首页选购</button>
+	</view>
+	<view class="container carts-list">
+		<view v-for="(cart_item, cart_idx) in carts"  class="carts-container" :key="cart_idx" :hidden="(cart_item.hidden==1?false:false)">
+			<view class="carts-item" :style="'left:' + itemLefts[cart_idx]+'px;'" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd">
 	    	<!-- 复选框图标 -->
-			<uni-icons style="margin-left:20rpx;" :type="(cart_item.selected ? 'checkbox' : 'circle')" size="18" @tap="bindCheckbox(cart_idx)" :data-index="cart_idx"></uni-icons>
+				<uni-icons style="margin-left:20rpx;" :type="(cart_item.selected ? 'checkbox' : 'circle')" size="18" @tap="bindCheckbox(cart_idx)" :data-index="cart_idx"></uni-icons>
 			<!-- 缩略图 -->
 				<image  class="carts-image" :src="cart_item.image" mode="aspectFit" @tap="showGoods(cart_item)"></image>
 				<!-- 商品标题 -->
 				<view class="carts-text">
-				  <view class="carts-title">{{cart_item.name}}</view>
-				  <view class="carts-subtitle">
-					<view class=''  >
-						<view v-if="cart_item['value'] && cart_item['value'].length>0">
-							<view class="carts-sku" >
-								<text v-for="(sku_value, index) in cart_item['value']" :key="index">{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
-								</text>
-							</view>
+					<view class="carts-title">{{cart_item.name}}</view>
+						<view class="carts-subtitle">
+							<view class=''  >
+								<view v-if="cart_item['value'] && cart_item['value'].length>0">
+									<view class="carts-sku" >
+										<text v-for="(sku_value, index) in cart_item['value']" :key="index">{{sku_value?sku_value['name']+':':''}}{{sku_value['type']==2?sku_value['note']+' ':sku_value['value']+' '}}
+										</text>
+									</view>
+								</view>
+							<view class="carts-en-price">￥{{cart_item.sell_price}}元</view>
 						</view>
-						<view class="carts-en-price">￥{{cart_item.sell_price}}元</view>
+						<view class="stepper">
+							<text :class="minusStatuses[cart_idx]" :data-index="cart_idx" @tap="bindMinus">-</text>
+							<input type="number" :data-index="cart_idx" @change="bindManual" @tap="bindManualTapped" :value="cart_item.num" />
+							<text class="normal" :data-index="cart_idx" @tap="bindPlus">+</text>
+						</view>
 					</view>
-				      <view class="stepper">
-						<text :class="minusStatuses[cart_idx]" :data-index="cart_idx" @tap="bindMinus">-</text>
-						<input type="number" :data-index="cart_idx" @change="bindManual" @tap="bindManualTapped" :value="cart_item.num" />
-						<text class="normal" :data-index="cart_idx" @tap="bindPlus">+</text>
-				  	</view>
 				</view>
 			</view>
-    </view>
-	<!-- 
-	<button type="warn" :data-index="cart_idx" class="delete-button" @tap="delete(cart_item)" :data-object-id="item.objectId"><text>删除</text></button>
+			<!-- 
+			<button type="warn" :data-index="cart_idx" class="delete-button" @tap="delete(cart_item)" :data-object-id="item.objectId"><text>删除</text></button>
+			-->
+		</view>
+	</view>
+	<view class="carts-footer">
+		<view class="select-and-amount" >
+			<uni-icons :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color='#e34c55' @tap="bindUnSelectAll"></uni-icons>
+			<text style="margin-left: 30rpx;" @tap="bindSelectAll">全选</text>
+			<text>{{total>0?'￥'+total:''}}</text>
+		</view>
+		<view style="display: flex;flex-direction: column;justify-content: center;">
+			<view class="button" @tap="bindCheckout">去结算</view>
+		</view>
+	</view>
+	<!--
+	<view class="recomment-title">
+		<text>精品推荐</text>
+	</view>
 	-->
-    </view>
-</view>
-<view class="carts-footer">
-	<view class="select-and-amount" >
-		<uni-icons :type="(selectedAllStatus ? 'checkbox-filled' : 'circle')" size="18" color='#e34c55' @tap="bindUnSelectAll"></uni-icons>
-		<text style="margin-left: 30rpx;" @tap="bindSelectAll">全选</text>
-		<text>{{total>0?'￥'+total:''}}</text>
+	<view v-for="(item,index) in recommentList" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
+		<image class="recomm-img" :src="item.image"></image>
+		<text style="font-size:12px;">{{item.name}}</text>
+		<view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
+		<view class="recomm-goods-tags">
+			<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
+		</view>    
+		<view class="price-list">
+			<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
+			<view class="price-now">￥{{item.sell_price}}</view>
+		</view>
 	</view>
-	<view style="display: flex;flex-direction: column;justify-content: center;">
-		<view class="button" @tap="bindCheckout">去结算</view>
-	</view>
-</view>
-<view class="recomment-title">
-    <text>精品推荐</text>
-</view>
-<view v-for="(item,index) in recommentList" class="recomm-item" :key="index" @tap="showGoods(item)" :data-object-id="item.id" :data-goods-id="item.id" :data-goods-name="item.name" :data-goods-price="item.sell_price" :data-sale="item.sale" :data-goods-info="item.act_info" :hidden="(item.hidden==1?true:false)">
-	<image class="recomm-img" :src="item.image"></image>
-	<text style="font-size:12px;">{{item.name}}</text>
-	<view style="font-size:10px;color:gray;">{{item.act_info?item.act_info:''}}</view>  
-	<view class="recomm-goods-tags">
-		<text class="left-tag">{{item.sale>0?item.sale:'0'}}人已送</text>
-	</view>    
-	<view class="price-list">
-		<view class="price-market">{{item.market_price>0?'￥'+item.market_price:''}}</view>
-   		<view class="price-now">￥{{item.sell_price}}</view>
-	</view>
-</view>
 
-<view class="carts-more" :hidden="rshowmorehidden">
-	<!-- 
-	 <text bindtap="bindShowMoreR" >更多[{{page}}/{{rpage_num}}]</text> 
-	-->
-</view>
+	<view class="carts-more" :hidden="rshowmorehidden">
+		<!-- 
+		<text bindtap="bindShowMoreR" >更多[{{page}}/{{rpage_num}}]</text> 
+		-->
+	</view>
 </view>
 </template>
 
@@ -174,6 +180,21 @@ export default {
 	},
 
 	methods: {
+	goBack: function () {
+		var that = this
+		var pages = getCurrentPages()
+		console.log('cart/cart goBack() frompage:'+that.frompage+' pages:'+pages.length)
+		if(that.frompage=='/pages/my/index' || that.frompage=='/pages/hall/hall'){
+			uni.switchTab({
+				url: that.frompage
+			})
+		} else {
+			uni.navigateBack({
+			  changed: true
+			})
+		}
+	},
+		
     //事件处理函数
 	bindTextAreaBlur: function (e) {
         var that = this;
@@ -442,7 +463,7 @@ export default {
         if (!order_note) order_note = '送你一份心意，愿美好长存!'; //默认祝福
         console.log('附言:' + order_note)
     
-        wx.request({
+        uni.request({
           url: weburl + '/api/client/add_order',
           method: 'POST',
           data: {

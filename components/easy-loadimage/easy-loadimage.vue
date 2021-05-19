@@ -12,6 +12,8 @@
     </view>
 </template>
 <script>
+var weburl = getApp().globalData.weburl;
+
 // 生成全局唯一id
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -44,7 +46,7 @@ export default{
             default() {
                 return uni.getSystemInfoSync().windowHeight;
             }
-        }
+        },
     },
     watch:{
         scrollTop(val,oldval){
@@ -60,7 +62,8 @@ export default{
             loadImg:false,
             showImg:false,
             isLoadError:false,
-            showTransition:false,
+            showTransition:false, 
+			default_img : weburl + '/uploads/default_goods_image.png?rand='+Math.random()*100,
         }
     },
     methods:{
@@ -133,6 +136,7 @@ export default{
     }
     .loading-img{
         height: 100%;
+		background: url('~@/static/easy-loadimage/loadfail.png') no-repeat center;
     }
     /* 转圈 */
     .spin-circle{
